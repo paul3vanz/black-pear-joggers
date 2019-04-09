@@ -32,17 +32,15 @@ export class Select implements Action {
 
 export class SendQuery implements Action {
   readonly type = ClubRecordsActionTypes.SendQuery;
-  constructor(public record: ClubRecord, public reason: string) {}
+  constructor(public record: ClubRecord, public reason: string, public notes: string) {}
 }
 
 export class SendQuerySuccess implements Action {
   readonly type = ClubRecordsActionTypes.SendQuerySuccess;
-  constructor(public payload: any) {}
 }
 
 export class SendQueryError implements Action {
   readonly type = ClubRecordsActionTypes.SendQueryError;
-  constructor(public payload: any) {}
 }
 
 export type ClubRecordsAction = Load | Loaded | LoadError | Select | SendQuery | SendQuerySuccess | SendQueryError;

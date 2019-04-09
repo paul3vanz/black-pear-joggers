@@ -17,33 +17,42 @@
 
   <form #queryForm="ngForm">
     <fieldset>
-      <legend class="h3">Query reason</legend>
-
-      <label class="u-visually-hidden" for="reason">Select a reason</label>
-
-      <select
-        [(ngModel)]="model.reason"
-        name="reason"
-        id="reason"
-      >
-        <option value="">Select a reason</option>
-        <option value="notMember">Wasn't a member of the club at the time</option>
-        <option value="notFastest">There is a faster performance not listed</option>
-        <option value="notRunner">This was not run by the runner named (e.g. bib swap)</option>
-        <option value="other">Other</option>
-      </select>
-
-      <div>
-        <button
-          *ngIf="1"
-          (click)="onSubmit()"
-        >
-          Submit
-        </button>
-      </div>
+      <legend>Query reason</legend>
 
       <p class="message success" *ngIf="showSuccess">Thank you. We have received your query. It will be reviewed and the records updated accordingly if necessary.</p>
       <p class="message error" *ngIf="showError">Sorry, there was a problem sending the query. Please try again later.</p>
+
+      <ng-container *ngIf="!showSuccess">
+        <label class="u-visually-hidden" for="reason">Select a reason</label>
+
+        <select
+          [(ngModel)]="model.reason"
+          name="reason"
+          id="reason"
+        >
+          <option value="">Select a reason</option>
+          <option value="notMember">Wasn't a member of the club at the time</option>
+          <option value="notFastest">There is a faster performance not listed</option>
+          <option value="notRunner">This was not run by the runner named (e.g. bib swap)</option>
+          <option value="other">Other</option>
+        </select>
+
+        <ng-container *ngIf="model.reason">
+          <label for="notes">Please enter further details</label>
+
+          <textarea
+            [(ngModel)]="model.notes"
+            name="notes"
+            id="notes"
+          ></textarea>
+
+          <button
+            (click)="onSubmit()"
+          >
+            Submit
+          </button>
+        </ng-container>
+      </ng-container>
     </fieldset>
   </form>
 </bpj-modal>

@@ -9,10 +9,15 @@ fieldset {
   border: 0;
 }
 
-select {
+select,
+textarea {
   width: 100%;
   margin-bottom: 1rem;
   padding: 0.5rem;
+}
+
+label {
+  display: block;
 }
 
 button {
@@ -24,8 +29,7 @@ button {
 }
 
 .message {
-  margin-top: 1rem;
-  margin-bottom: 0;
+  margin-bottom: 1rem;
   padding: 0.5rem 1rem;
   border: 1px solid;
   border-radius: 3px;

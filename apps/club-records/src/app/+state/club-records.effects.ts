@@ -39,14 +39,17 @@ export class ClubRecordsEffects {
   sendQuery$ = this.actions$.pipe(
     ofType(ClubRecordsActionTypes.SendQuery),
     switchMap((action: SendQuery) => {
-      return this.clubRecordsService.sendQuery(action.record, action.reason).pipe(
-        map((response) => new SendQuerySuccess(response)),
+      return this.clubRecordsService.sendQuery(action.record, action.reason, action.notes).pipe(
+        map(() => new fromClubRecordsActions.SendQuerySuccess()),
         catchError(() => {
-          return of(new SendQueryError(action));
+          return of(new fromClubRecordsActions.SendQueryError());
         })
       );
     })
   );
+
+  @Effect()
+  SendQuerySuccess$ = this.actions$.pipe(ofType(ClubRecordsActionTypes.SendQuerySuccess), map(() => new fromClubRecordsActions.Load()));
 
   constructor(
     private actions$: Actions,
