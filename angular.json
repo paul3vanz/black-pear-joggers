@@ -1,0 +1,373 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "",
+  "projects": {
+    "magic-mile": {
+      "root": "apps/magic-mile/",
+      "sourceRoot": "apps/magic-mile/src",
+      "projectType": "application",
+      "prefix": "bpj",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/magic-mile",
+            "index": "apps/magic-mile/src/index.html",
+            "main": "apps/magic-mile/src/main.ts",
+            "polyfills": "apps/magic-mile/src/polyfills.ts",
+            "tsConfig": "apps/magic-mile/tsconfig.app.json",
+            "assets": [ "apps/magic-mile/src/favicon.ico", "apps/magic-mile/src/assets" ],
+            "styles": [ "scss/main.scss", "apps/magic-mile/src/styles.scss" ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/magic-mile/src/environments/environment.ts",
+                  "with": "apps/magic-mile/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "magic-mile:build",
+            "port": 4201
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "magic-mile:build:production"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/magic-mile/src/test.ts",
+            "polyfills": "apps/magic-mile/src/polyfills.ts",
+            "tsConfig": "apps/magic-mile/tsconfig.spec.json",
+            "karmaConfig": "apps/magic-mile/karma.conf.js",
+            "styles": [ "scss/main.scss", "apps/magic-mile/src/styles.scss" ],
+            "scripts": [],
+            "assets": [ "apps/magic-mile/src/favicon.ico", "apps/magic-mile/src/assets" ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [ "apps/magic-mile/tsconfig.app.json", "apps/magic-mile/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
+          }
+        }
+      }
+    },
+    "shared-components": {
+      "root": "libs/shared-components",
+      "sourceRoot": "libs/shared-components/src",
+      "projectType": "library",
+      "prefix": "bpj",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/shared-components/src/test.ts",
+            "tsConfig": "libs/shared-components/tsconfig.spec.json",
+            "karmaConfig": "libs/shared-components/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [ "libs/shared-components/tsconfig.lib.json", "libs/shared-components/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
+          }
+        }
+      }
+    },
+    "club-standards": {
+      "root": "apps/club-standards/",
+      "sourceRoot": "apps/club-standards/src",
+      "projectType": "application",
+      "prefix": "bpj",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/club-standards",
+            "index": "apps/club-standards/src/index.html",
+            "main": "apps/club-standards/src/main.ts",
+            "polyfills": "apps/club-standards/src/polyfills.ts",
+            "tsConfig": "apps/club-standards/tsconfig.app.json",
+            "assets": [ "apps/club-standards/src/favicon.ico", "apps/club-standards/src/assets" ],
+            "styles": [ "scss/main.scss", "apps/club-standards/src/styles.css" ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/club-standards/src/environments/environment.ts",
+                  "with": "apps/club-standards/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "club-standards:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "club-standards:build:production"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/club-standards/src/test.ts",
+            "polyfills": "apps/club-standards/src/polyfills.ts",
+            "tsConfig": "apps/club-standards/tsconfig.spec.json",
+            "karmaConfig": "apps/club-standards/karma.conf.js",
+            "styles": [ "scss/main.scss", "apps/club-standards/src/styles.css" ],
+            "scripts": [],
+            "assets": [ "apps/club-standards/src/favicon.ico", "apps/club-standards/src/assets" ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [ "apps/club-standards/tsconfig.app.json", "apps/club-standards/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
+          }
+        }
+      }
+    },
+    "race-results": {
+      "root": "apps/race-results/",
+      "sourceRoot": "apps/race-results/src",
+      "projectType": "application",
+      "prefix": "black-pear-joggers",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/race-results",
+            "index": "apps/race-results/src/index.html",
+            "main": "apps/race-results/src/main.ts",
+            "polyfills": "apps/race-results/src/polyfills.ts",
+            "tsConfig": "apps/race-results/tsconfig.app.json",
+            "assets": [ "apps/race-results/src/favicon.ico", "apps/race-results/src/assets" ],
+            "styles": [ "scss/main.scss", "apps/race-results/src/styles.scss" ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/race-results/src/environments/environment.ts",
+                  "with": "apps/race-results/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "race-results:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "race-results:build:production"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/race-results/src/test.ts",
+            "polyfills": "apps/race-results/src/polyfills.ts",
+            "tsConfig": "apps/race-results/tsconfig.spec.json",
+            "karmaConfig": "apps/race-results/karma.conf.js",
+            "styles": [ "scss/main.scss", "apps/race-results/src/styles.scss" ],
+            "scripts": [],
+            "assets": [ "apps/race-results/src/favicon.ico", "apps/race-results/src/assets" ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [ "apps/race-results/tsconfig.app.json", "apps/race-results/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
+          }
+        }
+      }
+    },
+    "club-records": {
+      "root": "apps/club-records/",
+      "sourceRoot": "apps/club-records/src",
+      "projectType": "application",
+      "prefix": "black-pear-joggers",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/club-records",
+            "index": "apps/club-records/src/index.html",
+            "main": "apps/club-records/src/main.ts",
+            "polyfills": "apps/club-records/src/polyfills.ts",
+            "tsConfig": "apps/club-records/tsconfig.app.json",
+            "assets": [ "apps/club-records/src/favicon.ico", "apps/club-records/src/assets" ],
+            "styles": [ "scss/main.scss", "apps/club-records/src/styles.scss" ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/club-records/src/environments/environment.ts",
+                  "with": "apps/club-records/src/environments/environment.prod.ts"
+                }
+              ],
+              "baseHref": "/apps/club-records/",
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "club-records:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "club-records:build:production"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/club-records/src/test.ts",
+            "polyfills": "apps/club-records/src/polyfills.ts",
+            "tsConfig": "apps/club-records/tsconfig.spec.json",
+            "karmaConfig": "apps/club-records/karma.conf.js",
+            "styles": [ "scss/main.scss", "apps/club-records/src/styles.scss" ],
+            "scripts": [],
+            "assets": [ "apps/club-records/src/favicon.ico", "apps/club-records/src/assets" ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [ "apps/club-records/tsconfig.app.json", "apps/club-records/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "warnings": {
+      "typescriptMismatch": false,
+      "versionMismatch": false
+    },
+    "defaultCollection": "@nrwl/schematics"
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "prefix": "bpj",
+      "styleext": "scss"
+    },
+    "@schematics/angular:pipe": {
+      "export": true
+    }
+  },
+  "defaultProject": "magic-mile"
+}

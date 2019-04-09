@@ -1,0 +1,30 @@
+@import 'settings';
+@import 'tools';
+@import 'resets';
+@import 'base';
+@import 'objects';
+@import 'components';
+@import 'utilities';
+
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+a {
+  color: #f89829;
+  font-weight: bold;
+}
+
+.o-section-dark {
+  background: #222;
+  color: #fff;
+}
+
+.o-section-bright {
+  background: #f89829;
+  color: #000;
+
+  a {
+    color: #000;
+  }
+}

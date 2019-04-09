@@ -1,0 +1,3 @@
+@if $nb-use-width-offsets {
+  @include nb-offsets('width', $nb-offset-fractions);
+}

@@ -1,0 +1,18 @@
+@mixin nb-section() {
+  @each $key, $value in $nb-section-spacing {
+    $class: '-' + $key;
+    .#{$nb-namespace}o-section#{$class} {
+      padding-top: $value;
+      padding-bottom: $value;
+    }
+
+    @each $bp-key, $bp-value in $nb-breakpoints {
+      @include nb-respond-to($bp-key) {
+        .#{$nb-namespace}o-section#{$class}#{$nb-breakpoint-class}#{$bp-key} {
+          padding-top: $value;
+          padding-bottom: $value;
+        }
+      }
+    }
+  }
+}

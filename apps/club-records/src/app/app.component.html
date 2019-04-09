@@ -1,0 +1,95 @@
+<bpj-header></bpj-header>
+
+
+<main>
+  <bpj-query-record-modal [record]="clubRecordsSelected$ | async"></bpj-query-record-modal>
+
+  <div class="o-section-md" id="introduction">
+    <div class="o-site-wrap o-site-wrap--padding">
+      <h1>Club records</h1>
+
+      <p>
+        The great thing about Black Pear Joggers is that we cater for all abilities.
+        We are very supportive of new runners and non-competitive runners,
+        there is never any pressure to try and run quicker or enter races,
+        but we do have some very fast runners that win races and pick up age/gender category prizes.
+        Here’s an archive of the various records over different events.
+      </p>
+    </div>
+  </div>
+
+  <bpj-in-page-navigation>
+    <ul>
+      <li><a href="#male">Male records</a></li>
+      <li><a href="#female">Female records</a></li>
+      <li><a href="#criteria">Criteria for Inclusion</a></li>
+    </ul>
+  </bpj-in-page-navigation>
+
+  <div class="o-section-md o-section-dark" id="records">
+    <div class="o-site-wrap o-site-wrap--padding">
+      <h2 *ngIf="!(clubRecordsLoaded$ | async) || (clubRecordsError$ | async)">
+        Club records
+      </h2>
+
+      <bpj-loader *ngIf="!(clubRecordsLoaded$ | async)"></bpj-loader>
+
+      <p *ngIf="clubRecordsError$ | async">
+          <em>Error loading records. Please try again later.</em>
+      </p>
+
+      <ng-container *ngFor="let gender of clubRecordsGenders$ | async">
+        <h2 id="{{ gender | gender | lowercase }}">
+          {{ gender | gender}} records
+        </h2>
+
+        <ng-container *ngFor="let category of clubRecordsCategories$ | async">
+          <bpj-club-records-table
+            *ngIf="clubRecords$ | async"
+            [records]="clubRecords$ | async | filterCategory : { gender: gender, category: category }"
+            (query)="onQuery($event)"
+          ></bpj-club-records-table>
+        </ng-container>
+
+      </ng-container>
+    </div>
+  </div>
+
+  <div
+    class="o-section-md o-section-bright"
+    id="criteria"
+  >
+    <div class="o-site-wrap o-site-wrap--padding">
+      <h2>
+        Criteria for Inclusion
+      </h2>
+
+      <p>
+        To be eligible for listing as a club record, you must be a fully paid up affiliated member of the club at the time of the event
+        and the event should be an official event with published results, rather than on a training run.
+        If you think you’ve beaten a record, or know someone that has,
+        <a href="https://bpj.org.uk/contact-the-club/">let us know</a>
+        and we’ll update it.
+      </p>
+
+      <p>
+        The list only includes performances listed on
+        <a href="http://www.thepowerof10.info/athletes/athleteslookup.aspx?surname=&amp;firstname=&amp;club=Black+Pear+Joggers">Power of 10</a>,
+        so times set on training runs or races without a race licence are not included and likely won’t be in future
+        as this would be a nightmare to compile and maintain. The list is updated automatically on a daily basis,
+        but recent performances may not be listed on Power of 10 until a week or so after.
+      </p>
+    </div>
+  </div>
+
+  <div class="c-image-wrapper">
+    <img
+      src="https://bpj.org.uk/wp-content/uploads/2012/03/montage-2017.jpg"
+      alt=""
+    >
+  </div>
+
+  <router-outlet></router-outlet>
+</main>
+
+<bpj-footer></bpj-footer>

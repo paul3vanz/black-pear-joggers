@@ -1,0 +1,49 @@
+<bpj-modal [open]="isOpen" *ngIf="record" (close)="onCloseModal()">
+  <h2>Query record</h2>
+
+  <p>
+    If you think the record shown is not correct, please let us know why and we'll review it and update accordingly.
+  </p>
+
+  <h3>Record details</h3>
+
+  <p>
+    <strong>Record:</strong> {{ record.gender | gender }} {{ record.category }} {{ record.event }}<br>
+    <strong>Name:</strong> {{ record.first_name }} {{ record.last_name }}<br>
+    <strong>Event:</strong> {{ record.race }}<br>
+    <strong>Date:</strong> {{ record.date }}<br>
+    <strong>Time:</strong> {{ record.time }}<br>
+  </p>
+
+  <form #queryForm="ngForm">
+    <fieldset>
+      <legend class="h3">Query reason</legend>
+
+      <label class="u-visually-hidden" for="reason">Select a reason</label>
+
+      <select
+        [(ngModel)]="model.reason"
+        name="reason"
+        id="reason"
+      >
+        <option value="">Select a reason</option>
+        <option value="notMember">Wasn't a member of the club at the time</option>
+        <option value="notFastest">There is a faster performance not listed</option>
+        <option value="notRunner">This was not run by the runner named (e.g. bib swap)</option>
+        <option value="other">Other</option>
+      </select>
+
+      <div>
+        <button
+          *ngIf="1"
+          (click)="onSubmit()"
+        >
+          Submit
+        </button>
+      </div>
+
+      <p class="message success" *ngIf="showSuccess">Thank you. We have received your query. It will be reviewed and the records updated accordingly if necessary.</p>
+      <p class="message error" *ngIf="showError">Sorry, there was a problem sending the query. Please try again later.</p>
+    </fieldset>
+  </form>
+</bpj-modal>

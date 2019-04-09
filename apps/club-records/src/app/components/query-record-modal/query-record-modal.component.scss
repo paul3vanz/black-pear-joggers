@@ -1,0 +1,40 @@
+legend {
+  margin-bottom: 1rem;
+  font-size: 1.17em;
+  font-weight: bold;
+}
+
+fieldset {
+  margin: 0;
+  border: 0;
+}
+
+select {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
+  background-color: #f89829;
+  color: #000;
+  font-weight: bold;
+}
+
+.message {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  padding: 0.5rem 1rem;
+  border: 1px solid;
+  border-radius: 3px;
+
+  &.success {
+    color: green;
+  }
+
+  &.error {
+    color: red;
+  }
+}

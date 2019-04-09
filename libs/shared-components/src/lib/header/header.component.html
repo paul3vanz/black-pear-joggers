@@ -1,0 +1,41 @@
+<header>
+  <div class="logo">
+    <a href="https://bpj.org.uk">
+      <img
+        src="https://bpj.org.uk/wp-content/uploads/2014/12/bpj-logo.png"
+        alt="Black Pear Joggers Home Page"
+      >
+    </a>
+  </div>
+
+  <a
+    (click)="toggleMenu()"
+    class="mobile-menu"
+    href="javascript:void(0)"
+  >
+    <span>&nbsp;</span>
+
+    <span>Open navigation menu</span>
+
+    <span>&nbsp;</span>
+  </a>
+
+  <nav
+    class="navigation"
+    [class.active]="menuOpen"
+  >
+    <ul>
+      <ng-container *ngIf="menuContent">
+        <li *ngFor="let link of menuContent.items | keyvalue">
+          <a href="{{ link.value.url ? link.value.url : '#' }}">{{ link.value.title }}</a>
+
+          <ul *ngIf="link.value.child_items">
+            <li *ngFor="let childLink of link.value.child_items">
+              <a href="{{ childLink.url }}">{{ childLink.title }}</a>
+            </li>
+          </ul>
+        </li>
+      </ng-container>
+    </ul>
+  </nav>
+</header>

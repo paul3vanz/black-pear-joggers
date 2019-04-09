@@ -1,0 +1,40 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 290px;
+  max-width: 80%;
+  padding: 40px;
+  overflow-y: auto;
+  transform: translate(-50%, -50%);
+  background: #fff;
+}
+
+.close {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 30px;
+  height: 30px;
+  font-size: 0;
+  text-align: right;
+  text-decoration: none;
+
+  &::before {
+    content: '\00d7';
+    display: block;
+    color: #000;
+    font-size: 30px;
+    line-height: 30px;
+  }
+}

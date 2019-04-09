@@ -1,0 +1,9 @@
+{
+  "extends": [ "stylelint-config-standard", "stylelint-config-property-sort-order-smacss" ],
+  "rules": {
+    "indentation": 2,
+    "selector-pseudo-element-no-unknown": null,
+    "at-rule-no-unknown": null,
+    "no-descending-specificity": null
+  }
+}

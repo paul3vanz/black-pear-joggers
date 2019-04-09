@@ -1,0 +1,133 @@
+@import '../../../../../scss/settings';
+@import '../../../../../scss/tools';
+@import '../../../../../scss/resets';
+@import '../../../../../scss/base';
+@import '../../../../../scss/objects';
+@import '../../../../../scss/components';
+@import '../../../../../scss/utilities';
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #222;
+  color: #fff;
+}
+
+.logo {
+  margin-right: 20px;
+}
+
+nav {
+  @include nb-respond-to('max-md') {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    min-width: 200px;
+    padding: 20px;
+    overflow-y: auto;
+    transform: translate3d(-100%, 0, 0);
+    transition: transform 0.4s ease-in-out;
+    border-right: 2px solid #fff;
+    opacity: 0;
+    background: #222;
+
+    &.active {
+      display: block;
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+  }
+}
+
+ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+
+  @include nb-respond-to('max-md') {
+    flex-direction: column;
+  }
+}
+
+li {
+  position: relative;
+  padding: 20px;
+
+  @include nb-respond-to('max-md') {
+    padding: 0 0 10px 0;
+  }
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+nav a:hover,
+nav a:focus {
+  border-bottom: 2px solid #fff;
+}
+
+li ul {
+  display: none;
+  position: absolute;
+  top: 41px;
+  left: 0;
+  padding: 10px 20px 10px 20px;
+  background: #222;
+
+  @include nb-respond-to('max-md') {
+    position: static;
+    top: auto;
+    padding: 10px 0 0 10px;
+  }
+}
+
+li ul.menu-right {
+  right: 0;
+  left: auto;
+}
+
+li ul li {
+  margin-bottom: 10px;
+  padding: 0;
+  white-space: nowrap;
+}
+
+@include nb-respond-to('md') {
+  ul li:hover ul {
+    display: block;
+  }
+}
+
+ul li:focus-within ul {
+  display: block;
+}
+
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  overflow: hidden;
+  border-radius: 2px;
+  background-color: #fff;
+  text-indent: 900px;
+
+  @include nb-respond-to('md') {
+    display: none;
+  }
+
+  span {
+    width: 100%;
+    height: 3px;
+    background-color: #000;
+  }
+}
