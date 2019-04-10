@@ -1,45 +1,47 @@
-<h3>{{ records[0].gender | gender }} {{ records[0].category | category }}</h3>
-<div class="container">
-  <table data-sortable class="table table--large">
-    <thead>
-      <tr>
-        <th>Event</th>
+<ng-container *ngIf="records.length">
+  <h3 *ngIf="!hideHeading">{{ records[0].gender | gender }} {{ records[0].category | category }}</h3>
+  <div class="container">
+    <table data-sortable class="table table--large">
+      <thead>
+        <tr>
+          <th>Event</th>
 
-        <th>Time</th>
+          <th>Time</th>
 
-        <th data-sortable-type="alpha">Name</th>
+          <th data-sortable-type="alpha">Name</th>
 
-        <th data-sortable-type="alpha">Race</th>
+          <th data-sortable-type="alpha">Race</th>
 
-        <th data-sortable-type="date">Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let record of records">
-        <td class="nowrap">{{ record.event }}</td>
+          <th data-sortable-type="date">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of records">
+          <td class="nowrap">{{ record.event }}</td>
 
-        <td class="nowrap">{{ record.time }}</td>
+          <td class="nowrap">{{ record.time }}</td>
 
-        <td class="nowrap">
-          <a href="http://www.thepowerof10.info/athletes/profile.aspx?athleteid={{ record.athlete_id }}" target="_blank">
-            {{ record.first_name }} {{ record.last_name }}
-          </a>
-        </td>
+          <td class="nowrap">
+            <a href="http://www.thepowerof10.info/athletes/profile.aspx?athleteid={{ record.athlete_id }}" target="_blank">
+              {{ record.first_name }} {{ record.last_name }}
+            </a>
+          </td>
 
-        <td>{{ record.race }}</td>
+          <td>{{ record.race }}</td>
 
-        <td class="nowrap">{{ record.date }}</td>
+          <td class="nowrap">{{ record.date }}</td>
 
-        <td>
-          <a
-            (click)="onQuery(record)"
-            href="javascript:void(0)"
-            class="queryLink"
-          >
-            Query this record
-          </a>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+          <td>
+            <a
+              (click)="onQuery(record)"
+              href="javascript:void(0)"
+              class="queryLink"
+            >
+              <span>Query this record</span>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>

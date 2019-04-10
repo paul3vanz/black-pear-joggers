@@ -45,7 +45,7 @@
 
         <ng-container *ngFor="let category of clubRecordsCategories$ | async">
           <bpj-club-records-table
-            *ngIf="clubRecords$ | async"
+            *ngIf="clubRecords$ | async | filterCategory : { gender: gender, category: category }"
             [records]="clubRecords$ | async | filterCategory : { gender: gender, category: category }"
             (query)="onQuery($event)"
           ></bpj-club-records-table>

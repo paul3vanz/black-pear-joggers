@@ -73,6 +73,11 @@ nav a:focus {
   border-bottom: 2px solid #fff;
 }
 
+li:last-child ul {
+  right: 0;
+  left: auto;
+}
+
 li ul {
   display: none;
   position: absolute;

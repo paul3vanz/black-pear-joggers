@@ -24,13 +24,26 @@ table tr:last-child * {
 }
 
 .queryLink {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 20px;
   height: 20px;
   overflow: hidden;
+  border-radius: 3px;
+  background-color: #f89829;
+  color: #000;
+  text-decoration: none;
+
+  span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
 
   &::before {
-    content: '?';
+    content: '\2026';
     display: block;
   }
 }
