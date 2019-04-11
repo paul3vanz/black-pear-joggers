@@ -28,6 +28,9 @@
 
   <div class="o-section-md o-section-dark" id="records">
     <div class="o-site-wrap o-site-wrap--padding">
+
+      <bpj-search-bar></bpj-search-bar>
+
       <h2 *ngIf="!(clubRecordsLoaded$ | async) || (clubRecordsError$ | async)">
         Club records
       </h2>
@@ -38,19 +41,27 @@
           <em>Error loading records. Please try again later.</em>
       </p>
 
-      <ng-container *ngFor="let gender of clubRecordsGenders$ | async">
-        <h2 id="{{ gender | gender | lowercase }}">
-          {{ gender | gender}} records
-        </h2>
+      <bpj-club-records-table
+        *ngIf="(searchKeywords$ | async) && (clubRecords$ | async)"
+        [records]="clubRecords$ | async"
+        [showSubheading]="false"
+        (query)="onQuery($event)"
+      ></bpj-club-records-table>
 
-        <ng-container *ngFor="let category of clubRecordsCategories$ | async">
-          <bpj-club-records-table
-            *ngIf="clubRecords$ | async | filterCategory : { gender: gender, category: category }"
-            [records]="clubRecords$ | async | filterCategory : { gender: gender, category: category }"
-            (query)="onQuery($event)"
-          ></bpj-club-records-table>
+      <ng-container *ngIf="!(searchKeywords$ | async)">
+        <ng-container *ngFor="let gender of clubRecordsGenders$ | async">
+          <h2 id="{{ gender | gender | lowercase }}">
+            {{ gender | gender}} records
+          </h2>
+
+          <ng-container *ngFor="let category of clubRecordsCategories$ | async">
+            <bpj-club-records-table
+              *ngIf="clubRecords$ | async | filterCategory : { gender: gender, category: category }"
+              [records]="clubRecords$ | async | filterCategory : { gender: gender, category: category }"
+              (query)="onQuery($event)"
+            ></bpj-club-records-table>
+          </ng-container>
         </ng-container>
-
       </ng-container>
     </div>
   </div>

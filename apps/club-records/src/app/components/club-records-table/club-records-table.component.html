@@ -1,5 +1,5 @@
 <ng-container *ngIf="records.length">
-  <h3 *ngIf="!hideHeading">{{ records[0].gender | gender }} {{ records[0].category | category }}</h3>
+  <h3 *ngIf="showSubheading">{{ records[0].gender | gender }} {{ records[0].category | category }}</h3>
   <div class="container">
     <table data-sortable class="table table--large">
       <thead>
@@ -9,6 +9,13 @@
           <th>Time</th>
 
           <th data-sortable-type="alpha">Name</th>
+
+          <th
+            *ngIf="!showSubheading"
+            data-sortable-type="alpha"
+          >
+            Category
+          </th>
 
           <th data-sortable-type="alpha">Race</th>
 
@@ -21,8 +28,15 @@
 
           <td class="nowrap">{{ record.time }}</td>
 
+          <td
+            *ngIf="!showSubheading"
+            class="nowrap"
+          >
+            {{ record.gender | gender : 'short'}}{{ record.category }}
+          </td>
+
           <td class="nowrap">
-            <a href="http://www.thepowerof10.info/athletes/profile.aspx?athleteid={{ record.athlete_id }}" target="_blank">
+            <a href="https://www.thepowerof10.info/athletes/profile.aspx?athleteid={{ record.athlete_id }}" target="_blank">
               {{ record.first_name }} {{ record.last_name }}
             </a>
           </td>

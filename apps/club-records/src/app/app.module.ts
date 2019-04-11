@@ -17,6 +17,7 @@ import { environment } from '../environments/environment';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { storeFreeze } from 'ngrx-store-freeze';
 import { QueryRecordModalComponent } from './components/query-record-modal/query-record-modal.component';
+import { SearchModule } from '@black-pear-joggers/search';
 
 @NgModule({
   declarations: [ AppComponent, ClubRecordsTableComponent, QueryRecordModalComponent ],
@@ -28,6 +29,7 @@ import { QueryRecordModalComponent } from './components/query-record-modal/query
     PipesModule,
     RouterModule.forRoot([], { initialNavigation: 'enabled' }),
     SharedComponentsModule,
+    SearchModule,
     StoreModule.forRoot(
       { clubRecords: clubRecordsReducer },
       {

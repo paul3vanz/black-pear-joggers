@@ -8,7 +8,7 @@ import { ClubRecord } from '../../models/club-record.model';
 })
 export class ClubRecordsTableComponent {
   @Input() records: ClubRecord[];
-  @Input() hideHeading: boolean;
+  @Input() showSubheading = true;
   @Output() query = new EventEmitter<ClubRecord>();
 
   onQuery(record: ClubRecord) {
