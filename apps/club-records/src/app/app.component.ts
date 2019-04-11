@@ -20,21 +20,17 @@ export class AppComponent implements OnInit {
   clubRecordsLoaded$: Observable<boolean>;
   clubRecordsError$: Observable<boolean>;
   searchKeywords$: Observable<string>;
-  keywords: string;
 
   ngOnInit() {
     this.store$.dispatch(new fromClubRecordsActions.Load());
 
+    this.clubRecords$ = this.store$.select(clubRecordsQuery.getAllClubRecords);
     this.clubRecordsCategories$ = this.store$.select(clubRecordsQuery.getCategories);
     this.clubRecordsSelected$ = this.store$.select(clubRecordsQuery.getSelectedClubRecord);
     this.clubRecordsGenders$ = this.store$.select(clubRecordsQuery.getGenders);
     this.clubRecordsLoaded$ = this.store$.select(clubRecordsQuery.getLoaded);
     this.clubRecordsError$ = this.store$.select(clubRecordsQuery.getError);
     this.searchKeywords$ = this.store$.select(searchQuery.getKeywords);
-    this.searchKeywords$.subscribe((keywords) => {
-      this.keywords = keywords;
-    });
-    this.clubRecords$ = this.store$.select(clubRecordsQuery.getAllClubRecords, { keywords: 'Gay' });
   }
 
   onQuery(record: ClubRecord) {
