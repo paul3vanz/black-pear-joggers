@@ -13,9 +13,13 @@ const getAllClubRecords = createSelector(getClubRecordsState, searchQuery.getKey
   return (
     (keywords
       ? state.list.filter((record) => {
-          return [ record.first_name, record.last_name, `${record.first_name} ${record.last_name}` ].some(
-            (field) => !!field.match(new RegExp(keywords, 'i'))
-          );
+          return [
+            record.first_name,
+            record.last_name,
+            record.date,
+            record.race,
+            `${record.first_name} ${record.last_name} ${record.date} ${record.race}`,
+          ].some((field) => !!field.match(new RegExp(keywords, 'i')));
         })
       : state.list) || []
   );

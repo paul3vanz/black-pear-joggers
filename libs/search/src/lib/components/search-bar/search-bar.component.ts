@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { SearchPartialState } from '../../+state/search.reducer';
 import { fromSearchActions } from '../../+state/search.actions';
@@ -9,6 +9,7 @@ import { fromSearchActions } from '../../+state/search.actions';
   styleUrls: [ './search-bar.component.scss' ],
 })
 export class SearchBarComponent {
+  @Input() placeholder = 'Search...';
   @Output() search = new EventEmitter<string>();
 
   constructor(private store$: Store<SearchPartialState>) {}

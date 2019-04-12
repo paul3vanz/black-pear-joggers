@@ -2,7 +2,7 @@
   <input
     type="text"
     id="search"
-    placeholder="Search by name..."
+    [placeholder]="placeholder"
     (keyup)="onChange($event.target.value)"
   >
 </form>
