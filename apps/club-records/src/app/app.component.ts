@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
   clubRecordsLoaded$: Observable<boolean>;
   clubRecordsError$: Observable<boolean>;
   searchKeywords$: Observable<string>;
+  showPace = false;
 
   ngOnInit() {
     this.store$.dispatch(new fromClubRecordsActions.Load());
@@ -35,6 +36,10 @@ export class AppComponent implements OnInit {
 
   onQuery(record: ClubRecord) {
     this.store$.dispatch(new fromClubRecordsActions.Select(record));
+  }
+
+  onToggleFormat() {
+    this.showPace = !this.showPace;
   }
 
   constructor(private store$: Store<any>) {}

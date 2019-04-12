@@ -8,10 +8,9 @@
   <h3>Record details</h3>
 
   <p>
-    <strong>Record:</strong> {{ record.gender | gender }} {{ record.category }} {{ record.event }}<br>
+    <strong>Record:</strong> {{ record.gender | gender: 'short' }}{{ record.category }} {{ record.event }}<br>
     <strong>Name:</strong> {{ record.first_name }} {{ record.last_name }}<br>
-    <strong>Event:</strong> {{ record.race }}<br>
-    <strong>Date:</strong> {{ record.date }}<br>
+    <strong>Event:</strong> {{ record.race }} ({{ record.date }})<br>
     <strong>Time:</strong> {{ record.time }}<br>
   </p>
 

@@ -44,7 +44,9 @@
       <bpj-club-records-table
         *ngIf="(searchKeywords$ | async) && (clubRecords$ | async)"
         [records]="clubRecords$ | async"
+        [showPace]="showPace"
         [showSubheading]="false"
+        (toggleFormat)="onToggleFormat()"
         (query)="onQuery($event)"
       ></bpj-club-records-table>
 
@@ -58,6 +60,8 @@
             <bpj-club-records-table
               *ngIf="clubRecords$ | async | filterCategory : { gender: gender, category: category }"
               [records]="clubRecords$ | async | filterCategory : { gender: gender, category: category }"
+              [showPace]="showPace"
+              (toggleFormat)="onToggleFormat()"
               (query)="onQuery($event)"
             ></bpj-club-records-table>
           </ng-container>

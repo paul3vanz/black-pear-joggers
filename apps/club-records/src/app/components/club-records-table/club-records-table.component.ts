@@ -8,10 +8,16 @@ import { ClubRecord } from '../../models/club-record.model';
 })
 export class ClubRecordsTableComponent {
   @Input() records: ClubRecord[];
+  @Input() showPace = false;
   @Input() showSubheading = true;
   @Output() query = new EventEmitter<ClubRecord>();
+  @Output() toggleFormat = new EventEmitter();
 
   onQuery(record: ClubRecord) {
     this.query.emit(record);
+  }
+
+  onToggleFormat() {
+    this.toggleFormat.emit();
   }
 }
