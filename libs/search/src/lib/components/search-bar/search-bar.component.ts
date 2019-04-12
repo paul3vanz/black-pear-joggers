@@ -9,6 +9,7 @@ import { fromSearchActions } from '../../+state/search.actions';
   styleUrls: [ './search-bar.component.scss' ],
 })
 export class SearchBarComponent {
+  @Input() keywords: string;
   @Input() placeholder = 'Search...';
   @Output() search = new EventEmitter<string>();
 

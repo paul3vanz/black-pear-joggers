@@ -6,6 +6,9 @@ import { ClubRecordsPartialState } from './+state/club-records.reducer';
 import { Observable } from 'rxjs';
 import { clubRecordsQuery } from './+state/club-records.selectors';
 import { searchQuery } from '@black-pear-joggers/search';
+import { Router, ActivatedRoute, Params } from '@angular/router';
+import { fromSearchActions } from 'libs/search/src/lib/+state/search.actions';
+import { distinctUntilChanged, skip, take, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'bpj-root',
@@ -32,6 +35,17 @@ export class AppComponent implements OnInit {
     this.clubRecordsLoaded$ = this.store$.select(clubRecordsQuery.getLoaded);
     this.clubRecordsError$ = this.store$.select(clubRecordsQuery.getError);
     this.searchKeywords$ = this.store$.select(searchQuery.getKeywords);
+
+    this.searchKeywords$.pipe(skip(1), distinctUntilChanged()).subscribe((keywords) => {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: keywords ? { search: keywords } : null,
+      });
+    });
+
+    this.route.queryParams.pipe(skip(1), take(1), filter((queryParams) => queryParams.search)).subscribe((queryParams: Params) => {
+      this.store$.dispatch(new fromSearchActions.Search(queryParams.search));
+    });
   }
 
   onQuery(record: ClubRecord) {
@@ -42,5 +56,5 @@ export class AppComponent implements OnInit {
     this.showPace = !this.showPace;
   }
 
-  constructor(private store$: Store<any>) {}
+  constructor(private store$: Store<any>, private router: Router, private route: ActivatedRoute) {}
 }
