@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, empty, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ClubRecord } from '../models/club-record.model';
 
 @Injectable({

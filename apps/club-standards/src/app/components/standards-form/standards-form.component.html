@@ -1,21 +1,23 @@
 <bpj-chip-list>
-  <bpj-chip selected="true">Male</bpj-chip>
-  <bpj-chip>Female</bpj-chip>
-</bpj-chip-list>
+    <bpj-chip
+      *ngFor="let gender of genders"
+      [value]="gender"
+      [selected]="gender === (activeGender$ | async)"
+      (select)="onSelectGender($event)"
+      >
+        {{gender === 'W' ? 'Female' : 'Male'}}
+      </bpj-chip>
+  </bpj-chip-list>
 
 <bpj-chip-list>
-  <bpj-chip>U20</bpj-chip>
-  <bpj-chip>U23</bpj-chip>
-  <bpj-chip selected="true">Senior</bpj-chip>
-  <bpj-chip>V35</bpj-chip>
-  <bpj-chip>V40</bpj-chip>
-  <bpj-chip>V45</bpj-chip>
-  <bpj-chip>V50</bpj-chip>
-  <bpj-chip>V55</bpj-chip>
-  <bpj-chip>V60</bpj-chip>
-  <bpj-chip>V65</bpj-chip>
-  <bpj-chip>V70</bpj-chip>
-  <bpj-chip>V75</bpj-chip>
+  <bpj-chip
+    *ngFor="let category of categories"
+    [value]="category"
+    [selected]="category === (activeCategory$ | async)"
+    (select)="onSelectCategory($event)"
+    >
+    {{category}}
+  </bpj-chip>
 </bpj-chip-list>
 
 <table class="table table--large">
@@ -33,71 +35,13 @@
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>Mile</td>
+    <tr *ngFor="let event of standards$ | async">
+      <th>{{ event.name }}</th>
 
-        <td>7:25</td>
-
-        <td>6:11</td>
-
-        <td>5:18</td>
-
-        <td>4:57</td>
-
+      <td *ngFor="let standard of event.standards">
+        {{ standard.time }}
+      </td>
     </tr>
-
-    <tr>
-      <td>5K</td>
-
-        <td>25:48</td>
-
-        <td>21:30</td>
-
-        <td>18:26</td>
-
-        <td>17:12</td>
-
-    </tr>
-
-    <tr>
-      <td>10K</td>
-
-        <td>53:42</td>
-
-        <td>44:45</td>
-
-        <td>38:21</td>
-
-        <td>35:48</td>
-
-    </tr>
-
-    <tr>
-      <td>Half Marathon</td>
-
-        <td>1:58:26</td>
-
-        <td>1:38:42</td>
-
-        <td>1:24:36</td>
-
-        <td>1:18:57</td>
-
-    </tr>
-
-    <tr>
-      <td>Marathon</td>
-
-        <td>4:09:50</td>
-
-        <td>3:28:12</td>
-
-        <td>2:58:27</td>
-
-        <td>2:46:33</td>
-
-    </tr>
-
   </tbody>
 
 </table>
