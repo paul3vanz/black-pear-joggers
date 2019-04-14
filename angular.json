@@ -22,14 +22,8 @@
             "main": "apps/magic-mile/src/main.ts",
             "polyfills": "apps/magic-mile/src/polyfills.ts",
             "tsConfig": "apps/magic-mile/tsconfig.app.json",
-            "assets": [
-              "apps/magic-mile/src/favicon.ico",
-              "apps/magic-mile/src/assets"
-            ],
-            "styles": [
-              "scss/main.scss",
-              "apps/magic-mile/src/styles.scss"
-            ],
+            "assets": [ "apps/magic-mile/src/favicon.ico", "apps/magic-mile/src/assets" ],
+            "styles": [ "scss/main.scss", "apps/magic-mile/src/styles.scss" ],
             "scripts": []
           },
           "configurations": {
@@ -40,6 +34,7 @@
                   "with": "apps/magic-mile/src/environments/environment.prod.ts"
                 }
               ],
+              "baseHref": "/apps/magic-mile/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -78,27 +73,16 @@
             "polyfills": "apps/magic-mile/src/polyfills.ts",
             "tsConfig": "apps/magic-mile/tsconfig.spec.json",
             "karmaConfig": "apps/magic-mile/karma.conf.js",
-            "styles": [
-              "scss/main.scss",
-              "apps/magic-mile/src/styles.scss"
-            ],
+            "styles": [ "scss/main.scss", "apps/magic-mile/src/styles.scss" ],
             "scripts": [],
-            "assets": [
-              "apps/magic-mile/src/favicon.ico",
-              "apps/magic-mile/src/assets"
-            ]
+            "assets": [ "apps/magic-mile/src/favicon.ico", "apps/magic-mile/src/assets" ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/magic-mile/tsconfig.app.json",
-              "apps/magic-mile/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": [ "apps/magic-mile/tsconfig.app.json", "apps/magic-mile/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
           }
         }
       }
@@ -120,13 +104,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/shared-components/tsconfig.lib.json",
-              "libs/shared-components/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": [ "libs/shared-components/tsconfig.lib.json", "libs/shared-components/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
           }
         }
       }
@@ -146,14 +125,8 @@
             "main": "apps/club-standards/src/main.ts",
             "polyfills": "apps/club-standards/src/polyfills.ts",
             "tsConfig": "apps/club-standards/tsconfig.app.json",
-            "assets": [
-              "apps/club-standards/src/favicon.ico",
-              "apps/club-standards/src/assets"
-            ],
-            "styles": [
-              "scss/main.scss",
-              "apps/club-standards/src/styles.css"
-            ],
+            "assets": [ "apps/club-standards/src/favicon.ico", "apps/club-standards/src/assets" ],
+            "styles": [ "scss/main.scss", "apps/club-standards/src/styles.css" ],
             "scripts": []
           },
           "configurations": {
@@ -164,6 +137,7 @@
                   "with": "apps/club-standards/src/environments/environment.prod.ts"
                 }
               ],
+              "baseHref": "/apps/club-standards/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -201,27 +175,16 @@
             "polyfills": "apps/club-standards/src/polyfills.ts",
             "tsConfig": "apps/club-standards/tsconfig.spec.json",
             "karmaConfig": "apps/club-standards/karma.conf.js",
-            "styles": [
-              "scss/main.scss",
-              "apps/club-standards/src/styles.css"
-            ],
+            "styles": [ "scss/main.scss", "apps/club-standards/src/styles.css" ],
             "scripts": [],
-            "assets": [
-              "apps/club-standards/src/favicon.ico",
-              "apps/club-standards/src/assets"
-            ]
+            "assets": [ "apps/club-standards/src/favicon.ico", "apps/club-standards/src/assets" ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/club-standards/tsconfig.app.json",
-              "apps/club-standards/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": [ "apps/club-standards/tsconfig.app.json", "apps/club-standards/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
           }
         }
       }
@@ -245,14 +208,8 @@
             "main": "apps/race-results/src/main.ts",
             "polyfills": "apps/race-results/src/polyfills.ts",
             "tsConfig": "apps/race-results/tsconfig.app.json",
-            "assets": [
-              "apps/race-results/src/favicon.ico",
-              "apps/race-results/src/assets"
-            ],
-            "styles": [
-              "scss/main.scss",
-              "apps/race-results/src/styles.scss"
-            ],
+            "assets": [ "apps/race-results/src/favicon.ico", "apps/race-results/src/assets" ],
+            "styles": [ "scss/main.scss", "apps/race-results/src/styles.scss" ],
             "scripts": []
           },
           "configurations": {
@@ -263,6 +220,7 @@
                   "with": "apps/race-results/src/environments/environment.prod.ts"
                 }
               ],
+              "baseHref": "/apps/race-results/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -300,27 +258,16 @@
             "polyfills": "apps/race-results/src/polyfills.ts",
             "tsConfig": "apps/race-results/tsconfig.spec.json",
             "karmaConfig": "apps/race-results/karma.conf.js",
-            "styles": [
-              "scss/main.scss",
-              "apps/race-results/src/styles.scss"
-            ],
+            "styles": [ "scss/main.scss", "apps/race-results/src/styles.scss" ],
             "scripts": [],
-            "assets": [
-              "apps/race-results/src/favicon.ico",
-              "apps/race-results/src/assets"
-            ]
+            "assets": [ "apps/race-results/src/favicon.ico", "apps/race-results/src/assets" ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/race-results/tsconfig.app.json",
-              "apps/race-results/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": [ "apps/race-results/tsconfig.app.json", "apps/race-results/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
           }
         }
       }
@@ -344,14 +291,8 @@
             "main": "apps/club-records/src/main.ts",
             "polyfills": "apps/club-records/src/polyfills.ts",
             "tsConfig": "apps/club-records/tsconfig.app.json",
-            "assets": [
-              "apps/club-records/src/favicon.ico",
-              "apps/club-records/src/assets"
-            ],
-            "styles": [
-              "scss/main.scss",
-              "apps/club-records/src/styles.scss"
-            ],
+            "assets": [ "apps/club-records/src/favicon.ico", "apps/club-records/src/assets" ],
+            "styles": [ "scss/main.scss", "apps/club-records/src/styles.scss" ],
             "scripts": []
           },
           "configurations": {
@@ -400,27 +341,16 @@
             "polyfills": "apps/club-records/src/polyfills.ts",
             "tsConfig": "apps/club-records/tsconfig.spec.json",
             "karmaConfig": "apps/club-records/karma.conf.js",
-            "styles": [
-              "scss/main.scss",
-              "apps/club-records/src/styles.scss"
-            ],
+            "styles": [ "scss/main.scss", "apps/club-records/src/styles.scss" ],
             "scripts": [],
-            "assets": [
-              "apps/club-records/src/favicon.ico",
-              "apps/club-records/src/assets"
-            ]
+            "assets": [ "apps/club-records/src/favicon.ico", "apps/club-records/src/assets" ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/club-records/tsconfig.app.json",
-              "apps/club-records/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": [ "apps/club-records/tsconfig.app.json", "apps/club-records/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
           }
         }
       }
@@ -434,13 +364,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/search/tsconfig.lib.json",
-              "libs/search/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": [ "libs/search/tsconfig.lib.json", "libs/search/tsconfig.spec.json" ],
+            "exclude": [ "**/node_modules/**" ]
           }
         },
         "test": {
