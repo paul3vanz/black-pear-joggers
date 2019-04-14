@@ -1,9 +1,22 @@
+@import '../../../../scss/settings';
+@import '../../../../scss/tools';
+@import '../../../../scss/resets';
+@import '../../../../scss/base';
+@import '../../../../scss/objects';
+@import '../../../../scss/components';
+@import '../../../../scss/utilities';
+
 .events {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  margin: 0 0 1rem -1rem;
+  margin: 0 0 0 -1rem;
   padding: 0;
   list-style-type: none;
+
+  @include nb-respond-to('sm') {
+    flex-direction: row;
+  }
 
   li {
     display: flex;
@@ -11,6 +24,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-bottom: 1rem;
     margin-left: 1rem;
     padding: 1rem;
     background: #eee;

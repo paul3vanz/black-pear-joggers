@@ -1,0 +1,55 @@
+<div class="table__wrap">
+    <div class="table__scroll">
+    <table *ngIf="results && results.length">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Predicted</th>
+            <th>Actual</th>
+            <th>Date</th>
+            <th>Gender</th>
+            <th>Category</th>
+            <th>Location</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let result of results | paginate: { itemsPerPage: pageSize, currentPage: currentPage }">
+            <td nowrap="nowrap">
+            <a href="https://bpj.org.uk/records-and-rankings/race-results/#/athlete/{{ result.athleteId }}" *ngIf="result.athleteId">
+                {{ result.firstName }} {{ result.lastName }}
+            </a>
+            <ng-template [ngIf]="!result.athleteId">
+                {{ result.firstName }} {{ result.lastName }}
+            </ng-template>
+            </td>
+            <td [attr.data-sort-value]="result.predictedTimeParsed">{{ result.predictedTime }}</td>
+            <td [attr.data-sort-value]="result.actualTimeParsed">{{ result.actualTime }}</td>
+            <td>{{ result.date | date: "DD/MM/YYYY" }}</td>
+            <td>{{ result.gender | gender }}</td>
+            <td>{{ result.category }}</td>
+            <td>{{ result.location }}</td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<pagination-controls
+    *ngIf="results && results.length"
+    (pageChange)="currentPage = $event"
+></pagination-controls>
+
+<p *ngIf="loading">
+    Loading...
+</p>
+
+<p *ngIf="keywords && !loading && results">
+    <strong>{{ results.length }}</strong>
+    search results for
+    <strong>{{ keywords }}</strong>.
+</p>
+
+<p *ngIf="!keywords && !loading && results">
+    <strong>{{ results.length }}</strong>
+    results found.
+</p>

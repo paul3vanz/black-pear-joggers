@@ -55,7 +55,7 @@ ul {
 
 li {
   position: relative;
-  padding: 20px;
+  padding: 15px;
 
   @include nb-respond-to('max-md') {
     padding: 0 0 10px 0;
@@ -115,7 +115,7 @@ ul li:focus-within ul {
 }
 
 .mobile-menu {
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: space-around;
   width: 30px;
@@ -126,8 +126,8 @@ ul li:focus-within ul {
   background-color: #fff;
   text-indent: 900px;
 
-  @include nb-respond-to('md') {
-    display: none;
+  @include nb-respond-to('max-md') {
+    display: flex;
   }
 
   span {

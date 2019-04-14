@@ -1,0 +1,29 @@
+<h1>Magic Mile</h1>
+<p>
+  How fast can you go? A chance to see how what you can do over one single, measured mile.
+  All abilities are welcome; you may be pleasantly surprised at how you do.
+  The club magic mile events also count towards the
+  <a href="https://bpj.org.uk/club-standards/">club standard awards</a>.
+</p>
+
+<div class="o-site-wrap">
+  <div class="o-section-md">
+    <div class="u-push-bottom-md">
+      <bpj-search-bar
+        [currentYear]="currentYear$ | async"
+        [keywords]="keywords$ | async"
+        [years]="years$ | async"
+        (search)="onSearch($event)"
+        (setYear)="setYear($event)"
+      ></bpj-search-bar>
+    </div>
+
+    <bpj-results-table
+      [keywords]="keywords$ | async"
+      [loading]="loading$ | async"
+      [results]="results$ | async"
+      (pageChange)="pageChanged($event)"
+      #table
+    ></bpj-results-table>
+  </div>
+</div>
