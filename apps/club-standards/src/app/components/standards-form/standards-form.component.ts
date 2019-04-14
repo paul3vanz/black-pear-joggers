@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { fromClubStandardsActions } from '../../+state/club-standards.actions';
-import { Standard } from '../../models/standard.model';
 import { Observable } from 'rxjs';
 import { clubStandardsQuery } from '../../+state/club-standards.selectors';
 

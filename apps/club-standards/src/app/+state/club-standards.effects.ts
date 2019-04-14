@@ -37,18 +37,20 @@ export class ClubStandardsEffects {
   @Effect()
   selectGender$ = this.actions$.pipe(
     ofType(ClubStandardsActionTypes.ClubStandardsSetGender),
+    map((action: ClubStandardsSetGender) => action.gender),
     withLatestFrom(this.store$.select(clubStandardsQuery.getActiveCategory)),
-    map(([ action, category ]) => {
-      return new LoadClubStandards(action.gender, category);
+    map(([ gender, category ]) => {
+      return new LoadClubStandards(gender, category);
     })
   );
 
   @Effect()
   selectCategory$ = this.actions$.pipe(
     ofType(ClubStandardsActionTypes.ClubStandardsSetCategory),
+    map((action: ClubStandardsSetCategory) => action.category),
     withLatestFrom(this.store$.select(clubStandardsQuery.getActiveGender)),
-    map(([ action, gender ]) => {
-      return new LoadClubStandards(gender, action.category);
+    map(([ category, gender ]) => {
+      return new LoadClubStandards(gender, category);
     })
   );
 
