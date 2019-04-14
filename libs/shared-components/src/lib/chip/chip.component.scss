@@ -1,0 +1,21 @@
+:host {
+  display: inline-block;
+  margin: 0 0 0.5rem 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+}
+
+:host.selected {
+  background-color: #090;
+  color: #fff;
+  font-weight: bold;
+}
+
+:host:not(.selected):hover,
+:host:not(.selected):focus {
+  background-color: #eee;
+  font-weight: bold;
+}
