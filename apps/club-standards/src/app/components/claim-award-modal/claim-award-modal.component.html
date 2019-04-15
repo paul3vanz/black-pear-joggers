@@ -1,0 +1,46 @@
+<bpj-modal [open]="isOpen" (close)="onCloseModal()">
+  <h2>Claim an award</h2>
+
+  <form>
+    <div class="formField">
+      <label for="firstName">First name</label>
+      <input id="firstName" name="firstName">
+    </div>
+    <div class="formField">
+      <label for="lastName">Last name</label>
+      <input id="lastName" name="lastName">
+    </div>
+    <div class="formField">
+      <label for="gender">Gender</label>
+      <select id="gender" name="gender">
+        <option>Male</option>
+        <option>Female</option>
+      </select>
+    </div>
+    <div class="formField">
+      <label for="category">Age category</label>
+      <select id="category" name="category">
+          <option>Under 20</option>
+          <option>Under 23</option>
+          <option>Senior (23-34)</option>
+          <option>V35-39</option>
+          <option>V40-44</option>
+          <option>V45-49</option>
+          <option>V50-54</option>
+          <option>V55-59</option>
+          <option>V60-64</option>
+          <option>V65-69</option>
+          <option>V70-74</option>
+      </select>
+    </div>
+    <div class="formField">
+        <label for="certificate">Certificate</label>
+        <select id="certificate" name="certificate">
+          <option>Bronze</option>
+          <option>Silver</option>
+          <option>Gold</option>
+          <option>Platinum</option>
+        </select>
+      </div>
+  </form>
+</bpj-modal>

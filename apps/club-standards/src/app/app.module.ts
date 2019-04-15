@@ -17,9 +17,10 @@ import { ClubStandardsEffects } from './+state/club-standards.effects';
 import { environment } from '../environments/environment';
 import { storeFreeze } from 'ngrx-store-freeze';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { ClaimAwardModalComponent } from './components/claim-award-modal/claim-award-modal.component';
 
 @NgModule({
-  declarations: [ AppComponent, StandardsFormComponent ],
+  declarations: [ AppComponent, StandardsFormComponent, ClaimAwardModalComponent ],
   imports: [
     BrowserModule,
     HttpClientModule,

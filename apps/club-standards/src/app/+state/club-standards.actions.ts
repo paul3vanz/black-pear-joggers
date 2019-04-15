@@ -7,6 +7,7 @@ export enum ClubStandardsActionTypes {
   ClubStandardsLoadError = '[Club Standards] Load Error',
   ClubStandardsSetGender = '[Club Standards] Set Gender',
   ClubStandardsSetCategory = '[Club Standards] Set Category',
+  ClubStandardsClaimStart = '[Club Standards] Start Claim',
 }
 
 export class LoadClubStandards implements Action {
@@ -34,12 +35,17 @@ export class ClubStandardsSetCategory implements Action {
   constructor(public category: string) {}
 }
 
+export class ClubStandardsClaimStart implements Action {
+  readonly type = ClubStandardsActionTypes.ClubStandardsClaimStart;
+}
+
 export type ClubStandardsAction =
   | LoadClubStandards
   | ClubStandardsLoaded
   | ClubStandardsLoadError
   | ClubStandardsSetGender
-  | ClubStandardsSetCategory;
+  | ClubStandardsSetCategory
+  | ClubStandardsClaimStart;
 
 export const fromClubStandardsActions = {
   LoadClubStandards,
@@ -47,4 +53,5 @@ export const fromClubStandardsActions = {
   ClubStandardsLoadError,
   ClubStandardsSetGender,
   ClubStandardsSetCategory,
+  ClubStandardsClaimStart,
 };
