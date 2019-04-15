@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class ClubStandardsService {
+  
   standardsUrl = '//bpj.org.uk/api/public/index.php/standards';
 
   constructor(private http: HttpClient) {}
