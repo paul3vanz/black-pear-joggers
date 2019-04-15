@@ -20,6 +20,8 @@
   </bpj-chip>
 </bpj-chip-list>
 
+<bpj-loader *ngIf="!(loaded$ | async)"></bpj-loader>
+
 <table class="table table--large">
   <thead>
     <tr>

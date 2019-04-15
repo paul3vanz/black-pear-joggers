@@ -13,6 +13,8 @@ export class StandardsFormComponent implements OnInit {
   standards$: Observable<any>;
   activeGender$: Observable<string>;
   activeCategory$: Observable<string>;
+  loaded$: Observable<boolean>;
+  error$: Observable<boolean>;
 
   genders = [ 'M', 'W' ];
 
@@ -24,6 +26,8 @@ export class StandardsFormComponent implements OnInit {
     this.standards$ = this.store$.select(clubStandardsQuery.getStandardsByEvent);
     this.activeGender$ = this.store$.select(clubStandardsQuery.getActiveGender);
     this.activeCategory$ = this.store$.select(clubStandardsQuery.getActiveCategory);
+    this.loaded$ = this.store$.select(clubStandardsQuery.getLoaded);
+    this.error$ = this.store$.select(clubStandardsQuery.getError);
 
     this.store$.dispatch(new fromClubStandardsActions.LoadClubStandards('M', 'SEN'));
   }
