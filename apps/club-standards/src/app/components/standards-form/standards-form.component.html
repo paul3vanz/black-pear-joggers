@@ -22,7 +22,10 @@
 
 <bpj-loader *ngIf="!(loaded$ | async)"></bpj-loader>
 
-<table class="table table--large">
+<table
+  *ngIf="loaded$ | async"
+  class="table table--large"
+>
   <thead>
     <tr>
       <th></th>
