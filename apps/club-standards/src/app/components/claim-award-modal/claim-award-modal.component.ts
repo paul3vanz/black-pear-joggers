@@ -9,9 +9,9 @@ import { FormBuilder, Validators } from '@angular/forms';
   styleUrls: [ './claim-award-modal.component.scss' ],
 })
 export class ClaimAwardModalComponent implements OnInit {
-  @Input() isOpen = true;
+  @Input() isOpen = false;
 
-  currentPage = 4;
+  currentPage = 1;
   showValidation = false;
 
   claimForm = [
