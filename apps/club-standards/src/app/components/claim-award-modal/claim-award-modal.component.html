@@ -1,46 +1,175 @@
-<bpj-modal [open]="isOpen" (close)="onCloseModal()">
+<bpj-modal [open]="isOpen" (close)="onCloseModal()" [class.showValidation]="showValidation">
   <h2>Claim an award</h2>
 
-  <form>
+  <form [formGroup]="claimForm[0]" *ngIf="currentPage === 1" method="post">
     <div class="formField">
       <label for="firstName">First name</label>
-      <input id="firstName" name="firstName">
+      <input id="firstName" formControlName="firstName" required>
     </div>
     <div class="formField">
       <label for="lastName">Last name</label>
-      <input id="lastName" name="lastName">
+      <input id="lastName" formControlName="lastName" required>
     </div>
     <div class="formField">
-      <label for="gender">Gender</label>
-      <select id="gender" name="gender">
-        <option>Male</option>
-        <option>Female</option>
-      </select>
+      <label for="email">Email address</label>
+      <input id="email" formControlName="email" required>
     </div>
-    <div class="formField">
-      <label for="category">Age category</label>
-      <select id="category" name="category">
-          <option>Under 20</option>
-          <option>Under 23</option>
-          <option>Senior (23-34)</option>
-          <option>V35-39</option>
-          <option>V40-44</option>
-          <option>V45-49</option>
-          <option>V50-54</option>
-          <option>V55-59</option>
-          <option>V60-64</option>
-          <option>V65-69</option>
-          <option>V70-74</option>
-      </select>
-    </div>
-    <div class="formField">
-        <label for="certificate">Certificate</label>
-        <select id="certificate" name="certificate">
-          <option>Bronze</option>
-          <option>Silver</option>
-          <option>Gold</option>
-          <option>Platinum</option>
+    <div class="columns">
+      <div class="column formField">
+        <label for="gender">Gender</label>
+        <select id="gender" formControlName="gender">
+          <option>Male</option>
+          <option>Female</option>
         </select>
       </div>
+      <div class="column double formField">
+        <label for="category">Age category</label>
+        <select id="category" formControlName="category">
+            <option>Under 20</option>
+            <option>Under 23</option>
+            <option>Senior (23-34)</option>
+            <option>V35-39</option>
+            <option>V40-44</option>
+            <option>V45-49</option>
+            <option>V50-54</option>
+            <option>V55-59</option>
+            <option>V60-64</option>
+            <option>V65-69</option>
+            <option>V70-74</option>
+        </select>
+      </div>
+    </div>
+    <div class="formField">
+      <label for="certificate">Certificate</label>
+      <select id="certificate" formControlName="certificate">
+        <option>Bronze</option>
+        <option>Silver</option>
+        <option>Gold</option>
+        <option>Platinum</option>
+      </select>
+    </div>
   </form>
+
+  <form [formGroup]="claimForm[1]" *ngIf="currentPage === 2" method="post">
+    <h3>Race details (1/3)</h3>
+    <div class="columns">
+      <div class="column formField">
+        <label for="race1Distance">Distance</label>
+        <select id="race1Distance" formControlName="race1Distance">
+          <option value="">Select...</option>
+          <option>Mile</option>
+          <option>5K</option>
+          <option>10K</option>
+          <option>Half Marathon</option>
+          <option>Marathon</option>
+        </select>
+      </div>
+      <div class="column formField">
+        <label for="race1Date">Date</label>
+        <input id="race1Date" formControlName="race1Date" placeholder="DD/MM/YYYY" required>
+      </div>
+    </div>
+    <div class="formField">
+      <label for="race1Race">Race name</label>
+      <input id="race1Race" formControlName="race1Race" placeholder="e.g. Worcester City 10K" required>
+    </div>
+    <div class="columns">
+    <div class="column formField">
+      <label for="race1FinishTimeHours">Hours</label>
+      <input id="race1FinishTimeHours" formControlName="race1FinishTimeHours" required>
+    </div>
+    <div class="column formField">
+      <label for="race1FinishTimeMinutes">Minutes</label>
+      <input id="race1FinishTimeMinutes" formControlName="race1FinishTimeMinutes" required>
+    </div>
+    <div class="column formField">
+      <label for="race1FinishTimeSeconds">Seconds</label>
+      <input id="race1FinishTimeSeconds" formControlName="race1FinishTimeSeconds" required>
+    </div>
+    </div>
+  </form>
+
+  <form [formGroup]="claimForm[2]" *ngIf="currentPage === 3" method="post">
+    <h3>Race details (2/3)</h3>
+    <div class="columns">
+      <div class="column formField">
+        <label for="race2Distance">Distance</label>
+        <select id="race2Distance" formControlName="race2Distance">
+          <option value="">Select...</option>
+          <option>Mile</option>
+          <option>5K</option>
+          <option>10K</option>
+          <option>Half Marathon</option>
+          <option>Marathon</option>
+        </select>
+      </div>
+      <div class="column formField">
+        <label for="race2Date">Date</label>
+        <input id="race2Date" formControlName="race2Date" placeholder="DD/MM/YYYY" required>
+      </div>
+    </div>
+    <div class="formField">
+      <label for="race2Race">Race name</label>
+      <input id="race2Race" formControlName="race2Race" placeholder="e.g. Worcester City 10K" required>
+    </div>
+    <div class="columns">
+    <div class="column formField">
+      <label for="race2FinishTimeHours">Hours</label>
+      <input id="race2FinishTimeHours" formControlName="race2FinishTimeHours" required>
+    </div>
+    <div class="column formField">
+      <label for="race2FinishTimeMinutes">Minutes</label>
+      <input id="race2FinishTimeMinutes" formControlName="race2FinishTimeMinutes" required>
+    </div>
+    <div class="column formField">
+      <label for="race2FinishTimeSeconds">Seconds</label>
+      <input id="race2FinishTimeSeconds" formControlName="race2FinishTimeSeconds" required>
+    </div>
+    </div>
+  </form>
+
+  <form [formGroup]="claimForm[3]" *ngIf="currentPage === 4" method="post">
+    <h3>Race details (3/3)</h3>
+    <div class="columns">
+      <div class="column formField">
+        <label for="race3Distance">Distance</label>
+        <select id="race3Distance" formControlName="race3Distance">
+          <option value="">Select...</option>
+          <option>Mile</option>
+          <option>5K</option>
+          <option>10K</option>
+          <option>Half Marathon</option>
+          <option>Marathon</option>
+        </select>
+      </div>
+      <div class="column formField">
+        <label for="race3Date">Date</label>
+        <input id="race3Date" formControlName="race3Date" placeholder="DD/MM/YYYY" required>
+      </div>
+    </div>
+    <div class="formField">
+      <label for="race3Race">Race name</label>
+      <input id="race3Race" formControlName="race3Race" placeholder="e.g. Worcester City 10K" required>
+    </div>
+    <div class="columns">
+    <div class="column formField">
+      <label for="race3FinishTimeHours">Hours</label>
+      <input id="race3FinishTimeHours" formControlName="race3FinishTimeHours" required>
+    </div>
+    <div class="column formField">
+      <label for="race3FinishTimeMinutes">Minutes</label>
+      <input id="race3FinishTimeMinutes" formControlName="race3FinishTimeMinutes" required>
+    </div>
+    <div class="column formField">
+      <label for="race3FinishTimeSeconds">Seconds</label>
+      <input id="race3FinishTimeSeconds" formControlName="race3FinishTimeSeconds" required>
+    </div>
+    </div>
+  </form>
+
+  <div class="form-footer">
+    <a (click)="onBackButton()" href="javascript:void(0)" class="back" *ngIf="!isFirstPage()">Back</a>
+
+    <button (click)="onNextButton()">Next</button>
+  </div>
 </bpj-modal>

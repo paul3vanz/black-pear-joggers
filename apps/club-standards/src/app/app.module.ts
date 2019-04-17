@@ -18,12 +18,15 @@ import { environment } from '../environments/environment';
 import { storeFreeze } from 'ngrx-store-freeze';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ClaimAwardModalComponent } from './components/claim-award-modal/claim-award-modal.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [ AppComponent, StandardsFormComponent, ClaimAwardModalComponent ],
   imports: [
     BrowserModule,
     HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
     NxModule.forRoot(),
     SharedComponentsModule,
     StoreModule.forRoot(
