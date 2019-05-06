@@ -11,7 +11,8 @@ export class AppComponent {
   title = 'Club standards | BPJ';
 
   onClaimAwardClick() {
-    this.store$.dispatch(new fromClubStandardsActions.ClubStandardsClaimStart());
+    location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSdVYbxf7DYjH0QSWBDmpyV3yyC0RWh9jzrQ-1hoPcyCTGCvzA/viewform';
+    // this.store$.dispatch(new fromClubStandardsActions.ClubStandardsClaimStart());
   }
 
   constructor(private store$: Store<any>) {}
