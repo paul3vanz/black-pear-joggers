@@ -4,7 +4,12 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'pace',
 })
 export class PacePipe implements PipeTransform {
-  transform(timeInSeconds: number, distanceInMeters: number): string {
+  transform(timeInSeconds: number, distanceInMetersOrEventName: number | string): string {
+    const distanceInMeters =
+      typeof distanceInMetersOrEventName === 'string'
+        ? this.getDistanceByEventName(distanceInMetersOrEventName)
+        : distanceInMetersOrEventName;
+
     const metersPerSecond = distanceInMeters / timeInSeconds;
     const minutesPerMile = 26.8224 / metersPerSecond;
     const minutes = Math.floor(minutesPerMile);
@@ -13,5 +18,22 @@ export class PacePipe implements PipeTransform {
     const secondsFormatted = seconds < 10 ? seconds.toString().padStart(2, '0') : seconds;
 
     return `${minutes}:${secondsFormatted}/mile`;
+  }
+
+  private getDistanceByEventName(eventName: string): number {
+    switch (eventName) {
+      case 'Mile':
+        return 1609.34;
+      case '5K':
+        return 5000;
+      case '10K':
+        return 10000;
+      case 'Half Marathon':
+        return 21097.5;
+      case 'Marathon':
+        return 42195;
+      default:
+        throw `${eventName} not valid event`;
+    }
   }
 }
