@@ -1,0 +1,69 @@
+<div [formGroup]="form" *ngIf="form">
+  <div>
+    <ng-container *ngFor="let race of form.controls; let i = index" [formGroupName]="i">
+      <ng-container>
+        <div class="columns">
+          <div class="column formField">
+            <label for="distance">Distance</label>
+            <select id="distance" formControlName="distance">
+              <option value="">Select...</option>
+              <option>Mile</option>
+              <option>5K</option>
+              <option>10K</option>
+              <option>Half Marathon</option>
+              <option>Marathon</option>
+            </select>
+          </div>
+
+          <div class="column double">
+            <div class="columns" formGroupName="finishTime">
+              <div class="column formField">
+                <label for="hours">Hours</label>
+                <input formControlName="hours" required type="number" min="0" max="9">
+              </div>
+
+              <div class="column formField">
+                <label for="minutes">Minutes</label>
+                <input formControlName="minutes" required type="number" min="0" max="59">
+              </div>
+
+              <div class="column formField">
+                <label for="seconds">Seconds</label>
+                <input formControlName="seconds" required type="number" min="0" max="59">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="form.get(i+'.award').value; else noAward">
+          <p>
+            Well done, that time is a <strong>{{ form.get(i+'.award').value }}</strong> performance!
+          </p>
+
+          <div class="columns">
+            <div class="column formField">
+              <label for="date">Date</label>
+              <input id="date" formControlName="date" placeholder="DD/MM/YYYY" required>
+            </div>
+
+            <div class="column formField">
+              <label for="race">Race name</label>
+              <input id="race" formControlName="race" placeholder="e.g. Worcester City 10K" required>
+            </div>
+          </div>
+
+          <p *ngIf="!award" class="action">
+            <a href="javascript:void(0)" (click)="onAddRace()">Add another event</a>
+          </p>
+        </div>
+
+        <ng-template #noAward>
+          <p *ngIf="form.get(i+'.finishTime.hours').value || form.get(i+'.finishTime.minutes').value || form.get(i+'.finishTime.seconds').value">
+            Sorry, that time does not meet the standard for an award.
+          </p>
+        </ng-template>
+
+      </ng-container>
+    </ng-container>
+  </div>
+</div>

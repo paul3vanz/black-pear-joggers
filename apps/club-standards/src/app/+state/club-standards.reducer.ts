@@ -34,16 +34,15 @@ export const initialState: ClubStandardsState = {
 export function clubStandardsReducer(state: ClubStandardsState = initialState, action: ClubStandardsAction): ClubStandardsState {
   switch (action.type) {
     case ClubStandardsActionTypes.LoadClubStandards: {
-      state = {
+      return {
         ...state,
         list: [],
         loaded: false,
         error: false,
       };
-      break;
     }
     case ClubStandardsActionTypes.ClubStandardsLoadError: {
-      state = {
+      return {
         ...state,
         list: [],
         loaded: true,
@@ -51,7 +50,7 @@ export function clubStandardsReducer(state: ClubStandardsState = initialState, a
       };
     }
     case ClubStandardsActionTypes.ClubStandardsLoaded: {
-      state = {
+      return {
         ...state,
         list: action.payload,
         activeGender: action.payload[0].gender,
@@ -59,21 +58,18 @@ export function clubStandardsReducer(state: ClubStandardsState = initialState, a
         loaded: true,
         error: false,
       };
-      break;
     }
     case ClubStandardsActionTypes.ClubStandardsSetGender: {
-      state = {
+      return {
         ...state,
         activeGender: action.gender,
       };
-      break;
     }
     case ClubStandardsActionTypes.ClubStandardsSetCategory: {
-      state = {
+      return {
         ...state,
         activeCategory: action.category,
       };
-      break;
     }
   }
   return state;

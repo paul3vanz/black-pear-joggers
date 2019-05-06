@@ -10,6 +10,7 @@ import {
   ClubStandardsActionTypes,
   ClubStandardsSetGender,
   ClubStandardsSetCategory,
+  ClubStandardsClaimSubmit,
 } from './club-standards.actions';
 import { ClubStandardsService } from '../services/club-standards.service';
 import { map, withLatestFrom, switchMap } from 'rxjs/operators';
@@ -51,6 +52,17 @@ export class ClubStandardsEffects {
     withLatestFrom(this.store$.select(clubStandardsQuery.getActiveGender)),
     map(([ category, gender ]) => {
       return new LoadClubStandards(gender, category);
+    })
+  );
+
+  @Effect()
+  submitClaim$ = this.actions$.pipe(
+    ofType(ClubStandardsActionTypes.ClubStandardsClaimSubmit),
+    map((action: ClubStandardsClaimSubmit) => action.payload),
+    switchMap((formData) => {
+      const awardClaim = this.clubStandardsService.convertFormModelToApiModel(formData);
+
+      return this.clubStandardsService.submitClaim(awardClaim);
     })
   );
 

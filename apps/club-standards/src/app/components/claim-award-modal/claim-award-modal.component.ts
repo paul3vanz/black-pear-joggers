@@ -1,7 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
-import { ClubStandardsActionTypes } from '../../+state/club-standards.actions';
-import { FormBuilder, Validators } from '@angular/forms';
+import { ClubStandardsActionTypes, fromClubStandardsActions, ClubStandardsClaimSubmit } from '../../+state/club-standards.actions';
+import { FormBuilder, Validators, FormGroup, FormArray } from '@angular/forms';
+import { Standard } from '../../models/standard.model';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { clubStandardsQuery } from '../../+state/club-standards.selectors';
+import { withLatestFrom } from 'rxjs/operators';
+import { ClubStandardsService } from '../../services/club-standards.service';
 
 @Component({
   selector: 'bpj-claim-award-modal',
@@ -11,113 +17,175 @@ import { FormBuilder, Validators } from '@angular/forms';
 export class ClaimAwardModalComponent implements OnInit {
   @Input() isOpen = false;
 
-  currentPage = 1;
-  showValidation = false;
+  gender$: Observable<string>;
+  category$: Observable<string>;
+  standards$: Observable<Standard[]>;
 
-  claimForm = [
-    this.formBuilder.group(
-      {
+  currentStep = 1;
+  steps = 3;
+  showValidation = false;
+  claimForm: FormGroup;
+
+  events: string[] = [ 'Mile', '5K', '10K', 'Half Marathon', 'Marathon' ];
+  maximumRaces: number = this.events.length;
+
+  constructor(private actions$: Actions, private formBuilder: FormBuilder, private store$: Store<any>) {
+    this.gender$ = this.store$.select(clubStandardsQuery.getActiveGender);
+    this.category$ = this.store$.select(clubStandardsQuery.getActiveCategory);
+    this.standards$ = this.store$.select(clubStandardsQuery.getAllClubStandards);
+
+    this.claimForm = this.formBuilder.group({
+      categoryDetails: this.formBuilder.group({
+        gender: [ '', Validators.required ],
+        category: [ '', Validators.required ],
+        certificate: [ 'Gold', Validators.required ],
+      }),
+      races: this.formBuilder.array([]),
+      personalDetails: this.formBuilder.group({
         firstName: [ 'Paul', Validators.required ],
         lastName: [ 'Evans', Validators.required ],
         email: [ 'test@test.com', [ Validators.required, Validators.email ] ],
-        gender: [ 'Male', Validators.required ],
-        category: [ 'V35-39', Validators.required ],
-        certificate: [ 'Gold', Validators.required ],
-      },
-      { updateOn: 'blur' }
-    ),
-    this.formBuilder.group(
-      {
-        race1Distance: [ 'Mile', Validators.required ],
-        race1Date: [ '16/04/2019', Validators.required ],
-        race1Race: [ 'Magic Mile', Validators.required ],
-        race1FinishTimeHours: [ '00', Validators.required ],
-        race1FinishTimeMinutes: [ '05', Validators.required ],
-        race1FinishTimeSeconds: [ '46', Validators.required ],
-      },
-      { updateOn: 'blur' }
-    ),
-    this.formBuilder.group(
-      {
-        race2Distance: [ '5K', Validators.required ],
-        race2Date: [ '12/03/2019', Validators.required ],
-        race2Race: [ 'Worcester parkrun', Validators.required ],
-        race2FinishTimeHours: [ '00', Validators.required ],
-        race2FinishTimeMinutes: [ '19', Validators.required ],
-        race2FinishTimeSeconds: [ '45', Validators.required ],
-      },
-      { updateOn: 'blur' }
-    ),
-    this.formBuilder.group(
-      {
-        race3Distance: [ '10K', Validators.required ],
-        race3Date: [ '01/02/2019', Validators.required ],
-        race3Race: [ 'Telford 10K', Validators.required ],
-        race3FinishTimeHours: [ '00', Validators.required ],
-        race3FinishTimeMinutes: [ '38', Validators.required ],
-        race3FinishTimeSeconds: [ '23', Validators.required ],
-      },
-      { updateOn: 'blur' }
-    ),
-  ];
+      }),
+    });
 
-  constructor(private actions$: Actions, private formBuilder: FormBuilder) {
+    this.gender$.subscribe((gender) => this.claimForm.patchValue({ categoryDetails: { gender } }, { emitEvent: false }));
+    this.category$.subscribe((category) => this.claimForm.patchValue({ categoryDetails: { category } }, { emitEvent: false }));
+
+    this.addRace();
+
     this.actions$.pipe(ofType(ClubStandardsActionTypes.ClubStandardsClaimStart)).subscribe(() => {
-      alert('This feature is not yet available. Please email standards@blackpearjoggers.org.uk to claim a certificate.');
+      // alert('This feature is not yet available. Please email standards@blackpearjoggers.org.uk to claim a certificate.');
       this.isOpen = true;
     });
   }
 
-  ngOnInit() {}
+  addRace() {
+    const races = <FormArray>this.claimForm.controls['races'];
+
+    if (this.hasMaximumEvents()) {
+      return;
+    }
+
+    races.push(
+      this.formBuilder.group(
+        {
+          distance: [ 'Mile', Validators.required ],
+          date: [ '27/04/2019', Validators.required ],
+          race: [ 'Test', Validators.required ],
+          finishTime: this.formBuilder.group({
+            hours: [ 0, Validators.required ],
+            minutes: [ 8, Validators.required ],
+            seconds: [ 13, Validators.required ],
+          }),
+          award: [ '', Validators.required ],
+        },
+        { updateOn: 'change' }
+      )
+    );
+  }
+
+  getDistance(eventName: string): number {
+    switch (eventName) {
+      case 'Mile':
+        return 1609.34;
+      case '5K':
+        return 5000;
+      case '10K':
+        return 10000;
+      case 'Half Marathon':
+        return 21097.5;
+      case 'Marathon':
+        return 42195;
+    }
+  }
+
+  finishTimeInSeconds(hours: number, minutes: number, seconds: number) {
+    return hours * 3600 + minutes * 60 + seconds;
+  }
+
+  ngOnInit() {
+    this.claimForm.get('categoryDetails.gender').valueChanges.subscribe((gender) => {
+      this.store$.dispatch(new fromClubStandardsActions.ClubStandardsSetGender(gender));
+    });
+
+    this.claimForm.get('categoryDetails.category').valueChanges.subscribe((category) => {
+      this.store$.dispatch(new fromClubStandardsActions.ClubStandardsSetCategory(category));
+    });
+
+    this.races.valueChanges.pipe(withLatestFrom(this.standards$)).subscribe(([ newValue, standards ]) => {
+      this.races.controls.forEach((race: FormGroup) => {
+        const event = race.get('distance').value;
+        const hours = +race.get('finishTime.hours').value;
+        const minutes = +race.get('finishTime.minutes').value;
+        const seconds = +race.get('finishTime.seconds').value;
+        const finishTimeInSeconds = this.finishTimeInSeconds(hours, minutes, seconds);
+
+        const awardOrder = { Bronze: 1, Silver: 2, Gold: 3, Platinum: 4 };
+
+        const eventAward =
+          finishTimeInSeconds > 0
+            ? standards
+                .filter((standard) => standard.event === event)
+                .filter((standard) => Number(standard.time_parsed) >= finishTimeInSeconds)
+                .sort((value1, value2) => {
+                  return awardOrder[value1.name] < awardOrder[value2.name] ? 1 : -1;
+                })
+                .shift()
+            : null;
+
+        race.controls['award'].patchValue(eventAward ? eventAward['name'] : '', { emitEvent: false });
+      });
+    });
+  }
+
+  get races() {
+    return <FormArray>this.claimForm.get('races');
+  }
 
   onCloseModal() {
     this.isOpen = false;
   }
 
-  onBackButton() {
-    if (!this.isFirstPage()) {
-      this.currentPage--;
+  previousStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
     }
   }
 
-  onNextButton() {
-    if (!this.pageIsValid(this.currentPage)) {
+  nextStep(stepComplete: boolean) {
+    console.log(this.currentStep, stepComplete);
+    if (stepComplete) {
+      this.showValidation = false;
+    } else {
       this.showValidation = true;
-      return;
-    }
-
-    if (!this.isLastPage()) {
-      this.currentPage++;
 
       return;
     }
 
-    if (this.isLastPage()) {
+    if (this.currentStep < this.steps) {
+      this.currentStep++;
+    } else {
       this.submitClaim();
     }
   }
 
   submitClaim() {
-    // console.log(
-    //   this.claimForm.map((page) => {
-    //     return page.controls.map((control, value) => {
-    //       return control + value;
-    //     });
-    //   })
-    // );
-    // console.log(this.claimForm.values(console.log);
-    console.log('submitClaim method not implemented.');
+    this.store$.dispatch(new ClubStandardsClaimSubmit(this.claimForm.value));
   }
 
-  pageIsValid(page: number): boolean {
-    return this.claimForm[page - 1].valid;
+  stepIsValid(step: string): boolean {
+    return this.claimForm.controls[step].valid;
   }
 
-  isFirstPage(): boolean {
-    return this.currentPage === 1;
+  hasEnoughEvents() {
+    const races = <FormArray>this.claimForm.controls['races'];
+
+    return races.length >= 3;
   }
 
-  isLastPage(): boolean {
-    return this.currentPage === this.claimForm.length;
+  hasMaximumEvents() {
+    const races = <FormArray>this.claimForm.controls['races'];
+
+    return races.length === this.maximumRaces;
   }
 }

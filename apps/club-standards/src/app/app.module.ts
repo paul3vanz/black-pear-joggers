@@ -19,9 +19,21 @@ import { storeFreeze } from 'ngrx-store-freeze';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ClaimAwardModalComponent } from './components/claim-award-modal/claim-award-modal.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ClaimStepCategoryDetailsComponent } from './components/claim-step-category-details/claim-step-category-details.component';
+import { ClaimStepRacesComponent } from './components/claim-step-races/claim-step-races.component';
+import { ClaimStepPersonalDetailsComponent } from './components/claim-step-personal-details/claim-step-personal-details.component';
+import { PacePipe } from 'apps/club-records/src/app/pipes/pace.pipe';
 
 @NgModule({
-  declarations: [ AppComponent, StandardsFormComponent, ClaimAwardModalComponent ],
+  declarations: [
+    AppComponent,
+    StandardsFormComponent,
+    ClaimAwardModalComponent,
+    ClaimStepCategoryDetailsComponent,
+    ClaimStepRacesComponent,
+    ClaimStepPersonalDetailsComponent,
+    PacePipe,
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,

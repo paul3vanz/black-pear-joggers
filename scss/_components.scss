@@ -5,3 +5,35 @@
     width: 100%;
   }
 }
+
+label {
+  display: block;
+  margin-bottom: 5px;
+
+  &.invalid {
+    color: #f00;
+    font-weight: bold;
+  }
+}
+
+input,
+select {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #eee;
+  border-radius: 3px;
+
+  .showValidation &.ng-invalid {
+    border: 1px solid #fdd;
+    background-color: #fee;
+  }
+}
+
+button {
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
+  background-color: #000;
+  color: #fff;
+}

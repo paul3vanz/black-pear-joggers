@@ -8,6 +8,9 @@ export enum ClubStandardsActionTypes {
   ClubStandardsSetGender = '[Club Standards] Set Gender',
   ClubStandardsSetCategory = '[Club Standards] Set Category',
   ClubStandardsClaimStart = '[Club Standards] Start Claim',
+  ClubStandardsClaimSubmit = '[Club Standards] Submit Claim',
+  ClubStandardsClaimSubmitSuccess = '[Club Standards] Submit Claim Success',
+  ClubStandardsClaimSubmitError = '[Club Standards] Submit Claim Error',
 }
 
 export class LoadClubStandards implements Action {
@@ -39,13 +42,29 @@ export class ClubStandardsClaimStart implements Action {
   readonly type = ClubStandardsActionTypes.ClubStandardsClaimStart;
 }
 
+export class ClubStandardsClaimSubmit implements Action {
+  readonly type = ClubStandardsActionTypes.ClubStandardsClaimSubmit;
+  constructor(public payload: any) {}
+}
+export class ClubStandardsClaimSubmitSuccess implements Action {
+  readonly type = ClubStandardsActionTypes.ClubStandardsClaimSubmitSuccess;
+  constructor(public payload: any) {}
+}
+export class ClubStandardsClaimSubmitError implements Action {
+  readonly type = ClubStandardsActionTypes.ClubStandardsClaimSubmitError;
+  constructor(public payload: any) {}
+}
+
 export type ClubStandardsAction =
   | LoadClubStandards
   | ClubStandardsLoaded
   | ClubStandardsLoadError
   | ClubStandardsSetGender
   | ClubStandardsSetCategory
-  | ClubStandardsClaimStart;
+  | ClubStandardsClaimStart
+  | ClubStandardsClaimSubmit
+  | ClubStandardsClaimSubmitSuccess
+  | ClubStandardsClaimSubmitError;
 
 export const fromClubStandardsActions = {
   LoadClubStandards,
@@ -54,4 +73,7 @@ export const fromClubStandardsActions = {
   ClubStandardsSetGender,
   ClubStandardsSetCategory,
   ClubStandardsClaimStart,
+  ClubStandardsClaimSubmit,
+  ClubStandardsClaimSubmitSuccess,
+  ClubStandardsClaimSubmitError,
 };

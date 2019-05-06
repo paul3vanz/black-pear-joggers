@@ -5,7 +5,7 @@
       [selected]="gender === (activeGender$ | async)"
       (select)="onSelectGender($event)"
       >
-        {{gender === 'W' ? 'Female' : 'Male'}}
+        {{ gender === 'W' ? 'Female' : 'Male' }}
       </bpj-chip>
   </bpj-chip-list>
 
@@ -16,11 +16,30 @@
     [selected]="category === (activeCategory$ | async)"
     (select)="onSelectCategory($event)"
     >
-    {{category}}
+    {{ category }}
+  </bpj-chip>
+</bpj-chip-list>
+
+<bpj-chip-list>
+  <bpj-chip
+    *ngFor="let format of displayFormats"
+    [value]="format.value"
+    [selected]="displayFormat === format.value"
+    (select)="onSelectDisplayFormat(format.value)"
+    >
+    {{ format.label }}
   </bpj-chip>
 </bpj-chip-list>
 
 <bpj-loader *ngIf="!(loaded$ | async)"></bpj-loader>
+
+<p *ngIf="displayFormat === 'pace'">
+  <strong>Note:</strong> Awards are based on finish times, not recorded pace.
+  Paces are shown to help give you a rough idea of what pace you may need to run.
+  Races often measure different to the advertised distance due to many factors such as
+  GPS accuracy, not taking the racing line, etc. Take this into account when trying to
+  achieve the finish time you're aiming for.
+</p>
 
 <table
   *ngIf="loaded$ | async"
@@ -44,7 +63,13 @@
       <th>{{ event.name }}</th>
 
       <td *ngFor="let standard of event.standards">
-        {{ standard.time }}
+        <ng-container *ngIf="displayFormat === 'time'">
+          {{ standard.time }}
+        </ng-container>
+
+        <ng-container *ngIf="displayFormat === 'pace'">
+          {{ standard.timeParsed | pace : standard.event }}
+        </ng-container>
       </td>
     </tr>
   </tbody>

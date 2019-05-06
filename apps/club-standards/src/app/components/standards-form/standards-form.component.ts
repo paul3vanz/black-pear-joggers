@@ -15,10 +15,13 @@ export class StandardsFormComponent implements OnInit {
   activeCategory$: Observable<string>;
   loaded$: Observable<boolean>;
   error$: Observable<boolean>;
+  displayFormat: string;
 
   genders = [ 'M', 'W' ];
 
   categories = [ 'U20', 'U23', 'SEN', 'V35', 'V40', 'V45', 'V50', 'V55', 'V60', 'V65', 'V70' ];
+
+  displayFormats = [ { label: 'Time', value: 'time' }, { label: 'Pace (min/mile)', value: 'pace' } ];
 
   constructor(private store$: Store<any>) {}
 
@@ -28,6 +31,7 @@ export class StandardsFormComponent implements OnInit {
     this.activeCategory$ = this.store$.select(clubStandardsQuery.getActiveCategory);
     this.loaded$ = this.store$.select(clubStandardsQuery.getLoaded);
     this.error$ = this.store$.select(clubStandardsQuery.getError);
+    this.displayFormat = 'time';
 
     this.store$.dispatch(new fromClubStandardsActions.LoadClubStandards('M', 'SEN'));
   }
@@ -38,5 +42,9 @@ export class StandardsFormComponent implements OnInit {
 
   onSelectCategory(category: string) {
     this.store$.dispatch(new fromClubStandardsActions.ClubStandardsSetCategory(category));
+  }
+
+  onSelectDisplayFormat(format: string) {
+    this.displayFormat = format;
   }
 }

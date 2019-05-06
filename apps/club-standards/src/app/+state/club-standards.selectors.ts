@@ -32,11 +32,23 @@ const getStandardsByEvent = createSelector(getClubStandardsState, (state: ClubSt
     if (currentAward !== s.name) {
       ++currentAwardIndex;
       currentAward = s.name;
-      output[currentEventIndex].standards[currentAwardIndex] = { name: s.name, time: s.time, timeParsed: s.time_parsed };
+      output[currentEventIndex].standards[currentAwardIndex] = { name: s.name, time: s.time, timeParsed: s.time_parsed, event: s.event };
     }
   });
   return output;
 });
+
+const getAwardForEvent = (event: string, timeParsed: number) =>
+  createSelector(getClubStandardsState, (state: ClubStandardsState) => {
+    const awardOrder = { Bronze: 1, Silver: 2, Gold: 3, Platinum: 4 };
+
+    return state.list.filter((standard) => standard.event === event).filter((standard) => Number(standard.time_parsed) >= timeParsed);
+  });
+
+const getStandardForEventAndCategory = (gender: string, category: string) =>
+  createSelector(getClubStandardsState, (state: ClubStandardsState) => {
+    return state.list.filter((standard) => standard.gender === gender && standard.category === category);
+  });
 
 export const clubStandardsQuery = {
   getLoaded,
@@ -45,4 +57,6 @@ export const clubStandardsQuery = {
   getActiveGender,
   getActiveCategory,
   getStandardsByEvent,
+  getAwardForEvent,
+  getStandardForEventAndCategory,
 };

@@ -1,0 +1,53 @@
+:host {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.title,
+.content {
+  border: 1px solid #eee;
+}
+
+.title {
+  margin-bottom: 0;
+  padding: 0.5rem 1rem;
+  border-bottom-width: 0;
+  border-radius: 3px 3px 0 0;
+  background-color: #eee;
+
+  :host.active & {
+    // border-color: #ccc;
+  }
+}
+
+.content {
+  display: none;
+  padding: 1rem 1rem 0;
+  border: 1px solid #eee;
+  border-top-width: 0;
+  border-radius: 0 0 3px 3px;
+
+  :host.active & {
+    display: block;
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.back {
+  text-decoration: none;
+
+  &::before {
+    content: "\00ab\2002";
+  }
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+}

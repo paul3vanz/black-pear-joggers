@@ -6,3 +6,17 @@
 @import 'objects/grid';
 @import 'objects/section';
 @import 'objects/uniformed-list';
+
+.columns {
+  display: flex;
+  margin-left: -10px;
+
+  .column {
+    flex: 1;
+    margin-left: 10px;
+
+    &.double {
+      flex: 2;
+    }
+  }
+}

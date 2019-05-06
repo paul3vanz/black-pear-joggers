@@ -1,0 +1,23 @@
+<h3 class="title" (click)="onNextButton()">
+  {{ title }}
+</h3>
+<div class="content">
+  <ng-content></ng-content>
+
+  <div class="footer">
+      <a
+        *ngIf="showBack"
+        href="javascript:void(0)"
+        class="back"
+        (click)="onBackButton()"
+      >
+        Back
+      </a>
+
+      <button
+        (click)="onNextButton()"
+      >
+        {{ nextLabel }}
+      </button>
+    </div>
+</div>

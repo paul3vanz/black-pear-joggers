@@ -8,10 +8,29 @@ import { InPageNavigationComponent } from './in-page-navigation/in-page-navigati
 import { ModalComponent } from './modal/modal.component';
 import { ChipListComponent } from './chip-list/chip-list.component';
 import { ChipComponent } from './chip/chip.component';
+import { StepComponent } from './step/step.component';
 
 @NgModule({
   imports: [ CommonModule ],
-  declarations: [ HeaderComponent, FooterComponent, LoaderComponent, InPageNavigationComponent, ModalComponent, ChipListComponent, ChipComponent ],
-  exports: [ HeaderComponent, FooterComponent, LoaderComponent, InPageNavigationComponent, ModalComponent, ChipListComponent, ChipComponent ],
+  declarations: [
+    HeaderComponent,
+    FooterComponent,
+    LoaderComponent,
+    InPageNavigationComponent,
+    ModalComponent,
+    ChipListComponent,
+    ChipComponent,
+    StepComponent,
+  ],
+  exports: [
+    HeaderComponent,
+    FooterComponent,
+    LoaderComponent,
+    InPageNavigationComponent,
+    ModalComponent,
+    ChipListComponent,
+    ChipComponent,
+    StepComponent,
+  ],
 })
 export class SharedComponentsModule {}
