@@ -1,20 +1,13 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ElementRef,
-  ViewChild
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Load, Search, SetYear } from './+state/magic-mile.actions';
 import { Observable, Subject } from 'rxjs';
-import { magicMileQuery } from './+state/magic-mile.selectors';
-import { Entity, MagicMileState } from './+state/magic-mile.reducer';
+import { magicMileQuery, MagicMileState, Entity } from '@black-pear-joggers/magic-mile-data-access';
+import { Load, Search, SetYear } from 'libs/magic-mile-data-access/src/lib/+state/magic-mile.actions';
 
 @Component({
   selector: 'bpj-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: [ './app.component.scss' ],
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'app';

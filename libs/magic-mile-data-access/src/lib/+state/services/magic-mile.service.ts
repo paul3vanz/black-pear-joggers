@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
 import { MagicMile } from '../models/magic-mile.model';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MagicMileService {
   private API_PATH = '';
@@ -14,25 +14,16 @@ export class MagicMileService {
   constructor(private http: HttpClient) {}
 
   fetchResults(): Observable<MagicMile[]> {
-    console.log(this.http);
-    return this.http
-      .get('https://bpj.org.uk/api/public/index.php/magicmile')
-      .pipe(map(response => response.json() as Paging<Athlete>));
-    return this.http
-      .get('https://bpj.org.uk/api/public/index.php/magicmile')
-      .pipe(
-        map(response => {
-          console.log('fetched');
-          return response.map(result => {
-            return {
-              ...result,
-              location: result.location
-                .replace('Magic Mile (', '')
-                .replace(')', '')
-            };
-          });
-        })
-      );
+    return this.http.get<MagicMile[]>('https://bpj.org.uk/api/public/index.php/magicmile').pipe(
+      map((results) => {
+        return results.map((result) => {
+          return {
+            ...result,
+            location: result.location.replace(new RegExp(/Magic Mile \((.*)?\)/), '$1'),
+          };
+        });
+      })
+    );
   }
 
   setSearch(keywords) {

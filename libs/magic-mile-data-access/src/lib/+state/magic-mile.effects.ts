@@ -3,13 +3,7 @@ import { Effect, Actions, ofType } from '@ngrx/effects';
 import { DataPersistence } from '@nrwl/nx';
 
 import { MagicMilePartialState } from './magic-mile.reducer';
-import {
-  Load,
-  Loaded,
-  LoadError,
-  MagicMileActionTypes,
-  Search
-} from './magic-mile.actions';
+import { Load, Loaded, LoadError, MagicMileActionTypes, Search } from './magic-mile.actions';
 import { switchMap, map } from 'rxjs/operators';
 import { empty } from 'rxjs';
 import { MagicMileService } from '../services/magic-mile.service';
@@ -19,19 +13,17 @@ export class MagicMileEffects {
   @Effect()
   loadMagicMile$ = this.dataPersistence.fetch(MagicMileActionTypes.Load, {
     run: (action: Load, state: MagicMilePartialState) => {
-      console.log('FETCH');
-      this.magicMileService.fetchResults().pipe(
-        map(results => {
+      return this.magicMileService.fetchResults().pipe(
+        map((results) => {
           return new Loaded(results);
         })
       );
-      return new Loaded([]);
     },
 
     onError: (action: Load, error) => {
       console.error('Error', error);
       return new LoadError(error);
-    }
+    },
   });
 
   @Effect()

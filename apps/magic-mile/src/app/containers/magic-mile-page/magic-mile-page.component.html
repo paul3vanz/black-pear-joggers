@@ -1,29 +1,123 @@
-<h1>Magic Mile</h1>
-<p>
-  How fast can you go? A chance to see how what you can do over one single, measured mile.
-  All abilities are welcome; you may be pleasantly surprised at how you do.
-  The club magic mile events also count towards the
-  <a href="https://bpj.org.uk/club-standards/">club standard awards</a>.
-</p>
+<div class="o-section-md" id="introduction">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h1>Magic Mile</h1>
 
-<div class="o-site-wrap">
-  <div class="o-section-md">
-    <div class="u-push-bottom-md">
-      <bpj-search-bar
-        [currentYear]="currentYear$ | async"
-        [keywords]="keywords$ | async"
-        [years]="years$ | async"
-        (search)="onSearch($event)"
-        (setYear)="setYear($event)"
-      ></bpj-search-bar>
+    <p>
+      How fast can you go? A chance to see how what you can do over one single, measured mile.
+      All abilities are welcome; you may be pleasantly surprised at how you do.
+      The club magic mile events also count towards the
+      <a href="https://bpj.org.uk/club-standards/">club standard awards</a>.
+    </p>
+  </div>
+</div>
+
+<bpj-in-page-navigation>
+  <ul>
+    <li><a href="#howitworks">How it Works</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#routes">Routes</a></li>
+    <li><a href="#results">Results</a></li>
+  </ul>
+</bpj-in-page-navigation>
+
+<div class="c-image-wrapper">
+  <div><img src="https://bpj.org.uk/wp-content/uploads/2014/08/magic-mile-aug-2014.jpg" alt=""></div>
+  <div class="u-hidden@max-xs"><img src="https://bpj.org.uk/wp-content/uploads/2018/06/magic-mile-during-2.jpg" alt=""></div>
+  <div class="u-hidden@max-sm"><img src="https://bpj.org.uk/wp-content/uploads/2018/06/magic-mile-finish-may-18.jpg" alt=""></div>
+  <div class="u-hidden@max-md"><img src="https://bpj.org.uk/wp-content/uploads/2018/06/magic-mile-during.jpg" alt=""></div>
+</div>
+
+<div class="o-section-md" id="howitworks">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h2>How it Works</h2>
+
+    <ol>
+      <li>Meet at the designated start area (make sure you get a good warm up first and have a watch to time it).</li>
+      <li>You’ll be asked for your name, age category and predicted finish time (just for fun to see how close you are and to help group you with people of similar ability).</li>
+      <li>A short safety briefing and explanation is given.</li>
+      <li>You’ll be set off in small groups 30-40 seconds apart according to predicted finish time (this helps with other users of the footpaths and gives you some company to drag you along to a good time!).</li>
+      <li>At the finish you’ll be asked your actual finish time (don’t forget to stop your watch!).</li>
+      <li>If you’re lucky and we’re prepared, there may be water and sweets at the finish.</li>
+      <li>The results will be added to this page either later that day or within a couple of days at worst.</li>
+      <li>Get preparing for the next one to see if you’ve improved!</li>
+    </ol>
+  </div>
+</div>
+
+<div class="o-section-md o-section-bright" id="events">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h2>Upcoming Events</h2>
+
+    <ul class="c-event-list">
+      <li>
+        <strong class="c-event-list__date">Monday 6th May 2019</strong>
+        <span class="c-event-list__time">7:30pm</span>
+        <span class="c-event-list__location">Pitchcroft Grandstand</span>
+        <span class="c-event-list__description">Meet at Perdiswell at the club run at 6:50pm, for warm up run to start (approx. 2 miles).</span>
+      </li>
+      <li>
+        <strong class="c-event-list__date">Tuesday 7th May 2019</strong>
+        <span class="c-event-list__time">7:20pm</span>
+        <span class="c-event-list__location">Diglis Footbridge</span>
+        <span class="c-event-list__description">Meet at University Riverside at the club run at 6:50pm for warm up run to start (approx. 1.5 miles).</span>
+      </li>
+      <li>
+        <strong class="c-event-list__date">Saturday 11th May 2019</strong>
+        <span class="c-event-list__time">10:30am</span>
+        <span class="c-event-list__location">Diglis Footbridge</span>
+        <span class="c-event-list__description">Meet at University Riverside at 10:05am for warm up run to start (approx. 1.5 miles).</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="o-section-md o-section-light" id="routes">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h2>Routes</h2>
+
+    <div class="o-grid o-grid--gutter-lg">
+      <div class="o-grid__item u-1/2">
+        <h3>Pitchcroft Grandstand</h3>
+
+        <p><a href="https://www.plotaroute.com/route/406594">View and download route</a></p>
+
+        <p><img src="https://bpj.org.uk/wp-content/uploads/2018/06/magic-mile-route-pitchcroft.png" alt=""></p>
+      </div>
+
+      <div class="o-grid__item u-1/2">
+        <h3>Diglis Footbridge</h3>
+
+        <p><a href="https://www.plotaroute.com/route/332514">View and download route</a></p>
+
+        <p><img src="https://bpj.org.uk/wp-content/uploads/2018/06/magic-mile-route-diglis.png" alt=""></p>
+      </div>
     </div>
+  </div>
+</div>
+
+<div class="o-section-md o-section-dark" id="results">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h2>Results</h2>
+
+    <bpj-search-bar
+      [currentYear]="currentYear$ | async"
+      [keywords]="keywords$ | async"
+      [years]="years$ | async"
+      (search)="onSearch($event)"
+      (setYear)="setYear($event)"
+    ></bpj-search-bar>
 
     <bpj-results-table
       [keywords]="keywords$ | async"
-      [loading]="loading$ | async"
+      [loading]="!(loaded$ | async)"
       [results]="results$ | async"
       (pageChange)="pageChanged($event)"
       #table
     ></bpj-results-table>
   </div>
+</div>
+
+<div class="c-image-wrapper">
+  <div><img src="https://bpj.org.uk/wp-content/uploads/2018/06/magic-mile-grandstand.jpg" alt=""></div>
+  <div><img src="https://bpj.org.uk/wp-content/uploads/2018/06/magic-mile-during-3.jpg" alt=""></div>
 </div>

@@ -25,6 +25,18 @@
     },
     "search": {
       "tags": []
+    },
+    "magic-mile-data-access": {
+      "tags": []
+    },
+    "club-records-data-access": {
+      "tags": []
+    },
+    "club-standards-data-access": {
+      "tags": []
+    },
+    "race-results-data-access": {
+      "tags": []
     }
   }
 }

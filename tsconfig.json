@@ -21,6 +21,18 @@
       ],
       "@black-pear-joggers/search": [
         "libs/search/src/index.ts"
+      ],
+      "@black-pear-joggers/magic-mile-data-access": [
+        "libs/magic-mile-data-access/src/index.ts"
+      ],
+      "@black-pear-joggers/club-records-data-access": [
+        "libs/club-records-data-access/src/index.ts"
+      ],
+      "@black-pear-joggers/club-standards-data-access": [
+        "libs/club-standards-data-access/src/index.ts"
+      ],
+      "@black-pear-joggers/race-results-data-access": [
+        "libs/race-results-data-access/src/index.ts"
       ]
     }
   },

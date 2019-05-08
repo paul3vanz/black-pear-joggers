@@ -11,44 +11,36 @@ import { StoreModule } from '@ngrx/store';
 
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
-import {
-  initialState as magicMileInitialState,
-  magicMileReducer
-} from './+state/magic-mile.reducer';
-import { MagicMileEffects } from './+state/magic-mile.effects';
 import { MagicMilePageComponent } from './containers/magic-mile-page/magic-mile-page.component';
 import { PipesModule } from './pipes/pipes.module';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { ResultsTableComponent } from './components/results-table/results-table.component';
-import { SearchBarModule } from './components/search-bar/search-bar.module';
+import { MagicMileDataAccessModule } from '@black-pear-joggers/magic-mile-data-access';
 
 @NgModule({
-  declarations: [AppComponent, MagicMilePageComponent, ResultsTableComponent],
+  declarations: [ AppComponent, MagicMilePageComponent, SearchBarComponent, ResultsTableComponent ],
   imports: [
-    SearchBarModule,
     BrowserAnimationsModule,
     BrowserModule,
-    EffectsModule.forRoot([MagicMileEffects]),
+    EffectsModule.forRoot([]),
     HttpClientModule,
     NxModule.forRoot(),
     PipesModule,
     RouterModule.forRoot([
       {
         path: '',
-        component: MagicMilePageComponent
-      }
+        component: MagicMilePageComponent,
+      },
     ]),
     SharedComponentsModule,
-    StoreModule.forRoot(magicMileReducer, {
-      initialState: magicMileInitialState
-    }),
+    StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
-      logOnly: environment.production
+      logOnly: environment.production,
     }),
-    SearchBarModule
+    MagicMileDataAccessModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [ AppComponent ],
 })
 export class AppModule {}

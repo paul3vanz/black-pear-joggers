@@ -6,7 +6,7 @@ export enum MagicMileActionTypes {
   Loaded = '[Magic Mile] Loaded',
   LoadError = '[Magic Mile] Load Error',
   Search = '[Magic Mile] Search',
-  SetYear = '[Magic Mile] Set Year'
+  SetYear = '[Magic Mile] Set Year',
 }
 
 export class Load implements Action {
@@ -40,5 +40,5 @@ export const fromMagicMileActions = {
   Loaded,
   LoadError,
   Search,
-  SetYear
+  SetYear,
 };

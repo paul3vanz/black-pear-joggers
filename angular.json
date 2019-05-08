@@ -22,8 +22,14 @@
             "main": "apps/magic-mile/src/main.ts",
             "polyfills": "apps/magic-mile/src/polyfills.ts",
             "tsConfig": "apps/magic-mile/tsconfig.app.json",
-            "assets": [ "apps/magic-mile/src/favicon.ico", "apps/magic-mile/src/assets" ],
-            "styles": [ "scss/main.scss", "apps/magic-mile/src/styles.scss" ],
+            "assets": [
+              "apps/magic-mile/src/favicon.ico",
+              "apps/magic-mile/src/assets"
+            ],
+            "styles": [
+              "scss/main.scss",
+              "apps/magic-mile/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -73,16 +79,27 @@
             "polyfills": "apps/magic-mile/src/polyfills.ts",
             "tsConfig": "apps/magic-mile/tsconfig.spec.json",
             "karmaConfig": "apps/magic-mile/karma.conf.js",
-            "styles": [ "scss/main.scss", "apps/magic-mile/src/styles.scss" ],
+            "styles": [
+              "scss/main.scss",
+              "apps/magic-mile/src/styles.scss"
+            ],
             "scripts": [],
-            "assets": [ "apps/magic-mile/src/favicon.ico", "apps/magic-mile/src/assets" ]
+            "assets": [
+              "apps/magic-mile/src/favicon.ico",
+              "apps/magic-mile/src/assets"
+            ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [ "apps/magic-mile/tsconfig.app.json", "apps/magic-mile/tsconfig.spec.json" ],
-            "exclude": [ "**/node_modules/**" ]
+            "tsConfig": [
+              "apps/magic-mile/tsconfig.app.json",
+              "apps/magic-mile/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
@@ -104,8 +121,13 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [ "libs/shared-components/tsconfig.lib.json", "libs/shared-components/tsconfig.spec.json" ],
-            "exclude": [ "**/node_modules/**" ]
+            "tsConfig": [
+              "libs/shared-components/tsconfig.lib.json",
+              "libs/shared-components/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
@@ -125,8 +147,14 @@
             "main": "apps/club-standards/src/main.ts",
             "polyfills": "apps/club-standards/src/polyfills.ts",
             "tsConfig": "apps/club-standards/tsconfig.app.json",
-            "assets": [ "apps/club-standards/src/favicon.ico", "apps/club-standards/src/assets" ],
-            "styles": [ "scss/main.scss", "apps/club-standards/src/styles.css" ],
+            "assets": [
+              "apps/club-standards/src/favicon.ico",
+              "apps/club-standards/src/assets"
+            ],
+            "styles": [
+              "scss/main.scss",
+              "apps/club-standards/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -175,16 +203,27 @@
             "polyfills": "apps/club-standards/src/polyfills.ts",
             "tsConfig": "apps/club-standards/tsconfig.spec.json",
             "karmaConfig": "apps/club-standards/karma.conf.js",
-            "styles": [ "scss/main.scss", "apps/club-standards/src/styles.css" ],
+            "styles": [
+              "scss/main.scss",
+              "apps/club-standards/src/styles.css"
+            ],
             "scripts": [],
-            "assets": [ "apps/club-standards/src/favicon.ico", "apps/club-standards/src/assets" ]
+            "assets": [
+              "apps/club-standards/src/favicon.ico",
+              "apps/club-standards/src/assets"
+            ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [ "apps/club-standards/tsconfig.app.json", "apps/club-standards/tsconfig.spec.json" ],
-            "exclude": [ "**/node_modules/**" ]
+            "tsConfig": [
+              "apps/club-standards/tsconfig.app.json",
+              "apps/club-standards/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
@@ -208,8 +247,14 @@
             "main": "apps/race-results/src/main.ts",
             "polyfills": "apps/race-results/src/polyfills.ts",
             "tsConfig": "apps/race-results/tsconfig.app.json",
-            "assets": [ "apps/race-results/src/favicon.ico", "apps/race-results/src/assets" ],
-            "styles": [ "scss/main.scss", "apps/race-results/src/styles.scss" ],
+            "assets": [
+              "apps/race-results/src/favicon.ico",
+              "apps/race-results/src/assets"
+            ],
+            "styles": [
+              "scss/main.scss",
+              "apps/race-results/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -258,16 +303,27 @@
             "polyfills": "apps/race-results/src/polyfills.ts",
             "tsConfig": "apps/race-results/tsconfig.spec.json",
             "karmaConfig": "apps/race-results/karma.conf.js",
-            "styles": [ "scss/main.scss", "apps/race-results/src/styles.scss" ],
+            "styles": [
+              "scss/main.scss",
+              "apps/race-results/src/styles.scss"
+            ],
             "scripts": [],
-            "assets": [ "apps/race-results/src/favicon.ico", "apps/race-results/src/assets" ]
+            "assets": [
+              "apps/race-results/src/favicon.ico",
+              "apps/race-results/src/assets"
+            ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [ "apps/race-results/tsconfig.app.json", "apps/race-results/tsconfig.spec.json" ],
-            "exclude": [ "**/node_modules/**" ]
+            "tsConfig": [
+              "apps/race-results/tsconfig.app.json",
+              "apps/race-results/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
@@ -291,8 +347,14 @@
             "main": "apps/club-records/src/main.ts",
             "polyfills": "apps/club-records/src/polyfills.ts",
             "tsConfig": "apps/club-records/tsconfig.app.json",
-            "assets": [ "apps/club-records/src/favicon.ico", "apps/club-records/src/assets" ],
-            "styles": [ "scss/main.scss", "apps/club-records/src/styles.scss" ],
+            "assets": [
+              "apps/club-records/src/favicon.ico",
+              "apps/club-records/src/assets"
+            ],
+            "styles": [
+              "scss/main.scss",
+              "apps/club-records/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -341,16 +403,27 @@
             "polyfills": "apps/club-records/src/polyfills.ts",
             "tsConfig": "apps/club-records/tsconfig.spec.json",
             "karmaConfig": "apps/club-records/karma.conf.js",
-            "styles": [ "scss/main.scss", "apps/club-records/src/styles.scss" ],
+            "styles": [
+              "scss/main.scss",
+              "apps/club-records/src/styles.scss"
+            ],
             "scripts": [],
-            "assets": [ "apps/club-records/src/favicon.ico", "apps/club-records/src/assets" ]
+            "assets": [
+              "apps/club-records/src/favicon.ico",
+              "apps/club-records/src/assets"
+            ]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [ "apps/club-records/tsconfig.app.json", "apps/club-records/tsconfig.spec.json" ],
-            "exclude": [ "**/node_modules/**" ]
+            "tsConfig": [
+              "apps/club-records/tsconfig.app.json",
+              "apps/club-records/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
@@ -364,8 +437,13 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [ "libs/search/tsconfig.lib.json", "libs/search/tsconfig.spec.json" ],
-            "exclude": [ "**/node_modules/**" ]
+            "tsConfig": [
+              "libs/search/tsconfig.lib.json",
+              "libs/search/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "test": {
@@ -374,6 +452,118 @@
             "jestConfig": "libs/search/jest.config.js",
             "tsConfig": "libs/search/tsconfig.spec.json",
             "setupFile": "libs/search/src/test-setup.ts"
+          }
+        }
+      }
+    },
+    "magic-mile-data-access": {
+      "root": "libs/magic-mile-data-access",
+      "sourceRoot": "libs/magic-mile-data-access/src",
+      "projectType": "library",
+      "prefix": "bpj",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/magic-mile-data-access/src/test.ts",
+            "tsConfig": "libs/magic-mile-data-access/tsconfig.spec.json",
+            "karmaConfig": "libs/magic-mile-data-access/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/magic-mile-data-access/tsconfig.lib.json",
+              "libs/magic-mile-data-access/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "club-records-data-access": {
+      "root": "libs/club-records-data-access",
+      "sourceRoot": "libs/club-records-data-access/src",
+      "projectType": "library",
+      "prefix": "bpj",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/club-records-data-access/src/test.ts",
+            "tsConfig": "libs/club-records-data-access/tsconfig.spec.json",
+            "karmaConfig": "libs/club-records-data-access/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/club-records-data-access/tsconfig.lib.json",
+              "libs/club-records-data-access/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "club-standards-data-access": {
+      "root": "libs/club-standards-data-access",
+      "sourceRoot": "libs/club-standards-data-access/src",
+      "projectType": "library",
+      "prefix": "bpj",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/club-standards-data-access/src/test.ts",
+            "tsConfig": "libs/club-standards-data-access/tsconfig.spec.json",
+            "karmaConfig": "libs/club-standards-data-access/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/club-standards-data-access/tsconfig.lib.json",
+              "libs/club-standards-data-access/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "race-results-data-access": {
+      "root": "libs/race-results-data-access",
+      "sourceRoot": "libs/race-results-data-access/src",
+      "projectType": "library",
+      "prefix": "bpj",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/race-results-data-access/src/test.ts",
+            "tsConfig": "libs/race-results-data-access/tsconfig.spec.json",
+            "karmaConfig": "libs/race-results-data-access/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/race-results-data-access/tsconfig.lib.json",
+              "libs/race-results-data-access/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
@@ -393,6 +583,9 @@
     },
     "@schematics/angular:pipe": {
       "export": true
+    },
+    "@nwrl/schematics:library": {
+      "prefix": "bpj"
     }
   },
   "defaultProject": "magic-mile"
