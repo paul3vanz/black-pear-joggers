@@ -1,8 +1,14 @@
 .c-image-wrapper {
+  display: flex;
   line-height: 0;
+
+  div {
+    width: 100%;
+  }
 
   img {
     width: 100%;
+    height: auto;
   }
 }
 
@@ -36,4 +42,80 @@ button {
   border-radius: 3px;
   background-color: #000;
   color: #fff;
+}
+
+ol li {
+  display: flex;
+  margin-bottom: 0.5rem;
+  counter-increment: list;
+
+  &::before {
+    content: counter(list);
+    display: inline-flex;
+    flex: 0 0 20px;
+    justify-content: center;
+    height: 20px;
+    margin-right: 10px;
+    margin-bottom: 0.5rem;
+    border-radius: 50%;
+    background-color: #000;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+  }
+}
+
+.c-event-list {
+  display: flex;
+  margin: 2rem -1rem 1rem;
+
+  @include nb-respond-to('max-xs') {
+    flex-direction: column;
+  }
+
+  li {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    margin: 0 1rem 1rem;
+    padding: 1rem;
+    border-radius: 3px;
+    background-color: #fff;
+    text-align: center;
+  }
+
+  &__date {
+    font-size: 18px;
+  }
+
+  &__time {
+    font-size: 18px;
+  }
+
+  &__description {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    text-align: left;
+  }
+}
+
+table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+th {
+  text-align: left;
+}
+
+th,
+td {
+  padding: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+table tr:last-child * {
+  border-bottom: none;
 }
