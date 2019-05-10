@@ -16,8 +16,6 @@ export class MenuService {
   constructor(private http: HttpClient) {}
 
   fetchMenu() {
-    // return this.http.get('https://bpj.org.uk/wp-json/menus/v1/menus/3').subscribe((response: Menu) => response);
-
     const storedMenu = this.getMenuFromStorage();
 
     if (!storedMenu || (storedMenu && this.hasExpired(storedMenu.expiry))) {

@@ -18,17 +18,19 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { storeFreeze } from 'ngrx-store-freeze';
 import { QueryRecordModalComponent } from './components/query-record-modal/query-record-modal.component';
 import { SearchModule } from '@black-pear-joggers/search';
+import { SharedPipesModule } from 'libs/shared-pipes/src';
+import { FilterCategoryPipe } from './pipes/filter-category.pipe';
 
 @NgModule({
-  declarations: [ AppComponent, ClubRecordsTableComponent, QueryRecordModalComponent ],
+  declarations: [ AppComponent, ClubRecordsTableComponent, QueryRecordModalComponent, FilterCategoryPipe ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
     NxModule.forRoot(),
-    PipesModule,
     RouterModule.forRoot([], { initialNavigation: 'enabled' }),
     SharedComponentsModule,
+    SharedPipesModule,
     SearchModule,
     StoreModule.forRoot(
       { clubRecords: clubRecordsReducer },
