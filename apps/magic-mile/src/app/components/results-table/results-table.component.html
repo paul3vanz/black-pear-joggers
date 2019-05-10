@@ -1,46 +1,63 @@
-<table class="table table--large" *ngIf="results && results.length">
-    <thead>
+<table
+  *ngIf="results && results.length"
+  class="table table--large"
+>
+  <thead>
     <tr>
-        <th>Name</th>
-        <th>Predicted</th>
-        <th>Actual</th>
-        <th>Date</th>
-        <th>Gender</th>
-        <th>Category</th>
-        <th>Location</th>
+      <th>Name</th>
+
+      <th>Predicted</th>
+
+      <th>Actual</th>
+
+      <th>Date</th>
+
+      <th class="u-hidden@max-xs">Gender</th>
+
+      <th class="u-hidden@max-xs">Category</th>
+
+      <th class="u-hidden@max-sm">Location</th>
     </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let result of results">
-        <td nowrap="nowrap">
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let result of sortedResults | limit : startRecord : endRecord">
+      <td nowrap="nowrap">
         <a href="https://bpj.org.uk/records-and-rankings/race-results/#/athlete/{{ result.athleteId }}" *ngIf="result.athleteId">
             {{ result.firstName }} {{ result.lastName }}
         </a>
+
         <ng-template [ngIf]="!result.athleteId">
             {{ result.firstName }} {{ result.lastName }}
         </ng-template>
-        </td>
-        <td [attr.data-sort-value]="result.predictedTimeParsed">{{ result.predictedTime }}</td>
-        <td [attr.data-sort-value]="result.actualTimeParsed">{{ result.actualTime }}</td>
-        <td>{{ result.date | date: "d MMMM y" }}</td>
-        <td>{{ result.gender }}</td>
-        <td>{{ result.category }}</td>
-        <td>{{ result.location }}</td>
+      </td>
+
+      <td [attr.data-sort-value]="result.predictedTimeParsed">{{ result.predictedTimeParsed | finishTime }}</td>
+
+      <td [attr.data-sort-value]="result.actualTimeParsed">{{ result.actualTimeParsed | finishTime }}</td>
+
+      <td>{{ result.date | date: "d MMM y" }}</td>
+
+      <td class="u-hidden@max-xs">{{ result.gender | gender }}</td>
+
+      <td class="u-hidden@max-xs"><abbr title="{{ result.category | category }}">{{ result.category }}</abbr></td>
+
+      <td class="u-hidden@max-sm">{{ result.location }}</td>
     </tr>
-    </tbody>
+  </tbody>
 </table>
 
-<p *ngIf="loading">
-    Loading...
-</p>
+<div *ngIf="results" class="pagination">
+  <p>
+    Showing
+    {{ startRecord }}
+    to
+    {{ endRecord }}
+    of
+    {{ results.length }}
+  </p>
 
-<p *ngIf="keywords && !loading && results">
-    <strong>{{ results.length }}</strong>
-    search results for
-    <strong>{{ keywords }}</strong>.
-</p>
+  <a class="pagination__link pagination__link--previous" (click)="previousPage()" href="javascript:void(0)">Previous Page</a>
 
-<p *ngIf="!keywords && !loading && results">
-    <strong>{{ results.length }}</strong>
-    results found.
-</p>
+  <a class="pagination__link pagination__link--next" (click)="nextPage()" href="javascript:void(0)">Next Page</a>
+</div>

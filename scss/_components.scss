@@ -103,7 +103,7 @@ ol li {
 
 table {
   width: 100%;
-  margin-bottom: 0;
+  margin-bottom: 1rem;
 }
 
 th {
@@ -112,8 +112,12 @@ th {
 
 th,
 td {
-  padding: 8px;
+  padding: 4px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  @include nb-respond-to('sm') {
+    padding: 8px;
+  }
 }
 
 table tr:last-child * {

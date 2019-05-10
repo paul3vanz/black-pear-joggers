@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { MagicMile } from 'libs/magic-mile-data-access/src/lib/models/magic-mile.model';
+import { MagicMile } from '@black-pear-joggers/magic-mile-data-access';
 
 @Component({
   selector: 'bpj-results-table',
@@ -8,16 +8,38 @@ import { MagicMile } from 'libs/magic-mile-data-access/src/lib/models/magic-mile
 })
 export class ResultsTableComponent implements OnChanges {
   @Input() results: MagicMile[];
-  @Input() loading: boolean;
-  @Input() keywords: string;
-
-  currentPage: number;
-  totalPages: number;
-  pageSize = 50;
-
-  constructor() {}
+  @Input() resultsPerPage = 100;
+  @Input() sort: string;
+  currentPage = 1;
+  sortedResults: MagicMile[];
 
   ngOnChanges() {
-    this.currentPage = 1;
+    if (this.sort === 'fastest') {
+      this.sortedResults = this.results.slice(0).sort((result1, result2) => (result1.actualTimeParsed < result2.actualTimeParsed ? -1 : 0));
+    } else {
+      this.sortedResults = this.results;
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage() {
+    if (this.endRecord < this.results.length) {
+      this.currentPage++;
+    }
+  }
+
+  get startRecord() {
+    return this.resultsPerPage * this.currentPage - this.resultsPerPage + 1;
+  }
+
+  get endRecord() {
+    const endRecord = this.resultsPerPage * this.currentPage;
+
+    return endRecord > this.results.length ? this.results.length : endRecord;
   }
 }

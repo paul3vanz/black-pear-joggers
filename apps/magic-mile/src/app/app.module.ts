@@ -12,33 +12,34 @@ import { StoreModule } from '@ngrx/store';
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 import { MagicMilePageComponent } from './containers/magic-mile-page/magic-mile-page.component';
-import { PipesModule } from './pipes/pipes.module';
-import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { ResultsTableComponent } from './components/results-table/results-table.component';
 import { MagicMileDataAccessModule } from '@black-pear-joggers/magic-mile-data-access';
+import { SearchModule } from '@black-pear-joggers/search';
+import { SharedPipesModule } from 'libs/shared-pipes/src';
 
 @NgModule({
-  declarations: [ AppComponent, MagicMilePageComponent, SearchBarComponent, ResultsTableComponent ],
+  declarations: [ AppComponent, MagicMilePageComponent, ResultsTableComponent ],
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
     EffectsModule.forRoot([]),
     HttpClientModule,
     NxModule.forRoot(),
-    PipesModule,
     RouterModule.forRoot([
       {
         path: '',
         component: MagicMilePageComponent,
       },
     ]),
-    SharedComponentsModule,
     StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       logOnly: environment.production,
     }),
     MagicMileDataAccessModule,
+    SharedComponentsModule,
+    SharedPipesModule,
+    SearchModule,
   ],
   providers: [],
   bootstrap: [ AppComponent ],

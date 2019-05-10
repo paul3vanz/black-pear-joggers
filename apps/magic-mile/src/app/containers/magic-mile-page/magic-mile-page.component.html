@@ -100,19 +100,29 @@
     <h2>Results</h2>
 
     <bpj-search-bar
-      [currentYear]="currentYear$ | async"
-      [keywords]="keywords$ | async"
-      [years]="years$ | async"
       (search)="onSearch($event)"
-      (setYear)="setYear($event)"
+      debounce="200"
+      [keywords]="keywords"
+      placeholder="Search results..."
     ></bpj-search-bar>
 
+    <bpj-chip-list>
+      <bpj-chip
+        *ngFor="let format of displayFormats"
+        [value]="format.value"
+        [selected]="displayFormat === format.value"
+        (select)="onSelectDisplayFormat(format.value)"
+      >
+      {{ format.label }}
+    </bpj-chip>
+    </bpj-chip-list>
+
+    <bpj-loader *ngIf="!(loaded$ | async)"></bpj-loader>
+
     <bpj-results-table
-      [keywords]="keywords$ | async"
-      [loading]="!(loaded$ | async)"
+      *ngIf="(results$ | async).length"
       [results]="results$ | async"
-      (pageChange)="pageChanged($event)"
-      #table
+      [sort]="displayFormat"
     ></bpj-results-table>
   </div>
 </div>

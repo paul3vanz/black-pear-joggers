@@ -1,7 +1,6 @@
 <form #searchForm="ngForm">
   <input
     type="text"
-    id="search"
     [value]="keywords"
     [placeholder]="placeholder"
     (keyup)="onChange($event.target.value)"
