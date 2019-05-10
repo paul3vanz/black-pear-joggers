@@ -1,0 +1,16 @@
+table {
+    margin-bottom: 10px;
+}
+
+.meeting-page__title {
+    line-height: 18px;
+}
+
+.meeting-page__subtitle {
+    font-size: 18px;
+}
+
+.standards__heading--Bronze { background-color: #c08f67; }
+.standards__heading--Silver { background-color: #b9b9b9; }
+.standards__heading--Gold { background-color: #d89843; }
+.standards__heading--Platinum { background-color: #8791a0; }

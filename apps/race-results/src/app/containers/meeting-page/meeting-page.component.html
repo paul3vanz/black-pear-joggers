@@ -1,0 +1,79 @@
+<div class="o-section-md">
+  <div class="o-site-wrap o-site-wrap--padding">
+
+    <div *ngIf="results && results.data">
+      <p class="u-btm-l">
+        <a
+          class="button button--back"
+          routerLink="/results"
+          href="#"
+        >
+          <span aria-hidden="true">&laquo;</span>
+          Return to Results
+        </a>
+      </p>
+      <div>
+        <h2 class="meeting-page__title">
+          {{ results.data[0].race }}<br />
+          <span class="meeting-page__subtitle">{{ results.data[0].date | date: "Do MMMM YYYY" }}</span>
+        </h2>
+
+        <table
+          class="table table-bordered table-striped table-hover table-condensed"
+          data-sortable
+        >
+          <thead class="thead-inverse">
+            <tr>
+              <th data-sortable-type="alpha">Standard</th>
+
+              <th data-sortable-type="alpha">Gender</th>
+
+              <th data-sortable-type="alpha">Category</th>
+
+              <th>Event</th>
+
+              <th>Time</th>
+
+              <th data-sortable-type="alpha">Name</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let result of results.data">
+              <td class="nowrap standards__heading--{{result.award | formatAward}}">{{result.award | formatAward}}</td>
+
+              <td class="nowrap">{{result.gender | formatGender}}</td>
+
+              <td class="nowrap">{{result.category}}</td>
+
+              <td
+                class="nowrap"
+              >
+                {{result.event}}
+              </td>
+
+              <td
+                class="nowrap"
+                attr.data-value="{{result.time_parsed}}"
+              >
+                {{result.time}}
+              </td>
+
+              <td class="nowrap">
+                <a
+                  routerLink="/athlete/{{result.athlete_id}}"
+                  href="#"
+                  (click)="selectAthlete(result.athlete_id)"
+                >
+                  {{result.first_name}} {{result.last_name}}
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><strong>{{ results.data.length }}</strong> results</p>
+      </div>
+    </div>
+  </div>
+</div>

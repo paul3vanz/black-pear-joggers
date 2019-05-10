@@ -1,0 +1,50 @@
+<bpj-header></bpj-header>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<bpj-modal [open]="false">
+  <h2>Add your details to the site</h2>
+
+  <p>If you can't find yourself on the site, fill in the form below. We'll check your affiliation details and if all ok, your results will show on the site after a few days.</p>
+
+  <form method="post">
+    <div class="columns" formGroupName="finishTime">
+      <div class="column formField">
+        <label for="firstName">First name</label>
+        <input formControlName="firstName" required type="text" id="firstName">
+      </div>
+
+      <div class="column formField">
+        <label for="lastName">Last name</label>
+        <input formControlName="lastName" required type="text" id="lastName">
+      </div>
+    </div>
+
+    <fieldset>
+      <legend>Date of birth (e.g. 31/12/1980)</legend>
+      <div class="columns">
+        <div class="column formField">
+          <label for="day" class="u-visually-hidden">Day</label>
+          <input type="number" min="1" max="31" placeholder="DD" id="day">
+        </div>
+        <div class="column formField">
+          <label for="month" class="u-visually-hidden">Month</label>
+          <input type="number" min="1" max="12" placeholder="MM" id="month">
+        </div>
+        <div class="column formField">
+          <label for="year" class="u-visually-hidden">Year</label>
+          <input type="number" min="1900" max="9999" placeholder="YYYY" id="year">
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="formField">
+      <label for="emailAddress">Email address</label>
+      <input formControlName="emailAddress" required type="email" id="emailAddress">
+    </div>
+  </form>
+</bpj-modal>
+
+<bpj-footer></bpj-footer>

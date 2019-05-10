@@ -1,0 +1,4 @@
+<div class="search">
+    <label class="u-visually-hidden" for="searchTerm">Search</label>
+    <input class="search__input" [class.loading]="loading" #searchBox id="searchTerm" (keyup)="this.search.emit(searchBox.value)" placeholder="Search for athlete or event..." [value]="keywords" />
+</div>
