@@ -567,6 +567,34 @@
           }
         }
       }
+    },
+    "shared-pipes": {
+      "root": "libs/shared-pipes",
+      "sourceRoot": "libs/shared-pipes/src",
+      "projectType": "library",
+      "prefix": "bpj",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/shared-pipes/src/test.ts",
+            "tsConfig": "libs/shared-pipes/tsconfig.spec.json",
+            "karmaConfig": "libs/shared-pipes/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/shared-pipes/tsconfig.lib.json",
+              "libs/shared-pipes/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "cli": {

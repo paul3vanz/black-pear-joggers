@@ -37,6 +37,9 @@
     },
     "race-results-data-access": {
       "tags": []
+    },
+    "shared-pipes": {
+      "tags": []
     }
   }
 }
