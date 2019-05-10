@@ -1,7 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { MAGICMILE_FEATURE_KEY, MagicMileState } from './magic-mile.reducer';
+import { MagicMile } from '../models/magic-mile.model';
 
-// Lookup the 'MagicMile' feature state managed by NgRx
 const getMagicMileState = createFeatureSelector<MagicMileState>(MAGICMILE_FEATURE_KEY);
 
 const getLoaded = createSelector(getMagicMileState, (state: MagicMileState) => state.loaded);
@@ -15,10 +15,24 @@ const getSelectedMagicMile = createSelector(getAllMagicMile, getSelectedId, (mag
   const result = magicMile.find((it) => it['id'] === id);
   return result ? Object.assign({}, result) : undefined;
 });
+const getMagicMileSearch = (keywords: string) => {
+  return createSelector(getAllMagicMile, (magicMile) => {
+    const searchProperties = [ 'firstName', 'lastName' ];
+    const keywordArray = keywords && keywords.split(' ');
+    return keywords
+      ? magicMile.filter((result: MagicMile) => {
+          return keywordArray.every((keyword) =>
+            searchProperties.some((property) => result[property].toLowerCase().includes(keyword.toLowerCase()))
+          );
+        })
+      : magicMile;
+  });
+};
 
 export const magicMileQuery = {
   getLoaded,
   getError,
   getAllMagicMile,
   getSelectedMagicMile,
+  getMagicMileSearch,
 };

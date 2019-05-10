@@ -1,27 +1,13 @@
 import { MagicMileAction, MagicMileActionTypes } from './magic-mile.actions';
+import { MagicMile } from '../models/magic-mile.model';
 
 export const MAGICMILE_FEATURE_KEY = 'magicMile';
 
-/**
- * Interface for the 'MagicMile' data used in
- *  - MagicMileState, and
- *  - magicMileReducer
- *
- *  Note: replace if already defined in another module
- */
-
-/* tslint:disable:no-empty-interface */
-export interface Entity {}
-
 export interface MagicMileState {
-  list: Entity[]; // list of MagicMile; analogous to a sql normalized table
+  list: MagicMile[]; // list of MagicMile; analogous to a sql normalized table
   selectedId?: string | number; // which MagicMile record has been selected
   loaded: boolean; // has the MagicMile list been loaded
   error?: any; // last none error (if any)
-  filter: {
-    year: string;
-    name: string;
-  };
 }
 
 export interface MagicMilePartialState {
@@ -31,42 +17,22 @@ export interface MagicMilePartialState {
 export const initialState: MagicMileState = {
   list: [],
   loaded: false,
-  filter: {
-    year: null,
-    name: null
-  }
 };
 
-export function magicMileReducer(
-  state: MagicMileState = initialState,
-  action: MagicMileAction
-): MagicMileState {
+export function magicMileReducer(state: MagicMileState = initialState, action: MagicMileAction): MagicMileState {
   switch (action.type) {
     case MagicMileActionTypes.Loaded: {
-      state = {
+      return {
         ...state,
         list: action.payload,
-        loaded: true
+        loaded: true,
+        error: null,
       };
-      break;
     }
-    case MagicMileActionTypes.Search: {
-      state = {
+    case MagicMileActionTypes.LoadError: {
+      return {
         ...state,
-        filter: {
-          ...state.filter,
-          name: action.payload
-        }
-      };
-      break;
-    }
-    case MagicMileActionTypes.SetYear: {
-      state = {
-        ...state,
-        filter: {
-          ...state.filter,
-          year: action.payload
-        }
+        error: action.payload,
       };
     }
   }
