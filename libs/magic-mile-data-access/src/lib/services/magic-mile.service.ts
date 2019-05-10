@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class MagicMileService {
   private API_PATH = '';
@@ -14,16 +14,21 @@ export class MagicMileService {
   constructor(private http: HttpClient) {}
 
   fetchResults(): Observable<MagicMile[]> {
-    return this.http.get<MagicMile[]>('https://bpj.org.uk/api/public/index.php/magicmile').pipe(
-      map((results) => {
-        return results.map((result) => {
-          return {
-            ...result,
-            location: result.location.replace(new RegExp(/Magic Mile \((.*)?\)/), '$1'),
-          };
-        });
-      })
-    );
+    return this.http
+      .get<MagicMile[]>('https://bpj.org.uk/api/public/index.php/magicmile')
+      .pipe(
+        map(results => {
+          return results.map(result => {
+            return {
+              ...result,
+              location: result.location.replace(
+                new RegExp(/Magic Mile \((.*)?\)/),
+                '$1'
+              )
+            };
+          });
+        })
+      );
   }
 
   setSearch(keywords) {
