@@ -4,7 +4,6 @@ import { ClubRecordsTableComponent } from './components/club-records-table/club-
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { NxModule } from '@nrwl/nx';
-import { PipesModule } from './pipes/pipes.module';
 import { RouterModule } from '@angular/router';
 import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
 import { StoreModule } from '@ngrx/store';

@@ -22,7 +22,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ClaimStepCategoryDetailsComponent } from './components/claim-step-category-details/claim-step-category-details.component';
 import { ClaimStepRacesComponent } from './components/claim-step-races/claim-step-races.component';
 import { ClaimStepPersonalDetailsComponent } from './components/claim-step-personal-details/claim-step-personal-details.component';
-import { PacePipe } from 'apps/club-records/src/app/pipes/pace.pipe';
+import { SharedPipesModule } from '@black-pear-joggers/shared-pipes';
 
 @NgModule({
   declarations: [
@@ -32,7 +32,6 @@ import { PacePipe } from 'apps/club-records/src/app/pipes/pace.pipe';
     ClaimStepCategoryDetailsComponent,
     ClaimStepRacesComponent,
     ClaimStepPersonalDetailsComponent,
-    PacePipe,
   ],
   imports: [
     BrowserModule,
@@ -41,6 +40,7 @@ import { PacePipe } from 'apps/club-records/src/app/pipes/pace.pipe';
     ReactiveFormsModule,
     NxModule.forRoot(),
     SharedComponentsModule,
+    SharedPipesModule,
     StoreModule.forRoot(
       { clubStandards: clubStandardsReducer },
       {
