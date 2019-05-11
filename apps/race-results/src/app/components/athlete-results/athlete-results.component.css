@@ -21,12 +21,15 @@
 .standards__heading--Bronze span {
   background-color: #c08f67;
 }
+
 .standards__heading--Silver span {
   background-color: #b9b9b9;
 }
+
 .standards__heading--Gold span {
   background-color: #d89843;
 }
+
 .standards__heading--Platinum span {
   background-color: #8791a0;
 }
