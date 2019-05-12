@@ -52,7 +52,7 @@
                 <td class="athlete-results__award nowrap standards__heading--{{result.award | formatAward}}"><span>{{result.award | formatAward}}</span></td>
                 <td class="athlete-results__category nowrap">{{result.category}}</td>
                 <td class="athlete-results__event nowrap">{{result.event}}</td>
-                <td class="athlete-results__race"><a href="#/meeting/{{result.meeting_id}}">{{result.race}}</a></td>
+                <td class="athlete-results__race"><a href="#/meeting/{{result.date}}/{{result.meeting_id}}">{{result.race}}</a></td>
                 <td class="athlete-results__time nowrap" attr.data-value="{{result.time_parsed}}">{{result.time}}</td>
                 <td class="athlete-results__date nowrap">{{result.date | date: "DD/MM/YYYY"}}</td>
             </tr>
