@@ -2,21 +2,46 @@
   <div class="o-site-wrap o-site-wrap--padding">
 
     <div *ngIf="results && results.data">
-      <p class="u-btm-l">
-        <a
-          class="button button--back"
-          routerLink="/results"
-          href="#"
-        >
-          <span aria-hidden="true">&laquo;</span>
-          Return to Results
-        </a>
-      </p>
-      <div>
-        <h2 class="meeting-page__title">
-          {{ results.data[0].race }}<br />
-          <span class="meeting-page__subtitle">{{ results.data[0].date | date: "Do MMMM YYYY" }}</span>
-        </h2>
+      <div class="o-grid">
+        <div class="o-grid__item u-1/2@xs">
+          <p class="u-btm-l">
+            <a
+              class="button button--back"
+              routerLink="/results"
+              href="#"
+            >
+              <span aria-hidden="true">&laquo;</span>
+              Return to Results
+            </a>
+          </p>
+
+          <h2>
+            {{ results.data[0].race }}<br />
+            <span class="meeting-page__subtitle">{{ results.data[0].date | date: "Do MMMM YYYY" }}</span>
+          </h2>
+
+          <p><strong>{{ results.data.length }}</strong> members in results</p>
+
+          <p class="u-hidden@xs">
+            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results.data[0].meeting_id }}">
+              View full results on runbritain
+            </a>
+          </p>
+        </div>
+
+        <div class="o-grid__item u-1/2 u-text-right u-hidden@max-xs">
+          <p>
+            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results.data[0].meeting_id }}">
+              <img src="https://bpj.org.uk/wp-content/uploads/2015/11/run-britain-logo.png" alt="View full results on runbritain">
+            </a>
+          </p>
+
+          <p>
+            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results.data[0].meeting_id }}">
+              View full results on runbritain
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -71,7 +96,5 @@
         </tr>
       </tbody>
     </table>
-
-    <p><strong>{{ results.data.length }}</strong> results</p>
   </div>
 </div>
