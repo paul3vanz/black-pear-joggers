@@ -17,8 +17,10 @@ $router->get('/awards', 'AwardController@getAwards');
 
 $router->get('/events', 'EventController@getEvents');
 
-$router->get('/fetch/performances/{athleteId}', 'FetchController@fetchPerformances');
-$router->get('/fetch/performances', 'FetchController@queueAllFetchPerformances');
+$router->get('/fetch/performances/{athleteId}', 'FetchPerformancesController@fetchPerformances');
+$router->get('/fetch/performances', 'FetchPerformancesController@queueAllFetchPerformances');
+$router->get('/fetch/rankings/{athleteId}', 'FetchRankingsController@fetchRankings');
+$router->get('/fetch/rankings', 'FetchRankingsController@queueAllFetchRankings');
 
 $router->get('/registrations/queue', 'RegistrationController@queueAllRegistrations');
 

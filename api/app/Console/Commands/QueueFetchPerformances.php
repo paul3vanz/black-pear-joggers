@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Http\Controllers\FetchController;
+use App\Http\Controllers\FetchPerformancesController;
 use Log;
 
 class QueueFetchPerformances extends Command
@@ -13,8 +13,8 @@ class QueueFetchPerformances extends Command
     public function handle()
     {
         Log::info('QueueFetchPerformances');
-        $fetchController = new FetchController();
-        $fetchController->queueAllFetchPerformances();
+        $FetchPerformancesController = new FetchPerformancesController();
+        $FetchPerformancesController->queueAllFetchPerformances();
     }
 
 }

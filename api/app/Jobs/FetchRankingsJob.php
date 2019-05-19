@@ -2,11 +2,11 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\FetchPerformancesController;
+use App\Http\Controllers\FetchRankingsController;
 use App\Models\Athlete;
 use Log;
 
-class FetchPerformancesJob extends Job
+class FetchRankingsJob extends Job
 {
     protected $athlete;
     /**
@@ -26,9 +26,9 @@ class FetchPerformancesJob extends Job
      */
     public function handle()
     {
-        $fetchPerformancesController = new FetchPerformancesController();
-        $fetchPerformancesController->fetchPerformances($this->athlete->id);
+        $fetchRankingsController = new FetchRankingsController();
+        $fetchRankingsController->fetchRankings($this->athlete->id);
 
-        Log::info("Fetch performances athleteId #" . $this->athlete->id);
+        Log::info("Fetch rankings athleteId #" . $this->athlete->id);
     }
 }

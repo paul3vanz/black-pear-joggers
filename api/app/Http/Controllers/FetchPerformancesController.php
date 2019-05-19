@@ -11,7 +11,7 @@ use DB;
 use Log;
 use DateTime;
 
-class FetchController extends Controller
+class FetchPerformancesController extends Controller
 {
     public function __construct() {}
 
