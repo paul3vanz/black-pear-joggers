@@ -1,7 +1,7 @@
 import { environment } from './../environments/environment';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreModule } from '@ngrx/store';
 import { RouterModule } from '@angular/router';
@@ -21,21 +21,43 @@ import { StandardsTableComponent } from './components/standards-table/standards-
 import { ResultsSummaryTableComponent } from './components/results-summary-table/results-summary-table.component';
 
 import { reducers } from './reducers';
-import { AthletePageModule } from './containers/athlete-page/athlete-page.module';
 import { PipesModule } from './pipes/pipes.module';
 import { AthletesEffects } from './effects/athletes.effects';
 import { EffectsModule } from '@ngrx/effects';
 import { ResultsEffects } from './effects/results.effects';
 import { StandardsEffects } from './effects/standards.effects';
-import { MeetingPageModule } from './containers/meeting-page/meeting-page.module';
-import { SearchPageModule } from './containers/search-page/search-page.module';
-import { StandardsPageModule } from './containers/standards-page/standards-page.module';
 import { HttpClientModule } from '@angular/common/http';
 import { NxModule } from '@nrwl/nx';
 import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
+import { SharedPipesModule } from '@black-pear-joggers/shared-pipes';
+import { AthleteDetailsComponent } from './components/athlete-details/athlete-details.component';
+import { AthleteResultsComponent } from './components/athlete-results/athlete-results.component';
+import { AthleteStandardsComponent } from './components/athlete-standards/athlete-standards.component';
+import { SearchResultsAthletesComponent } from './components/search-results-athletes/search-results-athletes.component';
+import { SearchResultsMeetingsComponent } from './components/search-results-meetings/search-results-meetings.component';
+import { NoSearchResultsAthletesComponent } from './components/no-search-results-athletes/no-search-results-athletes.component';
+import { NoSearchResultsMeetingsComponent } from './components/no-search-results-meetings/no-search-results-meetings.component';
+import { SearchBarComponent } from './components/search-bar/search-bar/search-bar.component';
+import { LoaderComponent } from './components/loader/loader.component';
 
 @NgModule({
-  declarations: [ AppComponent, ResultsSummaryTableComponent, StandardsTableComponent ],
+  declarations: [
+    AppComponent,
+    ResultsSummaryTableComponent,
+    StandardsTableComponent,
+    AthletePageComponent,
+    MeetingPageComponent,
+    SearchPageComponent,
+    StandardsPageComponent,
+    AthleteDetailsComponent,
+    AthleteResultsComponent,
+    AthleteStandardsComponent,
+    SearchResultsAthletesComponent,
+    SearchResultsMeetingsComponent,
+    NoSearchResultsAthletesComponent,
+    NoSearchResultsMeetingsComponent,
+    SearchBarComponent,
+  ],
   imports: [
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({
@@ -46,14 +68,11 @@ import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
     BrowserModule,
     NxModule.forRoot(),
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     PipesModule,
     SharedComponentsModule,
-
-    AthletePageModule,
-    MeetingPageModule,
-    SearchPageModule,
-    StandardsPageModule,
+    SharedPipesModule,
 
     RouterModule.forRoot(
       [

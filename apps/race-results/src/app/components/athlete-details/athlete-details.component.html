@@ -1,31 +1,54 @@
 <div class="o-section-md">
     <div class="o-site-wrap o-site-wrap--padding">
-      <h1 class="u-flush-bottom">
-        Race Results
-        <span class="beta">(Beta)</span>
-      </h1>
+      <div class="o-grid">
+        <div class="o-grid__item u-1/2@xs">
+          <h1 class="u-flush-bottom">
+            Race Results
+            <span class="beta">(Beta)</span>
+          </h1>
 
-      <h2 class="athlete-details__title">
-          <span *ngIf="!loading">
-            {{athlete?.first_name}} {{athlete?.last_name}}
-            <span class="athlete-details__subtitle">
+          <h2 class="athlete-details__title">
+            <span *ngIf="!loading">
+              {{athlete?.first_name}} {{athlete?.last_name}}
+              <span class="athlete-details__subtitle">
                 {{ athlete?.gender | gender: 'short' }}{{ athlete?.category }}
+              </span>
             </span>
-          </span>
 
-          <span *ngIf="loading" class="placeholder" style="width: 250px; height: 22px;"></span>
-        </h2>
+            <span *ngIf="loading" class="placeholder" style="width: 250px; height: 22px;"></span>
+          </h2>
 
-      <p class="u-btm-l">
-        <a
-          class="button button--back"
-          href="#"
-          routerLink="/results"
+          <p class="u-btm-l">
+            <a
+              class="button button--back"
+              href="#"
+              routerLink="/results"
+            >
+              <span aria-hidden="true">&laquo;</span>
+              Return to Results
+            </a>
+          </p>
+        </div>
+
+        <div
+          *ngIf="athlete?.latest_ranking.ranking"
+          class="o-grid__item u-1/2 u-text-right u-hidden@max-xs"
         >
-          <span aria-hidden="true">&laquo;</span>
-          Return to Results
-        </a>
-      </p>
+          <p>
+            <a href="https://www.runbritainrankings.com/runners/profile.aspx?athleteid={{ athlete?.id }}">
+              <img src="https://bpj.org.uk/wp-content/uploads/2015/11/run-britain-logo.png" alt="View full results on runbritain" width="170">
+            </a>
+          </p>
+
+          <p>
+            <a href="https://www.runbritainrankings.com/runners/profile.aspx?athleteid={{ athlete?.id }}">
+            </a>
+            <strong class="ranking" [title]="'Updated ' + athlete?.latest_ranking.date | date: 'fromNow'">
+              {{ athlete?.latest_ranking.ranking }}
+            </strong><br>
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 

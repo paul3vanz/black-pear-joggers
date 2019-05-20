@@ -11,12 +11,14 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreModule } from '@ngrx/store';
 import { environment } from '../environments/environment';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [ AppComponent ],
   imports: [
     BrowserModule,
     EffectsModule.forRoot([]),
+    FormsModule,
     HttpClientModule,
     NxModule.forRoot(),
     RouterModule.forRoot([], { initialNavigation: 'enabled' }),
