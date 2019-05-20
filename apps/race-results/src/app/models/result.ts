@@ -1,4 +1,4 @@
-export class Result {
+export interface Result {
   award: string;
   athlete_id: string;
   first_name: string;

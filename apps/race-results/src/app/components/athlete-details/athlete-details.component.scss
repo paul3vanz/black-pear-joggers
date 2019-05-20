@@ -18,20 +18,21 @@
 
 .athlete-details__link-image {
   max-height: 80px;
+  margin: 0;
 }
 
 .pbs__heading {
   display: flex;
   justify-content: space-between;
-  border-radius: 3px;
-  border: 3px solid #fff;
   padding: 10px 20px;
+  border: 3px solid #fff;
+  border-radius: 3px;
 }
 
 .pbs__heading::after {
   content: '+';
-  line-height: 25px;
   font-size: 30px;
+  line-height: 25px;
 }
 
 .pbs__heading.active {
@@ -49,13 +50,13 @@
 
 .pbs {
   display: none;
-  list-style: none;
+  flex-direction: column;
+  margin: -2rem 0 1rem 0;
   padding: 20px 20px 0 20px;
   border: 3px solid #fff;
-  border-radius: 0 3px 3px 3px;
-  margin: -2rem 0 1rem 0;
-  flex-direction: column;
   border-top-width: 0;
+  border-radius: 0 3px 3px 3px;
+  list-style: none;
 
   &.active {
     display: flex;
@@ -63,7 +64,7 @@
 }
 
 .pbs .pbs__item:nth-child(odd) {
-  background: lighten(#000000, 90%);
+  background: lighten(#000, 90%);
 }
 
 .pbs .pbs__item:first-child {
@@ -75,34 +76,34 @@
 }
 
 .pbs__item {
-  background: #ffffff;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  border-radius: 3px;
-  text-align: center;
   margin: 0 0 20px 0;
   padding: 0;
   overflow: hidden;
+  border-radius: 3px;
+  background: #fff;
+  text-align: center;
 }
 
 .pbs__event {
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 12px;
-  line-height: 16px;
-  padding: 0 10px;
   margin-right: auto;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 16px;
   text-align: left;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 .pbs__race {
-  font-size: 10px;
-  line-height: 14px;
   height: 14px;
   overflow: hidden;
+  font-size: 10px;
+  line-height: 14px;
   text-align: right;
   white-space: nowrap;
 
@@ -113,10 +114,10 @@
 
 .pbs__award {
   display: block;
-  font-weight: bold;
-  padding: 10px;
   width: 85px;
   margin: 0;
+  padding: 10px;
+  font-weight: bold;
 }
 
 .pbs__time {
@@ -127,16 +128,15 @@
 .pbs__award--Bronze {
   background-color: #c08f67;
 }
+
 .pbs__award--Silver {
   background-color: #b9b9b9;
 }
+
 .pbs__award--Gold {
   background-color: #d89843;
 }
+
 .pbs__award--Platinum {
   background-color: #8791a0;
-}
-
-.athlete-details__link-image {
-  margin: 0;
 }

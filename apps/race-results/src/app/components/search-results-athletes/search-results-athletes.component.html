@@ -19,12 +19,14 @@
       <tr *ngFor="let athlete of athletes">
         <td><a href="#/athlete/{{athlete.id}}">{{athlete.first_name}} {{athlete.last_name}}</a></td>
 
-        <td>{{athlete.gender | formatGender }}</td>
+        <td>{{ athlete.gender | gender }}</td>
 
         <td>{{athlete.category }}</td>
       </tr>
     </tbody>
   </table>
-
-  <p><strong>Name not listed? </strong> <a href="javascript:void(0)" (click)="addAthlete.emit()">Request to be added</a></p>
 </div>
+
+<p *ngIf="keywords && !searching">
+  <strong>Name not listed? </strong> <a href="javascript:void(0)" (click)="addAthlete.emit()">Request to be added</a>
+</p>

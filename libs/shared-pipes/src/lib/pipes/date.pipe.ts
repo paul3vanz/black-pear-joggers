@@ -5,13 +5,17 @@ import * as moment from 'moment-mini-ts';
   name: 'date',
 })
 export class DatePipe implements PipeTransform {
-  transform(value: string, pattern?: string): string {
-    if (!value) {
-      return value;
+  transform(dateString: string, pattern?: string): string {
+    if (!dateString) {
+      return dateString;
     }
 
-    const formattedValue = moment(value).format(pattern);
+    const dateAsMoment = moment(dateString);
 
-    return formattedValue;
+    if (pattern === 'fromNow') {
+      return dateAsMoment.fromNow();
+    }
+
+    return dateAsMoment.format(pattern);
   }
 }

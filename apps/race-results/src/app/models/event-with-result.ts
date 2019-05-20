@@ -1,6 +1,6 @@
 import { Result } from '../models/result';
 
-export class EventWithResult {
+export interface EventWithResult {
   name: string;
   distance: number;
   aliases: string[];

@@ -9,7 +9,7 @@
           <span *ngIf="!loading">
             {{athlete?.first_name}} {{athlete?.last_name}}
             <span class="athlete-details__subtitle">
-              {{ athlete?.gender | formatGender: 'short' }}{{ athlete?.category }}
+                {{ athlete?.gender | gender: 'short' }}{{ athlete?.category }}
             </span>
           </span>
 
