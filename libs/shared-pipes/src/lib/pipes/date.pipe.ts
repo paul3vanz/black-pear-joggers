@@ -13,7 +13,6 @@ export class DatePipe implements PipeTransform {
     const dateAsMoment = moment(dateString);
 
     if (pattern === 'fromNow') {
-      console.log('fromNow');
       return dateAsMoment.fromNow();
     }
 
