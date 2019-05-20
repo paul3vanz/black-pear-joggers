@@ -36,6 +36,7 @@ class AthleteController extends Controller {
         $athlete = Athlete::query()
             ->with('latestPerformance')
             ->with('firstPerformance')
+            ->with('latestRanking')
             ->find($id);
         return response()->json($athlete);
     }

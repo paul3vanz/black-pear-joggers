@@ -57,4 +57,8 @@ final class Athlete extends Model {
     public function firstPerformance() {
         return $this->hasOne('App\Models\Performance', 'athlete_id', 'id')->oldest('date');
     }
+
+    public function latestRanking() {
+        return $this->hasOne('App\Models\Ranking', 'athlete_id', 'id')->latest('date');
+    }
 }

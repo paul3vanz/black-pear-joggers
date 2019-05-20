@@ -67,7 +67,7 @@ class FetchPerformancesController extends Controller
             'event' => $performance['event'],
             'meeting_id' => $performance['meeting_id'],
             'race' => $performance['race'],
-            'timeParsed' => $performance['timeParsed'],
+            'time_parsed' => $performance['time_parsed'],
             'time' => $performance['time']
         ]);
     }
@@ -144,7 +144,7 @@ class FetchPerformancesController extends Controller
                 'athlete_id' => $athleteId,
                 'event' => $event,
                 'time' => $time,
-                'timeParsed' => $timeParsed,
+                'time_parsed' => $timeParsed,
                 'race' => $race,
                 'date' => $date,
                 'category' => $currentAgeGroup,
