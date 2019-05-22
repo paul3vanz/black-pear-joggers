@@ -1,32 +1,9 @@
-<h3
-  class="pbs__heading u-color-white"
-  [class.active]="active"
->
-  <a
-    href="javascript:void(0)"
-    (click)="active = !active"
-  >{{ year.key }} ({{ category.key }})</a>
-</h3>
-<ul
-  class="pbs"
-  [class.active]="active"
->
-  <ng-container *ngFor="let race of races | keyvalue">
-    <li
-      class="pbs__item"
-      *ngIf="race"
-    >
-      <span class="pbs__event">{{race.key | eventName}}</span>
+<div class="o-section-md o-section-bright">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h2>Progress</h2>
 
-      <div class="pbs__race"><span [title]="race?.value?.performance?.date | date: 'DD/MM/YYYY'">{{race.value.performance.race}}</span></div>
-
-      <div
-        class="pbs__time"
-        style="font-weight: bold; font-size: 18px;"
-      >{{race.value.performance.time}}</div>
-
-      <div class="pbs__award pbs__award--{{race.value.performance.award | formatAward}}">{{race.value.performance.award
-        | formatAward}}</div>
-    </li>
-  </ng-container>
-</ul>
+    <div *ngIf="chart">
+      <canvas id="canvas" height="300">{{ chart }}</canvas>
+    </div>
+  </div>
+</div>
