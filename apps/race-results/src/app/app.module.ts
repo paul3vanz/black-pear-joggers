@@ -39,6 +39,7 @@ import { NoSearchResultsAthletesComponent } from './components/no-search-results
 import { NoSearchResultsMeetingsComponent } from './components/no-search-results-meetings/no-search-results-meetings.component';
 import { SearchBarComponent } from './components/search-bar/search-bar/search-bar.component';
 import { LoaderComponent } from './components/loader/loader.component';
+import { PersonalBestPanelComponent } from './components/personal-best-panel/personal-best-panel.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { LoaderComponent } from './components/loader/loader.component';
     SearchPageComponent,
     StandardsPageComponent,
     AthleteDetailsComponent,
+    PersonalBestPanelComponent,
     AthleteResultsComponent,
     AthleteStandardsComponent,
     SearchResultsAthletesComponent,
@@ -57,6 +59,7 @@ import { LoaderComponent } from './components/loader/loader.component';
     NoSearchResultsAthletesComponent,
     NoSearchResultsMeetingsComponent,
     SearchBarComponent,
+    LoaderComponent,
   ],
   imports: [
     StoreModule.forRoot(reducers),
