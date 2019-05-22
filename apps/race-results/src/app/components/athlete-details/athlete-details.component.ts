@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Athlete } from '../../models/athlete';
 
 @Component({
@@ -6,15 +6,13 @@ import { Athlete } from '../../models/athlete';
   templateUrl: './athlete-details.component.html',
   styleUrls: [ './athlete-details.component.scss' ],
 })
-export class AthleteDetailsComponent implements OnChanges {
+export class AthleteDetailsComponent {
   @Input() athlete: Athlete;
   @Input() loading: boolean;
   @Input() personalBests: any;
   multipleCategoriesInYear: boolean;
   activeYear = '';
   activeCategory = '';
-
-  ngOnChanges() {}
 
   onChangeTab(year: string, category: string) {
     if (this.activeYear === year && this.activeCategory === category) {
