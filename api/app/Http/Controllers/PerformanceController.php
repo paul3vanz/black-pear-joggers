@@ -253,8 +253,21 @@ class PerformanceController extends Controller
     }
 
     public function getParkrunAlphabet(Request $request) {
+        // $results = DB::select("
+        //     select `a`.`id` AS `athlete_id`,`a`.`first_name` AS `first_name`,`a`.`last_name` AS `last_name`,substr(`r`.`race`,1,1) AS `letter`,`r`.`race` AS `race`,`r`.`date` AS `date` from (`performances` `r` join `athletes` `a` on((`a`.`id` = `r`.`athlete_id`))) where ((`r`.`event` = 'parkrun') and (`r`.`race` regexp '^(B|L|A|C|K|P|E|A|R|S)') and (year(`r`.`date`) = '2019')) group by `a`.`id`,`letter` order by `a`.`last_name`,`a`.`first_name`,field(`letter`,'B','L','A','C','K','P','E','A','R','S')
+        // ");
+
         $results = DB::select("
-            select `a`.`id` AS `athlete_id`,`a`.`first_name` AS `first_name`,`a`.`last_name` AS `last_name`,substr(`r`.`race`,1,1) AS `letter`,`r`.`race` AS `race`,`r`.`date` AS `date` from (`performances` `r` join `athletes` `a` on((`a`.`id` = `r`.`athlete_id`))) where ((`r`.`event` = 'parkrun') and (`r`.`race` regexp '^(B|L|A|C|K|P|E|A|R|S)') and (year(`r`.`date`) = '2019')) group by `a`.`id`,`letter` order by `a`.`last_name`,`a`.`first_name`,field(`letter`,'B','L','A','C','K','P','E','A','R','S')
+            SELECT * FROM (
+                SELECT `a`.`id` AS `athlete_id`,`a`.`first_name` AS `first_name`,`a`.`last_name` AS `last_name`, SUBSTR(`r`.`race`,1,1) AS `letter`,`r`.`race` AS `race`,`r`.`date` AS `date`
+                FROM (`performances` `r`
+                JOIN `athletes` `a` ON((`a`.`id` = `r`.`athlete_id`)))
+                WHERE ((`r`.`event` = 'parkrun') AND (`r`.`race` REGEXP '^(B|L|A|C|K|P|E|A|R|S)') AND (YEAR(`r`.`date`) = '2019'))
+                GROUP BY `a`.`id`, r.`race`
+                ORDER BY `a`.`last_name`,`a`.`first_name`, FIELD(`letter`,'B','L','A','C','K','P','E','A','R','S'), r.`date`
+            ) AS results
+            GROUP BY `last_name`,`first_name`, `letter`
+            ORDER BY `last_name`,`first_name`, FIELD(`letter`,'B','L','A','C','K','P','E','A','R','S')
         ");
 
         return response()->json($results);
