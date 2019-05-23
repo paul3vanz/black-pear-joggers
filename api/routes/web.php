@@ -41,6 +41,9 @@ $router->get('/parkruntourists', 'PerformanceController@getParkrunTourists');
 $router->get('/performances', 'PerformanceController@getPerformanceSummaries');
 $router->get('/performances/{date}/{meeting}', 'PerformanceController@getPerformancesByMeeting');
 
+$router->get('/rankings/{athleteId}', 'RankingController@getRankingsByAthlete');
+$router->get('/rankings/{athleteId}/{year}', 'RankingController@getRankingsByAthlete');
+
 $router->get('/records', 'PerformanceController@getRecords');
 $router->post('/records/query', 'PerformanceController@queryRecord');
 
