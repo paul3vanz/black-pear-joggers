@@ -9,13 +9,11 @@
 
           <h2 class="athlete-details__title">
             <span *ngIf="!loading">
-              {{athlete?.first_name}} {{athlete?.last_name}}
+              {{athlete.first_name}} {{athlete.last_name}}
               <span class="athlete-details__subtitle">
-                {{ athlete?.gender | gender: 'short' }}{{ athlete?.category }}
+                {{ athlete.gender | gender: 'short' }}{{ athlete.category }}
               </span>
             </span>
-
-            <span *ngIf="loading" class="placeholder" style="width: 250px; height: 22px;"></span>
           </h2>
 
           <p class="u-btm-l">
@@ -31,21 +29,20 @@
         </div>
 
         <div
-          *ngIf="athlete?.latest_ranking.ranking"
+          *ngIf="!loading && athlete.latest_ranking.ranking"
           class="o-grid__item u-1/2 u-text-right u-hidden@max-xs"
         >
-          <p>
+          <p class="handicap">
             <a href="https://www.runbritainrankings.com/runners/profile.aspx?athleteid={{ athlete?.id }}">
-              <img src="https://bpj.org.uk/wp-content/uploads/2015/11/run-britain-logo.png" alt="View full results on runbritain" width="170">
+              <img
+                src="https://bpj.org.uk/wp-content/uploads/2015/11/run-britain-logo.png"
+                alt="View full results on runbritain"
+              >
             </a>
-          </p>
 
-          <p>
-            <a href="https://www.runbritainrankings.com/runners/profile.aspx?athleteid={{ athlete?.id }}">
-            </a>
-            <strong class="ranking" [title]="'Updated ' + athlete?.latest_ranking.date | date: 'fromNow'">
-              {{ athlete?.latest_ranking.ranking }}
-            </strong><br>
+            <strong class="handicap__score" [attr.title]="'Updated ' + (athlete?.latest_ranking.date | date: 'fromNow')">
+              {{ athlete.latest_ranking.ranking }}
+            </strong>
           </p>
         </div>
       </div>

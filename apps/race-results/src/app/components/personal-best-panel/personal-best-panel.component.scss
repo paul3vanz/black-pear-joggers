@@ -1,3 +1,81 @@
+@import '../../../../../../scss/settings';
+@import '../../../../../../scss/tools';
+@import '../../../../../../scss/utilities';
+
 :host {
   display: block;
+}
+
+.cards {
+  .card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+
+    @include nb-respond-to('xs') {
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+  }
+}
+
+.pb {
+  &__event {
+    flex: 1;
+    text-align: left;
+
+    @include nb-respond-to('xs') {
+      flex: 0 0 auto;
+      height: 16.67px;
+      overflow: hidden;
+      text-align: center;
+    }
+  }
+
+  &__time {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  &__date {
+    margin-bottom: 10px;
+    font-size: 10px;
+  }
+
+  &__award {
+    align-self: center;
+    margin-left: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+
+    @include nb-respond-to('xs') {
+      width: 100%;
+      justify-self: bottom;
+      margin-left: 0;
+    }
+
+    &--Bronze {
+      background-color: #c08f67;
+    }
+
+    &--Silver {
+      background-color: #b9b9b9;
+    }
+
+    &--Gold {
+      background-color: #d89843;
+    }
+
+    &--Platinum {
+      background-color: #8791a0;
+    }
+  }
+
+  &__missing {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+  }
 }

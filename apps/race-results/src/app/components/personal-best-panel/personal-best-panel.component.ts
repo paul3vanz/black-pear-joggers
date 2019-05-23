@@ -10,6 +10,9 @@ import * as moment from 'moment-mini-ts';
   styleUrls: [ './personal-best-panel.component.scss' ],
 })
 export class PersonalBestPanelComponent implements OnChanges {
+  @Input() eventName = '5K';
+  @Input() loading: boolean;
+  @Input() personalBests: any;
   @Input() results: Paging<Result>;
   chart = [];
 
@@ -32,37 +35,37 @@ export class PersonalBestPanelComponent implements OnChanges {
     //   marathon: { label: 'Marathon', data: [], includedEvents: [ 'Mar', 'MarMT' ], borderColor: '#fff', fill: false },
     // };
 
-    this.results.data
-      .filter((result) => {
-        return [ '5K', 'parkrun' ].includes(result.event);
-      })
-      .forEach((result) => {
-        chartData5K.push({ x: new Date(result.date), y: result.time_parsed });
+    this.get5K().forEach((result) => {
+      chartData5K.push({
+        x: new Date(result.date),
+        y: result.time_parsed,
+        event: result.race,
       });
+    });
 
-    this.results.data
-      .filter((result) => {
-        return [ '10K', '10KMT' ].includes(result.event);
-      })
-      .forEach((result) => {
-        chartData10K.push({ x: new Date(result.date), y: result.time_parsed });
-      });
+    // this.results.data
+    //   .filter((result) => {
+    //     return [ '10K', '10KMT' ].includes(result.event);
+    //   })
+    //   .forEach((result) => {
+    //     chartData10K.push({ x: new Date(result.date), y: result.time_parsed });
+    //   });
 
-    this.results.data
-      .filter((result) => {
-        return [ 'HM', 'HMMT' ].includes(result.event);
-      })
-      .forEach((result) => {
-        chartDataHM.push({ x: new Date(result.date), y: result.time_parsed });
-      });
+    // this.results.data
+    //   .filter((result) => {
+    //     return [ 'HM', 'HMMT' ].includes(result.event);
+    //   })
+    //   .forEach((result) => {
+    //     chartDataHM.push({ x: new Date(result.date), y: result.time_parsed });
+    //   });
 
-    this.results.data
-      .filter((result) => {
-        return [ 'Mar', 'MarMT' ].includes(result.event);
-      })
-      .forEach((result) => {
-        chartDataMar.push({ x: new Date(result.date), y: result.time_parsed });
-      });
+    // this.results.data
+    //   .filter((result) => {
+    //     return [ 'Mar', 'MarMT' ].includes(result.event);
+    //   })
+    //   .forEach((result) => {
+    //     chartDataMar.push({ x: new Date(result.date), y: result.time_parsed });
+    //   });
 
     this.chart = new Chart('canvas', {
       type: 'line',
@@ -74,18 +77,18 @@ export class PersonalBestPanelComponent implements OnChanges {
           //   borderColor: '#fff',
           //   fill: false,
           // },
+          {
+            data: chartData5K,
+            label: '5K',
+            borderColor: '#f89829',
+            fill: false,
+          },
           // {
-          //   data: chartData5K,
-          //   label: '5K',
+          //   data: chartData10K,
+          //   label: '10K',
           //   borderColor: '#fff',
           //   fill: false,
           // },
-          {
-            data: chartData10K,
-            label: '10K',
-            borderColor: '#fff',
-            fill: false,
-          },
           // {
           //   data: chartDataHM,
           //   label: 'Half Marathon',
@@ -102,6 +105,21 @@ export class PersonalBestPanelComponent implements OnChanges {
       },
       options: {
         maintainAspectRatio: false,
+        legend: {
+          position: false,
+        },
+        tooltips: {
+          mode: 'nearest',
+          intersect: false,
+          callbacks: {
+            title: (tooltipItem, data) => {
+              return data.datasets[0].data[tooltipItem[0].index].event;
+            },
+            label: (tooltipItem) => {
+              return this.formattedTime(tooltipItem.yLabel);
+            },
+          },
+        },
         scales: {
           xAxes: [
             {
@@ -114,8 +132,8 @@ export class PersonalBestPanelComponent implements OnChanges {
           yAxes: [
             {
               ticks: {
-                callback: function(value, index, values) {
-                  return moment().add(value, 'seconds').format('m:ss');
+                callback: (value, index, values) => {
+                  return this.formattedTime(value);
                 },
               },
             },
@@ -126,6 +144,16 @@ export class PersonalBestPanelComponent implements OnChanges {
           text: 'Race history',
         },
       },
+    });
+  }
+
+  formattedTime(timeInSeconds: number) {
+    return new Date(timeInSeconds * 1000).toISOString().substr(11, 8).toString().substring(timeInSeconds >= 3600 ? 1 : 3);
+  }
+
+  get5K() {
+    return this.results.data.filter((result) => {
+      return [ '5K', 'parkrun' ].includes(result.event);
     });
   }
 }

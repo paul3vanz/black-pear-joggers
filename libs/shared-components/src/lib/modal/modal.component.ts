@@ -7,6 +7,7 @@ import { Component, Input, HostListener, Output, EventEmitter } from '@angular/c
 })
 export class ModalComponent {
   @Input() open: boolean;
+  @Input() wide = false;
   @Output() close = new EventEmitter();
 
   @HostListener('document:keyup.escape', [ '$event' ])

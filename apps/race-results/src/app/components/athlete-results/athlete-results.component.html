@@ -3,61 +3,35 @@
 
     <h2>Race results</h2>
 
-    <p class="u-push-bottom-xl" *ngIf="results && results.data">
-        The following results are automatically taken from <a href="https://www.thepowerof10.info/athletes/profile.aspx?athleteid={{results.data[0].athlete_id}}" target="_blank">Power of 10</a> and <a href="http://www.runbritainrankings.com/runners/profile.aspx?athleteid={{results.data[0].athlete_id}}" target="_blank">Run Britain Rankings</a> as well as BPJ Magic Mile events. Races without UK Athletics race licences are not included. If a performance is missing from here, but is showing on your profile, get in touch. If it's not on your profile, use the <a href="http://www.runbritainrankings.com/user/claimhandicap.aspx" target="_blank">Add Your Performances</a> link and if that doesn't work, <a href="mailto:admin@runbritainrankings.com">contact UK Athletics</a>.
-    </p>
+    <bpj-loader *ngIf="loading"></bpj-loader>
 
-    <!--<p class="athlete-results__years">
-        <select [(ngModel)]="year" (change)="setYear()">
-            <option *ngFor="let year of years" class="button">{{year}}</option>
-        </select>
-    </p>
-    <p class="athlete-results__filters u-btm-l">
-        <a class="button" [class.button-X-active]="!filter" (click)="setFilter('')">All</a>
-        <a class="button" [class.button-X-active]="filter==='best'" (click)="setFilter('best')">Best</a>
-    </p>-->
+    <ng-container *ngIf="!loading">
+      <p class="u-push-bottom-xl" *ngIf="results && results.data">
+          The following results are automatically taken from <a href="https://www.thepowerof10.info/athletes/profile.aspx?athleteid={{results.data[0].athlete_id}}" target="_blank">Power of 10</a> and <a href="http://www.runbritainrankings.com/runners/profile.aspx?athleteid={{results.data[0].athlete_id}}" target="_blank">Run Britain Rankings</a> as well as BPJ Magic Mile events. Races without UK Athletics race licences are not included. If a performance is missing from here, but is showing on your profile, get in touch. If it's not on your profile, use the <a href="http://www.runbritainrankings.com/user/claimhandicap.aspx" target="_blank">Add Your Performances</a> link and if that doesn't work, <a href="mailto:admin@runbritainrankings.com">contact UK Athletics</a>.
+      </p>
 
-    <p class="pagination" *ngIf="results && results.data && results.last_page > 1">
-        <span class="pagination__text">
-            Results <strong>{{results.from}}</strong> to <strong>{{results.to}}</strong> of <strong>{{results.total}}</strong>
-        </span>
-        <a class="pagination__link pagination__link--previous" *ngIf="results.current_page !== 1 && results.last_page > 1" (click)="this.previous.emit()" href="javascript:void(0)">Previous</a>
-        <a class="pagination__link pagination__link--next" *ngIf="results.current_page !== results.last_page && results.last_page > 1" (click)="this.next.emit()" href="javascript:void(0)">Next</a>
-    </p>
-
-    <table class="u-btm-m">
+      <table class="u-btm-m">
         <thead>
-            <tr>
-                <th data-sortable-type="alpha">Standard</th>
-                <th data-sortable-type="alpha">Category</th>
-                <th>Event</th>
-                <th data-sortable-type="alpha">Race</th>
-                <th>Time</th>
-                <th data-sortable-type="date">Date</th>
-            </tr>
+          <tr>
+            <th data-sortable-type="alpha">Standard</th>
+            <th data-sortable-type="alpha">Category</th>
+            <th>Event</th>
+            <th data-sortable-type="alpha">Race</th>
+            <th>Time</th>
+            <th data-sortable-type="date">Date</th>
+          </tr>
         </thead>
-        <tbody *ngIf="loading">
-            <tr *ngFor="let number of [0,1,2]">
-                <td><span *ngIf="loading" class="placeholder" style="width: 100%; height: 15px;">&nbsp;</span></td>
-                <td><span *ngIf="loading" class="placeholder" style="width: 100%; height: 15px;"></span></td>
-                <td><span *ngIf="loading" class="placeholder" style="width: 100%; height: 15px;"></span></td>
-                <td><span *ngIf="loading" class="placeholder" style="width: 100%; height: 15px;"></span></td>
-                <td><span *ngIf="loading" class="placeholder" style="width: 100%; height: 15px;"></span></td>
-                <td><span *ngIf="loading" class="placeholder" style="width: 100%; height: 15px;"></span></td>
-                <td><span *ngIf="loading" class="placeholder" style="width: 100%; height: 15px;"></span></td>
-            </tr>
-        </tbody>
         <tbody *ngIf="!loading && results && results.data">
-            <tr *ngFor="let result of results.data">
-                <td class="athlete-results__award nowrap standards__heading--{{result.award | formatAward}}"><span>{{result.award | formatAward}}</span></td>
-                <td class="athlete-results__category nowrap">{{result.category}}</td>
-                <td class="athlete-results__event nowrap">{{result.event}}</td>
-                <td class="athlete-results__race"><a href="#/meeting/{{result.date}}/{{result.meeting_id}}">{{result.race}}</a></td>
-                <td class="athlete-results__time nowrap" attr.data-value="{{result.time_parsed}}">{{result.time}}</td>
-                <td class="athlete-results__date nowrap">{{result.date | date: "DD/MM/YYYY"}}</td>
-            </tr>
+          <tr *ngFor="let result of results.data">
+            <td class="athlete-results__award nowrap standards__heading--{{result.award | formatAward}}"><span>{{result.award | formatAward}}</span></td>
+            <td class="athlete-results__category nowrap">{{result.category}}</td>
+            <td class="athlete-results__event nowrap">{{result.event}}</td>
+            <td class="athlete-results__race"><a href="#/meeting/{{result.date}}/{{result.meeting_id}}">{{result.race}}</a></td>
+            <td class="athlete-results__time nowrap" attr.data-value="{{result.time_parsed}}">{{result.time}}</td>
+            <td class="athlete-results__date nowrap">{{result.date | date: "DD/MM/YYYY"}}</td>
+          </tr>
         </tbody>
-    </table>
-
+      </table>
+    </ng-container>
   </div>
 </div>

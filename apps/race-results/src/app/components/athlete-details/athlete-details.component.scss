@@ -141,6 +141,21 @@
   background-color: #8791a0;
 }
 
-.ranking {
-  font-size: 30px;
+canvas {
+  height: 200px;
+}
+
+.handicap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0;
+
+  img {
+    width: 170px;
+  }
+
+  &__score {
+    font-size: 30px;
+  }
 }

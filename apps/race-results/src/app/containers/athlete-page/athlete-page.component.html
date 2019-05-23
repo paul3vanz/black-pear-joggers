@@ -3,11 +3,13 @@
   [loading]="athletesLoading$ | async"
   [personalBests]="personalBests$ | async"
 ></bpj-athlete-details>
-<bpj-athlete-standards
-  [loading]="standardsLoading$ | async"
-  [athlete]="athlete$ | async"
-  [standards]="standards$ | async"
-></bpj-athlete-standards>
+
+<bpj-personal-best-panel
+  [loading]="resultsLoading$ | async"
+  [results]="results$ | async"
+  [personalBests]="personalBests$ | async"
+>
+</bpj-personal-best-panel>
 
 <bpj-athlete-results
   [loading]="resultsLoading$ | async"

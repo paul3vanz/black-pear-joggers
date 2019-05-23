@@ -1,9 +1,47 @@
 <div class="o-section-md o-section-bright">
   <div class="o-site-wrap o-site-wrap--padding">
-    <h2>Progress</h2>
+    <h2>Personal bests</h2>
 
-    <div *ngIf="chart">
-      <canvas id="canvas" height="300">{{ chart }}</canvas>
-    </div>
+    <bpj-loader *ngIf="loading"></bpj-loader>
+
+    <ng-container *ngIf="!loading">
+      <p *ngIf="!personalBests">
+        No personal bests currently set.
+      </p>
+
+      <div class="cards">
+        <div
+          *ngFor="let personalBest of personalBests"
+          class="card pb"
+        >
+          <span class="pb__event">{{ personalBest?.name | eventName }}</span>
+          <ng-container *ngIf="personalBest.best">
+            <span class="pb__time">{{ personalBest.best.time_parsed | finishTime }}</span>
+            <span class="pb__date u-hidden@max-xs">{{ personalBest.best.date | date : 'fromNow' }}</span>
+            <span
+              *ngIf="personalBest.best.award"
+              class="pb__award pb__award--{{ personalBest.best.award | formatAward }}"
+            >{{ personalBest.best.award | formatAward }}</span>
+          </ng-container>
+
+          <span
+            *ngIf="!personalBest.best"
+            class="pb__missing"
+          >No results</span>
+        </div>
+      </div>
+    </ng-container>
   </div>
 </div>
+
+<bpj-modal [wide]="true">
+  <div class="o-section-md">
+    <div class="o-site-wrap o-site-wrap--padding">
+      <h2>Finish times: {{ eventName }}</h2>
+
+      <div *ngIf="chart">
+        <canvas id="canvas" height="300">{{ chart }}</canvas>
+      </div>
+    </div>
+  </div>
+</bpj-modal>

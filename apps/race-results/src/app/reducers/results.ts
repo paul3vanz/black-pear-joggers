@@ -87,6 +87,8 @@ export const getPersonalBestsByYearAndCategory = createSelector(getState, (state
     }
   });
 
+  console.log(breakdown);
+
   return breakdown;
 });
 
@@ -110,17 +112,6 @@ export const getPersonalBests = (year?: number, category?: string) =>
                 !accumulatedEvents[resultByEventIndex].best ||
                 Number(accumulatedEvents[resultByEventIndex].best.time_parsed) > Number(result.time_parsed)
               ) {
-                console.log(
-                  year,
-                  accumulatedEvents[resultByEventIndex].best ? accumulatedEvents[resultByEventIndex].best.time_parsed : 'new',
-                  ' > ',
-                  result.time_parsed,
-                  result.race,
-                  result.category,
-                  accumulatedEvents[resultByEventIndex].best
-                    ? Number(accumulatedEvents[resultByEventIndex].best.time_parsed) > Number(result.time_parsed)
-                    : null
-                );
                 accumulatedEvents[resultByEventIndex].best = result;
               }
 

@@ -1,7 +1,7 @@
 <div *ngIf="open">
   <div class="overlay"></div>
 
-  <div class="container">
+  <div class="container" [class.wide]="wide">
     <a
       (click)="closeModal()"
       class="close"

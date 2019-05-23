@@ -40,7 +40,7 @@ export class AthletePageComponent implements OnInit {
 
     this.resultsLoading$ = this.store$.select(resultsReducer.getLoading);
     this.results$ = this.store$.select(resultsReducer.getResults);
-    this.personalBests$ = this.store$.select(resultsReducer.getPersonalBestsByYearAndCategory);
+    this.personalBests$ = this.store$.select(resultsReducer.getPersonalBests());
 
     this.standardsLoading$ = this.store$.select((store) => store.standards.loading);
     this.standards$ = this.store$.select(standardsReducer.getStandards);
