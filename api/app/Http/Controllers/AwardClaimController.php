@@ -17,6 +17,15 @@ class AwardClaimController extends Controller
     return response()->json($claims);
   }
 
+  public function getClaim($id, $uniqueToken) {
+    $claim = AwardClaim::query()
+      ->find($id)
+      ->with('races')
+      ->first();
+
+    return response()->json($claim);
+  }
+
   public function submitClaim(Request $request) {
     $validatedData = $this->validate($request, [
       'gender' => 'required',

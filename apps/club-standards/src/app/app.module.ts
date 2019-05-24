@@ -23,6 +23,7 @@ import { ClaimStepCategoryDetailsComponent } from './components/claim-step-categ
 import { ClaimStepRacesComponent } from './components/claim-step-races/claim-step-races.component';
 import { ClaimStepPersonalDetailsComponent } from './components/claim-step-personal-details/claim-step-personal-details.component';
 import { SharedPipesModule } from '@black-pear-joggers/shared-pipes';
+import { CertificateComponent } from './components/certificate/certificate.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { SharedPipesModule } from '@black-pear-joggers/shared-pipes';
     ClaimStepCategoryDetailsComponent,
     ClaimStepRacesComponent,
     ClaimStepPersonalDetailsComponent,
+    CertificateComponent,
   ],
   imports: [
     BrowserModule,

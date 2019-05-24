@@ -20,6 +20,10 @@ export class ClubStandardsService {
     return this.http.get<Standard[]>(`${this.apiRootUrl}/standards/${gender}/${category}`);
   }
 
+  getAwardClaim(id: number, uniqueToken: string): Observable<AwardClaim> {
+    return this.http.get<AwardClaim>(`${this.apiRootUrl}/awardclaim/${id}/${uniqueToken}`);
+  }
+
   submitClaim(claimDetails: AwardClaim) {
     console.log('submitClaim', claimDetails);
     return this.http.post(`${this.apiRootUrl}/awardclaim`, claimDetails);
@@ -58,5 +62,17 @@ export class ClubStandardsService {
         };
       }),
     };
+  }
+
+  displayCertificate() {
+    var win = window.open(
+      '',
+      'Title',
+      'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=' +
+        (screen.height - 400) +
+        ',left=' +
+        (screen.width - 840)
+    );
+    win.document.body.innerHTML = 'HTML';
   }
 }

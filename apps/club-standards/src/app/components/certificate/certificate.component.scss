@@ -1,0 +1,118 @@
+@page {
+  size: A4 landscape;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: url(https://bpj.org.uk/certificate/certificate.png) no-repeat center top;
+  background-size: cover;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+}
+
+main {
+  position: relative;
+  padding: 70px 110px;
+}
+
+.logo {
+  height: 3.7rem;
+  margin-bottom: 1.2rem;
+}
+
+.logo path {
+  fill: #000;
+}
+
+.title {
+  margin-bottom: 1.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.title__primary {
+  display: block;
+  margin-bottom: -0.7rem;
+  font-size: 1.7rem;
+}
+
+.title__secondary {
+  display: block;
+  color: #f89829;
+  font-size: 3.1rem;
+  font-weight: 800;
+}
+
+.summary {
+  margin-bottom: 2.1rem;
+  margin-left: 2.8rem;
+  padding-left: 2.5rem;
+  border-left: 5px solid #f89829;
+  font-size: 1.1rem;
+}
+
+.summary__title {
+  font-size: 1.4rem;
+}
+
+.summary__name {
+  color: #f89829;
+  font-family: 'Pacifico', cursive;
+  font-size: 2.8rem;
+}
+
+table {
+  position: absolute;
+  width: auto;
+  margin-left: 5.4rem;
+}
+
+table th {
+  padding: 0.1rem 1.5rem 0.1rem 0;
+  color: #f89829;
+  text-align: left;
+}
+
+table td {
+  padding: 0.1rem 1.5rem 0.1rem 0;
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 5.6em;
+  margin-right: 5rem;
+}
+
+footer .clubmark-logo {
+  height: 4.2rem;
+}
+
+footer .signature {
+  display: flex;
+  flex-direction: column;
+  margin: 0.8rem 3.5rem 0;
+}
+
+footer .signature__writing {
+  font-family: 'Herr Von Muellerhoff', cursive;
+  font-size: 2.6rem;
+  line-height: 0.8rem;
+}
+
+footer .signature__title {
+  margin-top: 0.5rem;
+  padding-right: 2rem;
+  border-top: 2px solid #222;
+  color: #f89829;
+  font-weight: bold;
+}
+
+footer .award-badge {
+  height: 8rem;
+}
