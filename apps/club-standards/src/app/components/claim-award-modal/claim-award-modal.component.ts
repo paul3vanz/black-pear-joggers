@@ -38,13 +38,13 @@ export class ClaimAwardModalComponent implements OnInit {
       categoryDetails: this.formBuilder.group({
         gender: [ '', Validators.required ],
         category: [ '', Validators.required ],
-        certificate: [ 'Gold', Validators.required ],
+        certificate: [ '', Validators.required ],
       }),
       races: this.formBuilder.array([]),
       personalDetails: this.formBuilder.group({
-        firstName: [ 'Paul', Validators.required ],
-        lastName: [ 'Evans', Validators.required ],
-        email: [ 'test@test.com', [ Validators.required, Validators.email ] ],
+        firstName: [ '', Validators.required ],
+        lastName: [ '', Validators.required ],
+        email: [ '', [ Validators.required, Validators.email ] ],
       }),
     });
 
@@ -69,13 +69,13 @@ export class ClaimAwardModalComponent implements OnInit {
     races.push(
       this.formBuilder.group(
         {
-          distance: [ 'Mile', Validators.required ],
-          date: [ '27/04/2019', Validators.required ],
-          race: [ 'Test', Validators.required ],
+          distance: [ '', Validators.required ],
+          date: [ '', Validators.required ],
+          race: [ '', Validators.required ],
           finishTime: this.formBuilder.group({
             hours: [ 0, Validators.required ],
-            minutes: [ 8, Validators.required ],
-            seconds: [ 13, Validators.required ],
+            minutes: [ 0, Validators.required ],
+            seconds: [ 0, Validators.required ],
           }),
           award: [ '', Validators.required ],
         },
@@ -187,5 +187,9 @@ export class ClaimAwardModalComponent implements OnInit {
     const races = <FormArray>this.claimForm.controls['races'];
 
     return races.length === this.maximumRaces;
+  }
+
+  onAddRace() {
+    this.addRace();
   }
 }

@@ -22,7 +22,10 @@
       (next)="nextStep($event)"
       (back)="previousStep()"
     >
-      <bpj-claim-step-races [form]="claimForm.controls['races']"></bpj-claim-step-races>
+      <bpj-claim-step-races
+        [form]="claimForm.controls['races']"
+        (addRace)="onAddRace()"
+      ></bpj-claim-step-races>
     </bpj-step>
 
     <bpj-step

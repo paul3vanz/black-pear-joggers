@@ -15,16 +15,17 @@ export class AppComponent implements OnInit {
   title = 'Club standards | BPJ';
 
   onClaimAwardClick() {
-    location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSdVYbxf7DYjH0QSWBDmpyV3yyC0RWh9jzrQ-1hoPcyCTGCvzA/viewform';
-    // this.store$.dispatch(new fromClubStandardsActions.ClubStandardsClaimStart());
+    // location.href = 'https://docs.google.com/forms/d/e/1FAIpQLSdVYbxf7DYjH0QSWBDmpyV3yyC0RWh9jzrQ-1hoPcyCTGCvzA/viewform';
+    this.store$.dispatch(new fromClubStandardsActions.ClubStandardsClaimStart());
   }
 
   constructor(private store$: Store<any>, private clubStandardsService: ClubStandardsService) {}
 
   ngOnInit() {
     const searchParams = new URLSearchParams(location.search);
-    if (searchParams.get('certificate')) {
-      const certificateId = searchParams.get('certificate');
+
+    if (searchParams.get('certificateId')) {
+      const certificateId = searchParams.get('certificateId');
       const uniqueToken = searchParams.get('token');
 
       this.clubStandardsService.getAwardClaim(Number(certificateId), uniqueToken).subscribe((certificate) => {
