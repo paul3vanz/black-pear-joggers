@@ -38,7 +38,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let race of certificate.races">
-            <td>{{ race.date | date }}</td>
+            <td>{{ race.date | date : "DD/MM/YYYY" }}</td>
             <td><strong>{{ race.timeParsed | finishTime }}</strong></td>
             <td>{{ race.race }}</td>
           </tr>

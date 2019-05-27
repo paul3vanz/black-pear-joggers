@@ -5,6 +5,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class GenderPipe implements PipeTransform {
   transform(value: string, format: string): string {
+    if (!value) {
+      return;
+    }
+
     const gender = value === 'M' ? 'Male' : 'Female';
 
     return format === 'short' ? gender.substring(0, 1) : gender;
