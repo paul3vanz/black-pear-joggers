@@ -8,8 +8,7 @@
 }
 
 body {
-  background: url(https://bpj.org.uk/certificate/certificate.png) no-repeat center top;
-  background-size: cover;
+  overflow: hidden;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
 }
@@ -19,9 +18,17 @@ main {
   padding: 70px 110px;
 }
 
+.background {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
 .logo {
-  height: 3.7rem;
-  margin-bottom: 1.2rem;
+  height: 60px;
+  margin-bottom: 20px;
 }
 
 .logo path {
@@ -29,90 +36,89 @@ main {
 }
 
 .title {
-  margin-bottom: 1.7rem;
+  margin-bottom: 30px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .title__primary {
   display: block;
-  margin-bottom: -0.7rem;
-  font-size: 1.7rem;
+  margin-bottom: -10px;
+  font-size: 28px;
 }
 
 .title__secondary {
   display: block;
   color: #f89829;
-  font-size: 3.1rem;
+  font-size: 50px;
   font-weight: 800;
 }
 
 .summary {
-  margin-bottom: 2.1rem;
-  margin-left: 2.8rem;
-  padding-left: 2.5rem;
+  margin-bottom: 35px;
+  margin-left: 45px;
+  padding-left: 40px;
   border-left: 5px solid #f89829;
-  font-size: 1.1rem;
+  font-size: 18px;
 }
 
 .summary__title {
-  font-size: 1.4rem;
+  font-size: 22px;
 }
 
 .summary__name {
   color: #f89829;
   font-family: 'Pacifico', cursive;
-  font-size: 2.8rem;
+  font-size: 44px;
 }
 
 table {
   position: absolute;
-  width: auto;
-  margin-left: 5.4rem;
+  margin-left: 90px;
 }
 
 table th {
-  padding: 0.1rem 1.5rem 0.1rem 0;
+  padding: 2px 20px 2px 0;
   color: #f89829;
   text-align: left;
 }
 
 table td {
-  padding: 0.1rem 1.5rem 0.1rem 0;
+  padding: 2px 20px 2px 0;
 }
 
 footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-top: 5.6em;
-  margin-right: 5rem;
+  margin-top: 80px;
+  margin-right: 70px;
 }
 
 footer .clubmark-logo {
-  height: 4.2rem;
+  height: 70px;
 }
 
 footer .signature {
   display: flex;
   flex-direction: column;
-  margin: 0.8rem 3.5rem 0;
+  margin: 10px 55px 0;
 }
 
 footer .signature__writing {
   font-family: 'Herr Von Muellerhoff', cursive;
-  font-size: 2.6rem;
-  line-height: 0.8rem;
+  font-size: 42px;
+  line-height: 12px;
 }
 
 footer .signature__title {
-  margin-top: 0.5rem;
-  padding-right: 2rem;
+  margin-top: 10px;
+  padding-right: 30px;
   border-top: 2px solid #222;
   color: #f89829;
   font-weight: bold;
 }
 
 footer .award-badge {
-  height: 8rem;
+  height: 130px;
 }
