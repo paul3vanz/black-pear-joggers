@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { clubStandardsQuery } from '../../+state/club-standards.selectors';
 import { withLatestFrom } from 'rxjs/operators';
-import { ClubStandardsService } from '../../services/club-standards.service';
 
 @Component({
   selector: 'bpj-claim-award-modal',
@@ -62,7 +61,6 @@ export class ClaimAwardModalComponent implements OnInit {
     this.addRace();
 
     this.actions$.pipe(ofType(ClubStandardsActionTypes.ClubStandardsClaimStart)).subscribe(() => {
-      // alert('This feature is not yet available. Please email standards@blackpearjoggers.org.uk to claim a certificate.');
       this.isOpen = true;
     });
   }
@@ -81,9 +79,9 @@ export class ClaimAwardModalComponent implements OnInit {
           date: [ '', Validators.required ],
           race: [ '', Validators.required ],
           finishTime: this.formBuilder.group({
-            hours: [ 0, Validators.required ],
-            minutes: [ 0, Validators.required ],
-            seconds: [ 0, Validators.required ],
+            hours: [ 0 ],
+            minutes: [ '', Validators.required ],
+            seconds: [ '', Validators.required ],
           }),
           award: [ '', Validators.required ],
         },
@@ -161,7 +159,6 @@ export class ClaimAwardModalComponent implements OnInit {
   }
 
   nextStep(stepComplete: boolean) {
-    console.log(this.currentStep, stepComplete);
     if (stepComplete) {
       this.showValidation = false;
     } else {

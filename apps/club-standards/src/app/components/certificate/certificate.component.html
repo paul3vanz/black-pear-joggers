@@ -34,6 +34,7 @@
             <th>Date</th>
             <th>Time</th>
             <th>Event</th>
+            <th>Standard</th>
           </tr>
         </thead>
         <tbody>
@@ -41,6 +42,7 @@
             <td>{{ race.date | date : "DD/MM/YYYY" }}</td>
             <td><strong>{{ race.timeParsed | finishTime }}</strong></td>
             <td>{{ race.race }}</td>
+            <td>{{ race.award }}</td>
           </tr>
         </tbody>
       </table>
