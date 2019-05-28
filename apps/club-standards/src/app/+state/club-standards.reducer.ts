@@ -17,6 +17,11 @@ export interface ClubStandardsState {
   activeCategory: string;
   loaded: boolean; // has the ClubStandards list been loaded
   error?: any; // last none error (if any)
+  claim: {
+    loading: boolean;
+    loaded: boolean;
+    error?: any;
+  };
 }
 
 export interface ClubStandardsPartialState {
@@ -29,6 +34,11 @@ export const initialState: ClubStandardsState = {
   activeCategory: 'SEN',
   loaded: false,
   error: false,
+  claim: {
+    loading: false,
+    loaded: false,
+    error: null,
+  },
 };
 
 export function clubStandardsReducer(state: ClubStandardsState = initialState, action: ClubStandardsAction): ClubStandardsState {
@@ -69,6 +79,34 @@ export function clubStandardsReducer(state: ClubStandardsState = initialState, a
       return {
         ...state,
         activeCategory: action.category,
+      };
+    }
+    case ClubStandardsActionTypes.ClubStandardsClaimSubmit: {
+      return {
+        ...state,
+        claim: {
+          loading: true,
+          loaded: false,
+        },
+      };
+    }
+    case ClubStandardsActionTypes.ClubStandardsClaimSubmitSuccess: {
+      return {
+        ...state,
+        claim: {
+          loading: false,
+          loaded: true,
+        },
+      };
+    }
+    case ClubStandardsActionTypes.ClubStandardsClaimSubmitError: {
+      return {
+        ...state,
+        claim: {
+          loading: false,
+          loaded: false,
+          error: true,
+        },
       };
     }
   }

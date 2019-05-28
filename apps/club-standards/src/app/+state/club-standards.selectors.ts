@@ -6,6 +6,10 @@ const getClubStandardsState = createFeatureSelector<ClubStandardsState>(CLUBSTAN
 const getLoaded = createSelector(getClubStandardsState, (state: ClubStandardsState) => state.loaded);
 const getError = createSelector(getClubStandardsState, (state: ClubStandardsState) => state.error);
 
+const getClaimLoading = createSelector(getClubStandardsState, (state: ClubStandardsState) => state.claim.loading);
+const getClaimLoaded = createSelector(getClubStandardsState, (state: ClubStandardsState) => state.claim.loaded);
+const getClaimError = createSelector(getClubStandardsState, (state: ClubStandardsState) => state.claim.error);
+
 const getActiveGender = createSelector(getClubStandardsState, (state: ClubStandardsState) => state.activeGender);
 const getActiveCategory = createSelector(getClubStandardsState, (state: ClubStandardsState) => state.activeCategory);
 
@@ -53,6 +57,9 @@ const getStandardForEventAndCategory = (gender: string, category: string) =>
 export const clubStandardsQuery = {
   getLoaded,
   getError,
+  getClaimLoading,
+  getClaimLoaded,
+  getClaimError,
   getAllClubStandards,
   getActiveGender,
   getActiveCategory,

@@ -19,7 +19,7 @@ class AwardClaimController extends Controller
 
   public function getClaim($id, $uniqueToken) {
     $claim = AwardClaim::query()
-      ->find($id)
+      ->where('id', '=', $id)
       ->with('races')
       ->first();
 

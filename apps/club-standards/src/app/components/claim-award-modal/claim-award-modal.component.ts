@@ -21,6 +21,10 @@ export class ClaimAwardModalComponent implements OnInit {
   category$: Observable<string>;
   standards$: Observable<Standard[]>;
 
+  claimLoading$: Observable<boolean>;
+  claimLoaded$: Observable<boolean>;
+  claimError$: Observable<boolean>;
+
   currentStep = 1;
   steps = 3;
   showValidation = false;
@@ -33,6 +37,10 @@ export class ClaimAwardModalComponent implements OnInit {
     this.gender$ = this.store$.select(clubStandardsQuery.getActiveGender);
     this.category$ = this.store$.select(clubStandardsQuery.getActiveCategory);
     this.standards$ = this.store$.select(clubStandardsQuery.getAllClubStandards);
+
+    this.claimLoading$ = this.store$.select(clubStandardsQuery.getClaimLoading);
+    this.claimLoaded$ = this.store$.select(clubStandardsQuery.getClaimLoaded);
+    this.claimError$ = this.store$.select(clubStandardsQuery.getClaimError);
 
     this.claimForm = this.formBuilder.group({
       categoryDetails: this.formBuilder.group({

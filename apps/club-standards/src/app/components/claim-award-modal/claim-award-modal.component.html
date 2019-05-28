@@ -1,43 +1,59 @@
 <bpj-modal [open]="isOpen" (close)="onCloseModal()" [class.showValidation]="showValidation">
   <h2>Claim an award</h2>
 
-  <form [formGroup]="claimForm" method="post">
-    <bpj-step
-      stepId="categoryDetails"
-      title="Category details"
-      [showBack]="false"
-      [active]="currentStep === 1"
-      [form]="claimForm.controls['categoryDetails']"
-      (next)="nextStep($event)"
-      (back)="previousStep()"
-      >
-      <bpj-claim-step-category-details [form]="claimForm.controls['categoryDetails']"></bpj-claim-step-category-details>
-    </bpj-step>
+  <p
+    *ngIf="claimError$ | async"
+    class="error"
+  >
+    Sorry, an error occurred. Please try again later.
+  </p>
 
-    <bpj-step
-      stepId="races"
-      title="Races"
-      [active]="currentStep === 2"
-      [form]="claimForm.controls['races']"
-      (next)="nextStep($event)"
-      (back)="previousStep()"
-    >
-      <bpj-claim-step-races
+  <p
+    *ngIf="claimLoaded$ | async"
+    class="success"
+  >
+    Thank you. We have received your claim. It will be checked over and we will be in touch soon.
+  </p>
+
+  <ng-container *ngIf="!(claimLoaded$ | async)">
+    <form [formGroup]="claimForm" method="post">
+      <bpj-step
+        stepId="categoryDetails"
+        title="Category details"
+        [showBack]="false"
+        [active]="currentStep === 1"
+        [form]="claimForm.controls['categoryDetails']"
+        (next)="nextStep($event)"
+        (back)="previousStep()"
+        >
+        <bpj-claim-step-category-details [form]="claimForm.controls['categoryDetails']"></bpj-claim-step-category-details>
+      </bpj-step>
+
+      <bpj-step
+        stepId="races"
+        title="Races"
+        [active]="currentStep === 2"
         [form]="claimForm.controls['races']"
-        (addRace)="onAddRace()"
-      ></bpj-claim-step-races>
-    </bpj-step>
+        (next)="nextStep($event)"
+        (back)="previousStep()"
+      >
+        <bpj-claim-step-races
+          [form]="claimForm.controls['races']"
+          (addRace)="onAddRace()"
+        ></bpj-claim-step-races>
+      </bpj-step>
 
-    <bpj-step
-      stepId="personalDetails"
-      title="Personal details"
-      nextLabel="Submit"
-      [active]="currentStep === 3"
-      [form]="claimForm.controls['personalDetails']"
-      (next)="nextStep($event)"
-      (back)="previousStep()"
-    >
-      <bpj-claim-step-personal-details [form]="claimForm.controls['personalDetails']"></bpj-claim-step-personal-details>
-    </bpj-step>
-  </form>
+      <bpj-step
+        stepId="personalDetails"
+        title="Personal details"
+        [nextLabel]="(claimLoading$ | async) ? 'Sending...' : 'Submit'"
+        [active]="currentStep === 3"
+        [form]="claimForm.controls['personalDetails']"
+        (next)="nextStep($event)"
+        (back)="previousStep()"
+      >
+        <bpj-claim-step-personal-details [form]="claimForm.controls['personalDetails']"></bpj-claim-step-personal-details>
+      </bpj-step>
+    </form>
+  </ng-container>
 </bpj-modal>

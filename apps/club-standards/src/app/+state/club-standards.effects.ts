@@ -11,11 +11,14 @@ import {
   ClubStandardsSetGender,
   ClubStandardsSetCategory,
   ClubStandardsClaimSubmit,
+  ClubStandardsClaimSubmitError,
+  ClubStandardsClaimSubmitSuccess,
 } from './club-standards.actions';
 import { ClubStandardsService } from '../services/club-standards.service';
-import { map, withLatestFrom, switchMap } from 'rxjs/operators';
+import { map, withLatestFrom, switchMap, catchError } from 'rxjs/operators';
 import { clubStandardsQuery } from './club-standards.selectors';
 import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
 
 @Injectable()
 export class ClubStandardsEffects {
@@ -62,7 +65,14 @@ export class ClubStandardsEffects {
     switchMap((formData) => {
       const awardClaim = this.clubStandardsService.convertFormModelToApiModel(formData);
 
-      return this.clubStandardsService.submitClaim(awardClaim);
+      return this.clubStandardsService.submitClaim(awardClaim).pipe(
+        map((payload) => {
+          return new ClubStandardsClaimSubmitSuccess(payload);
+        }),
+        catchError((error) => {
+          return of(new ClubStandardsClaimSubmitError(error));
+        })
+      );
     })
   );
 
