@@ -1,0 +1,36 @@
+<table>
+  <thead>
+    <tr>
+      <th>Submitted</th>
+      <th>Name</th>
+      <th>Category</th>
+      <th>Award</th>
+      <th>Races</th>
+      <th>Verified</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let award of awards">
+      <td>
+        <span [attr.title]="award.createdDate | date : 'D MMMM Y'">{{ award.createdDate | date : "fromNow" }}</span>
+      </td>
+      <td>{{ award.firstName }} {{ award.lastName }}</td>
+      <td>{{ award.gender | gender : 'short' }}{{ award.category }}</td>
+      <td>
+        <span
+          class="c-badge"
+          [ngClass]="'u-bg-' + award.award | lowercase"
+        >{{ award.award }}</span>
+      </td>
+      <td></td>
+      <td>{{ award.verified ? 'Yes' : '' }}</td>
+      <td>
+        <span class="action-links">
+          <a (click)="onEditClick(award)" href="javascript:void(0)">Edit</a>
+          <a href="https://black-pear-joggers.netlify.com/apps/club-standards/?certificateId={{ award.id }}" target="_blank">Print</a>
+        </span>
+      </td>
+    </tr>
+  </tbody>
+</table>

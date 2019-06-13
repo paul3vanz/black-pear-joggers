@@ -1,0 +1,18 @@
+<div class="o-section-md" id="introduction">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h1>Club Standards Certificates</h1>
+
+    <bpj-award-claim-table
+      [awards]="awardClaims$ | async"
+      (edit)="onEdit($event)"
+    ></bpj-award-claim-table>
+  </div>
+</div>
+
+<bpj-modal
+  *ngIf="selectedAwardClaim"
+  [open]="selectedAwardClaim"
+  (close)="onModalClose()"
+>
+  <bpj-edit-award-claim-modal [awardClaim]="selectedAwardClaim"></bpj-edit-award-claim-modal>
+</bpj-modal>

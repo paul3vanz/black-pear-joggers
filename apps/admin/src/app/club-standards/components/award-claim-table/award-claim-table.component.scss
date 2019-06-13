@@ -1,0 +1,10 @@
+.action-links {
+  a {
+    display: inline-block;
+    margin-right: 10px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
