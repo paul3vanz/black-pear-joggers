@@ -40,6 +40,9 @@
     },
     "shared-pipes": {
       "tags": []
+    },
+    "admin": {
+      "tags": []
     }
   }
 }
