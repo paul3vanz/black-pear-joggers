@@ -71,8 +71,7 @@ class RegistrationController extends Controller {
                 $membershipDetails->result->FirstClaimClub
             );
 
-            $registration->notes = $membershipDetails->CheckRegistrationStatus_UrnResult;
-            $registration->save();
+            $registration->delete();
         }
     }
 
@@ -99,9 +98,10 @@ class RegistrationController extends Controller {
     private function createAthlete($id, $urn, $firstName, $lastName, $gender, $dateOfBirth, $age, $active, $membershipCheck, $membershipCheckStatus, $club) {
         $category = '';
 
-        $record = Athlete::create([
+        $record = Athlete::firstOrCreate([
+            'urn' => $urn
+        ],[
             'id' => $id,
-            'urn' => $urn,
             'athlete_id' => $id,
             'first_name' => $firstName,
             'last_name' => $lastName,

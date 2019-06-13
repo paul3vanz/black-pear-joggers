@@ -22,6 +22,10 @@ final class AwardClaim extends Model {
     'email',
   ];
 
+  protected $hidden = [
+    'email'
+];
+
 	public function races() {
 		return $this->hasMany('App\Models\AwardClaimRace', 'claimId', 'id');
 	}

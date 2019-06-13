@@ -4,8 +4,11 @@ namespace App\Models;
 
 use Log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Registration extends Model {
+
+    use SoftDeletes;
 
     protected $table = 'registration';
 
