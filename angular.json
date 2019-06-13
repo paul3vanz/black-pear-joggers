@@ -524,6 +524,7 @@
                   "with": "apps/admin/src/environments/environment.prod.ts"
                 }
               ],
+              "baseHref": "/apps/admin/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
