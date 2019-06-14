@@ -22,7 +22,7 @@ import { HttpClientModule } from '@angular/common/http';
         },
         {
           path: 'club-standards',
-          loadChildren: './club-standards/club-standards.module#ClubStandardsModule',
+          loadChildren: () => import('./club-standards/club-standards.module').then(m => m.ClubStandardsModule),
         },
       ],
       { initialNavigation: 'enabled', anchorScrolling: 'enabled', useHash: true }
