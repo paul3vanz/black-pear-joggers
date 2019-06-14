@@ -20,6 +20,7 @@ final class AwardClaim extends Model {
 		'firstName',
 		'lastName',
     'email',
+    'verified',
   ];
 
   protected $hidden = [

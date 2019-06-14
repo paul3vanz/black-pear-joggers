@@ -26,6 +26,19 @@ class AwardClaimController extends Controller
     return response()->json($claim);
   }
 
+  public function toggleVerified($id) {
+    $claim = AwardClaim::query()
+      ->where('id', '=', $id)
+      ->with('races')
+      ->first();
+
+    $claim->verified = !$claim->verified;
+
+    $claim->save();
+
+    return response()->json($claim);
+  }
+
   public function submitClaim(Request $request) {
     $validatedData = $this->validate($request, [
       'gender' => 'required',

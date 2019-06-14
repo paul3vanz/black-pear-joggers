@@ -23,8 +23,8 @@
           [ngClass]="'u-bg-' + award.award | lowercase"
         >{{ award.award }}</span>
       </td>
-      <td></td>
-      <td>{{ award.verified ? 'Yes' : '' }}</td>
+      <td>{{ award.races.length }}</td>
+      <td><a (click)="onToggleVerifyClick(award)" href="javascript:void(0)">{{ award.verified ? 'Yes' : 'No' }}</a></td>
       <td>
         <span class="action-links">
           <a (click)="onEditClick(award)" href="javascript:void(0)">Edit</a>

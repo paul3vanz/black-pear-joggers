@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AwardClaimService } from 'libs/club-standards-data-access/src/lib/services/award-claim.service';
 import { Observable } from 'rxjs';
 import { AwardClaim } from 'libs/club-standards-data-access/src/lib/models/award-claim.model';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'bpj-club-standards-page',
@@ -24,5 +25,11 @@ export class ClubStandardsPageComponent implements OnInit {
 
   onEdit(awardClaim: AwardClaim) {
     this.selectedAwardClaim = awardClaim;
+  }
+
+  onToggleVerify(awardClaim: AwardClaim) {
+    this.awardClaimService.toggleVerified(awardClaim).subscribe(() => {
+      this.awardClaims$ = this.awardClaimService.getAll();
+    });
   }
 }

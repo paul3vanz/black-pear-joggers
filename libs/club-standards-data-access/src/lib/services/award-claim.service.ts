@@ -17,7 +17,7 @@ export class AwardClaimService {
     return this.http.get<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/${id}/${token}`);
   }
 
-  validateClaim(id: number): boolean {
-    return true;
+  toggleVerified(awardClaim: AwardClaim): Observable<AwardClaim> {
+    return this.http.get<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/toggleverified/${awardClaim.id}`);
   }
 }

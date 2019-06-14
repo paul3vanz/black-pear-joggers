@@ -11,6 +11,7 @@ $router->get('/athletes', 'AthleteController@getAthletes');
 $router->get('/athletes/awards', 'AwardController@getAthleteAwards');
 
 $router->get('/awardclaim', 'AwardClaimController@getAll');
+$router->get('/awardclaim/toggleverified/{id}', 'AwardClaimController@toggleVerified');
 $router->get('/awardclaim/{id}/{uniqueToken}', 'AwardClaimController@getClaim');
 $router->post('/awardclaim', 'AwardClaimController@submitClaim');
 

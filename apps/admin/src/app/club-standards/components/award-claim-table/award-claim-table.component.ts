@@ -9,6 +9,7 @@ import { AwardClaim } from 'libs/club-standards-data-access/src/lib/models/award
 export class AwardClaimTableComponent implements OnInit {
   @Input() awards: AwardClaim[];
   @Output() edit = new EventEmitter<AwardClaim>();
+  @Output() toggleVerify = new EventEmitter<AwardClaim>();
 
   constructor() {}
 
@@ -16,5 +17,9 @@ export class AwardClaimTableComponent implements OnInit {
 
   onEditClick(awardClaim: AwardClaim) {
     this.edit.emit(awardClaim);
+  }
+
+  onToggleVerifyClick(awardClaim: AwardClaim) {
+    this.toggleVerify.emit(awardClaim);
   }
 }
