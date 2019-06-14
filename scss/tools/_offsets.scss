@@ -4,9 +4,13 @@
 
   @if $action == 'push' {
     $property: 'left';
-  } @elseif $action == 'pull' {
+  }
+
+  @else if $action == 'pull' {
     $property: 'right';
-  } @else {
+  }
+
+  @else {
     $property: 'width';
     $class: '';
   }

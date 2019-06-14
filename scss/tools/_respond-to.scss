@@ -16,7 +16,7 @@
       }
     }
 
-    @elseif (str-index($bp, 'min-')) {
+    @else if (str-index($bp, 'min-')) {
       $min-bp: nb-str-replace($bp, 'min-', '');
 
       @if map-has-key($breakpoints, $min-bp) {
