@@ -9,6 +9,7 @@ import { ModalComponent } from './modal/modal.component';
 import { ChipListComponent } from './chip-list/chip-list.component';
 import { ChipComponent } from './chip/chip.component';
 import { StepComponent } from './step/step.component';
+import { IconComponent } from './icon/icon.component';
 
 @NgModule({
   imports: [ CommonModule ],
@@ -21,6 +22,7 @@ import { StepComponent } from './step/step.component';
     ChipListComponent,
     ChipComponent,
     StepComponent,
+    IconComponent,
   ],
   exports: [
     HeaderComponent,
@@ -31,6 +33,7 @@ import { StepComponent } from './step/step.component';
     ChipListComponent,
     ChipComponent,
     StepComponent,
+    IconComponent,
   ],
 })
 export class SharedComponentsModule {}

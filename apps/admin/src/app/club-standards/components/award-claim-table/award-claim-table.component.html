@@ -24,7 +24,13 @@
         >{{ award.award }}</span>
       </td>
       <td>{{ award.races.length }}</td>
-      <td><a (click)="onToggleVerifyClick(award)" href="javascript:void(0)">{{ award.verified ? 'Yes' : 'No' }}</a></td>
+      <td>
+        <a (click)="onToggleVerifyClick(award)" href="javascript:void(0)">
+          <bpj-icon
+            [icon]="award.verified ? 'tick' : 'cross'"
+          ></bpj-icon>
+        </a>
+      </td>
       <td>
         <span class="action-links">
           <a (click)="onEditClick(award)" href="javascript:void(0)">Edit</a>
