@@ -28,7 +28,22 @@ export class ClubStandardsPageComponent implements OnInit {
   }
 
   onToggleVerify(awardClaim: AwardClaim) {
-    this.awardClaimService.toggleVerified(awardClaim).subscribe(() => {
+    this.awardClaimService.toggleVerified(awardClaim).pipe(take(1)).subscribe(() => {
+      this.awardClaims$ = this.awardClaimService.getAll();
+      // this.awardClaimService.getAll().pipe(take(1)).subscribe(() => {
+      //   this.awardClaims$
+      // });
+    });
+  }
+
+  onArchive(awardClaim: AwardClaim) {
+    this.awardClaimService.archive(awardClaim).pipe(take(1)).subscribe(() => {
+      this.awardClaims$ = this.awardClaimService.getAll();
+    });
+  }
+
+  onDelete(awardClaim: AwardClaim) {
+    this.awardClaimService.delete(awardClaim).pipe(take(1)).subscribe(() => {
       this.awardClaims$ = this.awardClaimService.getAll();
     });
   }

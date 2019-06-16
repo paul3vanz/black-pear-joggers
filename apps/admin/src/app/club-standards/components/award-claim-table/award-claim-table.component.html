@@ -28,13 +28,27 @@
         <a (click)="onToggleVerifyClick(award)" href="javascript:void(0)">
           <bpj-icon
             [icon]="award.verified ? 'tick' : 'cross'"
+            [colour]="award.verified ? '#009900' : '#cc0000'"
           ></bpj-icon>
         </a>
       </td>
       <td>
         <span class="action-links">
-          <a (click)="onEditClick(award)" href="javascript:void(0)">Edit</a>
-          <a href="https://black-pear-joggers.netlify.com/apps/club-standards/?certificateId={{ award.id }}" target="_blank">Print</a>
+          <a (click)="onEditClick(award)" href="javascript:void(0)">
+            <bpj-icon icon="edit" colour="#666"></bpj-icon>
+          </a>
+
+          <a href="https://black-pear-joggers.netlify.com/apps/club-standards/?certificateId={{ award.id }}" target="_blank">
+            <bpj-icon icon="print" colour="#666"></bpj-icon>
+          </a>
+
+          <a (click)="onArchiveClick(award)" href="javascript:void(0)">
+            <bpj-icon icon="archive" colour="#666"></bpj-icon>
+          </a>
+
+          <a (click)="onDeleteClick(award)" href="javascript:void(0)">
+            <bpj-icon icon="delete" colour="#666"></bpj-icon>
+          </a>
         </span>
       </td>
     </tr>

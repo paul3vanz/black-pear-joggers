@@ -1,6 +1,18 @@
+<ng-container *ngIf="icon === 'edit'">
+  <svg [attr.fill]="colour" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+</ng-container>
 <ng-container *ngIf="icon === 'cross'">
-    <svg viewBox="0 0 612 792" xmlns="http://www.w3.org/2000/svg"><path d="M562 396c0-141.4-114.6-256-256-256S50 254.6 50 396s114.6 256 256 256 256-114.6 256-256zm-205.2 0L475 514.2 424.2 565 306 446.8 187.8 565 137 514.2 255.2 396 137 277.8l50.8-50.8L306 345.2 424.2 227l50.8 50.8L356.8 396z" fill="#e44061"/></svg>
+  <svg [attr.fill]="colour" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
 </ng-container>
 <ng-container *ngIf="icon === 'tick'">
-    <svg viewBox="0 0 612 792" xmlns="http://www.w3.org/2000/svg"><path d="M562 396c0-141.4-114.6-256-256-256S50 254.6 50 396s114.6 256 256 256 256-114.6 256-256zm-60.3-99.7l-241 241-17.2 17.2-133.2-133.2 58.8-58.8 74.5 74.5L443 237.6l58.7 58.7z" fill="#41ad49"/></svg>
+  <svg [attr.fill]="colour" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+</ng-container>
+<ng-container *ngIf="icon === 'print'">
+    <svg [attr.fill]="colour" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+</ng-container>
+<ng-container *ngIf="icon === 'archive'">
+    <svg [attr.fill]="colour" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+</ng-container>
+<ng-container *ngIf="icon === 'delete'">
+    <svg [attr.fill]="colour" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
 </ng-container>

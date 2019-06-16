@@ -5,6 +5,8 @@
     <bpj-award-claim-table
       [awards]="awardClaims$ | async"
       (edit)="onEdit($event)"
+      (archive)="onArchive($event)"
+      (delete)="onDelete($event)"
       (toggleVerify)="onToggleVerify($event)"
     ></bpj-award-claim-table>
   </div>

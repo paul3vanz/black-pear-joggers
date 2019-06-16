@@ -39,6 +39,25 @@ class AwardClaimController extends Controller
     return response()->json($claim);
   }
 
+  public function archive($id) {
+    $claim = AwardClaim::query()
+      ->where('id', '=', $id)
+      ->with('races')
+      ->first();
+
+    $claim->archived = 1;
+
+    $claim->save();
+
+    return response()->json($claim);
+  }
+
+  public function delete($id) {
+    $claim = AwardClaim::destroy($id);
+
+    return response()->json($claim);
+  }
+
   public function submitClaim(Request $request) {
     $validatedData = $this->validate($request, [
       'gender' => 'required',

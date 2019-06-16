@@ -5,11 +5,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class AwardClaim extends Model {
 
+  use SoftDeletes;
+
   const CREATED_AT = 'createdDate';
   const UPDATED_AT = 'updatedDate';
+  const DELETED_AT = 'deletedDate';
 
   protected $table = 'awardClaim';
 
