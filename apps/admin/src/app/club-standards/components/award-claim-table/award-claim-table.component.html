@@ -2,7 +2,7 @@
   <thead>
     <tr>
       <th class="u-hidden@max-xs">Submitted</th>
-      <th>Name</th>
+      <th class="nowrap">Name</th>
       <th>Category</th>
       <th>Award</th>
       <th>Races</th>
@@ -15,7 +15,7 @@
       <td class="u-hidden@max-xs">
         <span [attr.title]="award.createdDate | date : 'D MMMM Y'">{{ award.createdDate | date : "fromNow" }}</span>
       </td>
-      <td>{{ award.firstName }} {{ award.lastName }}</td>
+      <td class="nowrap">{{ award.firstName }} {{ award.lastName }}</td>
       <td>{{ award.gender | gender : 'short' }}{{ award.category }}</td>
       <td>
         <span
