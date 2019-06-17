@@ -1,7 +1,7 @@
 <table>
   <thead>
     <tr>
-      <th>Submitted</th>
+      <th class="u-hidden@max-xs">Submitted</th>
       <th>Name</th>
       <th>Category</th>
       <th>Award</th>
@@ -12,7 +12,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let award of awards">
-      <td>
+      <td class="u-hidden@max-xs">
         <span [attr.title]="award.createdDate | date : 'D MMMM Y'">{{ award.createdDate | date : "fromNow" }}</span>
       </td>
       <td>{{ award.firstName }} {{ award.lastName }}</td>
