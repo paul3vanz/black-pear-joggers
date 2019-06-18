@@ -2,7 +2,7 @@
   <thead>
     <tr>
       <th class="u-hidden@max-xs">Submitted</th>
-      <th class="nowrap">Name</th>
+      <th class="u-nowrap">Name</th>
       <th>Category</th>
       <th>Award</th>
       <th>Races</th>
@@ -15,7 +15,7 @@
       <td class="u-hidden@max-xs">
         <span [attr.title]="award.createdDate | date : 'D MMMM Y'">{{ award.createdDate | date : "fromNow" }}</span>
       </td>
-      <td class="nowrap">{{ award.firstName }} {{ award.lastName }}</td>
+      <td class="u-nowrap">{{ award.firstName }} {{ award.lastName }}</td>
       <td>{{ award.gender | gender : 'short' }}{{ award.category }}</td>
       <td>
         <span
@@ -23,7 +23,11 @@
           [ngClass]="'u-bg-' + award.award | lowercase"
         >{{ award.award }}</span>
       </td>
-      <td>{{ award.races.length }}</td>
+      <td>
+        <a (click)="onViewRacesClick(award)" href="javascript:void(0)">
+          {{ award.races.length }}
+        </a>
+      </td>
       <td>
         <a (click)="onToggleVerifyClick(award)" href="javascript:void(0)">
           <bpj-icon

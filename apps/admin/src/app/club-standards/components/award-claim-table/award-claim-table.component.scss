@@ -1,6 +1,8 @@
 .action-links {
+  display: inline-flex;
+
   a {
-    display: inline-block;
+    flex: 1;
     margin-right: 10px;
 
     &:last-child {

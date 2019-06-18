@@ -8,6 +8,7 @@ import { AwardClaim } from 'libs/club-standards-data-access/src/lib/models/award
 })
 export class AwardClaimTableComponent implements OnInit {
   @Input() awards: AwardClaim[];
+  @Output() viewRaces = new EventEmitter<AwardClaim>();
   @Output() edit = new EventEmitter<AwardClaim>();
   @Output() archive = new EventEmitter<AwardClaim>();
   @Output() delete = new EventEmitter<AwardClaim>();
@@ -16,6 +17,10 @@ export class AwardClaimTableComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
+
+  onViewRacesClick(awardClaim: AwardClaim) {
+    this.viewRaces.emit(awardClaim);
+  }
 
   onEditClick(awardClaim: AwardClaim) {
     this.edit.emit(awardClaim);

@@ -7,6 +7,8 @@ import { AwardClaimTableComponent } from './components/award-claim-table/award-c
 import { SharedPipesModule } from '@black-pear-joggers/shared-pipes';
 import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
 import { EditAwardClaimModalComponent } from './components/edit-award-claim-modal/edit-award-claim-modal.component';
+import { ValidationCheckModalComponent } from './components/validation-check-modal/validation-check-modal.component';
+import { ViewRacesModalComponent } from './components/view-races-modal/view-races-modal.component';
 
 @NgModule({
   imports: [
@@ -21,6 +23,12 @@ import { EditAwardClaimModalComponent } from './components/edit-award-claim-moda
     SharedComponentsModule,
     SharedPipesModule,
   ],
-  declarations: [ ClubStandardsPageComponent, AwardClaimTableComponent, EditAwardClaimModalComponent ],
+  declarations: [
+    ClubStandardsPageComponent,
+    AwardClaimTableComponent,
+    EditAwardClaimModalComponent,
+    ViewRacesModalComponent,
+    ValidationCheckModalComponent,
+  ],
 })
 export class ClubStandardsModule {}

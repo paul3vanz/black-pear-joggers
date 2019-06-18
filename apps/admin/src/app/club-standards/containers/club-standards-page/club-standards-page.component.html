@@ -4,6 +4,7 @@
 
     <bpj-award-claim-table
       [awards]="awardClaims$ | async"
+      (viewRaces)="onViewRaces($event)"
       (edit)="onEdit($event)"
       (archive)="onArchive($event)"
       (delete)="onDelete($event)"
@@ -14,8 +15,16 @@
 
 <bpj-modal
   *ngIf="selectedAwardClaim"
-  [open]="selectedAwardClaim"
+  [open]="activeModal === 'edit'"
   (close)="onModalClose()"
 >
   <bpj-edit-award-claim-modal [awardClaim]="selectedAwardClaim"></bpj-edit-award-claim-modal>
+</bpj-modal>
+
+<bpj-modal *ngIf="selectedAwardClaim" [open]="activeModal === 'viewRaces'" (close)="onModalClose()">
+  <bpj-view-races-modal [awardClaim]="selectedAwardClaim"></bpj-view-races-modal>
+</bpj-modal>
+
+<bpj-modal *ngIf="selectedAwardClaim" [open]="activeModal === 'validationCheck'" (close)="onModalClose()">
+  <bpj-validation-check-modal [awardClaim]="selectedAwardClaim"></bpj-validation-check-modal>
 </bpj-modal>

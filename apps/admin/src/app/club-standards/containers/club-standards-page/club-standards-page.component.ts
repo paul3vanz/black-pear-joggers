@@ -11,6 +11,7 @@ import { take } from 'rxjs/operators';
 })
 export class ClubStandardsPageComponent implements OnInit {
   awardClaims$: Observable<AwardClaim[]>;
+  activeModal: string;
   selectedAwardClaim: AwardClaim;
 
   constructor(private awardClaimService: AwardClaimService) {}
@@ -21,10 +22,17 @@ export class ClubStandardsPageComponent implements OnInit {
 
   onModalClose() {
     this.selectedAwardClaim = null;
+    this.activeModal = null;
+  }
+
+  onViewRaces(awardClaim: AwardClaim) {
+    this.selectedAwardClaim = awardClaim;
+    this.activeModal = 'viewRaces';
   }
 
   onEdit(awardClaim: AwardClaim) {
     this.selectedAwardClaim = awardClaim;
+    this.activeModal = 'edit';
   }
 
   onToggleVerify(awardClaim: AwardClaim) {
