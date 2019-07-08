@@ -1,3 +1,8 @@
+<bpj-chip-list>
+  <bpj-chip [selected]="true" value="" class="dark">All</bpj-chip>
+  <bpj-chip [selected]="false" value="" class="dark">Archived</bpj-chip>
+</bpj-chip-list>
+
 <table>
   <thead>
     <tr>
@@ -11,7 +16,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let award of awards">
+    <tr *ngFor="let award of _awards">
       <td class="u-hidden@max-xs">
         <span [attr.title]="award.createdDate | date : 'D MMMM Y'">{{ award.createdDate | date : "fromNow" }}</span>
       </td>

@@ -7,12 +7,17 @@ import { AwardClaim } from 'libs/club-standards-data-access/src/lib/models/award
   styleUrls: [ './award-claim-table.component.scss' ],
 })
 export class AwardClaimTableComponent implements OnInit {
-  @Input() awards: AwardClaim[];
+  @Input() set awards(awards: AwardClaim[]) {
+    this._awards = awards.filter(award => !award.archived);
+  };
+
   @Output() viewRaces = new EventEmitter<AwardClaim>();
   @Output() edit = new EventEmitter<AwardClaim>();
   @Output() archive = new EventEmitter<AwardClaim>();
   @Output() delete = new EventEmitter<AwardClaim>();
   @Output() toggleVerify = new EventEmitter<AwardClaim>();
+
+  _awards: AwardClaim[];
 
   constructor() {}
 

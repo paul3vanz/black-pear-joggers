@@ -3,9 +3,13 @@
   margin: 0 0 0.5rem 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 3px;
-  background: #fff;
+  background-color: #fff;
   color: #000;
   cursor: pointer;
+}
+
+:host.dark {
+  background-color: #eee;
 }
 
 :host.selected {

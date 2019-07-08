@@ -12,4 +12,5 @@ export interface AwardClaim {
   createdDate: string;
   updatedDate: string;
   races: AwardClaimRace[];
+  archived: boolean;
 }
