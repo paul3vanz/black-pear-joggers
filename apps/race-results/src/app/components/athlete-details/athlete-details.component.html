@@ -29,7 +29,7 @@
         </div>
 
         <div
-          *ngIf="!loading && athlete.latest_ranking.ranking"
+          *ngIf="!loading && athlete.latest_ranking && athlete.latest_ranking.ranking"
           class="o-grid__item u-1/2 u-text-right u-hidden@max-xs"
         >
           <p class="handicap">
