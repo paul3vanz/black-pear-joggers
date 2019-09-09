@@ -8,7 +8,7 @@ import { AwardClaim } from 'libs/club-standards-data-access/src/lib/models/award
 })
 export class AwardClaimTableComponent implements OnInit {
   @Input() set awards(awards: AwardClaim[]) {
-    this._awards = awards.filter(award => !award.archived);
+    this._awards = awards && awards.filter(award => !award.archived);
   };
 
   @Output() viewRaces = new EventEmitter<AwardClaim>();
