@@ -1,0 +1,17 @@
+<span
+  class="label"
+  [class.u-hidden]="editMode"
+  (click)="edit()"
+>
+  {{ label }}
+</span>
+
+<input
+  #inputField
+  class="input"
+  type="text"
+  [class.u-hidden]="!editMode"
+  [value]="label"
+  (blur)="save()"
+  (keypress)="onUpdate($event.target.value)"
+>

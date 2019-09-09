@@ -9,6 +9,8 @@ import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
 import { EditAwardClaimModalComponent } from './components/edit-award-claim-modal/edit-award-claim-modal.component';
 import { ValidationCheckModalComponent } from './components/validation-check-modal/validation-check-modal.component';
 import { ViewRacesModalComponent } from './components/view-races-modal/view-races-modal.component';
+import { AuthenticatedGuard } from '../guards/authenticated.guard';
+import { InlineEditFieldComponent } from './components/inline-edit-field/inline-edit-field.component';
 
 @NgModule({
   imports: [
@@ -17,6 +19,7 @@ import { ViewRacesModalComponent } from './components/view-races-modal/view-race
       {
         path: '',
         component: ClubStandardsPageComponent,
+        canActivate: [ AuthenticatedGuard ],
       },
     ]),
     ClubStandardsDataAccessModule,
@@ -29,6 +32,7 @@ import { ViewRacesModalComponent } from './components/view-races-modal/view-race
     EditAwardClaimModalComponent,
     ViewRacesModalComponent,
     ValidationCheckModalComponent,
+    InlineEditFieldComponent,
   ],
 })
 export class ClubStandardsModule {}

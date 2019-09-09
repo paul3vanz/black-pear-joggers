@@ -5,19 +5,26 @@
       <th>Time</th>
       <th class="u-nowrap">Event</th>
       <th>Standard</th>
+      <th>Checks</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let race of awardClaim.races">
       <td>{{ race.date | date : "DD/MM/YYYY" }}</td>
       <td><strong>{{ race.timeParsed | finishTime }}</strong></td>
-      <td class="u-nowrap">{{ race.race }}</td>
+      <td class="u-nowrap">
+        <bpj-inline-edit-field
+          [label]="race.race"
+          (update)="false"
+        ></bpj-inline-edit-field>
+      </td>
       <td>
         <span
           class="c-badge"
           [ngClass]="'u-bg-' + race.award | lowercase"
         >{{ race.award }}</span>
       </td>
+      <td>{{ race.checks | json }}</td>
     </tr>
   </tbody>
 </table>
