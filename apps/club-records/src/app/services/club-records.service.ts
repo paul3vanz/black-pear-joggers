@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ClubRecord } from '../models/club-record.model';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,10 @@ export class ClubRecordsService {
   }
 
   fetch(): Observable<ClubRecord[]> {
-    return this.http.get<ClubRecord[]>('https://bpj.org.uk/api/public/index.php/records');
+    return this.http.get<ClubRecord[]>('https://bpj.org.uk/api/public/index.php/records').pipe(
+      map((clubRecords: ClubRecord[]) => {
+        return clubRecords.filter((clubRecord: ClubRecord) => clubRecord.gender);
+      })
+    );
   }
 }

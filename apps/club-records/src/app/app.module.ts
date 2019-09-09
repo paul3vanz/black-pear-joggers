@@ -13,7 +13,7 @@ import { initialState as clubRecordsInitialState, clubRecordsReducer } from './+
 import { ClubRecordsEffects } from './+state/club-records.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
+// import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { storeFreeze } from 'ngrx-store-freeze';
 import { QueryRecordModalComponent } from './components/query-record-modal/query-record-modal.component';
 import { SearchModule } from '@black-pear-joggers/search';
@@ -40,7 +40,7 @@ import { FilterCategoryPipe } from './pipes/filter-category.pipe';
     ),
     EffectsModule.forRoot([ ClubRecordsEffects ]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
-    StoreRouterConnectingModule,
+    // StoreRouterConnectingModule,
   ],
   providers: [],
   bootstrap: [ AppComponent ],
