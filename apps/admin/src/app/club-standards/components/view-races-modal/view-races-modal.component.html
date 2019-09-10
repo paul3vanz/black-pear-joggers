@@ -15,7 +15,7 @@
       <td class="u-nowrap">
         <bpj-inline-edit-field
           [label]="race.race"
-          (update)="false"
+          (update)="onUpdate(race.id, $event)"
         ></bpj-inline-edit-field>
       </td>
       <td>

@@ -16,6 +16,7 @@ $router->get('/awardclaim/archive/{id}', 'AwardClaimController@archive');
 $router->get('/awardclaim/delete/{id}', 'AwardClaimController@delete');
 $router->get('/awardclaim/{id}/{uniqueToken}', 'AwardClaimController@getClaim');
 $router->post('/awardclaim', 'AwardClaimController@submitClaim');
+$router->post('/awardclaim/{id}/race', 'AwardClaimController@submitClaimRace');
 
 $router->get('/awards', 'AwardController@getAwards');
 

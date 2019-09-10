@@ -13,5 +13,5 @@
   [class.u-hidden]="!editMode"
   [value]="label"
   (blur)="save()"
-  (keypress)="onUpdate($event.target.value)"
+  (keyup)="onUpdate($event.target.value)"
 >

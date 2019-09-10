@@ -3,6 +3,7 @@ import { AwardClaimService } from 'libs/club-standards-data-access/src/lib/servi
 import { Observable } from 'rxjs';
 import { AwardClaim } from 'libs/club-standards-data-access/src/lib/models/award-claim.model';
 import { take } from 'rxjs/operators';
+import { AwardClaimRace } from 'libs/club-standards-data-access/src/lib/models/award-claim-race.model';
 
 @Component({
   selector: 'bpj-club-standards-page',
@@ -54,5 +55,10 @@ export class ClubStandardsPageComponent implements OnInit {
     this.awardClaimService.delete(awardClaim).pipe(take(1)).subscribe(() => {
       this.awardClaims$ = this.awardClaimService.getAll();
     });
+  }
+
+  onUpdate(awardClaimRace: AwardClaimRace) {
+    console.log(awardClaimRace);
+    this.awardClaimService.updateRace(awardClaimRace).subscribe(console.log);
   }
 }

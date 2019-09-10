@@ -6,6 +6,7 @@ import { ClubStandardsService } from 'apps/club-standards/src/app/services/club-
 
 import * as moment from 'moment-mini-ts';
 import { map } from 'rxjs/operators';
+import { AwardClaimRace } from '../models/award-claim-race.model';
 
 @Injectable({
   providedIn: 'root',
@@ -45,6 +46,10 @@ export class AwardClaimService {
 
   delete(awardClaim: AwardClaim): Observable<AwardClaim> {
     return this.http.get<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/delete/${awardClaim.id}`);
+  }
+
+  updateRace(awardClaimRace: AwardClaimRace) {
+    return this.http.post<AwardClaimRace>(`https://bpj.org.uk/api/public/index.php/awardclaim/${awardClaimRace.claimId}/race`, awardClaimRace);
   }
 
 // MANUAL CHECKS

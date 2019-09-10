@@ -22,7 +22,10 @@
 </bpj-modal>
 
 <bpj-modal *ngIf="selectedAwardClaim" [open]="activeModal === 'viewRaces'" (close)="onModalClose()">
-  <bpj-view-races-modal [awardClaim]="selectedAwardClaim"></bpj-view-races-modal>
+  <bpj-view-races-modal
+    [awardClaim]="selectedAwardClaim"
+    (update)="onUpdate($event)"
+  ></bpj-view-races-modal>
 </bpj-modal>
 
 <bpj-modal *ngIf="selectedAwardClaim" [open]="activeModal === 'validationCheck'" (close)="onModalClose()">

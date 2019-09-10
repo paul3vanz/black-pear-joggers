@@ -1,6 +1,6 @@
 <bpj-chip-list>
-  <bpj-chip [selected]="true" value="" class="dark">All</bpj-chip>
-  <bpj-chip [selected]="false" value="" class="dark">Archived</bpj-chip>
+  <bpj-chip [selected]="filters.archived === null" value="" class="dark" (select)="setFilter('archived', null)">Active</bpj-chip>
+  <bpj-chip [selected]="filters.archived === 1" value="" class="dark" (select)="setFilter('archived', 1)">Archived</bpj-chip>
 </bpj-chip-list>
 
 <table>
@@ -16,7 +16,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let award of _awards">
+    <tr *ngFor="let award of awardsWithFilters()">
       <td class="u-hidden@max-xs">
         <span [attr.title]="award.createdDate | date : 'D MMMM Y'">{{ award.createdDate | date : "fromNow" }}</span>
       </td>

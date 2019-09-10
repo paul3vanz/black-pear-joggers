@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AwardClaim;
+use App\Models\AwardClaimRace;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
@@ -81,5 +82,15 @@ class AwardClaimController extends Controller
     $claim->races()->createMany(Input::get('races'));
 
     return response()->json($claim);
+  }
+
+  public function submitClaimRace(Request $request, $awardClaimId) {
+    $race = AwardClaimRace::find(Input::get('id'));
+
+    $race->race = Input::get('race');
+
+    $race->save();
+
+    return response()->json($race);
   }
 }
