@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, CanActivate, Router, CanActivateChild } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AmplifyService } from 'aws-amplify-angular';
-import { map, take, switchMap, tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthenticatedGuard implements CanActivate, CanActivateChild {
+export class AuthenticatedGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -31,12 +31,6 @@ export class AuthenticatedGuard implements CanActivate, CanActivateChild {
           }
         })
       );
-  }
-
-  canActivateChild(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): boolean {
-    return this.canActivate(route, state);
   }
 
   constructor(
