@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { ClubStandardsService } from 'apps/club-standards/src/app/services/club-standards.service';
 
 import * as moment from 'moment-mini-ts';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,18 @@ export class AwardClaimService {
   ) {}
 
   getAll(): Observable<AwardClaim[]> {
-    return this.http.get<AwardClaim[]>('https://bpj.org.uk/api/public/index.php/awardclaim');
+    return this.http.get<AwardClaim[]>('https://bpj.org.uk/api/public/index.php/awardclaim').pipe(
+      map((awardClaims: AwardClaim[]) => {
+        return awardClaims.map((awardClaim: AwardClaim) => {
+          return {
+            ...awardClaim,
+            checks: {
+              racesAreInSameYear: null,
+            },
+          };
+        });
+      })
+    );
   }
 
   getCertificate(id: number, token: string): Observable<AwardClaim> {
@@ -35,14 +47,22 @@ export class AwardClaimService {
     return this.http.get<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/delete/${awardClaim.id}`);
   }
 
-// Matched up person with known member?
-// Is the person a paid up member?
-// Is their age category correct?
-// Are all events are in same calendar year?
-   checkRacesAreInSameYear(awardClaim: AwardClaim) {
-     return awardClaim.races.every((race) => moment(race.date).year === moment(awardClaim.races[0].date).year);
-   }
-// Were all events were completed in the same age category?
-// Do all events meet the minimum time for the award being claimed?
+// MANUAL CHECKS
+// Matched up person with known member? - Need membership list/api
+// Is the person a paid up member? - Need membership list/api
+// Is their age category correct? - Need DOB
+// Were all events were completed in the same age category? - Need DOB
 // Have all finish times have been verified?
+
+  // Do all events meet the minimum time for the award being claimed?
+  checkRacesMeetStandardClaimed(awardClaim: AwardClaim) {
+    return true;
+  }
+
+  // Are all events are in same calendar year?
+  checkRacesAreInSameYear(awardClaim: AwardClaim) {
+    console.log('checkRacesAreInSameYear');
+    return awardClaim.races.every((race) => moment(race.date).year === moment(awardClaim.races[0].date).year);
+  }
+
 }

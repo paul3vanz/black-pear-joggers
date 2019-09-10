@@ -9,4 +9,5 @@ export interface AwardClaimRace {
   award: string;
   createdDate: string;
   updatedDate: string;
+  checks: any;
 }
