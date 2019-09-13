@@ -11,16 +11,17 @@ import { NxModule } from '@nrwl/nx';
 import { RouterModule } from '@angular/router';
 import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
 import { SharedPipesModule } from '@black-pear-joggers/shared-pipes';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 // import { AuthService } from './services/auth.service';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 // import { AUTH_FEATURE_KEY } from './state/reducers/auth.reducer';
+import { TokenInterceptor } from './interceptors/token.interceptor';
 
 import * as fromAuth from './state/reducers/auth.reducer';
-import { AuthEffects } from './state/effects/auth.effects';
+// import { AuthEffects } from './state/effects/auth.effects';
 
 @NgModule({
   declarations: [ AppComponent ],
@@ -70,6 +71,11 @@ import { AuthEffects } from './state/effects/auth.effects';
           Interactions
         });
       }
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true,
     }
   ],
   bootstrap: [ AppComponent ],
