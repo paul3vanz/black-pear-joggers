@@ -18,6 +18,7 @@ import { environment } from '../environments/environment';
 
 import * as fromAuth from 'libs/authentication/src/lib/state/reducers/auth.reducer';
 import { AuthenticationModule } from '@black-pear-joggers/authentication';
+import { MagicMileModule } from './magic-mile/magic-mile.module';
 // import { AuthEffects } from './state/effects/auth.effects';
 
 @NgModule({
@@ -35,6 +36,10 @@ import { AuthenticationModule } from '@black-pear-joggers/authentication';
         {
           path: 'club-standards',
           loadChildren: () => import('./club-standards/club-standards.module').then(m => m.ClubStandardsModule),
+        },
+        {
+          path: 'magic-mile',
+          loadChildren: () => import('./magic-mile/magic-mile.module').then(m => m.MagicMileModule),
         },
         {
           path: 'auth',
@@ -58,6 +63,7 @@ import { AuthenticationModule } from '@black-pear-joggers/authentication';
     SharedComponentsModule,
     AuthenticationModule,
     SharedPipesModule,
+    MagicMileModule,
   ],
   bootstrap: [ AppComponent ],
 })
