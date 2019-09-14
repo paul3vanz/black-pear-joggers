@@ -43,6 +43,9 @@
     },
     "admin": {
       "tags": []
+    },
+    "authentication": {
+      "tags": []
     }
   }
 }

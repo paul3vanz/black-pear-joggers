@@ -1,0 +1,27 @@
+:host {
+  display: block;
+  background-color: #ccc;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.user {
+  display: flex;
+
+  span {
+    margin-left: 10px;
+  }
+}
+
+a {
+  color: #000;
+}
+
+.navigation {
+  &__item {
+    margin: 0 10px;
+  }
+}

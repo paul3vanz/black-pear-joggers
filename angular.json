@@ -701,6 +701,34 @@
           }
         }
       }
+    },
+    "authentication": {
+      "projectType": "library",
+      "root": "authentication",
+      "sourceRoot": "libs/authentication/src",
+      "prefix": "bpj",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/authentication/src/test.ts",
+            "tsConfig": "libs/authentication/tsconfig.spec.json",
+            "karmaConfig": "libs/authentication/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/authentication/tsconfig.lib.json",
+              "libs/authentication/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "cli": {

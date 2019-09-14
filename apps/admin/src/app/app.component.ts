@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AuthState } from './state/reducers/auth.reducer';
+import { AuthState } from 'libs/authentication/src/lib/state/reducers/auth.reducer';
 
-import * as AuthActions from './state/actions/auth.actions';
+import * as AuthActions from 'libs/authentication/src/lib/state/actions/auth.actions';
 
 @Component({
   selector: 'bpj-root',

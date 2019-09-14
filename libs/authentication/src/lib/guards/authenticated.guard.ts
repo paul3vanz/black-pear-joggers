@@ -11,26 +11,15 @@ export class AuthenticatedGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean> {
-    console.log('authGuard');
-    return this.amplifyService.authStateChange$
-      .pipe(
-        tap((authState) => {
-          console.log('tap', authState);
-        }),
-        map((authState) => {
-          console.log('authState', authState);
-
-          if (authState.user) {
-            console.log('isAuthed');
-            return true;
-          } else {
-            console.log('redirectToAuth');
-            this.router.navigate(['/auth']);
-            return false;
-          }
-        })
-      );
+  ): boolean {
+    if (this.amplifyService.auth().user) {
+      console.log('isAuthed');
+      return true;
+    } else {
+      console.log('redirectToAuth');
+      this.router.navigate(['/auth']);
+      return false;
+    }
   }
 
   constructor(
