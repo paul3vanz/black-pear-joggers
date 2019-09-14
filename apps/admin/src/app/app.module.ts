@@ -29,7 +29,7 @@ import { AuthenticationModule } from '@black-pear-joggers/authentication';
       [
         {
           path: '',
-          redirectTo: '/auth',
+          redirectTo: 'club-standards',
           pathMatch: 'full',
         },
         {

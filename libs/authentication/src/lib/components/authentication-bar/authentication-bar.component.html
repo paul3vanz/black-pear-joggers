@@ -1,21 +1,21 @@
 <div class="o-section-sm">
   <div class="o-site-wrap o-site-wrap--padding">
     <div class="container">
-      <div *ngIf="user" class="user">
+      <div *ngIf="authState?.state === 'signedIn'" class="user">
         <bpj-icon
           class="icon"
           icon="account-circle"
         ></bpj-icon>
         <span>
-          <strong>{{ user.username }}</strong><br />
-          {{ user.attributes.email }}
+          <strong>{{ authState.user.username }}</strong><br />
+          {{ authState.user.attributes.email }}
         </span>
       </div>
 
       <ul class="navigation">
         <a class="navigation__item" [routerLink]="['/club-standards']" href="javascript:void(0)">Club standards</a>
-        <a class="navigation__item" *ngIf="!user" [routerLink]="['/auth']" (click)="onSignIn()" href="javascript:void(0)">Sign in</a>
-        <a class="navigation__item" *ngIf="user" [routerLink]="['/auth']" (click)="onSignOut()" href="javascript:void(0)">Sign out</a>
+        <a class="navigation__item" *ngIf="authState?.state !== 'signedIn'" [routerLink]="['/auth']" (click)="onSignIn()" href="javascript:void(0)">Sign in</a>
+        <a class="navigation__item" *ngIf="authState?.state === 'signedIn'" [routerLink]="['/auth']" (click)="onSignOut()" href="javascript:void(0)">Sign out</a>
       </ul>
     </div>
   </div>

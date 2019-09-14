@@ -8,16 +8,12 @@ import { map, tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthenticatedGuard implements CanActivate {
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean {
+  canActivate(): boolean {
     if (this.amplifyService.auth().user) {
-      console.log('isAuthed');
       return true;
     } else {
-      console.log('redirectToAuth');
       this.router.navigate(['/auth']);
+
       return false;
     }
   }

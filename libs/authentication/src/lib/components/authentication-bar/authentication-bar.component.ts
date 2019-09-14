@@ -1,4 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { AmplifyService } from 'aws-amplify-angular';
+import { CognitoUser } from '@aws-amplify/auth';
+import { AuthState } from 'aws-amplify-angular/dist/src/providers';
 
 @Component({
   selector: 'bpj-authentication-bar',
@@ -6,11 +9,16 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
   styleUrls: ['./authentication-bar.component.scss']
 })
 export class AuthenticationBarComponent implements OnInit {
-  @Input() user = null;
+  authState: AuthState;
   @Output() signIn = new EventEmitter<any>();
   @Output() signOut = new EventEmitter<any>();
 
-  constructor() { }
+  constructor(private amplifyService: AmplifyService) {
+    this.amplifyService.authStateChange$.subscribe((authState) => {
+      this.authState = authState;
+      console.log(authState);
+    });
+  }
 
   ngOnInit() {
   }
@@ -20,6 +28,7 @@ export class AuthenticationBarComponent implements OnInit {
   }
 
   onSignOut() {
+    this.amplifyService.auth().signOut();
     this.signOut.emit();
   }
 

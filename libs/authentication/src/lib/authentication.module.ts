@@ -12,9 +12,14 @@ import Storage from '@aws-amplify/storage';
 import { AuthModule } from './auth/auth.module';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, SharedComponentsModule, AuthModule],
-  declarations: [AuthenticationBarComponent],
-  exports: [AuthenticationBarComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    SharedComponentsModule,
+    AuthModule
+  ],
+  declarations: [ AuthenticationBarComponent ],
+  exports: [ AuthenticationBarComponent ],
   providers: [
     {
       provide: AmplifyService,
