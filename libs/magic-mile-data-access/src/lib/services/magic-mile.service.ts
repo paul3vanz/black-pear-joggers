@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { MagicMile } from '../models/magic-mile.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Athlete } from 'apps/race-results/src/app/models/athlete';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,10 @@ export class MagicMileService {
           });
         })
       );
+  }
+
+  searchAthletes(searchTerm: string) {
+    return this.http.get<Athlete[]>(`https://bpj.org.uk/api/public/index.php/athletes?search=${searchTerm}`);
   }
 
   setSearch(keywords) {

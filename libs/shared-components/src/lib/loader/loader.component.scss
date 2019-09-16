@@ -15,6 +15,10 @@
   animation: sk-bouncedelay 1.4s infinite ease-in-out both;
 }
 
+:host.dark .spinner > div {
+  background-color: #222;
+}
+
 .spinner .bounce1 {
   -webkit-animation-delay: -0.32s;
   animation-delay: -0.32s;

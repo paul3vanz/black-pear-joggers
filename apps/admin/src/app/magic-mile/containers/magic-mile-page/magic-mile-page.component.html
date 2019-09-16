@@ -1,9 +1,27 @@
-<div class="o-section-md" id="introduction">
+<div class="o-section-md">
   <div class="o-site-wrap o-site-wrap--padding">
     <h1>Magic mile</h1>
 
     <h2>Record magic mile</h2>
 
-    <bpj-record-magic-mile-form></bpj-record-magic-mile-form>
+    <bpj-record-magic-mile-form (submit)="onSubmit($event)"></bpj-record-magic-mile-form>
+  </div>
+</div>
+
+<div class="o-section-md o-section-bright">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h2>Tools</h2>
+
+    <h3>Delete a record</h3>
+
+    <div class="o-grid o-grid--gutter-sm">
+      <div class="o-grid__item u-1/2@sm">
+        <select><option>Select a record</option></select>
+      </div>
+
+      <div class="o-grid__item u-1/2@sm">
+        <button>Delete</button>
+      </div>
+    </div>
   </div>
 </div>

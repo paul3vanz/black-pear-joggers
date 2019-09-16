@@ -1,0 +1,17 @@
+.athletes {
+  display: block;
+  margin-bottom: 1rem;
+  padding: 10px 15px;
+  border-radius: 3px;
+  background-color: #eee;
+
+  &__list {
+    margin-bottom: 0;
+    margin-left: 0;
+    list-style-type: none;
+  }
+
+  &__athlete {
+    margin-bottom: 5px;
+  }
+}

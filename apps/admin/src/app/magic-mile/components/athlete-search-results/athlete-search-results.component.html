@@ -1,0 +1,26 @@
+<div
+  *ngIf="loading || athletes.length"
+  class="athletes"
+>
+  <h3 *ngIf="!loading">Known athletes found</h3>
+
+  <h3 *ngIf="loading">Searching for known athletes</h3>
+
+  <ul *ngIf="!loading" class="athletes__list">
+    <li
+      *ngFor="let athlete of athletes"
+      class="athletes__athlete"
+    >
+      <a
+        (click)="onSelectAthlete(athlete)"
+        href="javascript:void(0)"
+      >
+        {{ athlete.first_name }} {{ athlete.last_name }} ({{ athlete.category }})
+      </a>
+    </li>
+  </ul>
+  <bpj-loader
+    *ngIf="loading"
+    [dark]="true"
+  ></bpj-loader>
+</div>

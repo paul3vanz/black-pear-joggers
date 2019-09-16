@@ -41,9 +41,10 @@
         </div>
       </div>
 
-      <div class="row">
-        <div id="athlete-search-results"></div>
-      </div>
+      <bpj-athlete-search-results
+        [athletes]="athletes$ | async"
+        (selectAthlete)="onSelectAthlete($event)"
+      ></bpj-athlete-search-results>
 
       <div class="o-grid o-grid--gutter-sm">
         <div class="o-grid__item u-1/2@sm">
@@ -103,14 +104,9 @@
         </div>
       </div>
 
-      <input type="hidden" formControlName="athleteId" id="athleteId">
+      <!-- <pre>Valid: {{ form.valid | json }} </pre>
 
-      <input formControlName="predictedTimeParsed" type="hidden" id="predictedTimeParsed">
-
-      <input formControlName="actualTimeParsed" type="hidden" id="actualTimeParsed">
-
-      <pre>{{ form.valid | json }} </pre>
-      <pre>{{ form.value | json }} </pre>
+      <pre>{{ form.value | json }} </pre> -->
 
       <input type="submit" class="btn btn-primary" id="submit">
     </div>
