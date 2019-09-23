@@ -1,4 +1,4 @@
-export const enum LoadingStates {
+export enum LoadingStates {
   INIT = 'INIT',
   LOADING = 'LOADING',
   LOADED = 'LOADED'

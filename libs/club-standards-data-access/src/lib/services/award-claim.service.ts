@@ -37,15 +37,15 @@ export class AwardClaimService {
   }
 
   toggleVerified(awardClaim: AwardClaim): Observable<AwardClaim> {
-    return this.http.get<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/toggleverified/${awardClaim.id}`);
+    return this.http.post<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/toggleverified/${awardClaim.id}`, null);
   }
 
   archive(awardClaim: AwardClaim): Observable<AwardClaim> {
-    return this.http.get<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/archive/${awardClaim.id}`);
+    return this.http.post<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/archive/${awardClaim.id}`, null);
   }
 
   delete(awardClaim: AwardClaim): Observable<AwardClaim> {
-    return this.http.get<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/delete/${awardClaim.id}`);
+    return this.http.post<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/delete/${awardClaim.id}`, null);
   }
 
   updateRace(awardClaimRace: AwardClaimRace) {

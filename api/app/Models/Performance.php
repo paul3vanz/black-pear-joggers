@@ -19,11 +19,11 @@ final class Performance extends Model {
 		'date',
 		'manual'
     ];
-    
+
 	public function athlete() {
-		return $this->belongsTo('App\Models\Athlete', 'athlete_id', 'id');
+		return $this->belongsTo('App\Models\Athlete', 'athlete_id', 'athlete_id');
     }
-    
+
 	public function event() {
 		return $this->belongsTo('App\Models\Event', 'event_id', 'id');
 	}

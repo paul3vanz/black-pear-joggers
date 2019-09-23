@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use GuzzleHttp\Client as GuzzleClient;
 use App\Models\Athlete;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,8 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use SoapClient;
 use Log;
+use DateTime;
+use DateTimeZone;
 
 class MembershipController extends Controller {
 
@@ -63,60 +66,59 @@ class MembershipController extends Controller {
     }
 
     public function checkNameDob(string $firstName, string $lastName, string $dateOfBirth) {
-      return response()->json($this->soapCall('CheckRegistrationStatus_Fn_Ln_Dob', array(
-        'firstName' => $firstName,
-        'lastName' => $lastName,
-        'dateOfBirth' => $dateOfBirth
-      )));
+      $date = date("Y-m-d");
+
+      return response()->json(MembershipController::fetchUrl("/race-provider/individuals?firstname=$firstName&lastname=$lastName&dob=$dateOfBirth"));
     }
 
     public function responseCheckUrn(int $urn) {
       return response()->json($this->checkUrn($urn));
     }
 
+    public function getClubs() {
+      return response()->json(MembershipController::fetchUrl('/race-provider/clubs'));
+    }
+
+    public function getClubMembers(int $clubId = 1606) {
+      $date = date("Y-m-d");
+
+      return response()->json(MembershipController::fetchUrl("/race-provider/clubs/$clubId/individuals?eventDate=$date"));
+    }
+
     public function checkUrn(int $urn) {
-      return $this->soapCall('CheckRegistrationStatus_Urn', array(
-        'urn' => $urn
-      ));
+      $date = date("Y-m-d");
+
+      return MembershipController::fetchUrl("/race-provider/individuals/$urn?eventDate=$date");
     }
 
-    private function soapCall($function, $params) {
-      // Live
-      $wsdl = 'https://myathletics.uka.org.uk/LicenceCheckService/LicenceCheck.svc?singleWsdl';
-      $key = env('UKA_API_KEY', null);
+    private function fetchUrl(string $url) {
+      $url = env(env('UKA_ENVIRONMENT') . '_UKA_TRINITY_API_URL') . $url;
 
-      $opts = array(
-        'ssl' => array(
-          'verify_peer' => false,
-          'verify_peer_name' => false,
-          'allow_self_signed' => true
-          )
-        );
+      $client = new GuzzleClient();
+      $res = $client->get($url, [
+        'headers' => MembershipController::getHeaders(),
+        'cert' => MembershipController::getCertificate(),
+      ]);
 
-        $context = stream_context_create($opts);
-
-        $defaultParams = array(
-          'webUserKey' => $key
-        );
-
-        try {
-          if (MembershipController::$soapClient === null) {
-            MembershipController::$soapClient = new \SoapClient($wsdl, array(
-              'stream_context' => $context, 'trace' => true)
-            );
-          }
-
-          $response = MembershipController::$soapClient->__soapCall($function, array(array_merge($defaultParams, $params)));
-
-          return $response;
-        }
-
-        catch ( \Exception $e) {
-          $error = 'Caught Exception in client'. $e->getMessage();
-
-          return $error;
-        }
-
+      if ($res->getStatusCode() === 200) {
+        $response = json_decode($res->getBody());
+        return $response;
+      } else {
+        return 'api error';
+      }
     }
 
+    private function getHeaders() {
+      $timestamp = gmdate("Y-m-d\TH:i:s");
+
+      return [
+        'X-TRAPI-CALLKEY' => env(env('UKA_ENVIRONMENT') . '_UKA_HEADER_X_TRAPI_CALLKEY', null),
+        'X-TRAPI-CALLSECRET' => env(env('UKA_ENVIRONMENT') . '_UKA_HEADER_X_TRAPI_CALLSECRET', null),
+        'X-TRAPI-CALLDATETIME' => $timestamp,
+      ];
+    }
+
+    private function getCertificate() {
+      return getcwd() . '\\' . env(env('UKA_ENVIRONMENT') . '_UKA_PEM_FILENAME');
+    }
 }

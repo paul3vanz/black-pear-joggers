@@ -7,13 +7,16 @@ import { AmplifyService } from 'aws-amplify-angular';
 export class TokenInterceptor implements HttpInterceptor {
   constructor(private amplifyService: AmplifyService) {}
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.amplifyService.auth().user.signInUserSession.idToken.jwtToken;
+    const user = this.amplifyService.auth().user;
+    const token = user ? user.signInUserSession.idToken.jwtToken : null;
 
-    request = request.clone({
-      setHeaders: {
-        Authorization: token ? `Bearer ${token}` : null,
-      },
-    });
+    if (token) {
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
 
     return next.handle(request);
   }
