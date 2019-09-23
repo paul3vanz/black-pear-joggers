@@ -1,5 +1,5 @@
 export interface MagicMile {
-  id: number;
+  id?: number;
   athleteId: number;
   firstName: string;
   lastName: string;
@@ -11,6 +11,6 @@ export interface MagicMile {
   predictedTimeParsed: number;
   actualTime: string;
   actualTimeParsed: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

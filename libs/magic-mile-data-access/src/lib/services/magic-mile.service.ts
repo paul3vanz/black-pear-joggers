@@ -9,14 +9,14 @@ import { Athlete } from 'apps/race-results/src/app/models/athlete';
   providedIn: 'root'
 })
 export class MagicMileService {
-  private API_PATH = '';
+  private API_PATH = 'https://bpj.org.uk/api/public/index.php/magicmile';
   private KEY_SEARCH = 'bpj.magic-mile.search';
 
   constructor(private http: HttpClient) {}
 
   fetchResults(): Observable<MagicMile[]> {
     return this.http
-      .get<MagicMile[]>('https://bpj.org.uk/api/public/index.php/magicmile')
+      .get<MagicMile[]>(this.API_PATH)
       .pipe(
         map(results => {
           return results.map(result => {
@@ -45,6 +45,8 @@ export class MagicMileService {
   }
 
   create(magicMile: MagicMile) {
-    return this.http.post(this.API_PATH, magicMile);
+    console.log('Create Magic Mile');
+    console.log(magicMile);
+    return this.http.post<MagicMile>(this.API_PATH, magicMile);
   }
 }

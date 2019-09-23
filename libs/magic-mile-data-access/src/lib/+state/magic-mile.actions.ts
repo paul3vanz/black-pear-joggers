@@ -1,30 +1,44 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 import { MagicMile } from '../models/magic-mile.model';
 
-export enum MagicMileActionTypes {
-  Load = '[Magic Mile] Load',
-  Loaded = '[Magic Mile] Loaded',
-  LoadError = '[Magic Mile] Load Error',
-}
+export const loadResults = createAction(
+  '[Magic Mile] Load'
+);
 
-export class Load implements Action {
-  readonly type = MagicMileActionTypes.Load;
-}
+export const loadResultsError = createAction(
+  '[Magic Mile] Load Error',
+  props<{ error: any }>()
+);
 
-export class LoadError implements Action {
-  readonly type = MagicMileActionTypes.LoadError;
-  constructor(public payload: any) {}
-}
+export const loadResultsSuccess = createAction(
+  '[Magic Mile] Load Success',
+  props<{ results: MagicMile[] }>()
+);
 
-export class Loaded implements Action {
-  readonly type = MagicMileActionTypes.Loaded;
-  constructor(public payload: MagicMile[]) {}
-}
+export const createResult = createAction(
+  '[Magic Mile] Create'
+);
 
-export type MagicMileAction = Load | Loaded | LoadError;
+export const createResultError = createAction(
+  '[Magic Mile] Create Error',
+  props<{ error: any }>()
+);
 
-export const fromMagicMileActions = {
-  Load,
-  Loaded,
-  LoadError,
-};
+export const createResultSuccess = createAction(
+  '[Magic Mile] Create Success',
+  props<{ result: MagicMile }>()
+);
+
+export const deleteResult = createAction(
+  '[Magic Mile] Delete'
+);
+
+export const deleteResultError = createAction(
+  '[Magic Mile] Delete Error',
+  props<{ error: any }>()
+);
+
+export const deleteResultSuccess = createAction(
+  '[Magic Mile] Delete Success',
+  props<{ result: MagicMile }>()
+);

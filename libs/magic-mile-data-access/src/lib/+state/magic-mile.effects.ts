@@ -1,29 +1,25 @@
+import { createEffect, Actions, ofType } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
-import { Effect } from '@ngrx/effects';
-import { DataPersistence } from '@nrwl/nx';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 
-import { MagicMilePartialState } from './magic-mile.reducer';
-import { Load, Loaded, LoadError, MagicMileActionTypes } from './magic-mile.actions';
-import { map } from 'rxjs/operators';
 import { MagicMileService } from '../services/magic-mile.service';
+import * as magicMileActions from './magic-mile.actions';
+import { EMPTY } from 'rxjs';
 
 @Injectable()
 export class MagicMileEffects {
-  @Effect()
-  loadMagicMile$ = this.dataPersistence.fetch(MagicMileActionTypes.Load, {
-    run: () => {
-      return this.magicMileService.fetchResults().pipe(
-        map((results) => {
-          return new Loaded(results);
-        })
-      );
-    },
+  loadResults$ = createEffect(() => this.actions$.pipe(
+    ofType(magicMileActions.loadResults),
+    mergeMap(() => this.magicMileService.fetchResults()
+      .pipe(
+        map(results => magicMileActions.loadResultsSuccess({ results })),
+        catchError(() => EMPTY),
+      ))
+    )
+  );
 
-    onError: (action: Load, error) => {
-      console.error('Error', error);
-      return new LoadError(error);
-    },
-  });
-
-  constructor(private dataPersistence: DataPersistence<MagicMilePartialState>, private magicMileService: MagicMileService) {}
+  constructor(
+    private actions$: Actions,
+    private magicMileService: MagicMileService
+  ) {}
 }
