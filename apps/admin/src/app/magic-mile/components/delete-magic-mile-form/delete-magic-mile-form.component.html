@@ -1,0 +1,20 @@
+<div class="o-grid o-grid--gutter-sm">
+  <div class="o-grid__item u-1/2@sm">
+    <select [(ngModel)]="selectedResultId">
+      <option>Select a record</option>
+      <option
+        *ngFor="let result of results"
+        [value]="result.id"
+      >
+        {{ result.date }} -
+        {{ result.firstName }} {{ result.lastName }} -
+        {{ result.gender }}{{ result.category }} -
+        {{ result.actualTime }}
+      </option>
+    </select>
+  </div>
+
+  <div class="o-grid__item u-1/2@sm">
+    <button (click)="onDeleteClick()">Delete</button>
+  </div>
+</div>

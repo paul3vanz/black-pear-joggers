@@ -14,24 +14,9 @@
 
     <h3>Delete a record</h3>
 
-    <div class="o-grid o-grid--gutter-sm">
-      <div class="o-grid__item u-1/2@sm">
-        <select>
-          <option>Select a record</option>
-          <option *ngFor="let result of results$ | async">
-            {{ result.date }} -
-            {{ result.lastName }} -
-            {{ result.firstName }} -
-            {{ result.gender }} -
-            {{ result.category }} -
-            {{ result.actualTime }}
-          </option>
-        </select>
-      </div>
-
-      <div class="o-grid__item u-1/2@sm">
-        <button (click="onDeleteClick()")>Delete</button>
-      </div>
-    </div>
+    <bpj-delete-magic-mile-form
+      [results]="results$ | async"
+      (delete)="onDeleteClick($event)"
+    ></bpj-delete-magic-mile-form>
   </div>
 </div>

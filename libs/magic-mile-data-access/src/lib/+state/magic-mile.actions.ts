@@ -30,7 +30,8 @@ export const createResultSuccess = createAction(
 );
 
 export const deleteResult = createAction(
-  '[Magic Mile] Delete'
+  '[Magic Mile] Delete',
+  props<{ result: MagicMile }>()
 );
 
 export const deleteResultError = createAction(
@@ -40,5 +41,5 @@ export const deleteResultError = createAction(
 
 export const deleteResultSuccess = createAction(
   '[Magic Mile] Delete Success',
-  props<{ result: MagicMile }>()
+  props<{ resultId: string }>()
 );

@@ -50,10 +50,15 @@ class MagicMileController extends Controller {
         return view('magicmile.create');
     }
 
+    public function delete(string $id) {
+        $result = MagicMile::destroy($id);
+        return response()->json($id);
+    }
+
     // Fetches all results in specific format needed for Angular application
     public function getAllLegacy() {
         $results = DB::select("
-            SELECT 
+            SELECT
                 id AS id,
                 athlete_id AS athleteId,
                 first_name AS firstName,

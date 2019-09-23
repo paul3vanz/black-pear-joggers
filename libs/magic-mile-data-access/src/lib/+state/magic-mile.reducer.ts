@@ -41,6 +41,12 @@ const _reducer = createReducer(initialState,
       list: [],
       callState: { error: action.error },
     };
+  }),
+  on(magicMileActions.deleteResultSuccess, (state, action) => {
+    return {
+      ...state,
+      list: state.list.filter((result) => result.id !== Number(action.resultId)),
+    };
   })
 );
 

@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import { loadResults, createResult, MagicMile, State } from '@black-pear-joggers/magic-mile-data-access';
+import { loadResults, createResult, deleteResult, MagicMile } from '@black-pear-joggers/magic-mile-data-access';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'bpj-magic-mile-page',
@@ -24,8 +25,8 @@ export class MagicMilePageComponent implements OnInit {
     this.store$.dispatch(createResult());
   }
 
-  onDeleteClick() {
-
+  onDeleteClick(result: MagicMile) {
+    this.store$.dispatch(deleteResult({ result: result }));
   }
 
 }

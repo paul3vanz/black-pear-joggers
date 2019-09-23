@@ -46,6 +46,7 @@ $router->get('/registrations/queue', 'RegistrationController@queueAllRegistratio
 $router->get('/magicmile', 'MagicMileController@getAllLegacy');
 $router->get('/magicmile/create', 'MagicMileController@create');
 $router->post('/magicmile', 'MagicMileController@store');
+$router->post('/magicmile/{id}/delete', 'MagicMileController@delete');
 
 $router->get('/members/totals', 'AthleteController@getMembershipTotals');
 

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MagicMile } from '../models/magic-mile.model';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Athlete } from 'apps/race-results/src/app/models/athlete';
 
@@ -44,9 +44,13 @@ export class MagicMileService {
     return localStorage.getItem(this.KEY_SEARCH);
   }
 
-  create(magicMile: MagicMile) {
+  create(magicMile: MagicMile): Observable<MagicMile> {
     console.log('Create Magic Mile');
     console.log(magicMile);
     return this.http.post<MagicMile>(this.API_PATH, magicMile);
+  }
+
+  delete(magicMile: MagicMile): Observable<string> {
+    return this.http.post<string>(`${this.API_PATH}/${magicMile.id}/delete`, null);
   }
 }
