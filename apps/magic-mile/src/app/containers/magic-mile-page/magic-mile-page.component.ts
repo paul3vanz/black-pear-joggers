@@ -17,7 +17,10 @@ export class MagicMilePageComponent implements OnInit {
   loaded$: Observable<LoadingState>;
   results$: Observable<MagicMile[]>;
 
-  displayFormats = [ { label: 'Recent First', value: 'recent' }, { label: 'Fastest First', value: 'fastest' } ];
+  displayFormats = [
+    { label: 'Recent First', value: 'recent' },
+    { label: 'Fastest First', value: 'fastest' },
+  ];
   displayFormat = 'recent';
 
   constructor(private store$: Store<any>, private route: ActivatedRoute, private router: Router) {

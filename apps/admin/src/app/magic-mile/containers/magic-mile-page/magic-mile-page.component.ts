@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { loadResults, createResult, deleteResult, MagicMile } from '@black-pear-joggers/magic-mile-data-access';
-import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'bpj-magic-mile-page',

@@ -1,9 +1,10 @@
-import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { debounceTime, distinctUntilChanged, startWith } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { SearchPartialState } from '../../+state/search.reducer';
-import { fromSearchActions } from '../../+state/search.actions';
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
+import { fromSearchActions } from '../../+state/search.actions';
+import { SearchPartialState } from '../../+state/search.reducer';
 
 @Component({
   selector: 'bpj-search-bar',
@@ -14,21 +15,27 @@ export class SearchBarComponent implements OnInit {
   @Input() debounce: number;
   @Input() keywords = '';
   @Input() placeholder = 'Search...';
+
   @Output() search = new EventEmitter<string>();
+
   inputChanged = new Subject<string>();
 
   constructor(private store$: Store<SearchPartialState>) {}
 
   ngOnInit() {
-    this.inputChanged.pipe(distinctUntilChanged(), debounceTime(this.debounce)).subscribe((input) => this.onSearch(input));
+    this.inputChanged
+      .pipe(
+        startWith(this.keywords),
+        debounceTime(this.debounce),
+        distinctUntilChanged()
+      )
+      .subscribe((input) => {
+        this.search.emit(input);
+        this.store$.dispatch(new fromSearchActions.Search(input));
+      });
   }
 
-  onChange(keywords: string) {
+  onKeyUp(keywords: string) {
     this.inputChanged.next(keywords);
-  }
-
-  onSearch(keywords: string) {
-    this.search.emit(keywords);
-    this.store$.dispatch(new fromSearchActions.Search(keywords));
   }
 }
