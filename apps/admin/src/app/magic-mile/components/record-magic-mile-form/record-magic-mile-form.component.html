@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
+<form [formGroup]="form" (submit)="onSubmit()" [class.show-errors]="showErrors">
   <div class="o-grid">
     <div class="o-grid__item u-1/2@sm">
       <div class="o-grid o-grid--gutter-sm">
@@ -41,10 +41,10 @@
         </div>
       </div>
 
-      <bpj-athlete-search-results
+      <!-- <bpj-athlete-search-results
         [athletes]="athletes$ | async"
         (selectAthlete)="onSelectAthlete($event)"
-      ></bpj-athlete-search-results>
+      ></bpj-athlete-search-results> -->
 
       <div class="o-grid o-grid--gutter-sm">
         <div class="o-grid__item u-1/2@sm">
@@ -104,7 +104,7 @@
         </div>
       </div>
 
-      <!-- <pre>Valid: {{ form.valid | json }} </pre>
+      <!-- <pre>Valid: {{ form.valid | json }}, ShowErrors: {{ showErrors }} </pre>
 
       <pre>{{ form.value | json }} </pre> -->
 

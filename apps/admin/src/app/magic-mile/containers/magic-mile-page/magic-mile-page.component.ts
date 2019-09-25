@@ -21,7 +21,7 @@ export class MagicMilePageComponent implements OnInit {
   }
 
   onSubmit(form: any) {
-    this.store$.dispatch(createResult());
+    this.store$.dispatch(createResult({ result: form }));
   }
 
   onDeleteClick(result: MagicMile) {

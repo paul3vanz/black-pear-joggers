@@ -45,8 +45,6 @@ export class MagicMileService {
   }
 
   create(magicMile: MagicMile): Observable<MagicMile> {
-    console.log('Create Magic Mile');
-    console.log(magicMile);
     return this.http.post<MagicMile>(this.API_PATH, magicMile);
   }
 

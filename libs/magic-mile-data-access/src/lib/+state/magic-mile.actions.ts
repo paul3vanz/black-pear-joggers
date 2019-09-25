@@ -16,7 +16,8 @@ export const loadResultsSuccess = createAction(
 );
 
 export const createResult = createAction(
-  '[Magic Mile] Create'
+  '[Magic Mile] Create',
+  props<{ result: MagicMile }>()
 );
 
 export const createResultError = createAction(
