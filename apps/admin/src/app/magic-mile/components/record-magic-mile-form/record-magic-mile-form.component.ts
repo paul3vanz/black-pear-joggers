@@ -23,30 +23,38 @@ export class RecordMagicMileFormComponent {
 
   @Output() create = new EventEmitter<any>();
 
-  form = this.formBuilder.group({
+  initialFormState = {
     date: [ moment().format('YYYY-MM-DD'), Validators.required ],
     location: [ this.getDefaultLocation(), Validators.required ],
     athleteId: [],
-    firstName: ['Paul', Validators.required],
-    lastName: ['Evans', Validators.required],
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
     gender: ['M'],
-    category: ['V35'],
-    predictedTime: ['10:00', Validators.required],
-    actualTime: ['09:59', Validators.required],
-    predictedTimeParsed: ['600', Validators.required],
-    actualTimeParsed: ['599', Validators.required],
-  });
+    category: ['SEN'],
+    predictedTime: ['', Validators.required],
+    actualTime: ['', Validators.required],
+    predictedTimeParsed: ['', Validators.required],
+    actualTimeParsed: ['', Validators.required],
+  };
+
+  form = this.formBuilder.group(this.initialFormState);
 
   constructor(
     private formBuilder: FormBuilder,
     private store$: Store<any>,
     private actions$: Actions
   ) {
-    // this.athletes$ = this.store$.select(magicMileQuery.getSearchedAthletes);
     this.callState$ = this.store$.select(magicMileQuery.getCallState);
 
     this.actions$.pipe(ofType(createResultSuccess)).subscribe(() => {
-      this.form.reset()
+      const formDefault = {};
+
+      Object.keys(this.initialFormState).forEach((key) => {
+        formDefault[key] = this.initialFormState[key][0];
+      });
+
+      this.form.reset(formDefault);
+      this.showErrors = false;
     });
 
     this.form.get('firstName').valueChanges.pipe(
