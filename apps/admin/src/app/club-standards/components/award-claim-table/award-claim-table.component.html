@@ -20,7 +20,9 @@
       <td class="u-hidden@max-xs">
         <span [attr.title]="award.createdDate | date : 'D MMMM Y'">{{ award.createdDate | date : "fromNow" }}</span>
       </td>
-      <td class="u-nowrap">{{ award.firstName }} {{ award.lastName }}</td>
+      <td class="u-nowrap">
+          <a href="mailto:{{ award.email }}">{{ award.firstName }} {{ award.lastName }}</a>
+      </td>
       <td>{{ award.gender | gender : 'short' }}{{ award.category }}</td>
       <td>
         <span

@@ -8,6 +8,7 @@ export interface AwardClaim {
   award: string;
   firstName: string;
   lastName: string;
+  email: string;
   verified?: any;
   createdDate: string;
   updatedDate: string;
