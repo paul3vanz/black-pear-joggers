@@ -44,3 +44,33 @@ export const deleteResultSuccess = createAction(
   '[Magic Mile] Delete Success',
   props<{ resultId: string }>()
 );
+
+export const searchAthletes = createAction(
+    '[Magic Mile] Search Athletes',
+    props<{ name: string }>()
+);
+
+export const searchAthletesError = createAction(
+    '[Magic Mile] Search Athletes Error',
+    props<{ error: any }>()
+);
+
+export const searchAthletesSuccess = createAction(
+    '[Magic Mile] Search Athletes Success',
+    props<{ athletes: any[] }>()
+);
+
+export const magicMileActions = {
+    loadResults,
+    loadResultsError,
+    loadResultsSuccess,
+    createResult,
+    createResultError,
+    createResultSuccess,
+    deleteResult,
+    deleteResultError,
+    deleteResultSuccess,
+    searchAthletes,
+    searchAthletesError,
+    searchAthletesSuccess,
+};

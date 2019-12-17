@@ -4,11 +4,23 @@ import { Injectable } from '@angular/core';
 import { EMPTY, of } from 'rxjs';
 
 import { MagicMileService } from '../services/magic-mile.service';
-import * as magicMileActions from './magic-mile.actions';
 import { MagicMile } from '../models/magic-mile.model';
+import { magicMileActions } from './magic-mile.actions';
 
 @Injectable()
 export class MagicMileEffects {
+    searchAthletes$ = createEffect(() => this.actions$
+        .pipe(
+            ofType(magicMileActions.searchAthletes),
+            mergeMap(({ name }) => this.magicMileService.searchAthletes(name)
+                .pipe(
+                    map((athletes) => magicMileActions.searchAthletesSuccess({ athletes })),
+                    catchError(() => EMPTY)
+                )
+            )
+        )
+    );
+
   loadResults$ = createEffect(() => this.actions$
     .pipe(
       ofType(magicMileActions.loadResults),

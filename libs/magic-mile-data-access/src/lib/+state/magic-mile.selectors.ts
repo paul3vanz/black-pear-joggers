@@ -10,6 +10,8 @@ const getError = createSelector(getMagicMileState, (state: magicMileReducer.Stat
 
 const getAllMagicMile = createSelector(getMagicMileState, getCallState, (state: magicMileReducer.State) => state.list);
 
+const getAthletes = createSelector(getMagicMileState, getCallState, (state: magicMileReducer.State) => state.athletes);
+
 const getSelectedId = createSelector(getMagicMileState, (state: magicMileReducer.State) => state.selectedId);
 
 const getSelectedMagicMile = createSelector(getAllMagicMile, getSelectedId, (magicMile, id) => {
@@ -37,4 +39,5 @@ export const magicMileQuery = {
   getAllMagicMile,
   getSelectedMagicMile,
   getMagicMileSearch,
+  getAthletes,
 };

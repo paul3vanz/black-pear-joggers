@@ -7,6 +7,7 @@ export const FEATURE_KEY = 'magicMile';
 
 export interface State {
   list: MagicMile[];
+  athletes: any[];
   selectedId?: number;
   callState: LoadingState;
 }
@@ -17,6 +18,7 @@ export interface PartialState {
 
 export const initialState: State = {
   list: [],
+  athletes: [],
   callState: LoadingStates.INIT,
 };
 
@@ -39,6 +41,27 @@ const _reducer = createReducer(initialState,
     return {
       ...state,
       list: [],
+      callState: { error: action.error },
+    };
+  }),
+  on(magicMileActions.searchAthletes, (state) => {
+    return {
+      ...state,
+      callState: LoadingStates.LOADING,
+    };
+  }),
+
+  on(magicMileActions.searchAthletesSuccess, (state, action) => {
+    return {
+      ...state,
+      athletes: action.athletes,
+      callState: LoadingStates.LOADED,
+    };
+  }),
+  on(magicMileActions.searchAthletesError, (state, action) => {
+    return {
+      ...state,
+      athletes: [],
       callState: { error: action.error },
     };
   }),

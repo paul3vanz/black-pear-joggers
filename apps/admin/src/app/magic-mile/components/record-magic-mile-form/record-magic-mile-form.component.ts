@@ -1,15 +1,17 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Actions, ofType } from '@ngrx/effects';
 
 import * as moment from 'moment-mini-ts';
+
 import { MagicMileLocation } from 'libs/magic-mile-data-access/src/lib/models/magic-mile-location.model';
 import { Athlete } from 'apps/race-results/src/app/models/athlete';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
-import { LoadingState } from 'libs/authentication/src/lib/models/loading-state.model';
-import { magicMileQuery, createResultSuccess } from '@black-pear-joggers/magic-mile-data-access';
-import { Actions, ofType } from '@ngrx/effects';
+import { LoadingState } from '@black-pear-joggers/authentication';
+import { magicMileQuery, createResultSuccess, magicMileActions } from '@black-pear-joggers/magic-mile-data-access';
+import { ToastService } from 'libs/shared-components/src/lib/services/toast.service';
 
 @Component({
   selector: 'bpj-record-magic-mile-form',
@@ -42,11 +44,15 @@ export class RecordMagicMileFormComponent {
   constructor(
     private formBuilder: FormBuilder,
     private store$: Store<any>,
-    private actions$: Actions
+    private actions$: Actions,
+    private toastService: ToastService
   ) {
     this.callState$ = this.store$.select(magicMileQuery.getCallState);
+    this.athletes$ = this.store$.select(magicMileQuery.getAthletes);
 
     this.actions$.pipe(ofType(createResultSuccess)).subscribe(() => {
+        this.toastService.pushMessage('Record created');
+
       const formDefault = {};
 
       Object.keys(this.initialFormState).forEach((key) => {
@@ -75,7 +81,6 @@ export class RecordMagicMileFormComponent {
   }
 
   onSubmit() {
-
     if (this.form.valid) {
       this.create.emit(this.form.value);
     } else {
@@ -89,9 +94,9 @@ export class RecordMagicMileFormComponent {
   }
 
   emitAthleteName() {
-    // this.store$.dispatch(new LoadAthletes(
-    //   `${this.form.get('firstName').value} ${this.form.get('lastName').value}`.trim()
-    // ));
+    this.store$.dispatch(magicMileActions.searchAthletes({
+      name: `${this.form.get('firstName').value} ${this.form.get('lastName').value}`.trim()
+    }));
   }
 
   onSelectAthlete(athlete: Athlete) {

@@ -9,6 +9,7 @@ import { Athlete } from 'apps/race-results/src/app/models/athlete';
 export class AthleteSearchResultsComponent {
   @Input() athletes: Athlete[];
   @Input() loading: boolean;
+  @Input() currentAthleteId: number;
   @Output() selectAthlete = new EventEmitter<Athlete>();
 
 
@@ -78,6 +79,13 @@ export class AthleteSearchResultsComponent {
     this.athletes = [];
   }
 
-
-
+  get shouldShowResults() {
+    return this.loading
+        ? true
+        : this.athletes.length
+            ? this.athletes.length === 1 && this.athletes[0].athlete_id === this.currentAthleteId
+                ? false
+                : true
+            : false;
+  }
 }
