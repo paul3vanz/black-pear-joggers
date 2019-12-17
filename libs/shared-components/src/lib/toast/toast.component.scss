@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+}
+
+.message {
+  margin-top: 10px;
+  padding: 20px 30px;
+  border: 2px solid #fff;
+  border-radius: 3px;
+  background-color: #000;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+}

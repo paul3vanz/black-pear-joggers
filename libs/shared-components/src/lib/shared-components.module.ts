@@ -10,6 +10,7 @@ import { ChipListComponent } from './chip-list/chip-list.component';
 import { ChipComponent } from './chip/chip.component';
 import { StepComponent } from './step/step.component';
 import { IconComponent } from './icon/icon.component';
+import { ToastComponent } from './toast/toast.component';
 
 @NgModule({
   imports: [ CommonModule ],
@@ -23,6 +24,7 @@ import { IconComponent } from './icon/icon.component';
     ChipComponent,
     StepComponent,
     IconComponent,
+    ToastComponent,
   ],
   exports: [
     HeaderComponent,
@@ -34,6 +36,7 @@ import { IconComponent } from './icon/icon.component';
     ChipComponent,
     StepComponent,
     IconComponent,
+    ToastComponent,
   ],
 })
 export class SharedComponentsModule {}
