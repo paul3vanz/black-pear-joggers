@@ -11,10 +11,12 @@ import { ValidationCheckModalComponent } from './components/validation-check-mod
 import { ViewRacesModalComponent } from './components/view-races-modal/view-races-modal.component';
 import { InlineEditFieldComponent } from './components/inline-edit-field/inline-edit-field.component';
 import { AuthenticatedGuard } from 'libs/authentication/src/lib/guards/authenticated.guard';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     RouterModule.forChild([
       {
         path: '',

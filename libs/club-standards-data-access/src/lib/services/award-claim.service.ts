@@ -17,8 +17,10 @@ export class AwardClaimService {
     // private clubStandardsService: ClubStandardsService
   ) {}
 
+  readonly API_URL = 'https://bpj.org.uk/api/public/index.php';
+
   getAll(): Observable<AwardClaim[]> {
-    return this.http.get<AwardClaim[]>('https://bpj.org.uk/api/public/index.php/awardclaim').pipe(
+    return this.http.get<AwardClaim[]>(`${this.API_URL}/awardclaim`).pipe(
       map((awardClaims: AwardClaim[]) => {
         return awardClaims.map((awardClaim: AwardClaim) => {
           return {
@@ -33,23 +35,27 @@ export class AwardClaimService {
   }
 
   getCertificate(id: number, token: string): Observable<AwardClaim> {
-    return this.http.get<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/${id}/${token}`);
+    return this.http.get<AwardClaim>(`${this.API_URL}/awardclaim/${id}/${token}`);
   }
 
   toggleVerified(awardClaim: AwardClaim): Observable<AwardClaim> {
-    return this.http.post<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/toggleverified/${awardClaim.id}`, null);
+    return this.http.post<AwardClaim>(`${this.API_URL}/awardclaim/toggleverified/${awardClaim.id}`, null);
   }
 
   archive(awardClaim: AwardClaim): Observable<AwardClaim> {
-    return this.http.post<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/archive/${awardClaim.id}`, null);
+    return this.http.post<AwardClaim>(`${this.API_URL}/awardclaim/archive/${awardClaim.id}`, null);
   }
 
   delete(awardClaim: AwardClaim): Observable<AwardClaim> {
-    return this.http.post<AwardClaim>(`https://bpj.org.uk/api/public/index.php/awardclaim/delete/${awardClaim.id}`, null);
+    return this.http.post<AwardClaim>(`${this.API_URL}/awardclaim/delete/${awardClaim.id}`, null);
   }
 
   updateRace(awardClaimRace: AwardClaimRace) {
-    return this.http.post<AwardClaimRace>(`https://bpj.org.uk/api/public/index.php/awardclaim/${awardClaimRace.claimId}/race`, awardClaimRace);
+    return this.http.post<AwardClaimRace>(`${this.API_URL}/awardclaim/${awardClaimRace.claimId}/race`, awardClaimRace);
+  }
+
+  update(awardClaim: AwardClaim) {
+    return this.http.post(`${this.API_URL}/awardclaim`, awardClaim);
   }
 
 // MANUAL CHECKS

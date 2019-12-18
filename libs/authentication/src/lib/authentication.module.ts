@@ -1,14 +1,16 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AuthenticationBarComponent } from './components/authentication-bar/authentication-bar.component';
-import { RouterModule } from '@angular/router';
-import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
 import { AmplifyService, AmplifyModules } from 'aws-amplify-angular';
+import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TokenInterceptor } from './interceptors/token.interceptor';
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+
 import Auth from '@aws-amplify/auth';
 import Interactions from '@aws-amplify/interactions';
 import Storage from '@aws-amplify/storage';
+
+import { AuthenticationBarComponent } from './components/authentication-bar/authentication-bar.component';
+import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
+import { TokenInterceptor } from './interceptors/token.interceptor';
 import { AuthModule } from './auth/auth.module';
 
 @NgModule({
@@ -19,7 +21,9 @@ import { AuthModule } from './auth/auth.module';
     AuthModule
   ],
   declarations: [ AuthenticationBarComponent ],
-  exports: [ AuthenticationBarComponent ],
+  exports: [
+      AuthenticationBarComponent
+  ],
   providers: [
     {
       provide: AmplifyService,

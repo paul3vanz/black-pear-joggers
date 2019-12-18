@@ -72,7 +72,7 @@ export class AuthPageComponent {
       tap(() => {
         console.log('authenticated redirect');
         setTimeout(() => {
-          this.router.navigate(['/club-standards']);
+          this.router.navigate(['/magic-mile']);
         }, 0);
       })
     ).subscribe();
