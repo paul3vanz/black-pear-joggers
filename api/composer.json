@@ -11,7 +11,8 @@
     "guzzlehttp/guzzle": "^6.2",
     "fabpot/goutte": "^3.2",
     "firebase/php-jwt": "^5.0",
-    "phpseclib/phpseclib": "^2.0"
+    "phpseclib/phpseclib": "^2.0",
+    "rebing/graphql-laravel": "^5.0"
   },
   "require-dev": {
     "fzaninotto/faker": "~1.4",
