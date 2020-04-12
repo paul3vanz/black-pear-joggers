@@ -9,17 +9,48 @@ use Rebing\GraphQL\Support\Query;
 
 class MagicMileQuery extends Query
 {
-    protected $attributes = [
-        'name' => 'MagicMile',
+  protected $attributes = [
+    'name' => 'MagicMile',
+  ];
+
+  public function type(): Type
+  {
+    return Type::listOf(GraphQL::type('MagicMile'));
+  }
+
+  public function args(): array
+  {
+    return [
+      'id' => [
+        'name' => 'id',
+        'type' => Type::int(),
+        'rules' => [],
+      ],
+      'category' => [
+        'name' => 'category',
+        'type' => GraphQL::type('CategoryEnum'),
+        'rules' => [],
+      ],
+      'location' => [
+        'name' => 'location',
+        'type' => GraphQL::type('LocationEnum'),
+        'rules' => [],
+      ],
     ];
+  }
 
-    public function type(): Type
-    {
-        return Type::listOf(GraphQL::type('MagicMile'));
+  public function resolve($root, $args)
+  {
+    $query = MagicMile::query();
+
+    foreach (MagicMileQuery::args() as $arg) {
+
+      $fieldName = $arg['name'];
+      if (isset($args[$fieldName])) {
+        $query = $query->where($fieldName, $args[$fieldName]);
+      }
     }
 
-    public function resolve($root, $args)
-    {
-        return MagicMile::all();
-    }
+    return $query->get();
+  }
 }
