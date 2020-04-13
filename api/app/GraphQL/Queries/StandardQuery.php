@@ -3,46 +3,34 @@
 namespace App\GraphQL\Queries;
 
 use Closure;
-use App\Models\MagicMile;
+use App\Models\Standard;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use GraphQL\Type\Definition\ResolveInfo;
 use Rebing\GraphQL\Support\SelectFields;
 use Rebing\GraphQL\Support\Query;
 
-class MagicMileQuery extends Query
+class StandardQuery extends Query
 {
   protected $attributes = [
-    'name' => 'MagicMile',
+    'name' => 'Standard',
   ];
 
   public function type(): Type
   {
-    return Type::listOf(GraphQL::type('MagicMile'));
+    return Type::listOf(GraphQL::type('Standard'));
   }
 
   public function args(): array
   {
     return [
-      'id' => [
-        'name' => 'id',
-        'type' => Type::int(),
-        'rules' => [],
+      'gender' => [
+        'name' => 'gender',
+        'type' => GraphQL::type('GenderEnum'),
       ],
       'category' => [
         'name' => 'category',
         'type' => GraphQL::type('CategoryEnum'),
-        'rules' => [],
-      ],
-      'location' => [
-        'name' => 'location',
-        'type' => GraphQL::type('LocationEnum'),
-        'rules' => [],
-      ],
-      'date' => [
-        'name' => 'date',
-        'type' => Type::string(),
-        'rules' => [],
       ],
     ];
   }
@@ -50,9 +38,9 @@ class MagicMileQuery extends Query
   public function resolve($root, $args, $context, ResolveInfo $info, Closure $getSelectFields)
   {
     $filtersAdded = 0;
-    $query = MagicMile::query();
+    $query = Standard::query();
 
-    foreach (MagicMileQuery::args() as $arg) {
+    foreach (StandardQuery::args() as $arg) {
       $fieldName = $arg['name'];
 
       if (isset($args[$fieldName])) {
@@ -60,6 +48,12 @@ class MagicMileQuery extends Query
         $filtersAdded++;
       }
     }
+
+    $fields = $getSelectFields();
+    $select = $fields->getSelect();
+    $with = $fields->getRelations();
+
+    $query = $query->with($with);
 
     if ($filtersAdded) {
       return $query->get();

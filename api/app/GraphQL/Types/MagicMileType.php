@@ -73,6 +73,10 @@ class MagicMileType extends GraphQLType
         'type' => Type::nonNull(Type::int()),
         'description' => 'Actual time in seconds',
       ],
+      'athlete' => [
+        'type' => GraphQL::type('Athlete'),
+        'description' => 'Athlete details',
+      ],
     ];
   }
 }

@@ -2,9 +2,12 @@
 
 namespace App\GraphQL\Queries;
 
+use Closure;
 use App\Models\Athlete;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Facades\GraphQL;
+use GraphQL\Type\Definition\ResolveInfo;
+use Rebing\GraphQL\Support\SelectFields;
 use Rebing\GraphQL\Support\Query;
 
 class AthleteQuery extends Query
@@ -44,7 +47,7 @@ class AthleteQuery extends Query
     ];
   }
 
-  public function resolve($root, $args)
+  public function resolve($root, $args, $context, ResolveInfo $info, Closure $getSelectFields)
   {
     $filtersAdded = 0;
     $query = Athlete::query();

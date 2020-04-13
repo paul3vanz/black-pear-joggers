@@ -3,22 +3,22 @@
 namespace App\GraphQL\Queries;
 
 use Closure;
-use App\Models\MagicMile;
+use App\Models\Event;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use GraphQL\Type\Definition\ResolveInfo;
 use Rebing\GraphQL\Support\SelectFields;
 use Rebing\GraphQL\Support\Query;
 
-class MagicMileQuery extends Query
+class EventQuery extends Query
 {
   protected $attributes = [
-    'name' => 'MagicMile',
+    'name' => 'Event',
   ];
 
   public function type(): Type
   {
-    return Type::listOf(GraphQL::type('MagicMile'));
+    return Type::listOf(GraphQL::type('Event'));
   }
 
   public function args(): array
@@ -34,13 +34,13 @@ class MagicMileQuery extends Query
         'type' => GraphQL::type('CategoryEnum'),
         'rules' => [],
       ],
-      'location' => [
-        'name' => 'location',
-        'type' => GraphQL::type('LocationEnum'),
+      'firstName' => [
+        'name' => 'firstName',
+        'type' => Type::string(),
         'rules' => [],
       ],
-      'date' => [
-        'name' => 'date',
+      'lastName' => [
+        'name' => 'lastName',
         'type' => Type::string(),
         'rules' => [],
       ],
@@ -50,9 +50,9 @@ class MagicMileQuery extends Query
   public function resolve($root, $args, $context, ResolveInfo $info, Closure $getSelectFields)
   {
     $filtersAdded = 0;
-    $query = MagicMile::query();
+    $query = Event::query();
 
-    foreach (MagicMileQuery::args() as $arg) {
+    foreach (EventQuery::args() as $arg) {
       $fieldName = $arg['name'];
 
       if (isset($args[$fieldName])) {

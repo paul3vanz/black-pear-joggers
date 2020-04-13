@@ -3,22 +3,22 @@
 namespace App\GraphQL\Queries;
 
 use Closure;
-use App\Models\MagicMile;
+use App\Models\Performance;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use GraphQL\Type\Definition\ResolveInfo;
 use Rebing\GraphQL\Support\SelectFields;
 use Rebing\GraphQL\Support\Query;
 
-class MagicMileQuery extends Query
+class PerformanceQuery extends Query
 {
   protected $attributes = [
-    'name' => 'MagicMile',
+    'name' => 'Performance',
   ];
 
   public function type(): Type
   {
-    return Type::listOf(GraphQL::type('MagicMile'));
+    return Type::listOf(GraphQL::type('Performance'));
   }
 
   public function args(): array
@@ -50,9 +50,9 @@ class MagicMileQuery extends Query
   public function resolve($root, $args, $context, ResolveInfo $info, Closure $getSelectFields)
   {
     $filtersAdded = 0;
-    $query = MagicMile::query();
+    $query = Performance::query();
 
-    foreach (MagicMileQuery::args() as $arg) {
+    foreach (PerformanceQuery::args() as $arg) {
       $fieldName = $arg['name'];
 
       if (isset($args[$fieldName])) {

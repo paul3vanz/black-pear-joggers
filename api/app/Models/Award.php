@@ -6,15 +6,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-final class Award extends Model {
+final class Award extends Model
+{
 
-	public $timestamps = false;
+  public $timestamps = false;
 
-	protected $fillable = [
-		'name'
-	];
+  protected $fillable = [
+    'name'
+  ];
 
-	public function standards() {
-		return $this->hasMany('App\Models\Standard', 'standard', 'id');
-	}
+  public function standards()
+  {
+    return $this->hasMany('App\Models\Standard', 'standard', 'id');
+  }
 }

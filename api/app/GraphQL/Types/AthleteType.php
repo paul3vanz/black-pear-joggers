@@ -15,20 +15,6 @@ class AthleteType extends GraphQLType
     'model' => Athlete::class
   ];
 
-  // 'id',
-  // 'urn',
-  // 'athlete_id',
-  // 'first_name',
-  // 'last_name',
-  // 'gender',
-  // 'dob',
-  // 'age',
-  // 'category',
-  // 'active',
-  // 'membership_check',
-  // 'membership_check_status',
-  // 'club'
-
   public function fields(): array
   {
     return [
@@ -93,7 +79,16 @@ class AthleteType extends GraphQLType
       'magicMiles' => [
         'type' => Type::listOf(GraphQL::type('MagicMile')),
         'description' => 'The athlete\'s magic mile performances',
+      ],
+      'performances' => [
+        'type' => Type::listOf(GraphQL::type('Performance')),
+        'description' => 'The athlete\'s performances',
       ]
+      // rankings
+      // standards
+      // latestPerformance
+      // firstPerformance
+      // latestRanking
     ];
   }
 }
