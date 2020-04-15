@@ -107,6 +107,7 @@ return [
         'event' => App\GraphQL\Queries\EventQuery::class,
         'magicMile' => App\GraphQL\Queries\MagicMileQuery::class,
         'performance' => App\GraphQL\Queries\PerformanceQuery::class,
+        'ranking' => App\GraphQL\Queries\RankingQuery::class,
         'standard' => App\GraphQL\Queries\StandardQuery::class,
       ],
       'mutation' => [
@@ -127,15 +128,18 @@ return [
   // ]
   //
   'types' => [
-    // 'example'           => ExampleType::class,
-    // 'relation_example'  => ExampleRelationType::class,
-    // \Rebing\GraphQL\Support\UploadType::class,
     'Athlete' => App\GraphQL\Types\AthleteType::class,
     'Award' => App\GraphQL\Types\AwardType::class,
     'Event' => App\GraphQL\Types\EventType::class,
     'MagicMile' => App\GraphQL\Types\MagicMileType::class,
     'Performance' => App\GraphQL\Types\PerformanceType::class,
+    'Ranking' => App\GraphQL\Types\RankingType::class,
     'Standard' => App\GraphQL\Types\StandardType::class,
+
+    'AthleteFilter' => App\GraphQL\InputObject\AthleteFilterInput::class,
+    'PerformanceFilter' => App\GraphQL\InputObject\PerformanceFilterInput::class,
+    'DateFilter' => App\GraphQL\InputObject\DateFilterInput::class,
+    'StringFilter' => App\GraphQL\InputObject\StringFilterInput::class,
 
     'GenderEnum' => App\GraphQL\Enums\GenderEnum::class,
     'CategoryEnum' => App\GraphQL\Enums\CategoryEnum::class,

@@ -8,9 +8,9 @@ use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use GraphQL\Type\Definition\ResolveInfo;
 use Rebing\GraphQL\Support\SelectFields;
-use Rebing\GraphQL\Support\Query;
+use App\GraphQL\Queries\BaseQuery;
 
-class PerformanceQuery extends Query
+class PerformanceQuery extends BaseQuery
 {
   protected $attributes = [
     'name' => 'Performance',
@@ -29,19 +29,9 @@ class PerformanceQuery extends Query
         'type' => Type::int(),
         'rules' => [],
       ],
-      'category' => [
-        'name' => 'category',
-        'type' => GraphQL::type('CategoryEnum'),
-        'rules' => [],
-      ],
-      'location' => [
-        'name' => 'location',
-        'type' => GraphQL::type('LocationEnum'),
-        'rules' => [],
-      ],
-      'date' => [
-        'name' => 'date',
-        'type' => Type::string(),
+      'filters' => [
+        'name' => 'filter',
+        'type' => GraphQL::type('PerformanceFilter'),
         'rules' => [],
       ],
     ];
@@ -49,22 +39,16 @@ class PerformanceQuery extends Query
 
   public function resolve($root, $args, $context, ResolveInfo $info, Closure $getSelectFields)
   {
-    $filtersAdded = 0;
     $query = Performance::query();
 
-    foreach (PerformanceQuery::args() as $arg) {
-      $fieldName = $arg['name'];
-
-      if (isset($args[$fieldName])) {
-        $query = $query->where($fieldName, $args[$fieldName]);
-        $filtersAdded++;
-      }
+    if (isset($args['id'])) {
+      $query = $query->where('id', $args['id']);
     }
 
-    if ($filtersAdded) {
-      return $query->get();
-    } else {
-      return $query->get()->all();
+    if (isset($args['filter'])) {
+      $query = PerformanceQuery::addFilters($args['filter'], $query);
     }
+
+    return $query->get();
   }
 }

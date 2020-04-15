@@ -8,9 +8,9 @@ use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use GraphQL\Type\Definition\ResolveInfo;
 use Rebing\GraphQL\Support\SelectFields;
-use Rebing\GraphQL\Support\Query;
+use App\GraphQL\Queries\BaseQuery;
 
-class AthleteQuery extends Query
+class AthleteQuery extends BaseQuery
 {
   protected $attributes = [
     'name' => 'Athlete',
@@ -29,19 +29,9 @@ class AthleteQuery extends Query
         'type' => Type::int(),
         'rules' => [],
       ],
-      'category' => [
-        'name' => 'category',
-        'type' => GraphQL::type('CategoryEnum'),
-        'rules' => [],
-      ],
-      'firstName' => [
-        'name' => 'firstName',
-        'type' => Type::string(),
-        'rules' => [],
-      ],
-      'lastName' => [
-        'name' => 'lastName',
-        'type' => Type::string(),
+      'filter' => [
+        'name' => 'filter',
+        'type' => GraphQL::type('AthleteFilter'),
         'rules' => [],
       ],
     ];
@@ -49,22 +39,16 @@ class AthleteQuery extends Query
 
   public function resolve($root, $args, $context, ResolveInfo $info, Closure $getSelectFields)
   {
-    $filtersAdded = 0;
     $query = Athlete::query();
 
-    foreach (AthleteQuery::args() as $arg) {
-      $fieldName = $arg['name'];
-
-      if (isset($args[$fieldName])) {
-        $query = $query->where($fieldName, $args[$fieldName]);
-        $filtersAdded++;
-      }
+    if (isset($args['id'])) {
+      $query = $query->where('id', $args['id']);
     }
 
-    if ($filtersAdded) {
-      return $query->get();
-    } else {
-      return $query->get()->all();
+    if (isset($args['filter'])) {
+      $query = AthleteQuery::addFilters($args['filter'], $query);
     }
+
+    return $query->get();
   }
 }

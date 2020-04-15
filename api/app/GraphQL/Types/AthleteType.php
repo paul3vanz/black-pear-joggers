@@ -47,7 +47,7 @@ class AthleteType extends GraphQLType
       ],
       'dateOfBirth' => [
         'alias' => 'dob',
-        'type' => Type::nonNull(Type::string()),
+        'type' => Type::string(),
         'description' => 'Date of birth',
       ],
       'age' => [
@@ -83,12 +83,38 @@ class AthleteType extends GraphQLType
       'performances' => [
         'type' => Type::listOf(GraphQL::type('Performance')),
         'description' => 'The athlete\'s performances',
-      ]
-      // rankings
-      // standards
-      // latestPerformance
-      // firstPerformance
-      // latestRanking
+      ],
+      'rankings' => [
+        'type' => Type::listOf(GraphQL::type('Ranking')),
+        'description' => 'The athlete\'s rankings',
+        'args' => [
+          'date' => [
+            'type' => GraphQL::type('DateFilter'),
+          ],
+
+        ],
+        'query' => function (array $args, $query, $ctx) {
+          print_r('test');
+          die('test');
+          return $query->where('date', '>', $args['date']);
+        }
+      ],
+      'standards' => [
+        'type' => Type::listOf(GraphQL::type('Standard')),
+        'description' => 'The athlete\'s standards',
+      ],
+      'latestPerformance' => [
+        'type' => GraphQL::type('Performance'),
+        'description' => 'The most recent performance recorded',
+      ],
+      'firstPerformance' => [
+        'type' => GraphQL::type('Performance'),
+        'description' => 'The most recent performance recorded',
+      ],
+      'latestRanking' => [
+        'type' => GraphQL::type('Ranking'),
+        'description' => 'The most recent handicap recorded',
+      ],
     ];
   }
 }
