@@ -1,6 +1,6 @@
 <?php
 return [
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Default Log Channel
     |--------------------------------------------------------------------------
@@ -10,8 +10,8 @@ return [
     | one of the channels defined in the "channels" configuration array.
     |
     */
-    'default' => env('LOG_CHANNEL', 'errorlog'),
-    /*
+  'default' => env('LOG_CHANNEL', 'slack'),
+  /*
     |--------------------------------------------------------------------------
     | Log Channels
     |--------------------------------------------------------------------------
@@ -24,36 +24,36 @@ return [
     |                    "errorlog", "custom", "stack"
     |
     */
-    'channels' => [
-        'stack' => [
-            'driver' => 'stack',
-            'channels' => ['single'],
-        ],
-        'single' => [
-            'driver' => 'single',
-            'path' => storage_path('logs/lumen.log'),
-            'level' => 'debug',
-        ],
-        'daily' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/lumen.log'),
-            'level' => 'debug',
-            'days' => 7,
-        ],
-        'slack' => [
-            'driver' => 'slack',
-            'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'Lumen Log',
-            'emoji' => ':boom:',
-            'level' => 'critical',
-        ],
-        'syslog' => [
-            'driver' => 'syslog',
-            'level' => 'debug',
-        ],
-        'errorlog' => [
-            'driver' => 'errorlog',
-            'level' => 'debug',
-        ],
+  'channels' => [
+    'stack' => [
+      'driver' => 'stack',
+      'channels' => ['single'],
     ],
+    'single' => [
+      'driver' => 'single',
+      'path' => storage_path('logs/lumen.log'),
+      'level' => 'debug',
+    ],
+    'daily' => [
+      'driver' => 'daily',
+      'path' => storage_path('logs/lumen.log'),
+      'level' => 'debug',
+      'days' => 7,
+    ],
+    'slack' => [
+      'driver' => 'slack',
+      'url' => env('LOG_SLACK_WEBHOOK_URL'),
+      'username' => 'Lumen Log',
+      'emoji' => ':running:',
+      'level' => 'debug',
+    ],
+    'syslog' => [
+      'driver' => 'syslog',
+      'level' => 'debug',
+    ],
+    'errorlog' => [
+      'driver' => 'errorlog',
+      'level' => 'debug',
+    ],
+  ],
 ];
