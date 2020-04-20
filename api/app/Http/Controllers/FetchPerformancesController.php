@@ -162,10 +162,24 @@ class FetchPerformancesController extends Controller
 
       $tableCells = $tableRow->filter('td');
 
+      // <tr style="background-color:WhiteSmoke;">
+      // 0 <td>HM</td>
+      // 1 <td>84:16</td>
+      // 2 <td></td>
+      // 3 <td nowrap="" align="right"></td>
+      // 4 <td>84:19</td>
+      // 5 <td>23</td>
+      // 6 <td></td>
+      // 7 <td></td>
+      // 8 <td></td>
+      // 9 <td><a href="../results/results.aspx?meetingid=294267&amp;event=HM&amp;venue=Worcester&amp;date=15-Sep-19" target="_blank">Worcester</a></td>
+      // 10 <td>Worcester City Runs Half Marathon</td>
+      // 11 <td nowrap="" align="right">15 Sep 19</td>
+      // </tr>
       $athleteId = $athlete->id;
       $event = trim($tableCells->eq(0)->text());
-      $gunTime = trim($tableCells->eq(1)->text());
-      $chipTime = trim($tableCells->eq(4)->text());
+      $gunTime = trim($tableCells->eq(4)->text());
+      $chipTime = trim($tableCells->eq(1)->text());
       $time = ($chipTime) ? $chipTime : $gunTime;
       $timeParsed = $this->parseTime($time);
       $race = trim($tableCells->eq(10)->text());

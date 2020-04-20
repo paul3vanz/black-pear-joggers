@@ -7,7 +7,7 @@ import * as moment from 'moment-mini-ts';
 @Component({
   selector: 'bpj-personal-best-panel',
   templateUrl: './personal-best-panel.component.html',
-  styleUrls: [ './personal-best-panel.component.scss' ],
+  styleUrls: ['./personal-best-panel.component.scss']
 })
 export class PersonalBestPanelComponent implements OnChanges {
   @Input() eventName = '5K';
@@ -35,21 +35,37 @@ export class PersonalBestPanelComponent implements OnChanges {
     //   marathon: { label: 'Marathon', data: [], includedEvents: [ 'Mar', 'MarMT' ], borderColor: '#fff', fill: false },
     // };
 
-    this.get5K().forEach((result) => {
+    this.get5K().forEach(result => {
       chartData5K.push({
         x: new Date(result.date),
         y: result.time_parsed,
-        event: result.race,
+        event: result.race
       });
     });
 
-    // this.results.data
-    //   .filter((result) => {
-    //     return [ '10K', '10KMT' ].includes(result.event);
-    //   })
-    //   .forEach((result) => {
-    //     chartData10K.push({ x: new Date(result.date), y: result.time_parsed });
-    //   });
+    this.get10K().forEach(result => {
+      chartData10K.push({
+        x: new Date(result.date),
+        y: result.time_parsed,
+        event: result.race
+      });
+    });
+
+    this.getHM().forEach(result => {
+      chartDataHM.push({
+        x: new Date(result.date),
+        y: result.time_parsed,
+        event: result.race
+      });
+    });
+
+    this.getMar().forEach(result => {
+      chartDataMar.push({
+        x: new Date(result.date),
+        y: result.time_parsed,
+        event: result.race
+      });
+    });
 
     // this.results.data
     //   .filter((result) => {
@@ -81,32 +97,32 @@ export class PersonalBestPanelComponent implements OnChanges {
             data: chartData5K,
             label: '5K',
             borderColor: '#f89829',
-            fill: false,
+            fill: false
           },
-          // {
-          //   data: chartData10K,
-          //   label: '10K',
-          //   borderColor: '#fff',
-          //   fill: false,
-          // },
-          // {
-          //   data: chartDataHM,
-          //   label: 'Half Marathon',
-          //   borderColor: '#fff',
-          //   fill: false,
-          // },
-          // {
-          //   data: chartDataMar,
-          //   label: 'Marathon',
-          //   borderColor: '#fff',
-          //   fill: false,
-          // },
-        ],
+          {
+            data: chartData10K,
+            label: '10K',
+            borderColor: '#ccc',
+            fill: false
+          },
+          {
+            data: chartDataHM,
+            label: 'Half Marathon',
+            borderColor: '#999',
+            fill: false
+          },
+          {
+            data: chartDataMar,
+            label: 'Marathon',
+            borderColor: '#000',
+            fill: false
+          }
+        ]
       },
       options: {
         maintainAspectRatio: false,
         legend: {
-          position: false,
+          position: false
         },
         tooltips: {
           mode: 'nearest',
@@ -115,45 +131,67 @@ export class PersonalBestPanelComponent implements OnChanges {
             title: (tooltipItem, data) => {
               return data.datasets[0].data[tooltipItem[0].index].event;
             },
-            label: (tooltipItem) => {
+            label: tooltipItem => {
               return this.formattedTime(tooltipItem.yLabel);
-            },
-          },
+            }
+          }
         },
         scales: {
           xAxes: [
             {
               type: 'time',
               time: {
-                unit: 'month',
-              },
-            },
+                unit: 'month'
+              }
+            }
           ],
           yAxes: [
             {
               ticks: {
                 callback: (value, index, values) => {
                   return this.formattedTime(value);
-                },
-              },
-            },
-          ],
+                }
+              }
+            }
+          ]
         },
         title: {
           display: false,
-          text: 'Race history',
-        },
-      },
+          text: 'Race history'
+        }
+      }
     });
   }
 
   formattedTime(timeInSeconds: number) {
-    return new Date(timeInSeconds * 1000).toISOString().substr(11, 8).toString().substring(timeInSeconds >= 3600 ? 1 : 3);
+    return new Date(timeInSeconds * 1000)
+      .toISOString()
+      .substr(11, 8)
+      .toString()
+      .substring(timeInSeconds >= 3600 ? 1 : 3);
   }
 
   get5K() {
-    return this.results.data.filter((result) => {
-      return [ '5K', 'parkrun' ].includes(result.event);
+    return this.results.data.filter(result => {
+      return ['5K', 'parkrun'].includes(result.event) && result.isPersonalBest;
+    });
+  }
+
+  get10K() {
+    return this.results.data.filter(result => {
+      return ['10K', '10KMT'].includes(result.event) && result.isPersonalBest;
+    });
+  }
+
+  getHM() {
+    return this.results.data.filter(result => {
+      return ['HM', 'HMMT'].includes(result.event) && result.isPersonalBest;
+    });
+  }
+
+  getMar() {
+    return this.results.data.filter(result => {
+      return ['Mar', 'MarMT'].includes(result.event) && result.isPersonalBest;
     });
   }
 }
