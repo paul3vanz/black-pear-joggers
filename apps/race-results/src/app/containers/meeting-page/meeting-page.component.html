@@ -82,6 +82,8 @@
             attr.data-value="{{result.time_parsed}}"
           >
             {{result.time}}
+
+            <span class="pb" *ngIf="result.isPersonalBest">PB</span>
           </td>
 
           <td class="nowrap">

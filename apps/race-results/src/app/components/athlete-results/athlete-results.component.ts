@@ -5,7 +5,7 @@ import { Result } from '../../models/result';
 @Component({
   selector: 'bpj-athlete-results',
   templateUrl: './athlete-results.component.html',
-  styleUrls: [ './athlete-results.component.css' ],
+  styleUrls: ['./athlete-results.component.scss']
 })
 export class AthleteResultsComponent {
   @Input() loading: boolean;

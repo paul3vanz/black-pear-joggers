@@ -30,3 +30,11 @@ table {
 .standards__heading--Platinum span {
   background-color: #8791a0;
 }
+
+.pb {
+  background-color: green;
+  color: #fff;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+}

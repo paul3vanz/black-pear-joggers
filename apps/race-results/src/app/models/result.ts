@@ -12,4 +12,5 @@ export interface Result {
   meeting_id: string;
   race: string;
   date: string;
+  isPersonalBest: boolean;
 }
