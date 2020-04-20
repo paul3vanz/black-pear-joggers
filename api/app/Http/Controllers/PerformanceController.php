@@ -67,7 +67,9 @@ class PerformanceController extends Controller
                 'performances.time_parsed',
                 'performances.meeting_id',
                 'performances.race',
-                'performances.date');
+                'performances.date',
+                'performances.isPersonalBest'
+              );
 
         $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
         if ($searchTerm) {
@@ -289,5 +291,3 @@ class PerformanceController extends Controller
     }
 
 }
-
-?>

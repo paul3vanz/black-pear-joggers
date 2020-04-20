@@ -29,6 +29,11 @@ class PerformanceQuery extends BaseQuery
         'type' => Type::int(),
         'rules' => [],
       ],
+      'athleteId' => [
+        'name' => 'athleteId',
+        'type' => Type::int(),
+        'rules' => [],
+      ],
       'filters' => [
         'name' => 'filter',
         'type' => GraphQL::type('PerformanceFilter'),
@@ -45,9 +50,16 @@ class PerformanceQuery extends BaseQuery
       $query = $query->where('id', $args['id']);
     }
 
+    if (isset($args['athleteId'])) {
+      $query = $query->where('athlete_id', $args['athleteId']);
+    }
+
     if (isset($args['filter'])) {
       $query = PerformanceQuery::addFilters($args['filter'], $query);
     }
+
+    // print_r($query->toSql());
+    // print_r($query->getBindings());
 
     return $query->get();
   }

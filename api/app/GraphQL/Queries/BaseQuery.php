@@ -2,16 +2,23 @@
 
 namespace App\GraphQL\Queries;
 
+use Log;
+// use Illuminate\Support\Facades\Log;
 use Rebing\GraphQL\Support\Query;
 
 abstract class BaseQuery extends Query
 {
   function addFilters($filter, $query)
   {
-    foreach ($filter as $fieldName => $operatorAndValue) {
-      $value = current($operatorAndValue);
+    foreach ($filter as $fieldName => $filterValue) {
+      if (!is_array($filterValue)) {
+        // echo $fieldName . '=' . $filterValue;
+        return $query->where($fieldName, '=', $filterValue);
+      }
 
-      switch (key($operatorAndValue)) {
+      $value = current($filterValue);
+
+      switch (key($filterValue)) {
         case 'lt':
           $query = $query->where($fieldName, '<', $value);
           break;

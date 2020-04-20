@@ -64,6 +64,10 @@ class PerformanceType extends GraphQLType
         'type' => Type::nonNull(Type::boolean()),
         'description' => 'Whether the performance was manually added',
       ],
+      'isPersonalBest' => [
+        'type' => Type::nonNull(Type::boolean()),
+        'description' => 'Was this performance a personal best at the time',
+      ],
       'athlete' => [
         'type' => GraphQL::type('Athlete'),
         'description' => 'Details of the athlete',

@@ -24,7 +24,7 @@ $router->group([
     $router->get('', 'AwardClaimController@getAll');
 });
 
-$router->group([ 'prefix' => 'membership'], function ($router) {
+$router->group(['prefix' => 'membership'], function ($router) {
     $router->get('update', 'MembershipController@updateMembershipStatus');
     $router->get('members/{clubId}', 'MembershipController@getClubMembers');
     $router->get('clubs', 'MembershipController@getClubs');
@@ -40,6 +40,7 @@ $router->get('/fetch/performances/{athleteId}', 'FetchPerformancesController@fet
 $router->get('/fetch/performances', 'FetchPerformancesController@queueAllFetchPerformances');
 $router->get('/fetch/rankings/{athleteId}', 'FetchRankingsController@fetchRankings');
 $router->get('/fetch/rankings', 'FetchRankingsController@queueAllFetchRankings');
+$router->get('/fetch/updatepersonalbests', 'FetchPerformancesController@updatePersonalBests');
 
 $router->get('/registrations/queue', 'RegistrationController@queueAllRegistrations');
 
