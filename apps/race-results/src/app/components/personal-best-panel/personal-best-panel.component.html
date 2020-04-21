@@ -34,8 +34,8 @@
   </div>
 </div>
 
-<div *ngIf="chart">
-  <canvas id="canvas" height="300">{{ chart }}</canvas>
+<div *ngIf="chart" class="chart-container">
+  <canvas class="chart" id="canvas" height="300">{{ chart }}</canvas>
 </div>
 
 <bpj-modal [wide]="true">

@@ -39,6 +39,7 @@ import { NoSearchResultsAthletesComponent } from './components/no-search-results
 import { NoSearchResultsMeetingsComponent } from './components/no-search-results-meetings/no-search-results-meetings.component';
 import { SearchBarComponent } from './components/search-bar/search-bar/search-bar.component';
 import { PersonalBestPanelComponent } from './components/personal-best-panel/personal-best-panel.component';
+import { PacePipe } from 'libs/shared-pipes/src/lib/pipes/pace.pipe';
 
 @NgModule({
   declarations: [
@@ -57,15 +58,15 @@ import { PersonalBestPanelComponent } from './components/personal-best-panel/per
     SearchResultsMeetingsComponent,
     NoSearchResultsAthletesComponent,
     NoSearchResultsMeetingsComponent,
-    SearchBarComponent,
+    SearchBarComponent
   ],
   imports: [
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
-      logOnly: environment.production,
+      logOnly: environment.production
     }),
-    EffectsModule.forRoot([ AthletesEffects, ResultsEffects, StandardsEffects ]),
+    EffectsModule.forRoot([AthletesEffects, ResultsEffects, StandardsEffects]),
     BrowserModule,
     NxModule.forRoot(),
     FormsModule,
@@ -80,31 +81,31 @@ import { PersonalBestPanelComponent } from './components/personal-best-panel/per
         {
           path: '',
           redirectTo: '/results',
-          pathMatch: 'full',
+          pathMatch: 'full'
         },
         {
           path: 'results',
-          component: SearchPageComponent,
+          component: SearchPageComponent
         },
         {
           path: 'standards',
-          component: StandardsPageComponent,
+          component: StandardsPageComponent
         },
         {
           path: 'athlete/:id',
-          component: AthletePageComponent,
+          component: AthletePageComponent
         },
         {
           path: 'meeting/:date/:id',
-          component: MeetingPageComponent,
-        },
+          component: MeetingPageComponent
+        }
       ],
       {
-        useHash: true,
+        useHash: true
       }
-    ),
+    )
   ],
-  providers: [ AthletesService, ResultsService, StandardsService ],
-  bootstrap: [ AppComponent ],
+  providers: [AthletesService, ResultsService, StandardsService],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

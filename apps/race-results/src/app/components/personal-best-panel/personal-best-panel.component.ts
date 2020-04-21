@@ -3,6 +3,7 @@ import { Chart } from 'chart.js';
 import { Paging } from '../../models/paging';
 import { Result } from '../../models/result';
 import * as moment from 'moment-mini-ts';
+import { PacePipe } from 'libs/shared-pipes/src/lib/pipes/pace.pipe';
 
 @Component({
   selector: 'bpj-personal-best-panel',
@@ -15,6 +16,8 @@ export class PersonalBestPanelComponent implements OnChanges {
   @Input() personalBests: any;
   @Input() results: Paging<Result>;
   chart = [];
+
+  constructor(private pacePipe: PacePipe) {}
 
   ngOnChanges() {
     if (!this.results || !this.results.data) {
@@ -38,7 +41,8 @@ export class PersonalBestPanelComponent implements OnChanges {
     this.get5K().forEach(result => {
       chartData5K.push({
         x: new Date(result.date),
-        y: result.time_parsed,
+        y: this.pacePipe.transform(result.time_parsed, '5K', true),
+        time: result.time_parsed,
         event: result.race
       });
     });
@@ -46,7 +50,8 @@ export class PersonalBestPanelComponent implements OnChanges {
     this.get10K().forEach(result => {
       chartData10K.push({
         x: new Date(result.date),
-        y: result.time_parsed,
+        y: this.pacePipe.transform(result.time_parsed, '10K', true),
+        time: result.time_parsed,
         event: result.race
       });
     });
@@ -54,7 +59,8 @@ export class PersonalBestPanelComponent implements OnChanges {
     this.getHM().forEach(result => {
       chartDataHM.push({
         x: new Date(result.date),
-        y: result.time_parsed,
+        y: this.pacePipe.transform(result.time_parsed, 'Half Marathon', true),
+        time: result.time_parsed,
         event: result.race
       });
     });
@@ -62,37 +68,16 @@ export class PersonalBestPanelComponent implements OnChanges {
     this.getMar().forEach(result => {
       chartDataMar.push({
         x: new Date(result.date),
-        y: result.time_parsed,
+        y: this.pacePipe.transform(result.time_parsed, 'Marathon', true),
+        time: result.time_parsed,
         event: result.race
       });
     });
-
-    // this.results.data
-    //   .filter((result) => {
-    //     return [ 'HM', 'HMMT' ].includes(result.event);
-    //   })
-    //   .forEach((result) => {
-    //     chartDataHM.push({ x: new Date(result.date), y: result.time_parsed });
-    //   });
-
-    // this.results.data
-    //   .filter((result) => {
-    //     return [ 'Mar', 'MarMT' ].includes(result.event);
-    //   })
-    //   .forEach((result) => {
-    //     chartDataMar.push({ x: new Date(result.date), y: result.time_parsed });
-    //   });
 
     this.chart = new Chart('canvas', {
       type: 'line',
       data: {
         datasets: [
-          // {
-          //   data: chartDataMile,
-          //   label: 'Mile',
-          //   borderColor: '#fff',
-          //   fill: false,
-          // },
           {
             data: chartData5K,
             label: '5K',
@@ -129,10 +114,20 @@ export class PersonalBestPanelComponent implements OnChanges {
           intersect: false,
           callbacks: {
             title: (tooltipItem, data) => {
-              return data.datasets[0].data[tooltipItem[0].index].event;
+              return data.datasets[tooltipItem[0].datasetIndex].data[
+                tooltipItem[0].index
+              ].event;
+              // console.log(tooltipItem);
             },
-            label: tooltipItem => {
-              return this.formattedTime(tooltipItem.yLabel);
+            label: (tooltipItem, data) => {
+              const dataItem =
+                data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+              const finishTime = dataItem.time;
+              const event = data.datasets[tooltipItem.datasetIndex].label;
+              const formattedTime = this.formattedTime(finishTime);
+              const pace = this.pacePipe.transform(finishTime, event);
+
+              return `${formattedTime} (${pace})`;
             }
           }
         },
@@ -149,7 +144,7 @@ export class PersonalBestPanelComponent implements OnChanges {
             {
               ticks: {
                 callback: (value, index, values) => {
-                  return this.formattedTime(value);
+                  // return this.formattedTime(value);
                 }
               }
             }

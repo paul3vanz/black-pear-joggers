@@ -8,8 +8,23 @@ import { PacePipe } from './pipes/pace.pipe';
 import { DatePipe } from './pipes/date.pipe';
 
 @NgModule({
-  imports: [ CommonModule ],
-  declarations: [ GenderPipe, CategoryPipe, LimitPipe, FinishTimePipe, PacePipe, DatePipe ],
-  exports: [ GenderPipe, CategoryPipe, LimitPipe, FinishTimePipe, PacePipe, DatePipe ],
+  imports: [CommonModule],
+  declarations: [
+    GenderPipe,
+    CategoryPipe,
+    LimitPipe,
+    FinishTimePipe,
+    PacePipe,
+    DatePipe
+  ],
+  providers: [PacePipe],
+  exports: [
+    GenderPipe,
+    CategoryPipe,
+    LimitPipe,
+    FinishTimePipe,
+    PacePipe,
+    DatePipe
+  ]
 })
 export class SharedPipesModule {}
