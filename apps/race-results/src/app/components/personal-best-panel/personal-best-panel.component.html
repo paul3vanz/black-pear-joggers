@@ -1,6 +1,6 @@
 <div class="o-section-md o-section-bright">
   <div class="o-site-wrap o-site-wrap--padding">
-    <h2>Personal bests</h2>
+    <h2>Current personal bests</h2>
 
     <bpj-loader *ngIf="loading"></bpj-loader>
 
@@ -35,7 +35,11 @@
 </div>
 
 <div *ngIf="chart" class="chart-container">
+  <h2 class="u-text-center">Personal best history</h2>
   <canvas class="chart" id="canvas" height="300">{{ chart }}</canvas>
+  <div class="">
+
+  </div>
 </div>
 
 <bpj-modal [wide]="true">

@@ -1,19 +1,26 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  ChangeDetectionStrategy
+} from '@angular/core';
 import { Chart } from 'chart.js';
 import { Paging } from '../../models/paging';
 import { Result } from '../../models/result';
-import * as moment from 'moment-mini-ts';
 import { PacePipe } from 'libs/shared-pipes/src/lib/pipes/pace.pipe';
+// import { Ranking } from '../../../../../../libs/race-results-data-access/src/lib/models/ranking.model';
 
 @Component({
   selector: 'bpj-personal-best-panel',
   templateUrl: './personal-best-panel.component.html',
-  styleUrls: ['./personal-best-panel.component.scss']
+  styleUrls: ['./personal-best-panel.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PersonalBestPanelComponent implements OnChanges {
   @Input() eventName = '5K';
   @Input() loading: boolean;
   @Input() personalBests: any;
+  // @Input() rankings: Ranking[];
   @Input() results: Paging<Result>;
   chart = [];
 
@@ -24,19 +31,10 @@ export class PersonalBestPanelComponent implements OnChanges {
       return;
     }
 
-    const chartDataMile = [];
     const chartData5K = [];
     const chartData10K = [];
     const chartDataHM = [];
     const chartDataMar = [];
-
-    // const chartData = {
-    //   mile: { label: 'Mile', data: [], includedEvents: [ '1M', 'Mile' ], borderColor: '#fff', fill: false },
-    //   five: { label: '5K', data: [], includedEvents: [ '5K', 'parkrun' ], borderColor: '#fff', fill: false },
-    //   ten: { label: '10K', data: [], includedEvents: [ '10K', '10KMT' ], borderColor: '#fff', fill: false },
-    //   half: { label: 'Half Marathon', data: [], includedEvents: [ 'HM', 'HMMT' ], borderColor: '#fff', fill: false },
-    //   marathon: { label: 'Marathon', data: [], includedEvents: [ 'Mar', 'MarMT' ], borderColor: '#fff', fill: false },
-    // };
 
     this.get5K().forEach(result => {
       chartData5K.push({
@@ -82,24 +80,32 @@ export class PersonalBestPanelComponent implements OnChanges {
             data: chartData5K,
             label: '5K',
             borderColor: '#f89829',
+            backgroundColor: '#f89829',
+            radius: 4,
             fill: false
           },
           {
             data: chartData10K,
             label: '10K',
             borderColor: '#ccc',
+            backgroundColor: '#ccc',
+            radius: 4,
             fill: false
           },
           {
             data: chartDataHM,
             label: 'Half Marathon',
             borderColor: '#999',
+            backgroundColor: '#999',
+            radius: 4,
             fill: false
           },
           {
             data: chartDataMar,
             label: 'Marathon',
             borderColor: '#000',
+            backgroundColor: '#000',
+            radius: 4,
             fill: false
           }
         ]
