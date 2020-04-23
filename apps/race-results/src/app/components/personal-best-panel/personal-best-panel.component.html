@@ -10,36 +10,25 @@
       </p>
 
       <div class="cards">
-        <div
-          *ngFor="let personalBest of personalBests"
-          class="card pb"
-        >
+        <div *ngFor="let personalBest of personalBests" class="card pb">
           <span class="pb__event">{{ personalBest?.name | eventName }}</span>
           <ng-container *ngIf="personalBest.best">
             <span class="pb__time">{{ personalBest.best.time_parsed | finishTime }}</span>
             <span class="pb__date u-hidden@max-xs">{{ personalBest.best.date | date : 'fromNow' }}</span>
-            <span
-              *ngIf="personalBest.best.award"
-              class="pb__award pb__award--{{ personalBest.best.award | formatAward }}"
-            >{{ personalBest.best.award | formatAward }}</span>
+            <span *ngIf="personalBest.best.award"
+              class="pb__award pb__award--{{ personalBest.best.award | formatAward }}">{{ personalBest.best.award | formatAward }}</span>
           </ng-container>
 
-          <span
-            *ngIf="!personalBest.best"
-            class="pb__missing"
-          >No results</span>
+          <span *ngIf="!personalBest.best" class="pb__missing">No results</span>
         </div>
       </div>
     </ng-container>
   </div>
 </div>
 
-<div *ngIf="chart" class="chart-container">
-  <h2 class="u-text-center">Personal best history</h2>
+<div class="chart-container">
+  <h2 class="u-text-center">Personal best and ranking history</h2>
   <canvas class="chart" id="canvas" height="300">{{ chart }}</canvas>
-  <div class="">
-
-  </div>
 </div>
 
 <bpj-modal [wide]="true">

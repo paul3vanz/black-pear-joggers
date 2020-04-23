@@ -1,5 +1,5 @@
 import { Result } from './result';
-import { Ranking } from './ranking';
+import { Ranking } from '../../../../../libs/race-results-data-access/src/lib/models/ranking.model';
 
 export interface Athlete {
   id: number;

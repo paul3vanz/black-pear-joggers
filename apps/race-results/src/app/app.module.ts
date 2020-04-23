@@ -40,6 +40,7 @@ import { NoSearchResultsMeetingsComponent } from './components/no-search-results
 import { SearchBarComponent } from './components/search-bar/search-bar/search-bar.component';
 import { PersonalBestPanelComponent } from './components/personal-best-panel/personal-best-panel.component';
 import { PacePipe } from 'libs/shared-pipes/src/lib/pipes/pace.pipe';
+import { RaceResultsDataAccessModule } from '@black-pear-joggers/race-results-data-access';
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { PacePipe } from 'libs/shared-pipes/src/lib/pipes/pace.pipe';
     PipesModule,
     SharedComponentsModule,
     SharedPipesModule,
+    RaceResultsDataAccessModule,
 
     RouterModule.forRoot(
       [

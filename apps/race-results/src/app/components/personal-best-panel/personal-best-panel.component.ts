@@ -2,39 +2,139 @@ import {
   Component,
   Input,
   OnChanges,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  AfterViewInit
 } from '@angular/core';
-import { Chart } from 'chart.js';
+import { Chart, ChartPoint } from 'chart.js';
 import { Paging } from '../../models/paging';
 import { Result } from '../../models/result';
 import { PacePipe } from 'libs/shared-pipes/src/lib/pipes/pace.pipe';
-// import { Ranking } from '../../../../../../libs/race-results-data-access/src/lib/models/ranking.model';
+import { Ranking } from '../../../../../../libs/race-results-data-access/src/lib/models/ranking.model';
 
+interface PerformanceChartPoint extends ChartPoint {
+  time?: number;
+  event?: string;
+}
 @Component({
   selector: 'bpj-personal-best-panel',
   templateUrl: './personal-best-panel.component.html',
   styleUrls: ['./personal-best-panel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PersonalBestPanelComponent implements OnChanges {
+export class PersonalBestPanelComponent implements OnChanges, AfterViewInit {
   @Input() eventName = '5K';
   @Input() loading: boolean;
   @Input() personalBests: any;
-  // @Input() rankings: Ranking[];
+  @Input() rankings: Ranking[];
   @Input() results: Paging<Result>;
-  chart = [];
+  chart: Chart;
+
+  chartDefaults: Chart.ChartDataSets = {
+    radius: 3,
+    fill: false,
+    cubicInterpolationMode: 'monotone',
+    lineTension: 0
+  };
 
   constructor(private pacePipe: PacePipe) {}
 
-  ngOnChanges() {
-    if (!this.results || !this.results.data) {
+  ngAfterViewInit() {
+    this.chart = new Chart('canvas', {
+      type: 'line',
+      data: {},
+      options: {
+        maintainAspectRatio: false,
+        legend: {
+          position: 'bottom'
+        },
+        tooltips: {
+          mode: 'nearest',
+          intersect: false,
+          callbacks: {
+            title: (tooltipItem, data) => {
+              const chartPoint = <PerformanceChartPoint>(
+                data.datasets[tooltipItem[0].datasetIndex].data[
+                  tooltipItem[0].index
+                ]
+              );
+              return chartPoint.event;
+            },
+            label: (tooltipItem, data) => {
+              const dataItem = <PerformanceChartPoint>(
+                data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
+              );
+
+              if (dataItem.time) {
+                const finishTime = dataItem.time;
+                const event = data.datasets[tooltipItem.datasetIndex].label;
+                const formattedTime = this.formattedTime(finishTime);
+                const pace = this.pacePipe.transform(finishTime, event);
+
+                return `${formattedTime} (${pace})`;
+              } else {
+                return `${dataItem.y}`;
+              }
+            }
+          }
+        },
+        scales: {
+          xAxes: [
+            {
+              type: 'time',
+              time: {
+                unit: 'month'
+              },
+              ticks: { maxRotation: 0, autoSkip: true, autoSkipPadding: 20 }
+            }
+          ],
+          yAxes: [
+            {
+              id: 'personalBests',
+              display: false,
+              ticks: {
+                callback: () => {
+                  return null;
+                }
+              }
+            },
+            {
+              id: 'rankings',
+              display: false,
+              ticks: {
+                reverse: true,
+                callback: () => {
+                  return null;
+                }
+              }
+            }
+          ]
+        },
+        title: {
+          display: false,
+          text: 'Race history'
+        }
+      }
+    });
+  }
+
+  ngOnChanges(changes) {
+    console.log(changes);
+    if (!this.results || !this.results.data || !this.rankings) {
       return;
     }
 
-    const chartData5K = [];
-    const chartData10K = [];
-    const chartDataHM = [];
-    const chartDataMar = [];
+    const chartDataRankings: ChartPoint[] = [];
+    const chartData5K: PerformanceChartPoint[] = [];
+    const chartData10K: PerformanceChartPoint[] = [];
+    const chartDataHM: PerformanceChartPoint[] = [];
+    const chartDataMar: PerformanceChartPoint[] = [];
+
+    this.rankings.forEach(ranking => {
+      chartDataRankings.push({
+        x: new Date(ranking.date),
+        y: ranking.ranking
+      });
+    });
 
     this.get5K().forEach(result => {
       chartData5K.push({
@@ -72,96 +172,25 @@ export class PersonalBestPanelComponent implements OnChanges {
       });
     });
 
-    this.chart = new Chart('canvas', {
-      type: 'line',
-      data: {
-        datasets: [
-          {
-            data: chartData5K,
-            label: '5K',
-            borderColor: '#f89829',
-            backgroundColor: '#f89829',
-            radius: 4,
-            fill: false
-          },
-          {
-            data: chartData10K,
-            label: '10K',
-            borderColor: '#ccc',
-            backgroundColor: '#ccc',
-            radius: 4,
-            fill: false
-          },
-          {
-            data: chartDataHM,
-            label: 'Half Marathon',
-            borderColor: '#999',
-            backgroundColor: '#999',
-            radius: 4,
-            fill: false
-          },
-          {
-            data: chartDataMar,
-            label: 'Marathon',
-            borderColor: '#000',
-            backgroundColor: '#000',
-            radius: 4,
-            fill: false
-          }
-        ]
-      },
-      options: {
-        maintainAspectRatio: false,
-        legend: {
-          position: false
-        },
-        tooltips: {
-          mode: 'nearest',
-          intersect: false,
-          callbacks: {
-            title: (tooltipItem, data) => {
-              return data.datasets[tooltipItem[0].datasetIndex].data[
-                tooltipItem[0].index
-              ].event;
-              // console.log(tooltipItem);
-            },
-            label: (tooltipItem, data) => {
-              const dataItem =
-                data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-              const finishTime = dataItem.time;
-              const event = data.datasets[tooltipItem.datasetIndex].label;
-              const formattedTime = this.formattedTime(finishTime);
-              const pace = this.pacePipe.transform(finishTime, event);
+    this.chart.data = {
+      datasets: [
+        this.createDataSet(chartDataRankings, 'Ranking', '#222222', {
+          borderWidth: 1,
+          borderDash: [2, 2],
+          radius: 0,
+          order: 1,
+          fill: false,
+          backgroundColor: '#fff',
+          yAxisID: 'rankings'
+        }),
+        this.createDataSet(chartData5K, '5K', '#f89829'),
+        this.createDataSet(chartData10K, '10K', '#ccc'),
+        this.createDataSet(chartDataHM, 'Half Marathon', '#999'),
+        this.createDataSet(chartDataMar, 'Marathon', '#000')
+      ]
+    };
 
-              return `${formattedTime} (${pace})`;
-            }
-          }
-        },
-        scales: {
-          xAxes: [
-            {
-              type: 'time',
-              time: {
-                unit: 'month'
-              }
-            }
-          ],
-          yAxes: [
-            {
-              ticks: {
-                callback: (value, index, values) => {
-                  // return this.formattedTime(value);
-                }
-              }
-            }
-          ]
-        },
-        title: {
-          display: false,
-          text: 'Race history'
-        }
-      }
-    });
+    this.chart.update();
   }
 
   formattedTime(timeInSeconds: number) {
@@ -194,5 +223,21 @@ export class PersonalBestPanelComponent implements OnChanges {
     return this.results.data.filter(result => {
       return ['Mar', 'MarMT'].includes(result.event) && result.isPersonalBest;
     });
+  }
+
+  createDataSet(
+    data: ChartPoint[],
+    label: string,
+    colour: string,
+    optionOverrides?: Chart.ChartDataSets
+  ): Chart.ChartDataSets {
+    return {
+      data: data,
+      label,
+      borderColor: colour,
+      backgroundColor: colour,
+      ...this.chartDefaults,
+      ...optionOverrides
+    };
   }
 }

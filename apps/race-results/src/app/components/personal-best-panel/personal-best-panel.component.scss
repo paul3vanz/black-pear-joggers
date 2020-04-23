@@ -81,9 +81,13 @@
 }
 
 .chart-container {
-  margin: 30px 20px 10px;
+  margin: 30px 20px 30px;
 }
 
 .chart {
-  max-height: 50vh;
+  height: 70vh;
+
+  @include nb-respond-to('xs') {
+    max-height: 50vh;
+  }
 }
