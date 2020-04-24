@@ -57,7 +57,10 @@ export class PersonalBestPanelComponent implements OnChanges, AfterViewInit {
                   tooltipItem[0].index
                 ]
               );
-              return chartPoint.event;
+              return (
+                chartPoint.event ||
+                new Date(<string>chartPoint.x).toDateString()
+              );
             },
             label: (tooltipItem, data) => {
               const dataItem = <PerformanceChartPoint>(
