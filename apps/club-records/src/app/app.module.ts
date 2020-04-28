@@ -9,7 +9,10 @@ import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
 import { StoreModule } from '@ngrx/store';
 import { FormsModule } from '@angular/forms';
 import { EffectsModule } from '@ngrx/effects';
-import { initialState as clubRecordsInitialState, clubRecordsReducer } from './+state/club-records.reducer';
+import {
+  initialState as clubRecordsInitialState,
+  clubRecordsReducer
+} from './+state/club-records.reducer';
 import { ClubRecordsEffects } from './+state/club-records.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
@@ -21,7 +24,12 @@ import { SharedPipesModule } from 'libs/shared-pipes/src';
 import { FilterCategoryPipe } from './pipes/filter-category.pipe';
 
 @NgModule({
-  declarations: [ AppComponent, ClubRecordsTableComponent, QueryRecordModalComponent, FilterCategoryPipe ],
+  declarations: [
+    AppComponent,
+    ClubRecordsTableComponent,
+    QueryRecordModalComponent,
+    FilterCategoryPipe
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -35,14 +43,14 @@ import { FilterCategoryPipe } from './pipes/filter-category.pipe';
       { clubRecords: clubRecordsReducer },
       {
         initialState: { clubRecords: clubRecordsInitialState },
-        metaReducers: !environment.production ? [ storeFreeze ] : [],
+        metaReducers: !environment.production ? [storeFreeze] : []
       }
     ),
-    EffectsModule.forRoot([ ClubRecordsEffects ]),
-    !environment.production ? StoreDevtoolsModule.instrument() : [],
+    EffectsModule.forRoot([ClubRecordsEffects]),
+    !environment.production ? StoreDevtoolsModule.instrument() : []
     // StoreRouterConnectingModule,
   ],
   providers: [],
-  bootstrap: [ AppComponent ],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

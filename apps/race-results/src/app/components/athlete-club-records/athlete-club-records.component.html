@@ -1,0 +1,54 @@
+<div *ngIf="clubRecords.length" class="o-section-md o-section-bright">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h2>Club records currently held</h2>
+
+    <p>{{ firstName }} currently holds <strong>{{ clubRecords.length }}</strong> club records. Check out the <a
+        href="https://black-pear-joggers.netlify.app/apps/club-records/">club
+        records</a> page to see all known records.</p>
+
+    <div class="container">
+      <table data-sortable class="table table--large">
+        <thead>
+          <tr>
+            <th>Event</th>
+
+            <th>
+              <a (click)="onToggleFormat()" href="javascript:void(0)">
+                {{ showPace ? 'Pace' : 'Time' }}
+              </a>
+            </th>
+
+            <th *ngIf="!showSubheading" data-sortable-type="alpha">
+              Category
+            </th>
+
+            <th data-sortable-type="alpha" class="u-hidden@max-xs">Race</th>
+
+            <th data-sortable-type="date">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of clubRecords">
+            <td class="nowrap">{{ record.event }}</td>
+
+            <td *ngIf="!showPace" class="nowrap">
+              {{ record.time }}
+            </td>
+
+            <td *ngIf="showPace" class="nowrap">
+              {{ record.time_parsed | pace : record.distance }}
+            </td>
+
+            <td *ngIf="!showSubheading" class="nowrap">
+              {{ record.gender | gender : 'short'}}{{ record.category }}
+            </td>
+
+            <td class="u-hidden@max-xs">{{ record.race }}</td>
+
+            <td class="nowrap" title="{{ record.date }}">{{ record.date | date : 'D MMM YY' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -41,6 +41,8 @@ import { SearchBarComponent } from './components/search-bar/search-bar/search-ba
 import { PersonalBestPanelComponent } from './components/personal-best-panel/personal-best-panel.component';
 import { PacePipe } from 'libs/shared-pipes/src/lib/pipes/pace.pipe';
 import { RaceResultsDataAccessModule } from '@black-pear-joggers/race-results-data-access';
+import { ClubRecordsDataAccessModule } from '@black-pear-joggers/club-records-data-access';
+import { AthleteClubRecordsComponent } from './components/athlete-club-records/athlete-club-records.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +55,7 @@ import { RaceResultsDataAccessModule } from '@black-pear-joggers/race-results-da
     StandardsPageComponent,
     AthleteDetailsComponent,
     PersonalBestPanelComponent,
+    AthleteClubRecordsComponent,
     AthleteResultsComponent,
     AthleteStandardsComponent,
     SearchResultsAthletesComponent,
@@ -77,6 +80,7 @@ import { RaceResultsDataAccessModule } from '@black-pear-joggers/race-results-da
     SharedComponentsModule,
     SharedPipesModule,
     RaceResultsDataAccessModule,
+    ClubRecordsDataAccessModule,
 
     RouterModule.forRoot(
       [

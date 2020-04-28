@@ -121,7 +121,6 @@ export class PersonalBestPanelComponent implements OnChanges, AfterViewInit {
   }
 
   ngOnChanges(changes) {
-    console.log(changes);
     if (!this.results || !this.results.data || !this.rankings) {
       return;
     }

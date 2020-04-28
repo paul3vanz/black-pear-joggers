@@ -1,6 +1,5 @@
 import { ActivatedRoute, Params } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 
@@ -20,7 +19,12 @@ import { Event } from '../../models/event';
 import { Paging } from '../../models/paging';
 import { Result } from '../../models/result';
 import { Standard } from '../../models/standard';
-import { Ranking } from 'libs/race-results-data-access/src/lib/models/ranking.model';
+import { Ranking } from '@black-pear-joggers/race-results-data-access';
+import {
+  ClubRecord,
+  clubRecordsQuery,
+  clubRecordsActions
+} from '@black-pear-joggers/club-records-data-access';
 
 @Component({
   selector: 'bpj-athlete-page',
@@ -38,10 +42,11 @@ export class AthletePageComponent implements OnInit {
   standardsLoading$: Observable<boolean>;
   standards$: Observable<Standard[]>;
   events$: Observable<Paging<Event>>;
+  recordsLoaded$: Observable<boolean>;
+  records$: Observable<ClubRecord[]>;
 
   constructor(
     private route: ActivatedRoute,
-    private location: Location,
     private store$: Store<rootReducer.State>
   ) {
     this.athletesLoading$ = this.store$.select(store => store.athletes.loading);
@@ -51,6 +56,11 @@ export class AthletePageComponent implements OnInit {
     this.results$ = this.store$.select(resultsReducer.getResults);
     this.rankings$ = this.store$.select(state => state.rankings.rankings);
     this.personalBests$ = this.store$.select(resultsReducer.getPersonalBests());
+
+    this.recordsLoaded$ = this.store$.select(clubRecordsQuery.getLoaded);
+    this.records$ = this.store$.select(
+      clubRecordsQuery.getClubRecordsByAthlete(this.route.snapshot.params['id'])
+    );
 
     this.standardsLoading$ = this.store$.select(
       store => store.standards.loading
@@ -63,6 +73,7 @@ export class AthletePageComponent implements OnInit {
       this.store$.dispatch(new athleteActions.GetAction(id));
       this.store$.dispatch(new resultsActions.GetAction(id));
       this.store$.dispatch(rankingsActions.loadAction({ athleteId: id }));
+      this.store$.dispatch(clubRecordsActions.load());
     });
   }
 }
