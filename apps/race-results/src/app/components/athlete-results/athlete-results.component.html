@@ -7,7 +7,15 @@
 
     <ng-container *ngIf="!loading">
       <p class="u-push-bottom-xl" *ngIf="results?.data">
-          The following results are automatically taken from <a href="https://www.thepowerof10.info/athletes/profile.aspx?athleteid={{results.data[0].athlete_id}}" target="_blank">Power of 10</a> and <a href="http://www.runbritainrankings.com/runners/profile.aspx?athleteid={{results.data[0].athlete_id}}" target="_blank">Run Britain Rankings</a> as well as BPJ Magic Mile events. Races without UK Athletics race licences are not included. If a performance is missing from here, but is showing on your profile, get in touch. If it's not on your profile, use the <a href="http://www.runbritainrankings.com/user/claimhandicap.aspx" target="_blank">Add Your Performances</a> link and if that doesn't work, <a href="mailto:admin@runbritainrankings.com">contact UK Athletics</a>.
+        The following results are automatically taken from <a
+          href="https://www.thepowerof10.info/athletes/profile.aspx?athleteid={{results.data[0].athlete_id}}"
+          target="_blank">Power of 10</a> and <a
+          href="http://www.runbritainrankings.com/runners/profile.aspx?athleteid={{results.data[0].athlete_id}}"
+          target="_blank">Run Britain Rankings</a> as well as BPJ Magic Mile events. Races without UK Athletics race
+        licences are not included. If a performance is missing from here, but is showing on your profile, get in touch.
+        If it's not on your profile, use the <a href="http://www.runbritainrankings.com/user/claimhandicap.aspx"
+          target="_blank">Add Your Performances</a> link and if that doesn't work, <a
+          href="mailto:admin@runbritainrankings.com">contact UK Athletics</a>.
       </p>
 
       <table class="u-btm-m">
@@ -23,10 +31,14 @@
         </thead>
         <tbody *ngIf="!loading && results?.data">
           <tr *ngFor="let result of results.data">
-            <td class="athlete-results__award nowrap standards__heading--{{result.award | formatAward}}"><span>{{result.award | formatAward}}</span></td>
+            <td class="athlete-results__award nowrap standards__heading--{{result.award | formatAward}}">
+              <a class="link"
+                href="https://black-pear-joggers.netlify.app/apps/club-standards/">{{result.award | formatAward}}</a>
+            </td>
             <td class="athlete-results__category nowrap">{{result.category}}</td>
             <td class="athlete-results__event nowrap">{{result.event}}</td>
-            <td class="athlete-results__race"><a href="#/meeting/{{result.date}}/{{result.meeting_id}}">{{result.race}}</a></td>
+            <td class="athlete-results__race"><a
+                href="#/meeting/{{result.date}}/{{result.meeting_id}}">{{result.race}}</a></td>
             <td class="athlete-results__time nowrap" [attr.data-value]="result.time_parsed">
               {{ result.time }}
               <span class="pb" *ngIf="result.isPersonalBest">PB</span>

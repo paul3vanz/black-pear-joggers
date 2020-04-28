@@ -13,24 +13,26 @@
   background-color: #f89829;
 }
 
-.athlete-results__award span {
+.athlete-results__award .link {
+  color: #fff;
+  text-decoration: none;
   padding: 2px 6px;
   border-radius: 3px;
 }
 
-.standards__heading--Bronze span {
+.standards__heading--Bronze .link {
   background-color: #c08f67;
 }
 
-.standards__heading--Silver span {
+.standards__heading--Silver .link {
   background-color: #b9b9b9;
 }
 
-.standards__heading--Gold span {
+.standards__heading--Gold .link {
   background-color: #d89843;
 }
 
-.standards__heading--Platinum span {
+.standards__heading--Platinum .link {
   background-color: #8791a0;
 }
 
