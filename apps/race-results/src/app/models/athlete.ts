@@ -1,10 +1,9 @@
 import { Result } from './result';
-import { Ranking } from '../../../../../libs/race-results-data-access/src/lib/models/ranking.model';
+import { Ranking } from '@black-pear-joggers/race-results-data-access';
 
 export interface Athlete {
   id: number;
   athlete_id: number;
-  athlete_id_alt: number;
   first_name: string;
   last_name: string;
   gender: string;
