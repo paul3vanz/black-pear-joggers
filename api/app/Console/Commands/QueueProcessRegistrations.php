@@ -4,17 +4,18 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\MembershipController;
 use Log;
 
 class QueueProcessRegistrations extends Command
 {
-    protected $name = 'queue:registrations';
+  protected $name = 'queue:registrations';
 
-    public function handle()
-    {
-        Log::info('QueueProcessRegistrations');
-        $registrationController = new RegistrationController();
-        $registrationController->queueAllRegistrations();
-    }
-
+  public function handle()
+  {
+    Log::info('QueueProcessRegistrations');
+    $registrationController = new RegistrationController(new MembershipController());
+    $registrationController->createRegistrationsFromMemberships();
+    $registrationController->queueAllRegistrations();
+  }
 }

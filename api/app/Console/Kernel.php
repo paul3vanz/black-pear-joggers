@@ -28,9 +28,9 @@ class Kernel extends ConsoleKernel
   protected function schedule(Schedule $schedule)
   {
     // Log::info('Scheduler run');
+    $schedule->command('queue:registrations')->dailyAt('00:00');
     $schedule->command('queue:fetch:performances')->dailyAt('01:00');
     $schedule->command('queue:fetch:rankings')->dailyAt('04:00');
-    // $schedule->command('queue:registrations')->hourly();
     $schedule->command('queue:work --stop-when-empty')->dailyAt('05:00');
     $schedule->command('queue:fetch:updatepersonalbests')->dailyAt('07:00');
   }

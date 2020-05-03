@@ -30,7 +30,7 @@ class FetchPerformancesController extends Controller
     foreach ($athletes as $athlete) {
       dispatch(new FetchPerformancesJob($athlete));
 
-      $athleteIds[] = $athlete->id;
+      $athleteIds[] = $athlete->athlete_id;
     }
 
     return response()->json($athleteIds);

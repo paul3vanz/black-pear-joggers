@@ -11,41 +11,42 @@ use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * A list of the exception types that should not be reported.
-     *
-     * @var array
-     */
-    protected $dontReport = [
-        AuthorizationException::class,
-        HttpException::class,
-        ModelNotFoundException::class,
-        ValidationException::class,
-    ];
+  /**
+   * A list of the exception types that should not be reported.
+   *
+   * @var array
+   */
+  protected $dontReport = [
+    AuthorizationException::class,
+    HttpException::class,
+    ModelNotFoundException::class,
+    ValidationException::class,
+  ];
 
-    /**
-     * Report or log an exception.
-     *
-     * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
-     *
-     * @param  \Exception  $e
-     * @return void
-     */
-    public function report(Exception $e)
-    {
-        parent::report($e);
-    }
+  /**
+   * Report or log an exception.
+   *
+   * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
+   *
+   * @param  \Exception  $e
+   * @return void
+   */
+  public function report(Exception $e)
+  {
+    parent::report($e);
+  }
 
-    /**
-     * Render an exception into an HTTP response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $e
-     * @return \Illuminate\Http\Response
-     */
-    public function render($request, Exception $e)
-    {
-        return response('Sorry, this request DNF\'d', 500);
-        // return parent::render($request, $e);
-    }
+  /**
+   * Render an exception into an HTTP response.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  \Exception  $e
+   * @return \Illuminate\Http\Response
+   */
+  public function render($request, Exception $e)
+  {
+    $showException = $request->cookie(env('DEBUG_COOKIE_KEY')) == env('DEBUG_COOKIE_VALUE');
+
+    return $showException ? parent::render($request, $e) : response('Sorry, this request DNF\'d', 500);
+  }
 }

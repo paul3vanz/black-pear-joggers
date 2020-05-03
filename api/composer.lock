@@ -4,8 +4,72 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1aed91480109ac962f7092b66c551a74",
+    "content-hash": "84e8819bc2c4edd109914c1f3e7e960c",
     "packages": [
+        {
+            "name": "awobaz/compoships",
+            "version": "1.1.16",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/topclaudy/compoships.git",
+                "reference": "494781fa905cbbc0bea8b515a09dae69376721e2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/topclaudy/compoships/zipball/494781fa905cbbc0bea8b515a09dae69376721e2",
+                "reference": "494781fa905cbbc0bea8b515a09dae69376721e2",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "~5.4|~6.0|~7.0",
+                "illuminate/console": "~5.4|~6.0|~7.0",
+                "illuminate/database": "~5.4|~6.0|~7.0",
+                "illuminate/support": "~5.4|~6.0|~7.0",
+                "php": ">=5.6.4"
+            },
+            "require-dev": {
+                "fzaninotto/faker": "^1.8",
+                "laravel/laravel": "~5.4|~6.0|~7.0",
+                "phpunit/phpunit": "5.*"
+            },
+            "suggest": {
+                "awobaz/blade-active": "Blade directives for the Laravel 'Active' package",
+                "awobaz/eloquent-auto-append": "Automatically append accessors to model serialization",
+                "awobaz/eloquent-mutators": "Reusable mutators (getters/setters) for Laravel 5's Eloquent",
+                "awobaz/syntactic": "Syntactic sugar for named and indexed parameters call."
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Awobaz\\Compoships\\ComposhipsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Awobaz\\Compoships\\": "src"
+                },
+                "files": []
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Claudin J. Daniel",
+                    "email": "cdaniel@awobaz.com"
+                }
+            ],
+            "description": "Laravel relationships with support for composite/multiple keys",
+            "keywords": [
+                "laravel",
+                "laravel composite keys",
+                "laravel relationships"
+            ],
+            "time": "2020-03-04T14:08:54+00:00"
+        },
         {
             "name": "doctrine/inflector",
             "version": "v1.3.0",

@@ -2,57 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Athlete;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Factory as Auth;
+use Illuminate\Support\Facades\DB;
 
-class AthleteController extends Controller {
+use App\Models\Athlete;
 
-    public function __construct() {}
+class AthleteController extends Controller
+{
+  public function __construct(Auth $auth)
+  {
+    $this->auth = $auth;
+  }
 
-    public function getAthletes(Request $request) {
-        $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
-        if ($searchTerm) {
-            $athletes = Athlete::where(function ($query) use ($searchTerm) {
-                $query->where('first_name', 'LIKE', "%$searchTerm%")
-                ->orWhere('last_name', 'LIKE', "%$searchTerm%")
-                ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'LIKE', "%$searchTerm%");
-            });
+  public function getAthletes(Request $request)
+  {
+    $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
 
-            // if ($request->input('active')) {
-                $athletes = $athletes->where('active', '=', 1);
-            // }
+    if ($searchTerm) {
+      $athletes = Athlete::where(function ($query) use ($searchTerm) {
+        $query->where('first_name', 'LIKE', "%$searchTerm%")
+          ->orWhere('last_name', 'LIKE', "%$searchTerm%")
+          ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'LIKE', "%$searchTerm%");
+      });
 
-            $athletes = $athletes->get();
-        } else {
-            $athletes = Athlete::query()->get()->all();
-        }
+      $athletes = $athletes->where('active', '=', 1);
 
-        return response()->json($athletes);
+      $athletes = $athletes->get();
+    } else {
+      $athletes = Athlete::query()->get()->all();
     }
 
-    public function getAthlete($id) {
-        $athlete = Athlete::query()
-            ->with('latestPerformance')
-            ->with('firstPerformance')
-            ->with('latestRanking')
-            ->find($id);
-        return response()->json($athlete);
-    }
+    return response()->json($athletes);
+  }
 
-    public function getAthletePerformances($id) {
-        $athlete = Athlete::with('performances')->find($id);
-        return response()->json($athlete);
-    }
+  public function getAthlete($id)
+  {
+    $athlete = Athlete::query()
+      ->with('latestPerformance')
+      ->with('firstPerformance')
+      ->with('latestRanking')
+      ->find($id);
+    return response()->json($athlete);
+  }
 
-    public function getAthleteStandards($id) {
-        $athlete = Athlete::with('standards')->find($id);
-        return response()->json($athlete);
-    }
+  public function getAthletePerformances($id)
+  {
+    $athlete = Athlete::with('performances')->find($id);
+    return response()->json($athlete);
+  }
 
-    public function getMembershipTotals() {
-        $results = DB::select("
+  public function getAthleteStandards($id)
+  {
+    $athlete = Athlete::with('standards')->find($id);
+    return response()->json($athlete);
+  }
+
+  public function getMembershipTotals()
+  {
+    $results = DB::select("
             SELECT 'all' AS 'type', COUNT(1) AS 'total', MAX(updated_at) AS 'updated_at' FROM members WHERE paid_status = 'Paid'
             UNION
             SELECT 'affiliated' AS 'type', COUNT(1) AS 'total', MAX(updated_at) AS 'updated_at' FROM members WHERE paid_status = 'Paid' AND membership_type NOT LIKE '%basic%'
@@ -60,6 +68,6 @@ class AthleteController extends Controller {
             SELECT 'basic' AS 'type', COUNT(1) AS 'total', MAX(updated_at) AS 'updated_at' FROM members WHERE paid_status = 'Paid' AND membership_type LIKE '%basic%'
         ");
 
-        return response()->json($results);
-    }
+    return response()->json($results);
+  }
 }

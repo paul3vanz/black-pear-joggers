@@ -22,6 +22,7 @@ final class Athlete extends Model
     'age',
     'category',
     'active',
+    'competitive_status',
     'membership_check',
     'membership_check_status',
     'club'

@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Types;
 
+use Log;
 use App\Models\Athlete;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use GraphQL\Type\Definition\Type;
@@ -87,16 +88,14 @@ class AthleteType extends GraphQLType
       'rankings' => [
         'type' => Type::listOf(GraphQL::type('Ranking')),
         'description' => 'The athlete\'s rankings',
-        'args' => [
-          'date' => [
-            'type' => GraphQL::type('DateFilter'),
+        'args'          => [
+          'blah' => [
+            'type' => Type::int(),
           ],
-
         ],
-        'query' => function (array $args, $query, $ctx) {
-          print_r('test');
-          die('test');
-          return $query->where('date', '>', $args['date']);
+        'resolve' => function ($root, array $args) {
+          // Log::error(print_r($root, true));
+          return $root->rankings()->first();
         }
       ],
       'standards' => [
