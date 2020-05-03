@@ -13,12 +13,12 @@
 <div class="o-section-md o-section-dark">
   <div class="o-site-wrap o-site-wrap--padding">
     <bpj-search-bar [keywords]="searchTermTemp"
-      [loading]="(athletesLoading$ | async) === 'LOADING' || (eventsLoading$ | async) === 'LOADING'"
+      [loading]="(athletesLoadingState$ | async) === 'LOADING' || (eventsLoading$ | async) === 'LOADING'"
       (search)="search($event)"></bpj-search-bar>
 
     <ng-container>
       <bpj-search-results-athletes [athletes]="athletes$ | async" [keywords]="searchTermTemp"
-        [searching]="(athletesLoading$ | async) === 'LOADING'" (addAthlete)="showAddAthleteModal = true">
+        [searching]="(athletesLoadingState$ | async) === 'LOADING'" (addAthlete)="showAddAthleteModal = true">
       </bpj-search-results-athletes>
 
       <bpj-search-results-meetings [Events]="events$ | async" [keywords]="searchTermTemp"

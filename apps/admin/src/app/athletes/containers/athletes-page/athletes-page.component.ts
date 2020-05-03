@@ -22,10 +22,8 @@ export class AthletesPageComponent implements OnInit {
   ngOnInit() {
     this.store$.dispatch(athletesActions.load({}));
 
-    this.loadingState$ = this.store$.select(
-      athletesSelectors.selectLoadingState
-    );
+    this.loadingState$ = this.store$.select(athletesSelectors.getLoadingState);
 
-    this.athletes$ = this.store$.select(athletesSelectors.selectAllRecords);
+    this.athletes$ = this.store$.select(athletesSelectors.getAllRecords);
   }
 }
