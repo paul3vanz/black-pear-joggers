@@ -1,52 +1,45 @@
 <div class="o-section-md">
-    <div class="o-site-wrap o-site-wrap--padding">
-      <div class="o-grid">
-        <div class="o-grid__item u-1/2@xs">
-          <h1 class="u-flush-bottom">
-            Race Results
-            <span class="beta">(Beta)</span>
-          </h1>
+  <div class="o-site-wrap o-site-wrap--padding">
+    <div class="o-grid">
+      <div class="o-grid__item u-1/2@xs">
+        <h1 class="u-flush-bottom">
+          Race Results
+          <span class="beta">(Beta)</span>
+        </h1>
 
-          <h2 class="athlete-details__title">
-            <span *ngIf="!loading">
-              {{athlete.first_name}} {{athlete.last_name}}
-              <span class="athlete-details__subtitle">
-                {{ athlete.gender | gender: 'short' }}{{ athlete.category }}
-              </span>
+        <h2 class="athlete-details__title">
+          <span *ngIf="loadingState === 'LOADED'">
+            {{athlete.first_name}} {{athlete.last_name}}
+
+            <span class="athlete-details__subtitle">
+              {{ athlete.gender | gender: 'short' }}{{ athlete.category }}
             </span>
-          </h2>
+          </span>
+        </h2>
 
-          <p class="u-btm-l">
-            <a
-              class="button button--back"
-              href="#"
-              routerLink="/results"
-            >
-              <span aria-hidden="true">&laquo;</span>
-              Return to Results
-            </a>
-          </p>
-        </div>
+        <p class="u-btm-l">
+          <a class="button button--back" href="#" routerLink="/results">
+            <span aria-hidden="true">&laquo;</span>
+            Return to Results
+          </a>
+        </p>
+      </div>
 
-        <div
-          *ngIf="!loading && athlete.latest_ranking?.ranking"
-          class="o-grid__item u-1/2 u-text-right u-hidden@max-xs"
-        >
-          <p class="handicap">
-            <a href="https://www.runbritainrankings.com/runners/profile.aspx?athleteid={{ athlete?.id }}">
-              <img
-                src="https://bpj.org.uk/wp-content/uploads/2015/11/run-britain-logo.png"
-                alt="View full results on runbritain"
-              >
-            </a>
+      <div *ngIf="loadingState === 'LOADED' && athlete?.latest_ranking?.ranking"
+        class="o-grid__item u-1/2 u-text-right u-hidden@max-xs">
+        <p class="handicap">
+          <a href="https://www.runbritainrankings.com/runners/profile.aspx?athleteid={{ athlete?.id }}">
+            <img src="https://bpj.org.uk/wp-content/uploads/2015/11/run-britain-logo.png"
+              alt="View full results on runbritain">
+          </a>
 
-            Current ranking
+          Current ranking
 
-            <strong class="handicap__score" [attr.title]="'Updated ' + (athlete?.latest_ranking.date | date: 'fromNow')">
-              {{ athlete.latest_ranking.ranking }}
-            </strong>
-          </p>
-        </div>
+          <strong class="handicap__score" [attr.title]="'Updated ' + (athlete?.latest_ranking.date | date: 'fromNow')">
+            {{ athlete.latest_ranking.ranking }}
+          </strong>
+        </p>
       </div>
     </div>
   </div>
+</div>

@@ -1,10 +1,14 @@
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import * as athleteActions from '../../actions/athletes';
-import * as rankingsActions from 'libs/race-results-data-access/src/lib/+state/rankings.actions';
+import {
+  athletesActions,
+  athletesSelectors,
+  LoadingState
+} from '@black-pear-joggers/race-results-data-access';
+import { rankingsActions } from 'libs/race-results-data-access/src/lib/+state/rankings.actions';
 import * as resultsActions from '../../actions/results';
 
 import * as rootReducer from '../../reducers';
@@ -12,7 +16,7 @@ import * as standardsReducer from '../../reducers/standards';
 import * as resultsReducer from '../../reducers/results';
 import * as rankingsReducer from 'libs/race-results-data-access/src/lib/+state/rankings.reducer';
 
-import * as rankingsSelectors from 'libs/race-results-data-access/src/lib/+state/rankings.selectors';
+import { rankingsSelectors } from '@black-pear-joggers/race-results-data-access';
 
 import { Athlete } from '../../models/athlete';
 import { Event } from '../../models/event';
@@ -32,8 +36,7 @@ import {
   styleUrls: ['./athlete-page.component.css']
 })
 export class AthletePageComponent implements OnInit {
-  title = 'Athlete Details';
-  athletesLoading$: Observable<boolean>;
+  athleteLoadingState$: Observable<LoadingState>;
   athlete$: Observable<Athlete>;
   resultsLoading$: Observable<boolean>;
   results$: Observable<Paging<Result>>;
@@ -49,12 +52,16 @@ export class AthletePageComponent implements OnInit {
     private route: ActivatedRoute,
     private store$: Store<rootReducer.State>
   ) {
-    this.athletesLoading$ = this.store$.select(store => store.athletes.loading);
-    this.athlete$ = this.store$.select(store => store.athletes.selected);
+    this.athleteLoadingState$ = this.store$.select(
+      athletesSelectors.getLoadingState
+    );
+    this.athlete$ = this.store$.select(athletesSelectors.getSelectedRecord);
+
+    this.athlete$.subscribe(console.log);
 
     this.resultsLoading$ = this.store$.select(resultsReducer.getLoading);
     this.results$ = this.store$.select(resultsReducer.getResults);
-    this.rankings$ = this.store$.select(state => state.rankings.rankings);
+    this.rankings$ = this.store$.select(rankingsSelectors.selectAllRecords);
     this.personalBests$ = this.store$.select(resultsReducer.getPersonalBests());
 
     this.recordsLoaded$ = this.store$.select(clubRecordsQuery.getLoaded);
@@ -70,10 +77,13 @@ export class AthletePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(({ id }) => {
-      this.store$.dispatch(new athleteActions.GetAction(id));
-      this.store$.dispatch(new resultsActions.GetAction(id));
-      this.store$.dispatch(rankingsActions.loadAction({ athleteId: id }));
+      const athleteId = parseInt(id);
+
+      this.store$.dispatch(athletesActions.load({ athleteId }));
+      this.store$.dispatch(athletesActions.select({ athleteId }));
+      this.store$.dispatch(rankingsActions.load({ athleteId }));
       this.store$.dispatch(clubRecordsActions.load());
+      this.store$.dispatch(new resultsActions.GetAction(id));
     });
   }
 }

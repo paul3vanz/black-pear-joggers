@@ -1,21 +1,18 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { AwardClaim } from '../models/award-claim.model';
-import { Observable } from 'rxjs';
-import { ClubStandardsService } from 'apps/club-standards/src/app/services/club-standards.service';
-
-import * as moment from 'moment-mini-ts';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+
 import { AwardClaimRace } from '../models/award-claim-race.model';
 
+import * as moment from 'moment-mini-ts';
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AwardClaimService {
-  constructor(
-    private http: HttpClient,
-    // private clubStandardsService: ClubStandardsService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   readonly API_URL = 'https://bpj.org.uk/api/public/index.php';
 
@@ -26,8 +23,8 @@ export class AwardClaimService {
           return {
             ...awardClaim,
             checks: {
-              racesAreInSameYear: null,
-            },
+              racesAreInSameYear: null
+            }
           };
         });
       })
@@ -35,35 +32,49 @@ export class AwardClaimService {
   }
 
   getCertificate(id: number, token: string): Observable<AwardClaim> {
-    return this.http.get<AwardClaim>(`${this.API_URL}/awardclaim/${id}/${token}`);
+    return this.http.get<AwardClaim>(
+      `${this.API_URL}/awardclaim/${id}/${token}`
+    );
   }
 
   toggleVerified(awardClaim: AwardClaim): Observable<AwardClaim> {
-    return this.http.post<AwardClaim>(`${this.API_URL}/awardclaim/toggleverified/${awardClaim.id}`, null);
+    return this.http.post<AwardClaim>(
+      `${this.API_URL}/awardclaim/toggleverified/${awardClaim.id}`,
+      null
+    );
   }
 
   archive(awardClaim: AwardClaim): Observable<AwardClaim> {
-    return this.http.post<AwardClaim>(`${this.API_URL}/awardclaim/archive/${awardClaim.id}`, null);
+    return this.http.post<AwardClaim>(
+      `${this.API_URL}/awardclaim/archive/${awardClaim.id}`,
+      null
+    );
   }
 
   delete(awardClaim: AwardClaim): Observable<AwardClaim> {
-    return this.http.post<AwardClaim>(`${this.API_URL}/awardclaim/delete/${awardClaim.id}`, null);
+    return this.http.post<AwardClaim>(
+      `${this.API_URL}/awardclaim/delete/${awardClaim.id}`,
+      null
+    );
   }
 
   updateRace(awardClaimRace: AwardClaimRace) {
-    return this.http.post<AwardClaimRace>(`${this.API_URL}/awardclaim/${awardClaimRace.claimId}/race`, awardClaimRace);
+    return this.http.post<AwardClaimRace>(
+      `${this.API_URL}/awardclaim/${awardClaimRace.claimId}/race`,
+      awardClaimRace
+    );
   }
 
   update(awardClaim: AwardClaim) {
     return this.http.post(`${this.API_URL}/awardclaim`, awardClaim);
   }
 
-// MANUAL CHECKS
-// Matched up person with known member? - Need membership list/api
-// Is the person a paid up member? - Need membership list/api
-// Is their age category correct? - Need DOB
-// Were all events were completed in the same age category? - Need DOB
-// Have all finish times have been verified?
+  // MANUAL CHECKS
+  // Matched up person with known member? - Need membership list/api
+  // Is the person a paid up member? - Need membership list/api
+  // Is their age category correct? - Need DOB
+  // Were all events were completed in the same age category? - Need DOB
+  // Have all finish times have been verified?
 
   // Do all events meet the minimum time for the award being claimed?
   checkRacesMeetStandardClaimed(awardClaim: AwardClaim) {
@@ -73,7 +84,8 @@ export class AwardClaimService {
   // Are all events are in same calendar year?
   checkRacesAreInSameYear(awardClaim: AwardClaim) {
     console.log('checkRacesAreInSameYear');
-    return awardClaim.races.every((race) => moment(race.date).year === moment(awardClaim.races[0].date).year);
+    return awardClaim.races.every(
+      race => moment(race.date).year === moment(awardClaim.races[0].date).year
+    );
   }
-
 }

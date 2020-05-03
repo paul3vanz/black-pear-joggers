@@ -12,13 +12,11 @@ export class AthleteSearchResultsComponent {
   @Input() currentAthleteId: number;
   @Output() selectAthlete = new EventEmitter<Athlete>();
 
-
   constructor() {
     this.athletes = [
       {
         id: 1,
         athlete_id: 1,
-        athlete_id_alt: null,
         first_name: 'Paul',
         last_name: 'Evans',
         gender: 'M',
@@ -27,12 +25,11 @@ export class AthleteSearchResultsComponent {
         updated_at: null,
         latest_performance: null,
         first_performance: null,
-        latest_ranking: null,
+        latest_ranking: null
       },
       {
         id: 2,
         athlete_id: 2,
-        athlete_id_alt: null,
         first_name: 'Jo',
         last_name: 'Evans',
         gender: 'W',
@@ -41,12 +38,11 @@ export class AthleteSearchResultsComponent {
         updated_at: null,
         latest_performance: null,
         first_performance: null,
-        latest_ranking: null,
+        latest_ranking: null
       },
       {
         id: 3,
         athlete_id: 3,
-        athlete_id_alt: null,
         first_name: 'Test',
         last_name: 'Evans',
         gender: 'W',
@@ -55,12 +51,11 @@ export class AthleteSearchResultsComponent {
         updated_at: null,
         latest_performance: null,
         first_performance: null,
-        latest_ranking: null,
+        latest_ranking: null
       },
       {
         id: 4,
         athlete_id: 4,
-        athlete_id_alt: null,
         first_name: 'Another',
         last_name: 'Evans',
         gender: 'W',
@@ -69,7 +64,7 @@ export class AthleteSearchResultsComponent {
         updated_at: null,
         latest_performance: null,
         first_performance: null,
-        latest_ranking: null,
+        latest_ranking: null
       }
     ];
   }
@@ -81,11 +76,12 @@ export class AthleteSearchResultsComponent {
 
   get shouldShowResults() {
     return this.loading
-        ? true
-        : this.athletes.length
-            ? this.athletes.length === 1 && this.athletes[0].athlete_id === this.currentAthleteId
-                ? false
-                : true
-            : false;
+      ? true
+      : this.athletes.length
+        ? this.athletes.length === 1 &&
+          this.athletes[0].athlete_id === this.currentAthleteId
+          ? false
+          : true
+        : false;
   }
 }

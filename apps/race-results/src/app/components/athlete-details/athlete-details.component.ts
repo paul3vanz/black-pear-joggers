@@ -1,14 +1,16 @@
 import { Component, Input } from '@angular/core';
+
 import { Athlete } from '../../models/athlete';
+import { LoadingState } from '@black-pear-joggers/race-results-data-access';
 
 @Component({
   selector: 'bpj-athlete-details',
   templateUrl: './athlete-details.component.html',
-  styleUrls: [ './athlete-details.component.scss' ],
+  styleUrls: ['./athlete-details.component.scss']
 })
 export class AthleteDetailsComponent {
   @Input() athlete: Athlete;
-  @Input() loading: boolean;
+  @Input() loadingState: LoadingState;
   @Input() personalBests: any;
   multipleCategoriesInYear: boolean;
   activeYear = '';
@@ -23,10 +25,6 @@ export class AthleteDetailsComponent {
 
     this.activeYear = year;
     this.activeCategory = category;
-
-    setTimeout(() => {
-      // this.scrollToActiveTab();
-    }, 100);
   }
 
   scrollToActiveTab() {
@@ -34,7 +32,7 @@ export class AthleteDetailsComponent {
 
     if (activeTab) {
       activeTab.scrollIntoView({
-        behavior: 'smooth',
+        behavior: 'smooth'
       });
     }
   }

@@ -2,31 +2,27 @@
   <div class="o-site-wrap o-site-wrap--padding">
     <h1>Race Results <span class="beta">(Beta)</span></h1>
 
-    <p>The list only includes performances listed on <a href="https://www.runbritainrankings.com" target="_blank">Run Britain Rankings</a> / <a href="https://www.thepowerof10.info" target="_blank">Power of 10</a>, so times set on training runs or races without a race licence are not included and likely won’t be in future as this would be a nightmare to compile and maintain. The list is updated automatically on a daily basis, but recent performances may not be listed on Power of 10 until a week or so after, depending on when the results are published.</p>
+    <p>The list only includes performances listed on <a href="https://www.runbritainrankings.com" target="_blank">Run
+        Britain Rankings</a> / <a href="https://www.thepowerof10.info" target="_blank">Power of 10</a>, so times set on
+      training runs or races without a race licence are not included and likely won’t be in future as this would be a
+      nightmare to compile and maintain. The list is updated automatically on a daily basis, but recent performances may
+      not be listed on Power of 10 until a week or so after, depending on when the results are published.</p>
   </div>
 </div>
 
 <div class="o-section-md o-section-dark">
   <div class="o-site-wrap o-site-wrap--padding">
-    <bpj-search-bar
-      [keywords]="searchTermTemp"
-      [loading]="(athletesLoading$ | async) || (eventsLoading$ | async)"
-      (search)="search($event)"
-    ></bpj-search-bar>
+    <bpj-search-bar [keywords]="searchTermTemp"
+      [loading]="(athletesLoading$ | async) === 'LOADING' || (eventsLoading$ | async) === 'LOADING'"
+      (search)="search($event)"></bpj-search-bar>
 
     <ng-container>
-        <bpj-search-results-athletes
-          [athletes]="athletes$ | async"
-          [keywords]="searchTermTemp"
-          [searching]="athletesLoading$ | async"
-          (addAthlete)="showAddAthleteModal = true"
-        ></bpj-search-results-athletes>
+      <bpj-search-results-athletes [athletes]="athletes$ | async" [keywords]="searchTermTemp"
+        [searching]="(athletesLoading$ | async) === 'LOADING'" (addAthlete)="showAddAthleteModal = true">
+      </bpj-search-results-athletes>
 
-        <bpj-search-results-meetings
-          [Events]="events$ | async"
-          [keywords]="searchTermTemp"
-          [searching]="eventsLoading$ | async"
-        ></bpj-search-results-meetings>
+      <bpj-search-results-meetings [Events]="events$ | async" [keywords]="searchTermTemp"
+        [searching]="eventsLoading$ | async"></bpj-search-results-meetings>
     </ng-container>
   </div>
 </div>
@@ -35,8 +31,9 @@
 
   <h2>Coming Soon</h2>
 
-  <p style="color: #f00; font-weight: bold; font-size: 14px;">Please speak to Paul Evans in the meantime via the club Facebook page.</p>
-<!--
+  <p style="color: #f00; font-weight: bold; font-size: 14px;">Please speak to Paul Evans in the meantime via the club
+    Facebook page.</p>
+  <!--
   <h2>Add your details to the site</h2>
 
   <p>If you can't find yourself on the site, fill in the form below. We'll check your affiliation details and if all ok, your results will show on the site after a few days.</p>
