@@ -1,16 +1,24 @@
 import { createAction, props } from '@ngrx/store';
+
 import { Ranking } from '../models/ranking.model';
 
-export const loadAction = createAction(
+export const load = createAction(
   '[Rankings] Load',
   props<{ athleteId: number }>()
 );
 
-export const loadSuccessAction = createAction(
+export const loadSuccess = createAction(
   '[Rankings] Load Success',
-  props<{
-    rankings: Ranking[];
-  }>()
+  props<{ rankings: Ranking[] }>()
 );
 
-export const loadFailureAction = createAction('[Rankings] Load Failure');
+export const loadFailure = createAction(
+  '[Rankings] Load Failure',
+  props<{ error: string }>()
+);
+
+export const rankingsActions = {
+  load,
+  loadSuccess,
+  loadFailure
+};

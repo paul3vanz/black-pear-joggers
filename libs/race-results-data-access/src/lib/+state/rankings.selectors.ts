@@ -1,11 +1,22 @@
 import * as rankingsReducer from './rankings.reducer';
 import { createFeatureSelector, State, createSelector } from '@ngrx/store';
 
-export const selectRankings = createFeatureSelector<any, rankingsReducer.State>(
+export const selectState = createFeatureSelector<any, rankingsReducer.State>(
   rankingsReducer.FEATURE_KEY
 );
 
-export const selectLoading = createSelector(
-  selectRankings,
-  (state: rankingsReducer.State) => state.rankings
+export const selectAllRecords = createSelector(
+  selectState,
+  (state: rankingsReducer.State) => state.records
 );
+
+export const selectLoading = createSelector(
+  selectState,
+  (state: rankingsReducer.State) => state.loadingState
+);
+
+export const rankingsSelectors = {
+  selectState,
+  selectAllRecords,
+  selectLoading
+};

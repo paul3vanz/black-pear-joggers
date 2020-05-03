@@ -1,39 +1,35 @@
 import { Ranking } from '../models/ranking.model';
 import { createReducer, on, Action } from '@ngrx/store';
-import * as rankingsActions from './rankings.actions';
+import { rankingsActions } from './rankings.actions';
+import { LoadingState, LoadingStates } from '../models/loading-state.model';
 
 export const FEATURE_KEY = 'rankings';
 
 export interface State {
-  rankings: Ranking[];
-  loading: boolean;
-  error: boolean;
+  records: Ranking[];
+  loadingState: LoadingState;
 }
 
 export const initialState: State = {
-  rankings: [],
-  loading: false,
-  error: false
+  records: [],
+  loadingState: LoadingStates.INIT
 };
 
 const rankingsReducer = createReducer(
   initialState,
-  on(rankingsActions.loadAction, state => ({
+  on(rankingsActions.load, state => ({
     ...state,
-    rankings: [],
-    loading: true,
-    error: false
+    records: [],
+    loadingState: LoadingStates.LOADING
   })),
-  on(rankingsActions.loadSuccessAction, (state, { rankings }) => ({
+  on(rankingsActions.loadSuccess, (state, { rankings }) => ({
     ...state,
-    rankings: rankings,
-    loading: false,
-    error: false
+    records: rankings,
+    loadingState: LoadingStates.LOADED
   })),
-  on(rankingsActions.loadFailureAction, state => ({
+  on(rankingsActions.loadFailure, (state, { error }) => ({
     ...state,
-    loading: false,
-    error: true
+    loadingState: { error }
   }))
 );
 
