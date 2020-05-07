@@ -1,0 +1,20 @@
+<table class="table--light table--centered">
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>Start of Year</th>
+      <th>End of Year</th>
+      <th>Improvement</th>
+      <th>Improvement %</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let rankingStat of rankingsStats">
+      <td>{{ rankingStat.year }}</td>
+      <td>{{ rankingStat.first.ranking }}</td>
+      <td>{{ rankingStat.last.ranking }}</td>
+      <td>{{ rankingStat.improvement.number | number : '1.0-2' }}</td>
+      <td>{{ rankingStat.improvement.percentage | percent }}</td>
+    </tr>
+  </tbody>
+</table>

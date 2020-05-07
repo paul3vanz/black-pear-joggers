@@ -39,6 +39,7 @@ import { StandardsEffects } from './effects/standards.effects';
 import { StandardsPageComponent } from './containers/standards-page/standards-page.component';
 import { StandardsService } from './services/standards.service';
 import { StandardsTableComponent } from './components/standards-table/standards-table.component';
+import { RankingStatsTableComponent } from './components/ranking-stats-table/ranking-stats-table.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { StandardsTableComponent } from './components/standards-table/standards-
     SearchResultsAthletesComponent,
     SearchResultsMeetingsComponent,
     StandardsPageComponent,
-    StandardsTableComponent
+    StandardsTableComponent,
+    RankingStatsTableComponent
   ],
   imports: [
     BrowserModule,

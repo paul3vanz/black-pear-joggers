@@ -29,6 +29,7 @@ import {
   clubRecordsQuery,
   clubRecordsActions
 } from '@black-pear-joggers/club-records-data-access';
+import { YearRankingStats } from 'libs/race-results-data-access/src/lib/models/ranking-stats.model';
 
 @Component({
   selector: 'bpj-athlete-page',
@@ -41,6 +42,7 @@ export class AthletePageComponent implements OnInit {
   resultsLoading$: Observable<boolean>;
   results$: Observable<Paging<Result>>;
   rankings$: Observable<Ranking[]>;
+  rankingsStats$: Observable<YearRankingStats[]>;
   personalBests$: Observable<any>;
   standardsLoading$: Observable<boolean>;
   standards$: Observable<Standard[]>;
@@ -62,6 +64,7 @@ export class AthletePageComponent implements OnInit {
     this.resultsLoading$ = this.store$.select(resultsReducer.getLoading);
     this.results$ = this.store$.select(resultsReducer.getResults);
     this.rankings$ = this.store$.select(rankingsSelectors.selectAllRecords);
+    this.rankingsStats$ = this.store$.select(rankingsSelectors.getStats);
     this.personalBests$ = this.store$.select(resultsReducer.getPersonalBests());
 
     this.recordsLoaded$ = this.store$.select(clubRecordsQuery.getLoaded);

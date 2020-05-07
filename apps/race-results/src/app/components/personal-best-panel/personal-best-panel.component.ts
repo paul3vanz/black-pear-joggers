@@ -10,6 +10,7 @@ import { Paging } from '../../models/paging';
 import { Result } from '../../models/result';
 import { PacePipe } from 'libs/shared-pipes/src/lib/pipes/pace.pipe';
 import { Ranking } from '../../../../../../libs/race-results-data-access/src/lib/models/ranking.model';
+import { YearRankingStats } from 'libs/race-results-data-access/src/lib/models/ranking-stats.model';
 
 interface PerformanceChartPoint extends ChartPoint {
   time?: number;
@@ -26,6 +27,7 @@ export class PersonalBestPanelComponent implements OnChanges, AfterViewInit {
   @Input() loading: boolean;
   @Input() personalBests: any;
   @Input() rankings: Ranking[];
+  @Input() rankingsStats: YearRankingStats[];
   @Input() results: Paging<Result>;
   chart: Chart;
 

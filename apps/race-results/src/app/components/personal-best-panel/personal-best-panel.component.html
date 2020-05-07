@@ -28,9 +28,19 @@
 
 <div class="chart-container">
   <h2 class="u-text-center">Personal best and ranking history</h2>
-  <canvas aria-label="Chart showing history of personal bests and runbritain ranking" class="chart" id="canvas"
-    height="300">{{ chart }}</canvas>
+  <canvas aria-label="Chart showing history of personal bests and runbritain ranking" aria-hidden="true" class="chart"
+    id="canvas" height="300">{{ chart }}</canvas>
+
+  <!-- <ul>
+    <li>Ranking improved from 27.6 to 12.3 over 1 year and 6 months</li>
+    <li>5K personal best improved from 31:34 to 21:23 over 13 events in 1 year</li>
+    <li>10K personal best improved from 51:45 to 46:17 over 3 events in 8 months</li>
+    <li>Half marathon personal best improved from 1:53:02 to 1:45:56 over 3 events in 10 months</li>
+    <li>Marathon personal best is 4:12:20</li>
+  </ul> -->
 </div>
+
+<bpj-ranking-stats-table class="stats-table" [rankingsStats]="rankingsStats"></bpj-ranking-stats-table>
 
 <bpj-modal [wide]="true">
   <div class="o-section-md">

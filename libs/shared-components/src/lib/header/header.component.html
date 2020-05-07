@@ -1,18 +1,11 @@
 <header>
   <div class="logo">
     <a href="https://bpj.org.uk">
-      <img
-        src="https://bpj.org.uk/download-logo/bpj-logo-alt.svg"
-        alt="Black Pear Joggers Home Page"
-      >
+      <img src="https://bpj.org.uk/download-logo/bpj-logo-alt.svg" alt="Black Pear Joggers Home Page">
     </a>
   </div>
 
-  <a
-    (click)="toggleMenu()"
-    class="mobile-menu"
-    href="javascript:void(0)"
-  >
+  <a (click)="toggleMenu()" class="mobile-menu" href="javascript:void(0)">
     <span>&nbsp;</span>
 
     <span>Open navigation menu</span>
@@ -20,10 +13,7 @@
     <span>&nbsp;</span>
   </a>
 
-  <nav
-    class="navigation"
-    [class.active]="menuOpen"
-  >
+  <nav class="navigation" [class.active]="menuOpen" aria-label="Site navigation menu">
     <ul>
       <ng-container *ngIf="menuContent">
         <li *ngFor="let link of menuContent.items | keyvalue">

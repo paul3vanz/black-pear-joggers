@@ -3,7 +3,8 @@
 @import '../../../../../../scss/utilities';
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .cards {
@@ -91,4 +92,9 @@
   @include nb-respond-to('xs') {
     max-height: 50vh;
   }
+}
+
+.stats-table {
+  margin-bottom: 30px;
+  align-self: center;
 }
