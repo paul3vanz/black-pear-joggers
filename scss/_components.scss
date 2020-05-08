@@ -106,31 +106,42 @@ ol li {
 table {
   width: 100%;
   margin-bottom: 1rem;
-}
+  border-collapse: collapse;
 
-th {
-  text-align: left;
-}
+  th {
+    text-align: left;
+  }
 
-th,
-td {
-  padding: 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  th,
+  td {
+    padding: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-  @include nb-respond-to('sm') {
-    padding: 8px;
+    @include nb-respond-to('sm') {
+      padding: 8px;
 
-    &:first-child {
-      padding-left: 0;
-    }
-    &:last-child {
-      padding-right: 0;
+      &:first-child {
+        padding-left: 0;
+      }
+      &:last-child {
+        padding-right: 0;
+      }
     }
   }
-}
 
-table tr:last-child * {
-  border-bottom: none;
+  tr:last-child * {
+    border-bottom: none;
+  }
+
+  &.table--light th,
+  &.table--light td {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+
+  &.table--centered th,
+  &.table--centered td {
+    text-align: center;
+  }
 }
 
 .c-badge {
