@@ -15,7 +15,7 @@
 
     @include nb-respond-to('xs') {
       flex-direction: column;
-      justify-content: flex-start;
+      justify-content: center;
     }
   }
 }
