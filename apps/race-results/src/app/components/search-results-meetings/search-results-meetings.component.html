@@ -1,40 +1,38 @@
-{{ searching }}
-
 <ng-container *ngIf="(Events && Events.total) || searching">
   <h2>Events</h2>
 
   <bpj-loader *ngIf="searching"></bpj-loader>
 </ng-container>
 
-  <div *ngIf="!searching && (Events && Events.total)">
-    <div class="table__container" *ngIf="Events && Events.total">
-      <div class="table__fade"></div>
-      <div class="table__scroll">
-        <table class="table table-bordered table-striped table-hover table-condensed" data-sortable>
-          <thead class="thead-inverse">
-            <tr>
-              <th data-sortable-type="alpha">Date</th>
-              <th data-sortable-type="alpha">Race</th>
-              <th data-sortable-type="alpha">Event</th>
-              <th data-sortable-type="alpha">Runners</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let performance of Events.data">
-              <td class="nowrap">{{ performance.date | date: "DD/MM/YYYY" }}</td>
-              <td><a href="#/meeting/{{performance.date}}/{{performance.meeting_id}}">{{performance.race}}</a></td>
-              <td class="nowrap">{{performance.event}}</td>
-              <td class="nowrap">
-                <a href="#/meeting/{{performance.date}}/{{performance.meeting_id}}">
-                  {{ performance.first_name }} {{ performance.last_name }}
-                  <span *ngIf="performance.total_results > 1">
-                    and {{ performance.total_results - 1 }} other<span *ngIf="performance.total_results > 2">s</span>
-                  </span>
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+<div *ngIf="!searching && (Events && Events.total)">
+  <div class="table__container" *ngIf="Events && Events.total">
+    <div class="table__fade"></div>
+    <div class="table__scroll">
+      <table class="table table-bordered table-striped table-hover table-condensed" data-sortable>
+        <thead class="thead-inverse">
+          <tr>
+            <th data-sortable-type="alpha">Date</th>
+            <th data-sortable-type="alpha">Race</th>
+            <th data-sortable-type="alpha">Event</th>
+            <th data-sortable-type="alpha">Runners</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let performance of Events.data">
+            <td class="nowrap">{{ performance.date | date: "DD/MM/YYYY" }}</td>
+            <td><a href="#/meeting/{{performance.date}}/{{performance.meeting_id}}">{{performance.race}}</a></td>
+            <td class="nowrap">{{performance.event}}</td>
+            <td class="nowrap">
+              <a href="#/meeting/{{performance.date}}/{{performance.meeting_id}}">
+                {{ performance.first_name }} {{ performance.last_name }}
+                <span *ngIf="performance.total_results > 1">
+                  and {{ performance.total_results - 1 }} other<span *ngIf="performance.total_results > 2">s</span>
+                </span>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
+</div>

@@ -13,7 +13,7 @@
 <div class="o-section-md o-section-dark">
   <div class="o-site-wrap o-site-wrap--padding">
     <bpj-search-bar [keywords]="searchTermTemp"
-      [loading]="(athletesLoadingState$ | async) === 'LOADING' || (eventsLoading$ | async) === 'LOADING'"
+      [loading]="(athletesLoadingState$ | async) === 'LOADING' || (eventsLoadingState$ | async)"
       (search)="search($event)"></bpj-search-bar>
 
     <ng-container>
@@ -22,7 +22,7 @@
       </bpj-search-results-athletes>
 
       <bpj-search-results-meetings [Events]="events$ | async" [keywords]="searchTermTemp"
-        [searching]="eventsLoading$ | async"></bpj-search-results-meetings>
+        [searching]="eventsLoadingState$ | async"></bpj-search-results-meetings>
     </ng-container>
   </div>
 </div>

@@ -14,6 +14,7 @@ import { Paging } from '../../models/paging';
 
 import * as eventsActions from '../../actions/events';
 import * as rootReducer from '../../reducers';
+import { getLoading } from '../../reducers/events';
 
 @Component({
   selector: 'bpj-results-page',
@@ -23,7 +24,7 @@ import * as rootReducer from '../../reducers';
 export class SearchPageComponent implements OnInit {
   athletesLoadingState$: Observable<LoadingState>;
   athletes$: Observable<Athlete[]>;
-  eventsLoading$: Observable<boolean>;
+  eventsLoadingState$: Observable<boolean>;
   events$: Observable<Paging<Event>>;
   searchTerm$: Subject<string> = new Subject<string>();
   searchTermTemp = '';
@@ -33,6 +34,8 @@ export class SearchPageComponent implements OnInit {
     this.athletesLoadingState$ = this.store$.select(
       athletesSelectors.getLoadingState
     );
+
+    this.eventsLoadingState$ = this.store$.select(getLoading);
   }
 
   ngOnInit() {

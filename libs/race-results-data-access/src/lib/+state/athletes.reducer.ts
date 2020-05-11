@@ -44,7 +44,8 @@ export namespace athletesReducer {
     })),
     on(athletesActions.search, (state, { keywords }) => ({
       ...state,
-      search: keywords
+      search: keywords,
+      loadingState: LoadingStates.LOADING
     })),
     on(athletesActions.select, (state, { athleteId }) => ({
       ...state,
