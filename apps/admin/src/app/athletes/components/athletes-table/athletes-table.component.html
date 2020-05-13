@@ -1,0 +1,56 @@
+<div class="o-section-md">
+  <div class="o-site-wrap o-site-wrap--padding">
+    <h1>Athletes</h1>
+
+    <h2>All athletes</h2>
+
+    <input [(ngModel)]="search" placeholder="Search...">
+
+    <table *ngIf="athletes">
+      <thead>
+        <th>ID</th>
+
+        <th>UKA ID</th>
+
+        <th>Name</th>
+
+        <th>Gender</th>
+
+        <th>Category</th>
+
+        <th>Status</th>
+
+        <th>Active</th>
+
+        <th>Created</th>
+
+        <th>Updated</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let athlete of athletes | filterAthletes : search">
+          <td>{{ athlete.id }}</td>
+
+          <td>{{ athlete.athlete_id }}</td>
+
+          <td>
+            <a (click)="this.onSelectAthlete(athlete.athlete_id)" href="javascript:void(0)">
+              {{ athlete.first_name }} {{ athlete.last_name }}
+            </a>
+          </td>
+
+          <td>{{ athlete.gender }}</td>
+
+          <td>{{ athlete.category }}</td>
+
+          <td>{{ athlete.competitive_status | competitiveStatus }}</td>
+
+          <td>{{ athlete.active }}</td>
+
+          <td>{{ athlete.created_at }}</td>
+
+          <td>{{ athlete.updated_at }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

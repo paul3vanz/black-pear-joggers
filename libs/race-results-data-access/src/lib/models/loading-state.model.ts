@@ -12,7 +12,7 @@ export type LoadingState = LoadingStates | ErrorState;
 
 export function getError(callState: LoadingState): string | null {
   if ((callState as ErrorState).error !== undefined) {
-      return (callState as ErrorState).error;
+    return (callState as ErrorState).error;
   }
   return null;
 }

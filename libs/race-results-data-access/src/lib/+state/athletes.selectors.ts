@@ -17,11 +17,6 @@ export namespace athletesSelectors {
     getState,
     (state: athletesReducer.AthletesState) => {
       return state.records.find(record => {
-        console.log(
-          record.athlete_id,
-          state.selected,
-          record.athlete_id === state.selected
-        );
         return record.athlete_id === state.selected;
       });
     }

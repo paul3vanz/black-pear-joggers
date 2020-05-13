@@ -1,0 +1,31 @@
+<bpj-modal [open]="open" *ngIf="athlete">
+  <h2>{{ athlete.first_name }} {{ athlete.last_name }}</h2>
+
+  <h3>Rankings</h3>
+
+  <bpj-loader *ngIf="rankingsLoadingState === 'LOADING'"></bpj-loader>
+
+  <ul *ngIf="rankingsLoadingState === 'LOADED'">
+    <li><strong>{{rankings.length}}</strong> rankings</li>
+    <li>Current ranking: <strong>{{ latestRanking.ranking }}</strong> ({{ latestRanking.date | date : 'fromNow' }})
+    </li>
+    <li>Updated <strong>{{ lastUpdated | date : 'fromNow' }}</strong></li>
+  </ul>
+
+  <h3>Links</h3>
+
+  <ul>
+    <li>
+      <a target="_blank" href="https://www.thepowerof10.info/athletes/profile.aspx?athleteid={{ athlete.athlete_id }}">
+        Power of 10
+      </a>
+    </li>
+
+    <li>
+      <a target="_blank"
+        href="https://www.runbritainrankings.com/runners/profile.aspx?athleteid={{ athlete.athlete_id }}">
+        Run Britain Rankings
+      </a>
+    </li>
+  </ul>
+</bpj-modal>

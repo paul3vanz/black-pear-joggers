@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AmplifyAngularModule } from 'aws-amplify-angular';
 
+import { FilterAthletesPipe } from './core/pipes/filter-athletes.pipe';
 import { AppComponent } from './app.component';
 import { NxModule } from '@nrwl/nx';
 import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
@@ -41,6 +42,7 @@ import { AppRoutingModule } from './app.routing.module';
     SharedPipesModule,
     MagicMileModule
   ],
+  exports: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

@@ -4,7 +4,9 @@ import {
   athletesActions,
   LoadingState,
   athletesSelectors,
-  Athlete
+  Athlete,
+  rankingsSelectors,
+  Ranking
 } from '@black-pear-joggers/race-results-data-access';
 import { Observable } from 'rxjs';
 
@@ -15,15 +17,27 @@ import { Observable } from 'rxjs';
 })
 export class AthletesPageComponent implements OnInit {
   loadingState$: Observable<LoadingState>;
+  athlete$: Observable<Athlete>;
   athletes$: Observable<Athlete[]>;
+  rankings$: Observable<Ranking[]>;
+  rankingsLoadingState$: Observable<LoadingState>;
 
   constructor(private store$: Store<any>) {}
 
   ngOnInit() {
     this.store$.dispatch(athletesActions.load({}));
+    this.store$.dispatch(athletesActions.select({ athleteId: 569901 }));
 
-    this.loadingState$ = this.store$.select(athletesSelectors.getLoadingState);
-
+    this.athlete$ = this.store$.select(athletesSelectors.getSelectedRecord);
     this.athletes$ = this.store$.select(athletesSelectors.getAllRecords);
+    this.loadingState$ = this.store$.select(athletesSelectors.getLoadingState);
+    this.rankings$ = this.store$.select(rankingsSelectors.selectAllRecords);
+    this.rankingsLoadingState$ = this.store$.select(
+      rankingsSelectors.selectLoading
+    );
+  }
+
+  onSelectAthlete(athleteId: number) {
+    this.store$.dispatch(athletesActions.select({ athleteId }));
   }
 }
