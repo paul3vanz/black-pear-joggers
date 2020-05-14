@@ -16,7 +16,7 @@ export namespace athletesSelectors {
   export const getSelectedRecord = createSelector(
     getState,
     (state: athletesReducer.AthletesState) => {
-      return state.records.find(record => {
+      return state.records.find((record) => {
         return record.athlete_id === state.selected;
       });
     }

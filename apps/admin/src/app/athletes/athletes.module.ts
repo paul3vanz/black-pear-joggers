@@ -1,27 +1,23 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { SharedPipesModule } from '@black-pear-joggers/shared-pipes';
-import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { AthletesPageComponent } from './containers/athletes-page/athletes-page.component';
-import { RaceResultsDataAccessModule } from '@black-pear-joggers/race-results-data-access';
-import { AthletesComponent } from './components/athletes/athletes.component';
-import { HttpClientModule } from '@angular/common/http';
-import { AthleteDetailsModalComponent } from './components/athlete-details-modal/athlete-details-modal.component';
-import { AthletesTableComponent } from './components/athletes-table/athletes-table.component';
-import { FilterAthletesPipe } from '../core/pipes/filter-athletes.pipe';
 import { EffectsModule } from '@ngrx/effects';
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+
+import { AthleteDetailsModalComponent } from './components/athlete-details-modal/athlete-details-modal.component';
+import { AthletesComponent } from './components/athletes/athletes.component';
+import { AthletesPageComponent } from './containers/athletes-page/athletes-page.component';
 import { AthletesPageEffects } from './effects/athletes-page.effects';
+import { AthletesTableComponent } from './components/athletes-table/athletes-table.component';
+import { AuthenticatedGuard } from 'libs/authentication/src/lib/guards/authenticated.guard';
+import { FilterAthletesPipe } from '../core/pipes/filter-athletes.pipe';
+import { RaceResultsDataAccessModule } from '@black-pear-joggers/race-results-data-access';
+import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
+import { SharedPipesModule } from '@black-pear-joggers/shared-pipes';
 
 @NgModule({
-  declarations: [
-    AthletesPageComponent,
-    AthletesComponent,
-    AthleteDetailsModalComponent,
-    AthletesTableComponent,
-    FilterAthletesPipe
-  ],
+  declarations: [AthletesPageComponent, AthletesComponent, AthleteDetailsModalComponent, AthletesTableComponent, FilterAthletesPipe],
   imports: [
     CommonModule,
     EffectsModule.forFeature([AthletesPageEffects]),
@@ -32,12 +28,12 @@ import { AthletesPageEffects } from './effects/athletes-page.effects';
       {
         path: '',
         component: AthletesPageComponent,
-        canActivate: []
-      }
+        canActivate: [AuthenticatedGuard],
+      },
     ]),
     RaceResultsDataAccessModule,
     SharedComponentsModule,
-    SharedPipesModule
-  ]
+    SharedPipesModule,
+  ],
 })
 export class AthletesModule {}

@@ -4,11 +4,6 @@
     "outDir": "../../dist/out-tsc/apps/magic-mile",
     "types": []
   },
-  "exclude": [
-    "test.ts",
-    "**/*.spec.ts"
-  ],
-  "include": [
-    "**/*.ts"
-  ]
+  "exclude": ["test.ts", "**/*.spec.ts"],
+  "files": ["src/main.ts", "src/polyfills.ts"]
 }

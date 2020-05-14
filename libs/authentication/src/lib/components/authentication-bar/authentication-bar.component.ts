@@ -1,26 +1,23 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { AmplifyService } from 'aws-amplify-angular';
-import { CognitoUser } from '@aws-amplify/auth';
-import { AuthState } from 'aws-amplify-angular/dist/src/providers';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Store } from '@ngrx/store';
+
+import { authReducer } from '../../state/reducers/auth.reducer';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'bpj-authentication-bar',
   templateUrl: './authentication-bar.component.html',
-  styleUrls: ['./authentication-bar.component.scss']
+  styleUrls: ['./authentication-bar.component.scss'],
 })
 export class AuthenticationBarComponent implements OnInit {
-  authState: AuthState;
+  user$: Observable<any>;
   @Output() signIn = new EventEmitter<any>();
   @Output() signOut = new EventEmitter<any>();
 
-  constructor(private amplifyService: AmplifyService) {
-    this.amplifyService.authStateChange$.subscribe((authState) => {
-      this.authState = authState;
-      console.log(authState);
-    });
-  }
+  constructor(private store$: Store<authReducer.AuthPartialState>) {}
 
   ngOnInit() {
+    this.user$ = this.store$.select((state) => state.auth.user);
   }
 
   onSignIn() {
@@ -28,8 +25,6 @@ export class AuthenticationBarComponent implements OnInit {
   }
 
   onSignOut() {
-    this.amplifyService.auth().signOut();
     this.signOut.emit();
   }
-
 }

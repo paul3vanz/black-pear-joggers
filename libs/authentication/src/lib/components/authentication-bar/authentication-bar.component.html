@@ -1,12 +1,11 @@
 <div class="o-section-sm">
   <div class="o-site-wrap o-site-wrap--padding">
     <div class="container">
-      <div *ngIf="authState?.state === 'signedIn'" class="user">
+      <div *ngIf="user$ | async as user" class="user">
         <bpj-icon class="icon" icon="account-circle"></bpj-icon>
 
         <span>
-          <strong>{{ authState.user.username }}</strong><br />
-          {{ authState.user.attributes.email }}
+          <strong [title]="user.email">{{ user.email }}</strong>
         </span>
       </div>
 
@@ -14,10 +13,12 @@
         <a class="navigation__item" [routerLink]="['/athletes']" href="javascript:void(0)">Athletes</a>
         <a class="navigation__item" [routerLink]="['/club-standards']" href="javascript:void(0)">Club standards</a>
         <a class="navigation__item" [routerLink]="['/magic-mile']" href="javascript:void(0)">Magic mile</a>
-        <a class="navigation__item" *ngIf="authState?.state !== 'signedIn'" [routerLink]="['/auth']"
-          (click)="onSignIn()" href="javascript:void(0)">Sign in</a>
-        <a class="navigation__item" *ngIf="authState?.state === 'signedIn'" [routerLink]="['/auth']"
-          (click)="onSignOut()" href="javascript:void(0)">Sign out</a>
+        <a class="navigation__item" *ngIf="user$ | async" [routerLink]="['/auth']" (click)="onSignIn()" href="javascript:void(0)"
+          >Sign in</a
+        >
+        <a class="navigation__item" *ngIf="user$ | async" [routerLink]="['/auth']" (click)="onSignOut()" href="javascript:void(0)"
+          >Sign out</a
+        >
       </ul>
     </div>
   </div>

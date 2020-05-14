@@ -2,13 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc/apps/admin",
-    "types": [ "node" ]
+    "types": ["node"]
   },
-  "exclude": [
-    "test.ts",
-    "**/*.spec.ts"
-  ],
-  "include": [
-    "**/*.ts"
-  ]
+  "exclude": ["test.ts", "**/*.spec.ts"],
+  "files": ["src/main.ts", "src/polyfills.ts"]
 }

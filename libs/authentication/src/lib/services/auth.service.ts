@@ -1,50 +1,33 @@
+import { Auth } from 'aws-amplify';
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
-import {AuthenticationDetails, CognitoUser, CognitoUserAttribute, CognitoUserPool, ICognitoUserPoolData} from 'amazon-cognito-identity-js';
+import { from, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
-  // https://blackpearjoggers.auth.us-east-1.amazoncognito.com/login?response_type=token&client_id=340gm7r5u38dpb0t5ipc2eamrt&redirect_uri=http://localhost:4200/?action=signed-in
-
-  cognitoUserPoolData: ICognitoUserPoolData = {
-    UserPoolId: 'us-east-1_ZrnykIqVi',
-    ClientId: '340gm7r5u38dpb0t5ipc2eamrt',
-  };
-
-  cognitoUserPool = new CognitoUserPool(this.cognitoUserPoolData);
-
   signIn(username: string, password: string) {
-    const authDetails = new AuthenticationDetails({
-      Username: username,
-      Password: password
-    });
-    const userData = {
-      Username: username,
-      Pool: this.cognitoUserPool
-    };
-    const cognitoUser = new CognitoUser(userData);
+    return from(Auth.signIn(username, password)).pipe(catchError((error) => throwError(error)));
+  }
 
-    cognitoUser.authenticateUser(authDetails, {
-      onSuccess: (result) => {
-        console.log('You are now Logged in');
-      },
-      onFailure: (err) => {
-        console.log('There was an error during login, please try again -> ', err)
-      }
-    })
+  signOut() {
+    return from(Auth.signOut()).pipe(catchError((error) => throwError(error)));
   }
 
   check() {
-    console.log('auth service - check');
-
-    this.signIn('paul@3vanz.co.uk', 'Password1!');
-
-    return of({
-      username: 'paul3vanz'
-    });
+    return from(Auth.currentUserInfo()).pipe(
+      map(({ attributes }) => {
+        return {
+          email: attributes.email,
+          emailVerified: attributes.email_verified,
+          phoneNumber: attributes.phone_number,
+          phoneNumberVerified: attributes.phone_number_verified,
+          username: attributes.sub,
+        };
+      }),
+      catchError((error) => throwError(error))
+    );
   }
 
   constructor() {}

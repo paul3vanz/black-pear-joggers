@@ -1,8 +1,9 @@
-import { NgModule } from '@angular/core';
+import { AmplifyUIAngularModule } from '@aws-amplify/ui-angular';
 import { CommonModule } from '@angular/common';
-import { AuthPageComponent } from './containers/auth-page/auth-page.component';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AmplifyAngularModule } from 'aws-amplify-angular';
+
+import { AuthPageComponent } from './containers/auth-page/auth-page.component';
 
 @NgModule({
   declarations: [AuthPageComponent],
@@ -14,7 +15,7 @@ import { AmplifyAngularModule } from 'aws-amplify-angular';
         component: AuthPageComponent,
       },
     ]),
-    AmplifyAngularModule,
+    AmplifyUIAngularModule,
   ],
 })
-export class AuthModule { }
+export class AuthModule {}
