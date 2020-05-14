@@ -26,7 +26,6 @@ export class AthletesPageComponent implements OnInit {
 
   ngOnInit() {
     this.store$.dispatch(athletesActions.load({}));
-    this.store$.dispatch(athletesActions.select({ athleteId: 569901 }));
 
     this.athlete$ = this.store$.select(athletesSelectors.getSelectedRecord);
     this.athletes$ = this.store$.select(athletesSelectors.getAllRecords);

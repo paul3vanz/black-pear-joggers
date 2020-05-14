@@ -3,13 +3,17 @@
 
   <h3>Rankings</h3>
 
-  <bpj-loader *ngIf="rankingsLoadingState === 'LOADING'"></bpj-loader>
+  <bpj-loader *ngIf="rankingsLoadingState === 'LOADING'" [dark]="true"></bpj-loader>
 
   <ul *ngIf="rankingsLoadingState === 'LOADED'">
     <li><strong>{{rankings.length}}</strong> rankings</li>
-    <li>Current ranking: <strong>{{ latestRanking.ranking }}</strong> ({{ latestRanking.date | date : 'fromNow' }})
-    </li>
-    <li>Updated <strong>{{ lastUpdated | date : 'fromNow' }}</strong></li>
+
+    <ng-container *ngIf="rankings.length">
+      <li>
+        Current ranking: <strong>{{ latestRanking.ranking }}</strong> ({{ latestRanking.date | date : 'fromNow' }})
+      </li>
+      <li>Updated <strong>{{ lastUpdated | date : 'fromNow' }}</strong></li>
+    </ng-container>
   </ul>
 
   <h3>Links</h3>
