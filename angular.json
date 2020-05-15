@@ -4,7 +4,7 @@
   "newProjectRoot": "",
   "projects": {
     "magic-mile": {
-      "root": "apps/magic-mile/",
+      "root": "/magic-mile/",
       "sourceRoot": "apps/magic-mile/src",
       "projectType": "application",
       "prefix": "bpj",
@@ -111,7 +111,7 @@
       }
     },
     "club-standards": {
-      "root": "apps/club-standards/",
+      "root": "/club-standards/",
       "sourceRoot": "apps/club-standards/src",
       "projectType": "application",
       "prefix": "bpj",
@@ -190,7 +190,7 @@
       }
     },
     "race-results": {
-      "root": "apps/race-results/",
+      "root": "/race-results/",
       "sourceRoot": "apps/race-results/src",
       "projectType": "application",
       "prefix": "black-pear-joggers",
@@ -273,7 +273,7 @@
       }
     },
     "club-records": {
-      "root": "apps/club-records/",
+      "root": "/club-records/",
       "sourceRoot": "apps/club-records/src",
       "projectType": "application",
       "prefix": "black-pear-joggers",
@@ -494,7 +494,7 @@
       }
     },
     "admin": {
-      "root": "apps/admin/",
+      "root": "/admin/",
       "sourceRoot": "apps/admin/src",
       "projectType": "application",
       "prefix": "bpj",
