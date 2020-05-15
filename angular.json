@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/magic-mile",
+            "outputPath": "dist/magic-mile",
             "index": "apps/magic-mile/src/index.html",
             "main": "apps/magic-mile/src/main.ts",
             "polyfills": "apps/magic-mile/src/polyfills.ts",
@@ -34,7 +34,7 @@
                   "with": "apps/magic-mile/src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "/apps/magic-mile/",
+              "baseHref": "/magic-mile/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -120,7 +120,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/club-standards",
+            "outputPath": "dist/club-standards",
             "index": "apps/club-standards/src/index.html",
             "main": "apps/club-standards/src/main.ts",
             "polyfills": "apps/club-standards/src/polyfills.ts",
@@ -137,7 +137,7 @@
                   "with": "apps/club-standards/src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "/apps/club-standards/",
+              "baseHref": "/club-standards/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -203,7 +203,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/race-results",
+            "outputPath": "dist/race-results",
             "index": "apps/race-results/src/index.html",
             "main": "apps/race-results/src/main.ts",
             "polyfills": "apps/race-results/src/polyfills.ts",
@@ -220,7 +220,7 @@
                   "with": "apps/race-results/src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "/apps/race-results/",
+              "baseHref": "/race-results/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -286,7 +286,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/club-records",
+            "outputPath": "dist/club-records",
             "index": "apps/club-records/src/index.html",
             "main": "apps/club-records/src/main.ts",
             "polyfills": "apps/club-records/src/polyfills.ts",
@@ -303,7 +303,7 @@
                   "with": "apps/club-records/src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "/apps/club-records/",
+              "baseHref": "/club-records/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -507,7 +507,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/admin",
+            "outputPath": "dist/admin",
             "index": "apps/admin/src/index.html",
             "main": "apps/admin/src/main.ts",
             "polyfills": "apps/admin/src/polyfills.ts",
@@ -524,7 +524,7 @@
                   "with": "apps/admin/src/environments/environment.prod.ts"
                 }
               ],
-              "baseHref": "/apps/admin/",
+              "baseHref": "/admin/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
