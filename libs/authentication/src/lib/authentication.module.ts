@@ -6,10 +6,6 @@ import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 
-import { Auth } from '@aws-amplify/auth';
-import { Interactions } from '@aws-amplify/interactions';
-import { Storage } from '@aws-amplify/storage';
-
 import { AuthEffects } from './state/effects/auth.effects';
 import { AuthenticationBarComponent } from './components/authentication-bar/authentication-bar.component';
 import { AuthModule } from './auth/auth.module';
@@ -18,9 +14,9 @@ import { AuthService } from './services/auth.service';
 import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 
-import { AmplifyUIAngularModule } from '@aws-amplify/ui-angular';
 import Amplify from '@aws-amplify/core';
 import awsconfig from '../../../../src/aws-exports';
+import { AmplifyUIAngularModule } from '@aws-amplify/ui-angular';
 
 Amplify.configure(awsconfig);
 
@@ -29,6 +25,7 @@ Amplify.configure(awsconfig);
     CommonModule,
     RouterModule,
     SharedComponentsModule,
+    AmplifyUIAngularModule,
     AuthModule,
     StoreModule.forRoot({
       auth: authReducer.reducer,

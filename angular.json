@@ -4,7 +4,7 @@
   "newProjectRoot": "",
   "projects": {
     "magic-mile": {
-      "root": "/magic-mile/",
+      "root": "apps/magic-mile/",
       "sourceRoot": "apps/magic-mile/src",
       "projectType": "application",
       "prefix": "bpj",
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/magic-mile",
+            "outputPath": "dist/apps/magic-mile",
             "index": "apps/magic-mile/src/index.html",
             "main": "apps/magic-mile/src/main.ts",
             "polyfills": "apps/magic-mile/src/polyfills.ts",
@@ -111,7 +111,7 @@
       }
     },
     "club-standards": {
-      "root": "/club-standards/",
+      "root": "apps/club-standards/",
       "sourceRoot": "apps/club-standards/src",
       "projectType": "application",
       "prefix": "bpj",
@@ -120,7 +120,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/club-standards",
+            "outputPath": "dist/apps/club-standards",
             "index": "apps/club-standards/src/index.html",
             "main": "apps/club-standards/src/main.ts",
             "polyfills": "apps/club-standards/src/polyfills.ts",
@@ -190,7 +190,7 @@
       }
     },
     "race-results": {
-      "root": "/race-results/",
+      "root": "apps/race-results/",
       "sourceRoot": "apps/race-results/src",
       "projectType": "application",
       "prefix": "black-pear-joggers",
@@ -203,7 +203,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/race-results",
+            "outputPath": "dist/apps/race-results",
             "index": "apps/race-results/src/index.html",
             "main": "apps/race-results/src/main.ts",
             "polyfills": "apps/race-results/src/polyfills.ts",
@@ -273,7 +273,7 @@
       }
     },
     "club-records": {
-      "root": "/club-records/",
+      "root": "apps/club-records/",
       "sourceRoot": "apps/club-records/src",
       "projectType": "application",
       "prefix": "black-pear-joggers",
@@ -286,7 +286,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/club-records",
+            "outputPath": "dist/apps/club-records",
             "index": "apps/club-records/src/index.html",
             "main": "apps/club-records/src/main.ts",
             "polyfills": "apps/club-records/src/polyfills.ts",
@@ -494,7 +494,7 @@
       }
     },
     "admin": {
-      "root": "/admin/",
+      "root": "apps/admin/",
       "sourceRoot": "apps/admin/src",
       "projectType": "application",
       "prefix": "bpj",
@@ -507,7 +507,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/admin",
+            "outputPath": "dist/apps/admin",
             "index": "apps/admin/src/index.html",
             "main": "apps/admin/src/main.ts",
             "polyfills": "apps/admin/src/polyfills.ts",

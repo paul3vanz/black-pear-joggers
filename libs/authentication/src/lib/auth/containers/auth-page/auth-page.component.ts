@@ -1,10 +1,9 @@
+import { Actions } from '@ngrx/effects';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
-import { authActions, authReducer } from '@black-pear-joggers/authentication';
-import { Actions, ofType } from '@ngrx/effects';
-import { tap } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import { authReducer } from '@black-pear-joggers/authentication';
 
 @Component({
   selector: 'bpj-auth-page',
