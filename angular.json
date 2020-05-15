@@ -17,19 +17,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/magic-mile",
+            "outputPath": "dist/magic-mile",
             "index": "apps/magic-mile/src/index.html",
             "main": "apps/magic-mile/src/main.ts",
             "polyfills": "apps/magic-mile/src/polyfills.ts",
             "tsConfig": "apps/magic-mile/tsconfig.app.json",
-            "assets": [
-              "apps/magic-mile/src/favicon.ico",
-              "apps/magic-mile/src/assets"
-            ],
-            "styles": [
-              "scss/main.scss",
-              "apps/magic-mile/src/styles.scss"
-            ],
+            "assets": ["apps/magic-mile/src/favicon.ico", "apps/magic-mile/src/assets"],
+            "styles": ["scss/main.scss", "apps/magic-mile/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -79,27 +73,16 @@
             "polyfills": "apps/magic-mile/src/polyfills.ts",
             "tsConfig": "apps/magic-mile/tsconfig.spec.json",
             "karmaConfig": "apps/magic-mile/karma.conf.js",
-            "styles": [
-              "scss/main.scss",
-              "apps/magic-mile/src/styles.scss"
-            ],
+            "styles": ["scss/main.scss", "apps/magic-mile/src/styles.scss"],
             "scripts": [],
-            "assets": [
-              "apps/magic-mile/src/favicon.ico",
-              "apps/magic-mile/src/assets"
-            ]
+            "assets": ["apps/magic-mile/src/favicon.ico", "apps/magic-mile/src/assets"]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/magic-mile/tsconfig.app.json",
-              "apps/magic-mile/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["apps/magic-mile/tsconfig.app.json", "apps/magic-mile/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -121,13 +104,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/shared-components/tsconfig.lib.json",
-              "libs/shared-components/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["libs/shared-components/tsconfig.lib.json", "libs/shared-components/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -142,19 +120,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/club-standards",
+            "outputPath": "dist/club-standards",
             "index": "apps/club-standards/src/index.html",
             "main": "apps/club-standards/src/main.ts",
             "polyfills": "apps/club-standards/src/polyfills.ts",
             "tsConfig": "apps/club-standards/tsconfig.app.json",
-            "assets": [
-              "apps/club-standards/src/favicon.ico",
-              "apps/club-standards/src/assets"
-            ],
-            "styles": [
-              "scss/main.scss",
-              "apps/club-standards/src/styles.css"
-            ],
+            "assets": ["apps/club-standards/src/favicon.ico", "apps/club-standards/src/assets"],
+            "styles": ["scss/main.scss", "apps/club-standards/src/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -203,27 +175,16 @@
             "polyfills": "apps/club-standards/src/polyfills.ts",
             "tsConfig": "apps/club-standards/tsconfig.spec.json",
             "karmaConfig": "apps/club-standards/karma.conf.js",
-            "styles": [
-              "scss/main.scss",
-              "apps/club-standards/src/styles.css"
-            ],
+            "styles": ["scss/main.scss", "apps/club-standards/src/styles.css"],
             "scripts": [],
-            "assets": [
-              "apps/club-standards/src/favicon.ico",
-              "apps/club-standards/src/assets"
-            ]
+            "assets": ["apps/club-standards/src/favicon.ico", "apps/club-standards/src/assets"]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/club-standards/tsconfig.app.json",
-              "apps/club-standards/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["apps/club-standards/tsconfig.app.json", "apps/club-standards/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -242,19 +203,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/race-results",
+            "outputPath": "dist/race-results",
             "index": "apps/race-results/src/index.html",
             "main": "apps/race-results/src/main.ts",
             "polyfills": "apps/race-results/src/polyfills.ts",
             "tsConfig": "apps/race-results/tsconfig.app.json",
-            "assets": [
-              "apps/race-results/src/favicon.ico",
-              "apps/race-results/src/assets"
-            ],
-            "styles": [
-              "scss/main.scss",
-              "apps/race-results/src/styles.scss"
-            ],
+            "assets": ["apps/race-results/src/favicon.ico", "apps/race-results/src/assets"],
+            "styles": ["scss/main.scss", "apps/race-results/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -303,27 +258,16 @@
             "polyfills": "apps/race-results/src/polyfills.ts",
             "tsConfig": "apps/race-results/tsconfig.spec.json",
             "karmaConfig": "apps/race-results/karma.conf.js",
-            "styles": [
-              "scss/main.scss",
-              "apps/race-results/src/styles.scss"
-            ],
+            "styles": ["scss/main.scss", "apps/race-results/src/styles.scss"],
             "scripts": [],
-            "assets": [
-              "apps/race-results/src/favicon.ico",
-              "apps/race-results/src/assets"
-            ]
+            "assets": ["apps/race-results/src/favicon.ico", "apps/race-results/src/assets"]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/race-results/tsconfig.app.json",
-              "apps/race-results/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["apps/race-results/tsconfig.app.json", "apps/race-results/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -342,19 +286,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/club-records",
+            "outputPath": "dist/club-records",
             "index": "apps/club-records/src/index.html",
             "main": "apps/club-records/src/main.ts",
             "polyfills": "apps/club-records/src/polyfills.ts",
             "tsConfig": "apps/club-records/tsconfig.app.json",
-            "assets": [
-              "apps/club-records/src/favicon.ico",
-              "apps/club-records/src/assets"
-            ],
-            "styles": [
-              "scss/main.scss",
-              "apps/club-records/src/styles.scss"
-            ],
+            "assets": ["apps/club-records/src/favicon.ico", "apps/club-records/src/assets"],
+            "styles": ["scss/main.scss", "apps/club-records/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -403,27 +341,16 @@
             "polyfills": "apps/club-records/src/polyfills.ts",
             "tsConfig": "apps/club-records/tsconfig.spec.json",
             "karmaConfig": "apps/club-records/karma.conf.js",
-            "styles": [
-              "scss/main.scss",
-              "apps/club-records/src/styles.scss"
-            ],
+            "styles": ["scss/main.scss", "apps/club-records/src/styles.scss"],
             "scripts": [],
-            "assets": [
-              "apps/club-records/src/favicon.ico",
-              "apps/club-records/src/assets"
-            ]
+            "assets": ["apps/club-records/src/favicon.ico", "apps/club-records/src/assets"]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/club-records/tsconfig.app.json",
-              "apps/club-records/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["apps/club-records/tsconfig.app.json", "apps/club-records/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -437,13 +364,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/search/tsconfig.lib.json",
-              "libs/search/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["libs/search/tsconfig.lib.json", "libs/search/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         },
         "test": {
@@ -473,13 +395,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/magic-mile-data-access/tsconfig.lib.json",
-              "libs/magic-mile-data-access/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["libs/magic-mile-data-access/tsconfig.lib.json", "libs/magic-mile-data-access/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -501,13 +418,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/club-records-data-access/tsconfig.lib.json",
-              "libs/club-records-data-access/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["libs/club-records-data-access/tsconfig.lib.json", "libs/club-records-data-access/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -529,13 +441,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/club-standards-data-access/tsconfig.lib.json",
-              "libs/club-standards-data-access/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["libs/club-standards-data-access/tsconfig.lib.json", "libs/club-standards-data-access/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -557,13 +464,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/race-results-data-access/tsconfig.lib.json",
-              "libs/race-results-data-access/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["libs/race-results-data-access/tsconfig.lib.json", "libs/race-results-data-access/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -585,13 +487,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/shared-pipes/tsconfig.lib.json",
-              "libs/shared-pipes/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["libs/shared-pipes/tsconfig.lib.json", "libs/shared-pipes/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -610,19 +507,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/admin",
+            "outputPath": "dist/admin",
             "index": "apps/admin/src/index.html",
             "main": "apps/admin/src/main.ts",
             "polyfills": "apps/admin/src/polyfills.ts",
             "tsConfig": "apps/admin/tsconfig.app.json",
-            "assets": [
-              "apps/admin/src/favicon.ico",
-              "apps/admin/src/assets"
-            ],
-            "styles": [
-              "scss/main.scss",
-              "apps/admin/src/styles.scss"
-            ],
+            "assets": ["apps/admin/src/favicon.ico", "apps/admin/src/assets"],
+            "styles": ["scss/main.scss", "apps/admin/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -677,27 +568,16 @@
             "polyfills": "apps/admin/src/polyfills.ts",
             "tsConfig": "apps/admin/tsconfig.spec.json",
             "karmaConfig": "apps/admin/karma.conf.js",
-            "styles": [
-              "scss/main.scss",
-              "apps/admin/src/styles.scss"
-            ],
+            "styles": ["scss/main.scss", "apps/admin/src/styles.scss"],
             "scripts": [],
-            "assets": [
-              "apps/admin/src/favicon.ico",
-              "apps/admin/src/assets"
-            ]
+            "assets": ["apps/admin/src/favicon.ico", "apps/admin/src/assets"]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "apps/admin/tsconfig.app.json",
-              "apps/admin/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["apps/admin/tsconfig.app.json", "apps/admin/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -719,13 +599,8 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "libs/authentication/tsconfig.lib.json",
-              "libs/authentication/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["libs/authentication/tsconfig.lib.json", "libs/authentication/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
