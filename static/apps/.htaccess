@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^([^/]+/[^/]+/)[^/]+/$ https://apps.bpj.org.uk/$1 [QSA,R=301,L]
