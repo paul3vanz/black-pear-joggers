@@ -1,5 +1,3 @@
-/apps/admin/            /admin/
-/apps/club-records/     /club-records/
-/apps/club-standards/   /club-standards/
-/apps/magic-mile/       /magic-mile/
-/apps/race-results/     /race-results/
+https://black-pear-joggers.netlify.app/apps/* https://apps.bpj.org.uk/:splat
+https://black-pear-joggers.netlify.app/* https://apps.bpj.org.uk/:splat
+/apps/* /:splat
