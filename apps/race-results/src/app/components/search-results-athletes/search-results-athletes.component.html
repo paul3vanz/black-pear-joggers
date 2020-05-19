@@ -13,20 +13,20 @@
         <th>Gender</th>
 
         <th>Category</th>
+
+        <th>Ranking</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let athlete of athletes">
-        <td><a href="#/athlete/{{athlete.id}}">{{athlete.first_name}} {{athlete.last_name}}</a></td>
+        <td><a href="#/athlete/{{ athlete.id }}">{{ athlete.first_name }} {{ athlete.last_name }}</a></td>
 
         <td>{{ athlete.gender | gender }}</td>
 
-        <td>{{athlete.category }}</td>
+        <td>{{ athlete.category }}</td>
+
+        <td>{{ athlete.latest_ranking?.ranking }}</td>
       </tr>
     </tbody>
   </table>
 </div>
-
-<!-- <p *ngIf="keywords && !searching">
-  <strong>Name not listed? </strong> <a href="javascript:void(0)" (click)="addAthlete.emit()">Request to be added</a>
-</p> -->
