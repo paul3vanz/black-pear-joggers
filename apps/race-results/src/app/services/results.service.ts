@@ -1,4 +1,3 @@
-import { delay, map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -24,7 +23,7 @@ export class ResultsService {
     return this.http.get<Paging<Result>>(`${this.performancesUrl}/${date}/${meetingId}`);
   }
 
-  getAthleteResults(athleteId: string, page?: number): Observable<Paging<Result>> {
+  getAthleteResults(athleteId: number, page?: number): Observable<Paging<Result>> {
     return this.http.get<Paging<Result>>(`${this.apiRoot}/athlete/${athleteId}/performances?page=${page}`);
   }
 

@@ -2,9 +2,9 @@
   <div class="o-site-wrap o-site-wrap--padding">
     <h2>Current personal bests</h2>
 
-    <bpj-loader *ngIf="loading"></bpj-loader>
+    <bpj-loader *ngIf="loadingState !== 'LOADED'"></bpj-loader>
 
-    <ng-container *ngIf="!loading">
+    <ng-container *ngIf="loadingState === 'LOADED'">
       <p *ngIf="!personalBests">
         No personal bests currently set.
       </p>
@@ -15,7 +15,7 @@
           <ng-container *ngIf="personalBest.best">
             <span class="pb__time">{{ personalBest.best.time_parsed | finishTime }}</span>
             <span class="pb__date u-hidden@max-xs">{{ personalBest.best.date | date : 'fromNow' }}</span>
-            <a *ngIf="personalBest.best.award" href="https://black-pear-joggers.netlify.app/apps/club-standards/"
+            <a *ngIf="personalBest.best.award" href="https://apps.bpj.org.uk/club-standards/"
               class="pb__award pb__award--{{ personalBest.best.award | formatAward }}">{{ personalBest.best.award | formatAward }}</a>
           </ng-container>
 

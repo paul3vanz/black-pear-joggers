@@ -3,9 +3,9 @@
 
     <h2>Race results</h2>
 
-    <bpj-loader *ngIf="loading"></bpj-loader>
+    <bpj-loader *ngIf="loadingState !== 'LOADED'"></bpj-loader>
 
-    <ng-container *ngIf="!loading">
+    <ng-container *ngIf="loadingState === 'LOADED'">
       <p class="u-push-bottom-xl" *ngIf="results?.data">
         The following results are automatically taken from <a
           href="https://www.thepowerof10.info/athletes/profile.aspx?athleteid={{results.data[0].athlete_id}}"
@@ -29,11 +29,10 @@
             <th data-sortable-type="date">Date</th>
           </tr>
         </thead>
-        <tbody *ngIf="!loading && results?.data">
+        <tbody *ngIf="loadingState === 'LOADED' && results?.data">
           <tr *ngFor="let result of results.data">
             <td class="athlete-results__award nowrap standards__heading--{{result.award | formatAward}}">
-              <a class="link"
-                href="https://black-pear-joggers.netlify.app/apps/club-standards/">{{result.award | formatAward}}</a>
+              <a class="link" href="https://apps.bpj.org.uk/club-standards/">{{result.award | formatAward}}</a>
             </td>
             <td class="athlete-results__category nowrap">{{result.category}}</td>
             <td class="athlete-results__event nowrap">{{result.event}}</td>
