@@ -6,6 +6,7 @@ import { LimitPipe } from './pipes/limit.pipe';
 import { FinishTimePipe } from './pipes/finish-time.pipe';
 import { PacePipe } from './pipes/pace.pipe';
 import { DatePipe } from './pipes/date.pipe';
+import { RaceNamePipe } from './pipes/race-name.pipe';
 
 @NgModule({
   imports: [CommonModule],
@@ -15,7 +16,8 @@ import { DatePipe } from './pipes/date.pipe';
     LimitPipe,
     FinishTimePipe,
     PacePipe,
-    DatePipe
+    DatePipe,
+    RaceNamePipe
   ],
   providers: [PacePipe],
   exports: [
@@ -24,7 +26,8 @@ import { DatePipe } from './pipes/date.pipe';
     LimitPipe,
     FinishTimePipe,
     PacePipe,
-    DatePipe
+    DatePipe,
+    RaceNamePipe
   ]
 })
 export class SharedPipesModule {}
