@@ -95,11 +95,12 @@ class RegistrationController extends Controller
     $httpClient = new Client();
     $html = $httpClient->request('GET', $fetchUrl);
 
-    $findProfileLink = $html->filter('a[id=cphBody_lnkRBProfile]');
+    $findProfileLink = $html->filter('a[id=cphBody_lnkEditAthlete]');
 
     if ($findProfileLink->count()) {
       $profileUrl = $findProfileLink->link()->getUri();
-      $athleteId = substr($profileUrl, strpos($profileUrl, 'athleteid=') + 10);
+      preg_match("/athleteid=(\d+)&/i", $profileUrl, $matches);
+      $athleteId = $matches[1];
       Log::info("Found athlete ID: $athleteId");
     } else {
       return null;
