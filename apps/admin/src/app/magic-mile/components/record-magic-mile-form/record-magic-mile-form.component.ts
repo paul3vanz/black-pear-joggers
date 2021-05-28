@@ -116,7 +116,7 @@ export class RecordMagicMileFormComponent {
 
   onSelectAthlete(athlete: Athlete) {
     this.form.patchValue({
-      athleteId: athlete.athlete_id,
+      athleteId: athlete.id,
       firstName: athlete.first_name,
       lastName: athlete.last_name,
       gender: athlete.gender,
