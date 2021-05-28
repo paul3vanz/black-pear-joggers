@@ -59,22 +59,36 @@ class MagicMileController extends Controller {
     public function getAllLegacy() {
         $results = DB::select("
             SELECT
-                id AS id,
-                athlete_id AS athleteId,
-                first_name AS firstName,
-                last_name AS lastName,
-                gender AS gender,
-                category AS category,
-                date AS date,
-                location AS location,
-                predicted_time AS predictedTime,
-                predicted_time_parsed AS predictedTimeParsed,
-                actual_time AS actualTime,
-                actual_time_parsed AS actualTimeParsed,
-                created_at AS createdAt,
-                updated_at AS updatedAt
+                m.id AS id,
+                m.athlete_id AS athleteId,
+                m.first_name AS firstName,
+                m.last_name AS lastName,
+                m.gender AS gender,
+                m.category AS category,
+                m.date AS date,
+                m.location AS location,
+                m.predicted_time AS predictedTime,
+                m.predicted_time_parsed AS predictedTimeParsed,
+                m.actual_time AS actualTime,
+                m.actual_time_parsed AS actualTimeParsed,
+                m.created_at AS createdAt,
+                m.updated_at AS updatedAt,
+                p.isPersonalBest,
+                MAX(awards.id) AS award
             FROM
-                magicMile
+                magicMile m
+            LEFT JOIN performances p
+                ON p.athlete_id = m.athlete_id
+                AND p.date = m.date
+                AND p.time_parsed = m.actual_time_parsed
+            LEFT JOIN events ON p.event = events.alias
+            LEFT JOIN standards
+                ON m.gender = standards.gender
+                AND standards.category = m.category
+                AND standards.event_id = events.has_standard
+                AND standards.time_parsed >= m.actual_time_parsed
+            LEFT JOIN awards ON standards.award_id = awards.id
+            GROUP BY m.id
             ORDER BY
                 date DESC,
                 actual_time_parsed ASC,

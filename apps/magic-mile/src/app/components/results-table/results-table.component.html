@@ -34,7 +34,11 @@
 
       <td [attr.data-sort-value]="result.predictedTimeParsed">{{ result.predictedTimeParsed | finishTime }}</td>
 
-      <td [attr.data-sort-value]="result.actualTimeParsed">{{ result.actualTimeParsed | finishTime }}</td>
+      <td [attr.data-sort-value]="result.actualTimeParsed">
+        {{ result.actualTimeParsed | finishTime }}
+
+        <span class="pb" *ngIf="result.isPersonalBest">PB</span>
+      </td>
 
       <td>{{ result.date | date: "D MMM YY" }}</td>
 
