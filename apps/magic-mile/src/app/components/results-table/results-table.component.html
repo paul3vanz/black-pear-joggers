@@ -10,6 +10,8 @@
 
       <th>Actual</th>
 
+      <th>Standards</th>
+
       <th>Date</th>
 
       <th class="u-hidden@max-xs">Gender</th>
@@ -38,6 +40,10 @@
         {{ result.actualTimeParsed | finishTime }}
 
         <span class="pb" *ngIf="result.isPersonalBest">PB</span>
+      </td>
+
+      <td class="athlete-results__award nowrap standards__heading--{{result.award | formatAward}}">
+        <a class="link" href="https://apps.bpj.org.uk/club-standards/">{{result.award | formatAward}}</a>
       </td>
 
       <td>{{ result.date | date: "D MMM YY" }}</td>
