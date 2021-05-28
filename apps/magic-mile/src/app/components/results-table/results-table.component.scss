@@ -47,3 +47,26 @@ table {
   color: #fff;
   font-weight: bold;
 }
+
+.athlete-results__award .link {
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.standards__heading--Bronze .link {
+  background-color: #c08f67;
+}
+
+.standards__heading--Silver .link {
+  background-color: #b9b9b9;
+}
+
+.standards__heading--Gold .link {
+  background-color: #d89843;
+}
+
+.standards__heading--Platinum .link {
+  background-color: #8791a0;
+}
