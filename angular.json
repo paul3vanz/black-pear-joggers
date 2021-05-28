@@ -604,6 +604,34 @@
           }
         }
       }
+    },
+    "membership-data-access": {
+      "projectType": "library",
+      "root": "libs/membership-data-access",
+      "sourceRoot": "libs/membership-data-access/src",
+      "prefix": "black-pear-joggers",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["libs/membership-data-access/tsconfig.lib.json", "libs/membership-data-access/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!libs/membership-data-access/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/membership-data-access/jest.config.js",
+            "tsConfig": "libs/membership-data-access/tsconfig.spec.json",
+            "setupFile": "libs/membership-data-access/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "styleext": "scss"
+        }
+      }
     }
   },
   "cli": {

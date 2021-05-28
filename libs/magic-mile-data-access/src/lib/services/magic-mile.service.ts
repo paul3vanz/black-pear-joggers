@@ -1,12 +1,13 @@
+import { Observable, of } from 'rxjs';
+
+import { Athlete } from 'apps/race-results/src/app/models/athlete';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MagicMile } from '../models/magic-mile.model';
-import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Athlete } from 'apps/race-results/src/app/models/athlete';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MagicMileService {
   private API_PATH = 'https://bpj.org.uk/api/public/index.php/magicmile';
@@ -15,21 +16,16 @@ export class MagicMileService {
   constructor(private http: HttpClient) {}
 
   fetchResults(): Observable<MagicMile[]> {
-    return this.http
-      .get<MagicMile[]>(this.API_PATH)
-      .pipe(
-        map(results => {
-          return results.map(result => {
-            return {
-              ...result,
-              location: result.location.replace(
-                new RegExp(/Magic Mile \((.*)?\)/),
-                '$1'
-              )
-            };
-          });
-        })
-      );
+    return this.http.get<MagicMile[]>(this.API_PATH).pipe(
+      map((results) => {
+        return results.map((result) => {
+          return {
+            ...result,
+            location: result.location.replace(new RegExp(/Magic Mile \((.*)?\)/), '$1'),
+          };
+        });
+      })
+    );
   }
 
   searchAthletes(searchTerm: string) {
@@ -45,6 +41,8 @@ export class MagicMileService {
   }
 
   create(magicMile: MagicMile): Observable<MagicMile> {
+    return of({} as MagicMile);
+
     return this.http.post<MagicMile>(this.API_PATH, magicMile);
   }
 

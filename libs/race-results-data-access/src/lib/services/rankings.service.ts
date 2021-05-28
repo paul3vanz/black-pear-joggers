@@ -12,4 +12,10 @@ export class RankingsService {
       `https://bpj.org.uk/api/public/index.php/rankings/${athleteId}`
     );
   }
+
+  fetchRankings(athleteId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `https://bpj.org.uk/api/public/index.php/fetch/rankings/${athleteId}`
+    );
+  }
 }

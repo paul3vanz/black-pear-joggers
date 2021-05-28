@@ -46,6 +46,9 @@
     },
     "authentication": {
       "tags": []
+    },
+    "membership-data-access": {
+      "tags": []
     }
   }
 }

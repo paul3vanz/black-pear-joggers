@@ -2,30 +2,26 @@ export const routes = [
   {
     path: '',
     redirectTo: 'athletes',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'athletes',
-    loadChildren: () =>
-      import('./athletes/athletes.module').then(m => m.AthletesModule)
+    loadChildren: () => import('./athletes/athletes.module').then((m) => m.AthletesModule),
+  },
+  {
+    path: 'memberships',
+    loadChildren: () => import('./memberships/memberships.module').then((m) => m.MembershipsModule),
   },
   {
     path: 'club-standards',
-    loadChildren: () =>
-      import('./club-standards/club-standards.module').then(
-        m => m.ClubStandardsModule
-      )
+    loadChildren: () => import('./club-standards/club-standards.module').then((m) => m.ClubStandardsModule),
   },
   {
     path: 'magic-mile',
-    loadChildren: () =>
-      import('./magic-mile/magic-mile.module').then(m => m.MagicMileModule)
+    loadChildren: () => import('./magic-mile/magic-mile.module').then((m) => m.MagicMileModule),
   },
   {
     path: 'auth',
-    loadChildren: () =>
-      import('libs/authentication/src/lib/auth/auth.module').then(
-        m => m.AuthModule
-      )
-  }
+    loadChildren: () => import('libs/authentication/src/lib/auth/auth.module').then((m) => m.AuthModule),
+  },
 ];
