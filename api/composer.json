@@ -6,7 +6,7 @@
   "type": "project",
   "require": {
     "php": ">=5.5.9",
-    "laravel/lumen-framework": "^7.0",
+    "laravel/lumen-framework": "^8.0",
     "vlucas/phpdotenv": "^3.3",
     "guzzlehttp/guzzle": "^6.2",
     "fabpot/goutte": "^3.2",
