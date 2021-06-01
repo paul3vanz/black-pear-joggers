@@ -359,4 +359,44 @@ class PerformanceController extends Controller
         ");
     return response()->json($results);
   }
+
+  public function syncMagicMileResults() {
+    $results = DB::affectingStatement("
+      INSERT INTO performances
+      (
+          athlete_id,
+          category,
+          meeting_id,
+          event,
+          time,
+          time_parsed,
+          race,
+          date,
+          manual,
+          isPersonalBest
+      )
+      SELECT
+          m.athlete_id,
+          m.category,
+          0,
+          '1M',
+          m.actual_time,
+          m.actual_time_parsed,
+          m.location,
+          m.date,
+          1,
+          0
+      FROM magicMile m
+      LEFT JOIN performances p2
+          ON m.athlete_id = p2.athlete_id
+          AND m.date = p2.date
+          AND m.location = p2.race
+          AND m.actual_time_parsed = p2.time_parsed
+      WHERE m.athlete_id IS NOT NULL
+      AND m.athlete_id != 0
+      AND p2.id IS NULL
+    ");
+
+    return response()->json([ 'recordsInserted' => $results]);
+  }
 }
