@@ -1,7 +1,9 @@
 on:
   push:
+    branches:
+      - master
     paths: 
-      - 'api'
+      - 'api/**'
 name: Deploy API on push
 jobs:
   web-deploy:
