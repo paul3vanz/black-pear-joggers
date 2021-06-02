@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { RecordMagicMileFormComponent } from './record-magic-mile-form.component';
 
@@ -6,7 +6,7 @@ describe('RecordMagicMileFormComponent', () => {
   let component: RecordMagicMileFormComponent;
   let fixture: ComponentFixture<RecordMagicMileFormComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RecordMagicMileFormComponent ]
     })

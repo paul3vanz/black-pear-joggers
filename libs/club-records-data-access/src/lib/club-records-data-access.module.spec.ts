@@ -1,8 +1,8 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { ClubRecordsDataAccessModule } from './club-records-data-access.module';
 
 describe('ClubRecordsDataAccessModule', () => {
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [ClubRecordsDataAccessModule]
     }).compileComponents();

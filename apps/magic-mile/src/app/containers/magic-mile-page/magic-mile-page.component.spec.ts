@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MagicMilePageComponent } from './magic-mile-page.component';
 
@@ -6,7 +6,7 @@ describe('MagicMilePageComponent', () => {
   let component: MagicMilePageComponent;
   let fixture: ComponentFixture<MagicMilePageComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [MagicMilePageComponent]
     }).compileComponents();

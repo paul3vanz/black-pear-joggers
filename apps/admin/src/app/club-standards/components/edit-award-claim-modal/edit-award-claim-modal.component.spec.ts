@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { EditAwardClaimModalComponent } from './edit-award-claim-modal.component';
 
@@ -6,7 +6,7 @@ describe('EditAwardClaimModalComponent', () => {
   let component: EditAwardClaimModalComponent;
   let fixture: ComponentFixture<EditAwardClaimModalComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EditAwardClaimModalComponent ]
     })

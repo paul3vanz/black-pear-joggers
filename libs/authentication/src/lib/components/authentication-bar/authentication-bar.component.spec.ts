@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AuthenticationBarComponent } from './authentication-bar.component';
 
@@ -6,7 +6,7 @@ describe('AuthenticationBarComponent', () => {
   let component: AuthenticationBarComponent;
   let fixture: ComponentFixture<AuthenticationBarComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AuthenticationBarComponent ]
     })

@@ -5,10 +5,11 @@ import { routes } from './app.routes';
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, {
-      initialNavigation: 'enabled',
-      anchorScrolling: 'enabled',
-      useHash: true
-    })
+    initialNavigation: 'enabled',
+    anchorScrolling: 'enabled',
+    useHash: true,
+    relativeLinkResolution: 'legacy'
+})
   ],
   exports: [RouterModule]
 })

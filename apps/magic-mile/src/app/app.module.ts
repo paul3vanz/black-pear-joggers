@@ -26,11 +26,11 @@ import { SharedPipesModule } from 'libs/shared-pipes/src';
     HttpClientModule,
     NxModule.forRoot(),
     RouterModule.forRoot([
-      {
+    {
         path: '',
         component: MagicMilePageComponent,
-      },
-    ]),
+    },
+], { relativeLinkResolution: 'legacy' }),
     StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({
       maxAge: 25,

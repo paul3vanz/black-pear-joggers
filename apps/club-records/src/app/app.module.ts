@@ -35,7 +35,7 @@ import { FilterCategoryPipe } from './pipes/filter-category.pipe';
     HttpClientModule,
     FormsModule,
     NxModule.forRoot(),
-    RouterModule.forRoot([], { initialNavigation: 'enabled' }),
+    RouterModule.forRoot([], { initialNavigation: 'enabled', relativeLinkResolution: 'legacy' }),
     SharedComponentsModule,
     SharedPipesModule,
     SearchModule,

@@ -73,8 +73,9 @@ import { RankingStatsTableComponent } from './components/ranking-stats-table/ran
     RaceResultsDataAccessModule,
     ReactiveFormsModule,
     RouterModule.forRoot(appRoutes, {
-      useHash: true
-    }),
+    useHash: true,
+    relativeLinkResolution: 'legacy'
+}),
     SharedComponentsModule,
     SharedPipesModule,
     StoreModule.forRoot(reducers),
