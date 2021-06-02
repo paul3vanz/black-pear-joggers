@@ -10,7 +10,7 @@
       "prefix": "bpj",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "scss"
+          "style": "scss"
         }
       },
       "architect": {
@@ -196,7 +196,7 @@
       "prefix": "black-pear-joggers",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "scss"
+          "style": "scss"
         }
       },
       "architect": {
@@ -279,7 +279,7 @@
       "prefix": "black-pear-joggers",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "scss"
+          "style": "scss"
         }
       },
       "architect": {
@@ -500,7 +500,7 @@
       "prefix": "bpj",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "scss"
+          "style": "scss"
         }
       },
       "architect": {
@@ -636,7 +636,6 @@
   },
   "cli": {
     "warnings": {
-      "typescriptMismatch": false,
       "versionMismatch": false
     },
     "defaultCollection": "@nrwl/schematics"
@@ -644,7 +643,7 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "bpj",
-      "styleext": "scss"
+      "style": "scss"
     },
     "@schematics/angular:pipe": {
       "export": true
