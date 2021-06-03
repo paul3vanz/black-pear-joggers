@@ -253,7 +253,7 @@ class PerformanceController extends Controller
                   WHERE pf.flag IS NULL
                   AND p.category != ''
                   AND p.time_parsed IS NOT NULL
-                  ORDER BY p.time_parsed ASC) AS t
+                  ORDER BY p.time_parsed ASC LIMIT 100000000) AS t
                   GROUP BY $groupString
                   $filterString
                   ORDER BY gender,
