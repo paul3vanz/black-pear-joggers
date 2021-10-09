@@ -26,6 +26,7 @@ $router->group([
 
 $router->group(['prefix' => 'membership'], function ($router) {
   $router->get('update', 'MembershipController@updateMembershipStatus');
+  $router->get('store', 'MembershipController@storeClubMembers');
   $router->get('members/{clubId}', 'MembershipController@getClubMembers');
   $router->get('clubs', 'MembershipController@getClubs');
   $router->get('{firstName}/{lastName}/{dateOfBirth}', 'MembershipController@checkNameDob');

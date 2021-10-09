@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use GuzzleHttp\Client as GuzzleClient;
 use App\Models\Athlete;
+use App\Models\Membership;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
@@ -91,6 +92,33 @@ class MembershipController extends Controller
     $date = date("Y-m-d");
 
     return MembershipController::fetchUrl("/race-provider/individuals/$urn?eventDate=$date");
+  }
+
+  public function storeClubMembers()
+  {
+    $members = collect(MembershipController::getClubMembers()->getData()->Athletes)->each(function ($value, $key) {
+      Membership::create([
+        'urn' => $value->Urn,
+        'firstName' => $value->Firstname,
+        'lastName' => $value->Lastname,
+        'dob' => $value->Dob,
+        'gender' => $value->Gender,
+        'foreignFlag' => $value->ForeignFlag,
+        'competitiveRegStatus' => $value->CompetitiveRegStatus,
+        'firstClaimClubId' => $value->FirstClaimClubId,
+        'firstClaimClubName' => $value->FirstClaimClubName,
+        'firstClaimOtherId' => $value->FirstClaimOtherId,
+        'firstClaimOtherName' => $value->FirstClaimOtherName,
+        'higherClaimClubId' => $value->HigherClaimClubId,
+        'higherClaimClubName' => $value->HigherClaimClubName,
+        'secondClaimClubId' => $value->SecondClaimClubId,
+        'secondClaimClubName' => $value->SecondClaimClubName,
+      ]);
+    });
+
+    return response()->json([
+      'count' => count($members),
+    ]);
   }
 
   private function fetchUrl(string $url)
