@@ -39,6 +39,8 @@ final class Membership extends Model {
         return in_array($this->competitiveRegStatus, [
             'Registered',
             'Registration Being Processed',
+            'Registration Being Processed By Club',
+            'Awaiting Registration with Club',
         ]);
     }
 
