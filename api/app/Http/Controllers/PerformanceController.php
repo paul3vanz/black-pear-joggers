@@ -350,9 +350,12 @@ class PerformanceController extends Controller
             INNER JOIN
               athletes a
               ON a.id = p.athlete_id
+            INNER JOIN
+              memberships m
+              ON m.urn = a.urn
+              AND m.competitiveRegStatus IN ('Registered', 'Registration Being Processed', 'Registration Being Processed By Club', 'Awaiting Registration with Club')
           WHERE
             p.event = 'parkrun'
-            AND a.active = 1
           GROUP BY a.athlete_id
           HAVING event_count >= 10
           ORDER BY event_count DESC

@@ -26,11 +26,11 @@ class AthleteController extends Controller
           ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'LIKE', "%$searchTerm%");
       });
 
-      $athletes = $athletes->where('active', '=', 1)->with('latestRanking');
+      $athletes = $athletes->has('activeMembership')->with('latestRanking');
 
       $athletes = $athletes->get();
     } else {
-      $athletes = Athlete::query()->get()->all();
+      $athletes = Athlete::query()->has('activeMembership')->get()->all();
     }
 
     return response()->json($athletes);

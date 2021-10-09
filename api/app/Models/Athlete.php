@@ -89,4 +89,13 @@ final class Athlete extends Model
 	public function membership() {
 		return $this->belongsTo('App\Models\Membership', 'urn', 'urn');
 	}
+
+	public function activeMembership() {
+		return $this->belongsTo('App\Models\Membership', 'urn', 'urn')->whereIn('competitiveRegStatus', [
+      'Registered',
+      'Registration Being Processed',
+      'Registration Being Processed By Club',
+      'Awaiting Registration with Club',
+    ]);
+	}
 }

@@ -19,8 +19,7 @@ class FetchController extends Controller
         $athleteIds = array();
 
         $athletes = Athlete::whereNotNull('urn')
-            ->where('active', '=', '1')
-            ->where('club', 'like', 'Black Pear%')
+            ->has('activeMembership')
             ->get();
 
         foreach($athletes as $athlete) {
