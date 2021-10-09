@@ -16,53 +16,6 @@ use DateTimeZone;
 
 class MembershipController extends Controller
 {
-  public function updateMembershipStatusAll()
-  {
-  }
-
-  public function updateMembershipStatus()
-  {
-    $athletesWithUrns = Athlete::query()
-      ->whereNotNull('urn')
-      ->where(function ($query) {
-        $query
-          ->where('membership_check', '<=', time() - (24 * 60 * 60))
-          ->orWhereNull('membership_check');
-      })
-      ->limit(100)
-      ->get()
-      ->makeVisible(['urn', 'age']);
-
-    $affected = array();
-
-    foreach ($athletesWithUrns as $athlete) {
-      $membershipCheck = $this->soapCall('CheckRegistrationStatus_Urn', array(
-        'urn' => $athlete->urn
-      ));
-
-      if (!$membershipCheck) continue;
-
-      $athlete->membership_check_status = $membershipCheck->CheckRegistrationStatus_UrnResult;
-      if ($membershipCheck->CheckRegistrationStatus_UrnResult === 'MatchFound') {
-        $athlete->age = $membershipCheck->result->Age;
-        $athlete->active = $membershipCheck->result->Registered;
-        $athlete->club = $membershipCheck->result->FirstClaimClub;
-      } else {
-        $athlete->age = null;
-        $athlete->active = null;
-        $athlete->club = null;
-      }
-
-      $athlete->membership_check = DB::raw('now()');
-
-      $athlete->save();
-
-      $affected[] = $athlete;
-    }
-
-    return response()->json($affected);
-  }
-
   public function checkNameDob(string $firstName, string $lastName, string $dateOfBirth)
   {
     $date = date("Y-m-d");
@@ -96,8 +49,14 @@ class MembershipController extends Controller
 
   public function storeClubMembers()
   {
-    $members = collect(MembershipController::getClubMembers()->getData()->Athletes)->each(function ($value, $key) {
-      Membership::create([
+    $athletes = MembershipController::getClubMembers()->getData()->Athletes;
+
+    if (count($athletes)) {
+      Membership::truncate();
+    }
+
+    $members = collect($athletes)->each(function ($value, $key) {
+      Membership::firstOrCreate([
         'urn' => $value->Urn,
         'firstName' => $value->Firstname,
         'lastName' => $value->Lastname,

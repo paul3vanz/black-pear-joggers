@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
   protected $commands = [
     'App\Console\Commands\QueueFetchPerformances',
     'App\Console\Commands\QueueFetchRankings',
+    'App\Console\Commands\QueueFetchMemberships',
     'App\Console\Commands\QueueProcessRegistrations',
     'App\Console\Commands\QueueUpdatePersonalBests',
   ];
@@ -29,6 +30,7 @@ class Kernel extends ConsoleKernel
   {
     // Log::info('Scheduler run');
     $schedule->command('queue:registrations')->dailyAt('00:00');
+    $schedule->command('queue:fetch:memberships')->dailyAt('00:05');
     $schedule->command('queue:fetch:performances')->dailyAt('01:00');
     $schedule->command('queue:fetch:rankings')->dailyAt('04:00');
     $schedule->command('queue:work --stop-when-empty')->dailyAt('05:00');
