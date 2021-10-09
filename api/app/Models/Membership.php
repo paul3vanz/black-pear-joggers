@@ -26,6 +26,22 @@ final class Membership extends Model {
         'secondClaimClubName',
 	];
 
+    protected $hidden = [
+        'urn',
+        'dob',
+      ];
+
+    protected $appends = [
+        'isActive',
+    ];
+
+    public function getIsActiveAttribute() {
+        return in_array($this->competitiveRegStatus, [
+            'Registered',
+            'Registration Being Processed',
+        ]);
+    }
+
     protected $primaryKey = 'urn';
     
 	public function athlete() {

@@ -42,6 +42,7 @@ class AthleteController extends Controller
       ->with('latestPerformance')
       ->with('firstPerformance')
       ->with('latestRanking')
+      ->with('membership')
       ->find($id);
     return response()->json($athlete);
   }

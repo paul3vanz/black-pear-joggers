@@ -59,24 +59,6 @@ class AthleteType extends GraphQLType
         'type' => Type::nonNull(GraphQL::type('CategoryEnum')),
         'description' => 'Age category',
       ],
-      'active' => [
-        'type' => Type::nonNull(Type::int()),
-        'description' => '',
-      ],
-      'membershipCheck' => [
-        'alias' => 'membership_check',
-        'type' => Type::nonNull(Type::string()),
-        'description' => '',
-      ],
-      'membershipCheckStatus' => [
-        'alias' => 'membership_check_status',
-        'type' => Type::nonNull(Type::string()),
-        'description' => '',
-      ],
-      'club' => [
-        'type' => Type::nonNull(Type::string()),
-        'description' => '',
-      ],
       'magicMiles' => [
         'type' => Type::listOf(GraphQL::type('MagicMile')),
         'description' => 'The athlete\'s magic mile performances',

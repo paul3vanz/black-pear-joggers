@@ -74,10 +74,6 @@ class RegistrationController extends Controller
           'last_name' => $membershipDetails->Lastname,
           'gender' => $registration->gender,
           'dob' => $registration->dateOfBirth,
-          'competitive_status' => $membershipDetails->CompetitiveRegStatus,
-          'membership_check' => DB::raw('now()'),
-          'membership_check_status' => $membershipDetails->ResponseStatus,
-          'club' => $membershipDetails->FirstClaimClubName,
         ]
       );
 

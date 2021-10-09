@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Log;
 use Awobaz\Compoships\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 final class Athlete extends Model
 {
@@ -19,23 +20,36 @@ final class Athlete extends Model
     'last_name',
     'gender',
     'dob',
-    'age',
-    'category',
-    'active',
-    'competitive_status',
-    'membership_check',
-    'membership_check_status',
-    'club'
   ];
 
   protected $hidden = [
     'urn',
     'dob',
     'age',
-    'membership_check',
-    'membership_check_status',
-    'club'
   ];
+
+  protected $appends = [
+    'age',
+    'category',
+  ];
+
+  public function getAgeAttribute()
+  {
+    return (new \Carbon\Carbon($this->dob))->age;
+  }
+
+  public function getCategoryAttribute()
+  {
+    if ($this->age < 20) {
+      return 'U20';
+    } else if ($this->age < 23) {
+      return 'U23';
+    } else if ($this->age < 35) {
+      return 'SEN';
+    } else {
+      return 'V' . (floor($this->age / 5) * 5);
+    }
+  }
 
   public function magicmiles()
   {
@@ -71,4 +85,8 @@ final class Athlete extends Model
   {
     return $this->hasOne('App\Models\Ranking', 'athlete_id', 'id')->latest('date');
   }
+
+	public function membership() {
+		return $this->belongsTo('App\Models\Membership', 'urn', 'urn');
+	}
 }
