@@ -124,7 +124,7 @@ class RegistrationController extends Controller
     })->toArray();
 
     foreach ($newMembers as $newMember) {
-      Registration::firstOrCreate(
+      Registration::withTrashed()->firstOrCreate(
         [
           'urn' => $newMember->Urn,
         ],
@@ -135,7 +135,7 @@ class RegistrationController extends Controller
           'dateOfBirth' => preg_replace('/(\d*)\/(\d*)\/(\d*)/', '$3-$2-$1', $newMember->Dob),
           'notes' => 'Added from membership list',
         ]
-      );
+      )->restore();
     }
 
     Log::info(count($newMembers) . ' new members added to registration');
