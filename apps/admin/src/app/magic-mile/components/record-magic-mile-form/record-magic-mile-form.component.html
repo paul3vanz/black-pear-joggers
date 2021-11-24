@@ -15,6 +15,7 @@
             <label for="location">Location</label>
 
             <select formControlName="location" id="location">
+              <option value="Magic Mile (Nunnery Wood Track)">Nunnery Wood Track</option>
               <option value="Magic Mile (Diglis Bridge)">Diglis Bridge</option>
               <option value="Magic Mile (Grandstand)">Grandstand</option>
               <option value="Magic Mile (Wainwright Road)">Wainwright Road</option>
@@ -105,11 +106,12 @@
         </div>
       </div>
 
+      <input type="submit" class="btn btn-primary" id="submit">
+
       <pre>Valid: {{ form.valid | json }}, ShowErrors: {{ showErrors }} </pre>
 
       <pre>{{ form.value | json }} </pre>
 
-      <input type="submit" class="btn btn-primary" id="submit">
     </div>
   </div>
 </form>
