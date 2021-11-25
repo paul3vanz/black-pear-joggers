@@ -9,6 +9,7 @@
   },
   "private": true,
   "dependencies": {
+    "@auth0/auth0-react": "^1.8.0",
     "@nrwl/next": "12.10.0",
     "core-js": "^3.6.5",
     "next": "11.1.0",

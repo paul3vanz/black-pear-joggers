@@ -1,24 +1,26 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import { Auth0Provider } from '@auth0/auth0-react';
+
 import './styles.css';
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <Auth0Provider
+      domain="blackpearjoggers.us.auth0.com"
+      clientId="30P0GEyOCCjXjTI7VtJeAhYwovaJSKq1"
+      redirectUri={typeof window !== 'undefined' && window.location.origin}
+    >
+      <h1>Black Pear Joggers</h1>
       <Head>
-        <title>Welcome to auth!</title>
+        <title>Welcome to Black Pear Joggers</title>
       </Head>
       <div className="app">
-        <header className="flex">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/nx-logo-white.svg" alt="Nx logo" width="75" height="50" />
-          <h1>Welcome to auth!</h1>
-        </header>
         <main>
           <Component {...pageProps} />
         </main>
       </div>
-    </>
+    </Auth0Provider>
   );
 }
 
