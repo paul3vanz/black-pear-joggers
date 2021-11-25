@@ -33,6 +33,27 @@
     "auth-e2e": {
       "tags": [],
       "implicitDependencies": ["auth"]
+    },
+    "container": {
+      "tags": []
+    },
+    "favicon": {
+      "tags": []
+    },
+    "footer": {
+      "tags": []
+    },
+    "header": {
+      "tags": []
+    },
+    "helpers": {
+      "tags": []
+    },
+    "lazy-load-image": {
+      "tags": []
+    },
+    "stack": {
+      "tags": []
     }
   }
 }

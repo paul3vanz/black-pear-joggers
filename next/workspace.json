@@ -79,6 +79,160 @@
           }
         }
       }
+    },
+    "container": {
+      "root": "libs/container",
+      "sourceRoot": "libs/container/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/container/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/container"],
+          "options": {
+            "jestConfig": "libs/container/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "favicon": {
+      "root": "libs/favicon",
+      "sourceRoot": "libs/favicon/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/favicon/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/favicon"],
+          "options": {
+            "jestConfig": "libs/favicon/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "footer": {
+      "root": "libs/footer",
+      "sourceRoot": "libs/footer/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/footer/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/footer"],
+          "options": {
+            "jestConfig": "libs/footer/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "header": {
+      "root": "libs/header",
+      "sourceRoot": "libs/header/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/header/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/header"],
+          "options": {
+            "jestConfig": "libs/header/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "helpers": {
+      "root": "libs/helpers",
+      "sourceRoot": "libs/helpers/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/helpers/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/helpers"],
+          "options": {
+            "jestConfig": "libs/helpers/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "lazy-load-image": {
+      "root": "libs/lazy-load-image",
+      "sourceRoot": "libs/lazy-load-image/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/lazy-load-image/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/lazy-load-image"],
+          "options": {
+            "jestConfig": "libs/lazy-load-image/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "stack": {
+      "root": "libs/stack",
+      "sourceRoot": "libs/stack/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/stack/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/stack"],
+          "options": {
+            "jestConfig": "libs/stack/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

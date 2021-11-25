@@ -17,7 +17,7 @@ export function Test() {
   if (isAuthenticated) {
     return (
       <div>
-        Hello {user.name} {user}
+        Hello {user.name}
         <button onClick={() => logout({ returnTo: window.location.origin })}>
           Log out
         </button>
