@@ -5,7 +5,7 @@ export default function Tools() {
   return (
     <Stack>
       <Container>
-        <h1>Tools</h1>;
+        <h1>Tools</h1>
       </Container>
     </Stack>
   );
