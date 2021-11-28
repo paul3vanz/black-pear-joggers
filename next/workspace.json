@@ -80,6 +80,28 @@
         }
       }
     },
+    "button": {
+      "root": "libs/button",
+      "sourceRoot": "libs/button/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/button/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/button"],
+          "options": {
+            "jestConfig": "libs/button/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "container": {
       "root": "libs/container",
       "sourceRoot": "libs/container/src",
@@ -207,6 +229,28 @@
           "outputs": ["coverage/libs/lazy-load-image"],
           "options": {
             "jestConfig": "libs/lazy-load-image/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "search-bar": {
+      "root": "libs/search-bar",
+      "sourceRoot": "libs/search-bar/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/search-bar/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/search-bar"],
+          "options": {
+            "jestConfig": "libs/search-bar/jest.config.js",
             "passWithNoTests": true
           }
         }

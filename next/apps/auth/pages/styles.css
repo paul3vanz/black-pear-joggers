@@ -25,3 +25,7 @@ p {
 a {
     @apply font-bold underline;
 }
+
+th {
+    @apply text-left;
+}

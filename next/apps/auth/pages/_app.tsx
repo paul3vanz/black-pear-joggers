@@ -1,12 +1,12 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { Auth0Provider } from '@auth0/auth0-react';
-import Link from 'next/link';
 
 import './styles.css';
 import { Favicon } from '@black-pear-joggers/favicon';
 import { Header } from '@black-pear-joggers/header';
 import { Footer } from '@black-pear-joggers/footer';
+import AdminBar from '../components/admin-bar/admin-bar';
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
@@ -33,38 +33,15 @@ function CustomApp({ Component, pageProps }: AppProps) {
             crossOrigin="anonymous"
           ></script>
         </Head>
+
         <Header />
 
-        <ul className="flex justify-around py-4 bg-gray-200">
-          <li>
-            <Link href="/athletes">
-              <a>Athletes</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/club-standards">
-              <a>Club standards</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/magic-mile">
-              <a>Magic mile</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/members">
-              <a>Members</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/tools">
-              <a>Tools</a>
-            </Link>
-          </li>
-        </ul>
+        <AdminBar />
+
         <main>
           <Component {...pageProps} />
         </main>
+
         <Footer />
       </div>
     </Auth0Provider>

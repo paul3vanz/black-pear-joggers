@@ -34,6 +34,9 @@
       "tags": [],
       "implicitDependencies": ["auth"]
     },
+    "button": {
+      "tags": []
+    },
     "container": {
       "tags": []
     },
@@ -50,6 +53,9 @@
       "tags": []
     },
     "lazy-load-image": {
+      "tags": []
+    },
+    "search-bar": {
       "tags": []
     },
     "stack": {
