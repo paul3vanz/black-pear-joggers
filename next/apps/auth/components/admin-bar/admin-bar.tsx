@@ -37,9 +37,13 @@ function Menu() {
 }
 
 function User() {
-  const { user } = useAuth0();
+  const { user, logout } = useAuth0();
 
-  return <>{user && user.name}</>;
+  return (
+    <a href="#" onClick={() => logout({ returnTo: '/' })}>
+      {user && user.name}
+    </a>
+  );
 }
 
 export default function AdminBar() {
