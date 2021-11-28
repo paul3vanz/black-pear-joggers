@@ -36,7 +36,7 @@ function MembersPage() {
         <h1>{club?.ClubName}</h1>
         {isMembersLoading ? (
           <p>Loading...</p>
-        ) : (
+        ) : members.Athletes ? (
           <>
             <p>
               <strong>{members.Athletes.length}</strong> members (
@@ -83,6 +83,8 @@ function MembersPage() {
               </tbody>
             </table>
           </>
+        ) : (
+          <p>No members</p>
         )}
       </Container>
     </Stack>
