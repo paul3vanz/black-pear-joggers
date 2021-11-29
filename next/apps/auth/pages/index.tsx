@@ -1,39 +1,17 @@
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
-import styled from 'styled-components';
+import { Stack } from '@black-pear-joggers/stack';
+import { Container } from '@black-pear-joggers/container';
 
-const StyledPage = styled.div`
-  .page {
-  }
-`;
-
-export function Test() {
-  const { isLoading, isAuthenticated, error, user, loginWithRedirect, logout } =
-    useAuth0();
-
-  //   if (isLoading) {
-  //     return <div>Loading...</div>;
-  //   }
-
-  if (isAuthenticated) {
-    return (
-      <div>
-        Hello {user.name}
-        <button onClick={() => logout({ returnTo: window.location.origin })}>
-          Log out
-        </button>
-      </div>
-    );
-  } else {
-    return <button onClick={loginWithRedirect}>Log in</button>;
-  }
-}
-
-export function Index() {
+function AdminHomePage() {
   return (
-    <StyledPage>
-      <Test />
-    </StyledPage>
+    <Stack>
+      <Container>
+        <h1>Black Pear Joggers Admin</h1>
+
+        <p>Please use the menu above to navigate around.</p>
+      </Container>
+    </Stack>
   );
 }
 
-export default withAuthenticationRequired(Index);
+export default withAuthenticationRequired(AdminHomePage);

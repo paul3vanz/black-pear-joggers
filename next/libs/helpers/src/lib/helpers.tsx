@@ -34,9 +34,7 @@ export function mapClassNames(
   value: string | undefined,
   map: { [key: string]: string }
 ) {
-  return value
-    ? map[value] || map.default || undefined
-    : map.default || undefined;
+  return value ? map[value] || map.default || '' : map.default || '';
 }
 
 export function hasTag(tags: string[], tag: string): boolean {

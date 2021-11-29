@@ -36,18 +36,10 @@ function Menu() {
   );
 }
 
-function User() {
-  const { user, logout } = useAuth0();
-
-  return (
-    <a href="#" onClick={() => logout({ returnTo: '/' })}>
-      {user && user.name}
-    </a>
-  );
-}
-
 export default function AdminBar() {
-  return (
+  const { user, logout, isAuthenticated } = useAuth0();
+
+  return isAuthenticated ? (
     <div className="py-4 bg-gray-200">
       <Container>
         <div className="flex justify-between">
@@ -56,10 +48,17 @@ export default function AdminBar() {
           </nav>
 
           <div>
-            <User />
+            <a
+              href="#"
+              onClick={() => logout({ returnTo: window.location.origin })}
+            >
+              {user && user.name}
+            </a>
           </div>
         </div>
       </Container>
     </div>
+  ) : (
+    <></>
   );
 }
