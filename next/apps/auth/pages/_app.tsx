@@ -20,7 +20,7 @@ function LoadingContent() {
   );
 }
 
-function PageContent(props: PropsWithChildren<{}>) {
+function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   const { isLoading } = useAuth0();
   return (
     <div className="flex flex-col">
