@@ -16,24 +16,6 @@ function CustomApp({ Component, pageProps }: AppProps) {
       redirectUri={typeof window !== 'undefined' && window.location.origin}
     >
       <div className="flex flex-col">
-        <Head>
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin="anonymous"
-          />
-
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;800&amp;display=swap"
-          />
-
-          <script
-            src="https://kit.fontawesome.com/97736414dd.js"
-            crossOrigin="anonymous"
-          ></script>
-        </Head>
-
         <Header />
 
         <AdminBar />

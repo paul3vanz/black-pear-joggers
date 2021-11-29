@@ -21,7 +21,26 @@ export default class CustomDocument extends Document<{
   render() {
     return (
       <Html>
-        <Head>{this.props.styleTags}</Head>
+        <Head>
+          {this.props.styleTags}
+
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin="anonymous"
+          />
+
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;800&amp;display=swap"
+          />
+
+          <script
+            async
+            src="https://kit.fontawesome.com/97736414dd.js"
+            crossOrigin="anonymous"
+          ></script>
+        </Head>
         <body>
           <Main />
           <NextScript />

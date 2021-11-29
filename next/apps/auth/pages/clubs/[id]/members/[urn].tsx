@@ -6,7 +6,7 @@ import { withAuthenticationRequired } from '@auth0/auth0-react';
 import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
 import { useEffect } from 'react';
-import { useMember } from 'apps/auth/services/members';
+import { useMember } from '../../../../services/members';
 
 function MemberDetailsPage() {
   const router = useRouter();

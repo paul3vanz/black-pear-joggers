@@ -12,22 +12,24 @@ interface Props extends PropsWithChildren<{}> {
   padding?: string;
 }
 
-const Section = styled.section.attrs((props: Props) => ({
-  className: classNames(
-    'relative',
-    mapClassNames(props.backgroundColour, {
-      dark: 'bg-gray-900 text-white',
-      bright: 'bg-primary',
-      light: 'bg-gray-100',
-      default: 'bg-white',
-    }),
-    mapClassNames(props.padding, {
-      larger: 'py-16 sm:py-32',
-      sm: 'py-8',
-      default: 'py-12 sm:py-16',
-    })
-  ),
-}))``;
+// .attrs((props: Props) => ({
+//     className: classNames(
+//       'relative',
+//       mapClassNames(props.backgroundColour, {
+//         dark: 'bg-gray-900 text-white',
+//         bright: 'bg-primary',
+//         light: 'bg-gray-100',
+//         default: 'bg-white',
+//       }),
+//       mapClassNames(props.padding, {
+//         larger: 'py-16 sm:py-32',
+//         sm: 'py-8',
+//         default: 'py-12 sm:py-16',
+//       })
+//     ),
+//   }))
+
+const Section = styled.section<Props>``;
 
 export const Stack = (props: Props) => (
   <>
@@ -54,11 +56,10 @@ export const Stack = (props: Props) => (
         {props.children}
       </div>
     </Section>
-
-    <style jsx>{`
+    {/* <style jsx>{`
       .image img {
         mix-blend-mode: multiply;
       }
-    `}</style>
+    `}</style> */}
   </>
 );

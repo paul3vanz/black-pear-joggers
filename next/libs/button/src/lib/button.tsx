@@ -35,7 +35,7 @@ const styles = {
   }),
 };
 
-const StyledButton = styled.a`
+const StyledButton = styled.a<Props>`
   font-weight: bold;
   cursor: pointer;
   display: inline-block;

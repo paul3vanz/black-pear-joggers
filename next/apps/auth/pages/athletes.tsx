@@ -2,7 +2,7 @@ import { Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import Link from 'next/link';
-import { toTitleCase } from 'apps/auth/helpers/formatters';
+import { toTitleCase } from '../helpers/formatters';
 import { useAthletes } from '../services/athletes';
 
 function AthletesPage() {

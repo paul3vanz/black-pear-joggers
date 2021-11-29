@@ -30,8 +30,13 @@ export function fileSize(bytes: number, decimals = 2): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-export function mapClassNames(value: string, map: { [key: string]: string }) {
-  return map[value] || map.default || undefined;
+export function mapClassNames(
+  value: string | undefined,
+  map: { [key: string]: string }
+) {
+  return value
+    ? map[value] || map.default || undefined
+    : map.default || undefined;
 }
 
 export function hasTag(tags: string[], tag: string): boolean {
