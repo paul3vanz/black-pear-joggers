@@ -20,7 +20,7 @@ function MenuItem(props: MenuItemProps) {
 
 function Menu() {
   return (
-    <ul className="flex justify-around">
+    <ul className="flex flex-col md:flex-row justify-around">
       <MenuItem link="/athletes" title="Athletes" />
 
       <MenuItem link="/club-standards" title="Club standards" />

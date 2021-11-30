@@ -1,4 +1,4 @@
-import useSWR from 'swr';
+import useSWRImmutable from 'swr';
 import { config } from '../helpers/config';
 import { Athlete } from './athletes.interface';
 
@@ -9,7 +9,7 @@ const fetcher = (url) => fetch(url).then((res) => {
 });
 
 export function useAthletes() {
-    const { data, error } = useSWR<Athlete[], string>(`${config.baseApiUrl}/athletes`, fetcher);
+    const { data, error } = useSWRImmutable<Athlete[], string>(`${config.baseApiUrl}/athletes`, fetcher);
 
     return {
         athletes: data,

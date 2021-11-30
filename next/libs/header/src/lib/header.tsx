@@ -123,7 +123,7 @@ const Logo = () => (
 );
 
 export const Header = () => {
-  const [menuOpen, setMenuOpen] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <nav className="bg-gray-900">

@@ -10,7 +10,7 @@ import { useMember } from '../../../../services/members';
 
 function MemberDetailsPage() {
   const router = useRouter();
-  const { urn } = router.query;
+  const { urn, id: clubId } = router.query;
   const { member, isLoading, isError } = useMember(Number(urn));
 
   if (isLoading) {
@@ -27,7 +27,7 @@ function MemberDetailsPage() {
     <Stack>
       <Container>
         <p>
-          <Link href="/members">Back to members</Link>
+          <Link href={`/clubs/${clubId}/members`}>Back to members</Link>
         </p>
 
         <h1>
