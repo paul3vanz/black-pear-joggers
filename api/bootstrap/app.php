@@ -82,15 +82,12 @@ $app->routeMiddleware([
 |
 */
 
-$app->configure('graphql');
-
 // $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(App\Providers\CatchAllOptionsRequestsProvider::class);
 // class_alias('Illuminate\Support\Facades\Response', 'Response');
 // class_alias('Illuminate\Support\Facades\Config', 'Config');
-$app->register(Rebing\GraphQL\GraphQLLumenServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
