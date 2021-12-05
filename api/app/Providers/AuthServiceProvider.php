@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use App\CognitoJWT;
+use Auth0\SDK\Configuration\SdkConfiguration;
+use Auth0\SDK\Token;
+use Illuminate\Auth\GenericUser;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -34,10 +36,22 @@ class AuthServiceProvider extends ServiceProvider
             $bearerToken = $request->bearerToken();
 
             if ($bearerToken) {
-                $region = env('AWS_REGION', '');
-                $userPoolId = env('AWS_COGNITO_USER_POOL_ID', '');
 
-                return CognitoJWT::verifyToken($bearerToken, $region, $userPoolId);
+                $jwksUri = env('AUTH0_DOMAIN') . '.well-known/jwks.json';
+
+                $configuration = new SdkConfiguration([
+                    'domain' => env('AUTH0_DOMAIN'),
+                    'clientId' => env('AUTH0_CLIENT_ID'),
+                    'audience' => [ env('AUTH0_AUDIENCE') ],
+                    'clientSecret' => env('AUTH0_CLIENT_SECRET'),
+                    'tokenAlgorithm' => 'HS256'
+                ]);
+
+                $tokenVerifier = new Token($configuration, $bearerToken, 2);
+
+                $decoded = $tokenVerifier->verify()->validate()->toArray();
+
+                return new GenericUser($decoded);
             }
         });
     }

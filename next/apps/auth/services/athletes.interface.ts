@@ -1,5 +1,6 @@
 export interface Athlete {
     id: number;
+    urn?: number;
     athlete_id: number;
     athlete_id_alt: number;
     first_name: string;

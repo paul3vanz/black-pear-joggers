@@ -1,14 +1,11 @@
 import useSWRImmutable from 'swr';
 import { config } from '../helpers/config';
 import { Athlete } from './athletes.interface';
-
-const fetcher = (url) => fetch(url).then((res) => {
-    const data = res.json();
-
-    return data;
-});
+import { fetcher } from './fetcher';
 
 export function useAthletes() {
+    console.log('useAthletes');
+
     const { data, error } = useSWRImmutable<Athlete[], string>(`${config.baseApiUrl}/athletes`, fetcher);
 
     return {
@@ -18,4 +15,12 @@ export function useAthletes() {
     }
 };
 
-
+export function updateAthlete(id: number, athlete: any) {
+    fetch(`${config.baseApiUrl}/athletes/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+          },
+        body: JSON.stringify(athlete),
+    })
+}

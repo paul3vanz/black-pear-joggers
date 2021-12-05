@@ -1,3 +1,11 @@
+import {
+  formatRelative,
+  parseISO,
+  format,
+  isToday,
+  isTomorrow,
+} from 'date-fns';
+
 function moment(...test: any[]): any {
   return null;
 }
@@ -50,14 +58,15 @@ export function friendlyTime(time: string) {
 }
 
 export function friendlyDate(dateString: string) {
-  const today = moment().startOf('day').format('YYYY-MM-DD');
-  const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
+  if (!dateString) return dateString;
 
-  if (dateString === today) {
+  const date = parseISO(dateString.substr(0, 10));
+
+  if (isToday(date)) {
     return 'Today';
-  } else if (dateString === tomorrow) {
+  } else if (isTomorrow(date)) {
     return 'Tomorrow';
   } else {
-    return moment(dateString, 'YYYY-MM-DD').format('dddd, Do MMMM');
+    return formatRelative(date, new Date(), { weekStartsOn: 1 });
   }
 }

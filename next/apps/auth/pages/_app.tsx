@@ -6,9 +6,18 @@ import './styles.css';
 import { Header } from '@black-pear-joggers/header';
 import { Footer } from '@black-pear-joggers/footer';
 import AdminBar from '../components/admin-bar/admin-bar';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import { Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
+import { SWRConfig } from 'swr';
+import { swrConfig } from '../services/swr-config';
+
+let getAccessTokenSilently = null;
+
+export const sec = {
+  getAccessTokenSilently: () => getAccessTokenSilently,
+  setAccessTokenSilently: (func) => (getAccessTokenSilently = func),
+};
 
 function LoadingContent() {
   return (
@@ -21,7 +30,23 @@ function LoadingContent() {
 }
 
 function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
-  const { isLoading } = useAuth0();
+  const { isLoading, getAccessTokenSilently } = useAuth0();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        localStorage.setItem(
+          'bpj.token',
+          await getAccessTokenSilently({
+            audience: 'https://blackpearjoggers.us.auth0.com/api/v2/',
+          })
+        );
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, [getAccessTokenSilently]);
+
   return (
     <div className="flex flex-col">
       <Header />

@@ -3,20 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Factory as Auth;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
-
 use App\Models\Athlete;
+use Illuminate\Support\Facades\Auth;
 
 class AthleteController extends Controller
 {
-  public function __construct(Auth $auth)
-  {
-    $this->auth = $auth;
-  }
-
   public function getAthletes(Request $request)
   {
+    $user = Auth::check();
+
     $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
 
     if ($searchTerm) {
@@ -27,6 +24,10 @@ class AthleteController extends Controller
       });
 
       $athletes = $athletes->has('activeMembership')->with('latestRanking');
+
+    //   if ($user) {
+    //       $athletes->makeVisible('urn');
+    //   }
 
       $athletes = $athletes->get();
     } else {
@@ -45,6 +46,56 @@ class AthleteController extends Controller
       ->with('membership')
       ->find($id);
     return response()->json($athlete);
+  }
+
+  private function validateRequest(Request $request) {
+    $this->validate($request, [
+        'id' => 'required|integer',
+        'urn' => 'required|integer',
+        'athleteId' => 'required|integer',
+        'athleteIdAlt' => 'integer|nullable',
+        'firstName' => 'required|string',
+        'lastName' => 'required|string',
+        'gender' => 'required|in:M,W',
+        'dob' => 'required|date',
+    ]);
+  }
+
+  public function createAthlete(Request $request) {
+    $this->validateRequest($request);
+
+    Athlete::create([
+        'id' => Input::get('id'),
+        'urn' => Input::get('urn'),
+        'athlete_id' => Input::get('athleteId'),
+        'first_name' => Input::get('firstName'),
+        'last_name' => Input::get('lastName'),
+        'gender' => Input::get('gender'),
+        'dob' => Input::get('dob')
+    ]);
+}
+
+  public function updateAthlete($id, $request)
+  {
+    $this->validateRequest($request);
+
+    Athlete::find($id)->update([
+        'urn' => Input::get('urn'),
+        'athlete_id' => Input::get('athleteId'),
+        'first_name' => Input::get('firstName'),
+        'last_name' => Input::get('lastName'),
+        // 'gender' => Input::get('gender')
+        // 'dob' => Input::get('dob')
+    ]);
+  }
+
+  public function deleteAthlete($id)
+  {
+    $athlete = Athlete::find($id);
+
+    $hasDeleted = $athlete->delete();
+
+    return $hasDeleted ? response()->noContent() : response('Failed', 500);
   }
 
   public function getAthletePerformances($id)

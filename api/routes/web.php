@@ -4,10 +4,13 @@ $router->get('/', function () use ($router) {
   return $router->app->version();
 });
 
-
-$router->get('/athlete/{id}', 'AthleteController@getAthlete');
-$router->get('/athlete/{id}/performances', 'PerformanceController@getPerformancesByAthlete');
 $router->get('/athletes', 'AthleteController@getAthletes');
+$router->get('/athlete/{id}', 'AthleteController@getAthlete');
+$router->post('/athlete', 'AthleteController@createAthlete');
+$router->put('/athlete/{id}', 'AthleteController@updateAthlete');
+$router->delete('/athlete/{id}', 'AthleteController@deleteAthlete');
+
+$router->get('/athlete/{id}/performances', 'PerformanceController@getPerformancesByAthlete');
 $router->get('/athletes/awards', 'AwardController@getAthleteAwards');
 
 $router->get('/awardclaim/{id}/{uniqueToken}', 'AwardClaimController@getClaim');
@@ -24,7 +27,7 @@ $router->group([
   $router->get('', 'AwardClaimController@getAll');
 });
 
-$router->group(['prefix' => 'membership'], function ($router) {
+$router->group(['middleware' => 'auth', 'prefix' => 'membership'], function ($router) {
   $router->get('store', 'MembershipController@storeClubMembers');
   $router->get('members/{clubId}', 'MembershipController@getClubMembers');
   $router->get('clubs', 'MembershipController@getClubs');
@@ -36,11 +39,13 @@ $router->get('/awards', 'AwardController@getAwards');
 
 $router->get('/events', 'EventController@getEvents');
 
-$router->get('/fetch/performances/{athleteId}', 'FetchPerformancesController@fetchPerformances');
-$router->get('/fetch/performances', 'FetchPerformancesController@queueAllFetchPerformances');
-$router->get('/fetch/rankings/{athleteId}', 'FetchRankingsController@fetchRankings');
-$router->get('/fetch/rankings', 'FetchRankingsController@queueAllFetchRankings');
-$router->get('/fetch/updatepersonalbests', 'FetchPerformancesController@updatePersonalBests');
+$router->group(['middleware' => 'auth', 'prefix' => 'fetch'], function ($router) {
+$router->get('performances/{athleteId}', 'FetchPerformancesController@fetchPerformances');
+$router->get('performances', 'FetchPerformancesController@queueAllFetchPerformances');
+$router->get('rankings/{athleteId}', 'FetchRankingsController@fetchRankings');
+$router->get('rankings', 'FetchRankingsController@queueAllFetchRankings');
+$router->get('updatepersonalbests', 'FetchPerformancesController@updatePersonalBests');
+});
 
 $router->get('/registrations/queue', 'RegistrationController@queueAllRegistrations');
 $router->get('/registrations/createregistrationsfrommemberships', 'RegistrationController@createRegistrationsFromMemberships');

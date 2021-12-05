@@ -2,6 +2,7 @@ import { Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
 import { Button } from '@black-pear-joggers/button';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
+import { UpdateAthleteForm } from '../../components/athletes/update-athlete-form';
 
 import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
@@ -35,35 +36,7 @@ function AthleteDetailsPage() {
 
         <h1>{athlete.first_name + ' ' + athlete.last_name}</h1>
 
-        <ul className="list-disc list-inside mb-4">
-          <li>
-            <strong>id</strong> {athlete.id}
-          </li>
-          <li>
-            <strong>athlete_id</strong> {athlete.athlete_id}
-          </li>
-          <li>
-            <strong>athlete_id_alt</strong> {athlete.athlete_id_alt}
-          </li>
-          <li>
-            <strong>first_name</strong> {athlete.first_name}
-          </li>
-          <li>
-            <strong>last_name</strong> {athlete.last_name}
-          </li>
-          <li>
-            <strong>gender</strong> {athlete.gender}
-          </li>
-          <li>
-            <strong>category</strong> {athlete.category}
-          </li>
-          <li>
-            <strong>created_at</strong> {athlete.created_at}
-          </li>
-          <li>
-            <strong>updated_at</strong> {athlete.updated_at}
-          </li>
-        </ul>
+        <UpdateAthleteForm athlete={athlete} />
 
         <h2>Profiles</h2>
 
