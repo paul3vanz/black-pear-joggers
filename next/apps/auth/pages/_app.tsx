@@ -38,7 +38,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
         localStorage.setItem(
           'bpj.token',
           await getAccessTokenSilently({
-            audience: 'https://blackpearjoggers.us.auth0.com/api/v2/',
+            audience: 'https://bpj.org.uk/',
           })
         );
       } catch (e) {
@@ -65,6 +65,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
     <Auth0Provider
       domain="blackpearjoggers.us.auth0.com"
       clientId="30P0GEyOCCjXjTI7VtJeAhYwovaJSKq1"
+      audience="https://bpj.org.uk"
       redirectUri={typeof window !== 'undefined' && window.location.origin}
     >
       <PageContent>
