@@ -35,7 +35,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
         localStorage.setItem(
           'bpj.token',
           await getAccessTokenSilently({
-            audience: 'https://bpj.org.uk/',
+            audience: 'https://bpj.org.uk',
           })
         );
       } catch (e) {
