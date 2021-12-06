@@ -6,7 +6,7 @@ import { UpdateAthleteForm } from '../../components/athletes/update-athlete-form
 
 import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
-import { useAthletes } from 'apps/auth/services/athletes';
+import { useAthletes } from '../../services/athletes';
 
 function AthleteDetailsPage() {
   const router = useRouter();

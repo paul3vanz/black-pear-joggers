@@ -1,9 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { friendlyDate } from '@black-pear-joggers/helpers';
-import athletes from 'apps/auth/pages/athletes';
-import { Athlete } from 'apps/auth/services/athletes.interface';
+import { Athlete } from '../../services/athletes.interface';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
-import { updateAthlete } from 'apps/auth/services/athletes';
+import { updateAthlete } from '../../services/athletes';
 
 interface UpdateAthleteFormProps {
   athlete: Athlete;
