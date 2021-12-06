@@ -4,8 +4,6 @@ import { Athlete } from './athletes.interface';
 import { fetcher } from './fetcher';
 
 export function useAthletes() {
-    console.log('useAthletes');
-
     const { data, error } = useSWRImmutable<Athlete[], string>(`${config.baseApiUrl}/athletes`, fetcher);
 
     return {
