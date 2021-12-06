@@ -1,7 +1,7 @@
 <?php
 
 $router->get('/', function () use ($router) {
-  return $router->app->version();
+    return $router->app->version();
 });
 
 $router->get('/athletes', 'AthleteController@getAthletes');
@@ -18,21 +18,24 @@ $router->post('/awardclaim', 'AwardClaimController@submitClaim');
 $router->post('/awardclaim/{id}/race', 'AwardClaimController@submitClaimRace');
 
 $router->group([
-  'middleware' => 'auth',
-  'prefix' => 'awardclaim',
+    'middleware' => 'auth',
+    'prefix' => 'awardclaim',
 ],  function ($router) {
-  $router->post('toggleverified/{id}', 'AwardClaimController@toggleVerified');
-  $router->post('archive/{id}', 'AwardClaimController@archive');
-  $router->post('delete/{id}', 'AwardClaimController@delete');
-  $router->get('', 'AwardClaimController@getAll');
+    $router->post('toggleverified/{id}', 'AwardClaimController@toggleVerified');
+    $router->post('archive/{id}', 'AwardClaimController@archive');
+    $router->post('delete/{id}', 'AwardClaimController@delete');
+    $router->get('', 'AwardClaimController@getAll');
 });
 
 $router->group(['middleware' => 'auth', 'prefix' => 'membership'], function ($router) {
-  $router->get('store', 'MembershipController@storeClubMembers');
-  $router->get('members/{clubId}', 'MembershipController@getClubMembers');
-  $router->get('clubs', 'MembershipController@getClubs');
-  $router->get('{firstName}/{lastName}/{dateOfBirth}', 'MembershipController@checkNameDob');
-  $router->get('{urn}', 'MembershipController@responseCheckUrn');
+    $router->get('{firstName}/{lastName}/{dateOfBirth}', 'MembershipController@checkNameDob');
+    $router->get('{urn}', 'MembershipController@responseCheckUrn');
+});
+
+$router->group(['middleware' => 'auth', 'prefix' => 'clubs'], function ($router) {
+    $router->get('', 'MembershipController@getClubs');
+    $router->get('{clubId}/members', 'MembershipController@getClubMembers');
+    $router->get('store', 'MembershipController@storeClubMembers');
 });
 
 $router->get('/awards', 'AwardController@getAwards');
@@ -40,11 +43,11 @@ $router->get('/awards', 'AwardController@getAwards');
 $router->get('/events', 'EventController@getEvents');
 
 $router->group(['middleware' => 'auth', 'prefix' => 'fetch'], function ($router) {
-$router->get('performances/{athleteId}', 'FetchPerformancesController@fetchPerformances');
-$router->get('performances', 'FetchPerformancesController@queueAllFetchPerformances');
-$router->get('rankings/{athleteId}', 'FetchRankingsController@fetchRankings');
-$router->get('rankings', 'FetchRankingsController@queueAllFetchRankings');
-$router->get('updatepersonalbests', 'FetchPerformancesController@updatePersonalBests');
+    $router->get('performances/{athleteId}', 'FetchPerformancesController@fetchPerformances');
+    $router->get('performances', 'FetchPerformancesController@queueAllFetchPerformances');
+    $router->get('rankings/{athleteId}', 'FetchRankingsController@fetchRankings');
+    $router->get('rankings', 'FetchRankingsController@queueAllFetchRankings');
+    $router->get('updatepersonalbests', 'FetchPerformancesController@updatePersonalBests');
 });
 
 $router->get('/registrations/queue', 'RegistrationController@queueAllRegistrations');

@@ -9,7 +9,7 @@ const fetcher = (url) => fetch(url).then((res) => {
 });
 
 export function useClubs() {
-    const { data, error } = useSWRImmutable<ClubsResponse, string>(`${config.baseApiUrl}/membership/clubs`, fetcher);
+    const { data, error } = useSWRImmutable<ClubsResponse, string>(`${config.baseApiUrl}/clubs`, fetcher);
 
     return {
         clubs: data,
