@@ -2,15 +2,12 @@ import { AppProps } from 'next/app';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
 import './styles.css';
-// import { Favicon } from '@black-pear-joggers/favicon';
 import { Header } from '@black-pear-joggers/header';
 import { Footer } from '@black-pear-joggers/footer';
 import AdminBar from '../components/admin-bar/admin-bar';
 import { PropsWithChildren, useEffect } from 'react';
 import { Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
-import { SWRConfig } from 'swr';
-import { swrConfig } from '../services/swr-config';
 
 let getAccessTokenSilently = null;
 
