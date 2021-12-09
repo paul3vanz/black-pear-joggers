@@ -13,6 +13,16 @@ export function useAthletes() {
     }
 };
 
+export function useAthlete(athleteId?: number) {
+    const { data, error } = useSWRImmutable<Athlete, string>(athleteId ? `${config.baseApiUrl}/athlete/${athleteId}` : null, fetcher);
+
+    return {
+        athlete: data,
+        isLoading: !error && !data,
+        isError: error
+    }
+};
+
 export function updateAthlete(id: number, athlete: any) {
     fetch(`${config.baseApiUrl}/athletes/${id}`, {
         method: 'PUT',

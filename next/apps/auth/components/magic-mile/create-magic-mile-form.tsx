@@ -4,10 +4,11 @@ import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { createMagicMileResult } from '../../services/magic-mile';
 import { TextInput } from '../../components/forms/text-input';
 import { TimeInput } from '../../components/forms/time-input';
-import { Select } from '../../components/forms/select';
-import { shortDate } from '~/libs/helpers/src';
-import { useAthletes } from '../../services/athletes';
+import { Select, SelectOption } from '../../components/forms/select';
+import { shortDate } from '@black-pear-joggers/helpers';
+import { useAthlete, useAthletes } from '../../services/athletes';
 import { useEffect, useState } from 'react';
+import { Athlete } from '../../services/athletes.interface';
 
 interface CreateMagicMileResultFormProps {
   magicMileResult?: MagicMileResult;
@@ -44,6 +45,28 @@ function onSubmit(data) {
   });
 }
 
+const categories = [
+  'U20',
+  'U23',
+  'SEN',
+  'V35',
+  'V40',
+  'V45',
+  'V50',
+  'V55',
+  'V60',
+  'V65',
+  'V70',
+];
+
+const locations = [
+  'Diglis Bridge',
+  'Grandstand, Pitchcroft',
+  'Nunnery Wood Track',
+  'Pitchcroft Reverse',
+  'Wainwright Road',
+];
+
 export function CreateMagicMileResultForm(
   props: CreateMagicMileResultFormProps
 ) {
@@ -54,8 +77,40 @@ export function CreateMagicMileResultForm(
     setValue,
     formState: { isValid, errors, isSubmitted },
   } = useForm<FormData>();
+  let athleteId;
   const { athletes } = useAthletes();
+  const { athlete } = useAthlete(athleteId);
   const [showMembers, setShowMembers] = useState(true);
+
+  function handleAthleteChange(setValue, athletes: Athlete[], e: any) {
+    const athlete = athletes.find(
+      (athlete) => athlete.id === Number(e.target.value)
+    );
+
+    athleteId = athlete.id;
+
+    setValue('firstName', athlete.first_name);
+    setValue('lastName', athlete.last_name);
+    setValue('gender', athlete.gender);
+    setValue('category', athlete.category);
+  }
+
+  function getAthleteOptionElements(athletes: Athlete[]) {
+    return athletes
+      ? athletes
+          .sort((a, b) => {
+            return a.first_name.localeCompare(b.first_name);
+          })
+          .map((athlete) => {
+            return {
+              value: athlete.id.toString(),
+              label: `${athlete.first_name} ${athlete.last_name} (${athlete.category})`,
+            };
+          })
+      : [];
+  }
+
+  useEffect(() => {}, [athleteId]);
 
   return (
     <>
@@ -80,15 +135,9 @@ export function CreateMagicMileResultForm(
               label="Location"
               registerField={register('location', {
                 required: true,
-                value: 'Nunnery Wood Track',
+                value: locations[2],
               })}
-              options={[
-                'Diglis Bridge',
-                'Grandstand, Pitchcroft',
-                'Nunnery Wood Track',
-                'Pitchcroft Reverse',
-                'Wainwright Road',
-              ]}
+              options={locations}
             />
           </div>
         </div>
@@ -101,34 +150,10 @@ export function CreateMagicMileResultForm(
                 label="Name"
                 registerField={register('athleteId', {
                   onChange: async (e) => {
-                    setValue(
-                      'firstName',
-                      athletes.find(
-                        (athlete) => athlete.id === Number(e.target.value)
-                      ).first_name
-                    );
-                    setValue(
-                      'lastName',
-                      athletes.find(
-                        (athlete) => athlete.id === Number(e.target.value)
-                      ).last_name
-                    );
+                    handleAthleteChange(setValue, athletes, e);
                   },
                 })}
-                options={
-                  athletes
-                    ? athletes
-                        .sort((a, b) => {
-                          return a.first_name.localeCompare(b.first_name);
-                        })
-                        .map((athlete) => {
-                          return {
-                            value: athlete.id.toString(),
-                            label: `${athlete.first_name} ${athlete.last_name} (${athlete.category})`,
-                          };
-                        })
-                    : []
-                }
+                options={getAthleteOptionElements(athletes)}
               />
               <div className="mt-2">
                 <a
@@ -145,7 +170,7 @@ export function CreateMagicMileResultForm(
           </div>
         )}
 
-        {!showMembers && (
+        {true && (
           <div className="flex flex-wrap -mx-3 mb-3">
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <TextInput
@@ -198,19 +223,7 @@ export function CreateMagicMileResultForm(
                 required: true,
                 value: 'SEN',
               })}
-              options={[
-                'U20',
-                'U23',
-                'SEN',
-                'V35',
-                'V40',
-                'V45',
-                'V50',
-                'V55',
-                'V60',
-                'V65',
-                'V70',
-              ]}
+              options={categories}
             />
           </div>
         </div>

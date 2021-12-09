@@ -65,6 +65,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
       audience="https://bpj.org.uk"
       redirectUri={typeof window !== 'undefined' && window.location.origin}
     >
+      <div id="modalContainer"></div>
       <PageContent>
         <Component {...pageProps} />
       </PageContent>
