@@ -17,7 +17,10 @@ export function useMember(urn: number) {
     const { data, error } = useSWRImmutable<MemberResponse, string>(`${config.baseApiUrl}/membership/${urn}`, fetcher);
 
     return {
-        member: data,
+        member: data && {
+            ...data,
+            ForeignFlag: JSON.parse(data.ForeignFlag.toLowerCase())
+        },
         isLoading: !error && !data,
         isError: error
     }

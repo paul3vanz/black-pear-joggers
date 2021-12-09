@@ -127,6 +127,7 @@ export function UpdateAthleteForm({ athlete }: UpdateAthleteFormProps) {
               className="block w-full border rounded py-3 px-4 mb-3"
               id="athlete-dob"
               type="text"
+              defaultValue={athlete.dob}
               {...register('dob')}
             />
           </div>

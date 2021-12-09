@@ -6,3 +6,7 @@ export function toTitleCase(input: string): string {
         }
       );
 }
+
+export function booleanLabels(input: string, labels?: ['Yes', 'No']): string {
+    return input ? "Yes" : "No";
+}

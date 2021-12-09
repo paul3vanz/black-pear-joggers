@@ -5,8 +5,8 @@ import { withAuthenticationRequired } from '@auth0/auth0-react';
 
 import Link from 'next/link';
 import { useRouter } from 'next/dist/client/router';
-import { useEffect } from 'react';
 import { useMember } from '../../../../services/members';
+import { booleanLabels, toTitleCase } from '../../../../helpers/formatters';
 
 function MemberDetailsPage() {
   const router = useRouter();
@@ -36,50 +36,59 @@ function MemberDetailsPage() {
 
         <ul className="list-disc list-inside mb-4">
           <li>
-            <strong>CompetitiveRegStatus:</strong> {member.CompetitiveRegStatus}
+            <strong>URN:</strong> {member.Urn}
+          </li>
+
+          <li>
+            <strong>Registration status:</strong> {member.CompetitiveRegStatus}
+          </li>
+
+          <li>
+            <strong>Gender:</strong> {toTitleCase(member.Gender)}
+          </li>
+
+          <li>
+            <strong>Date of birth:</strong> {member.Dob}
           </li>
           <li>
-            <strong>Dob:</strong> {member.Dob}
+            <strong>First claim club:</strong>{' '}
+            <Link href={`/clubs/${member.FirstClaimClubId}/members`}>
+              {member.FirstClaimClubName}
+            </Link>
           </li>
-          <li>
-            <strong>FirstClaimClubId:</strong> {member.FirstClaimClubId}
-          </li>
-          <li>
-            <strong>FirstClaimClubName:</strong> {member.FirstClaimClubName}
-          </li>
-          <li>
-            <strong>FirstClaimOtherId:</strong> {member.FirstClaimOtherId}
-          </li>
-          <li>
-            <strong>FirstClaimOtherName:</strong> {member.FirstClaimOtherName}
-          </li>
-          <li>
-            <strong>Firstname:</strong> {member.Firstname}
-          </li>
-          <li>
-            <strong>ForeignFlag:</strong> {member.ForeignFlag}
-          </li>
-          <li>
-            <strong>Gender:</strong> {member.Gender}
-          </li>
-          <li>
-            <strong>HigherClaimClubId:</strong> {member.HigherClaimClubId}
-          </li>
-          <li>
-            <strong>HigherClaimClubName:</strong> {member.HigherClaimClubName}
-          </li>
-          <li>
-            <strong>Lastname:</strong> {member.Lastname}
-          </li>
-          <li>
-            <strong>SecondClaimClubId:</strong> {member.SecondClaimClubId}
-          </li>
-          <li>
-            <strong>SecondClaimClubName:</strong> {member.SecondClaimClubName}
-          </li>
-          <li>
-            <strong>Urn:</strong> {member.Urn}
-          </li>
+
+          {member.FirstClaimOtherId && (
+            <li>
+              <strong>First claim other club:</strong>{' '}
+              <Link href={`/clubs/${member.FirstClaimOtherId}/members`}>
+                {member.FirstClaimOtherName}
+              </Link>
+            </li>
+          )}
+
+          {member.SecondClaimClubId && (
+            <li>
+              <strong>Second claim club:</strong>{' '}
+              <Link href={`/clubs/${member.SecondClaimClubId}/members`}>
+                {member.SecondClaimClubName}
+              </Link>
+            </li>
+          )}
+
+          {member.HigherClaimClubId && (
+            <li>
+              <strong>Higher claim club:</strong>{' '}
+              <Link href={`/clubs/${member.SecondClaimClubId}/members`}>
+                {member.SecondClaimClubName}
+              </Link>
+            </li>
+          )}
+
+          {member.ForeignFlag && (
+            <li>
+              <strong>Foreign flag:</strong> {booleanLabels(member.ForeignFlag)}
+            </li>
+          )}
         </ul>
 
         <span className="mr-4">

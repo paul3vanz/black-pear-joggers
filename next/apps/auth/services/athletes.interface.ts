@@ -6,6 +6,7 @@ export interface Athlete {
     first_name: string;
     last_name: string;
     gender: string;
+    dob?: string;
     created_at: string;
     updated_at: string;
     category: string;

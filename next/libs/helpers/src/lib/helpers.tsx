@@ -70,3 +70,7 @@ export function friendlyDate(dateString: string) {
     return formatRelative(date, new Date(), { weekStartsOn: 1 });
   }
 }
+
+export function shortDate(date?: string) {
+  return format(date ? parseISO(date) : new Date(), 'yyyy-MM-dd');
+}
