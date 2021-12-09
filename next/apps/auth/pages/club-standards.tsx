@@ -19,20 +19,17 @@ export function ClubStandards() {
 
   async function onToggleVerified(awardClaim: AwardClaim) {
     const response = await toggleVerified(awardClaim);
-    console.log(awardClaims);
-    console.log(
-      awardClaims.findIndex((awardClaim) => awardClaim.id === response.id)
+
+    const position = awardClaims.findIndex(
+      (awardClaim) => awardClaim.id === response.id
     );
-    console.log(response);
 
     mutate(
       awardClaimsUrl,
       [
-        ...awardClaims.splice(
-          awardClaims.findIndex((awardClaim) => awardClaim.id === response.id),
-          1
-        ),
+        ...awardClaims.slice(0, position),
         response,
+        ...awardClaims.slice(position + 1),
       ],
       false
     );
