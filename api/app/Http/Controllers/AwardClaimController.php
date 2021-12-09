@@ -78,12 +78,12 @@ class AwardClaimController extends Controller
         ]);
 
         $claim = AwardClaim::create([
-            'gender' => $request::input('gender'),
-            'category' => $request::input('category'),
-            'award' => $request::input('award'),
-            'firstName' => $request::input('firstName'),
-            'lastName' => $request::input('lastName'),
-            'email' => $request::input('email'),
+            'gender' => $request->input('gender'),
+            'category' => $request->input('category'),
+            'award' => $request->input('award'),
+            'firstName' => $request->input('firstName'),
+            'lastName' => $request->input('lastName'),
+            'email' => $request->input('email'),
         ]);
 
         return response()->json($claim);
@@ -102,24 +102,24 @@ class AwardClaimController extends Controller
         ]);
 
         $claim = AwardClaim::create([
-            'gender' => $request::input('gender'),
-            'category' => $request::input('category'),
-            'award' => $request::input('award'),
-            'firstName' => $request::input('firstName'),
-            'lastName' => $request::input('lastName'),
-            'email' => $request::input('email'),
+            'gender' => $request->input('gender'),
+            'category' => $request->input('category'),
+            'award' => $request->input('award'),
+            'firstName' => $request->input('firstName'),
+            'lastName' => $request->input('lastName'),
+            'email' => $request->input('email'),
         ]);
 
-        $claim->races()->createMany($request::input('races'));
+        $claim->races()->createMany($request->input('races'));
 
         return response()->json($claim);
     }
 
     public function submitClaimRace(Request $request, $awardClaimId)
     {
-        $race = AwardClaimRace::find($request::input('id'));
+        $race = AwardClaimRace::find($request->input('id'));
 
-        $race->race = $request::input('race');
+        $race->race = $request->input('race');
 
         $race->save();
 

@@ -5,19 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\MagicMile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 
-class MagicMileController extends Controller {
+class MagicMileController extends Controller
+{
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
-    public function getAll() {
+    public function getAll()
+    {
         $results = MagicMile::query()->get()->all();
         return response()->json($results);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $validatedData = $this->validate($request, [
             'first_name' => 'required',
             'last_name' => 'required',
@@ -32,31 +36,34 @@ class MagicMileController extends Controller {
         ]);
 
         $record = MagicMile::create([
-            'athlete_id' => Input::get('athlete_id'),
-            'first_name' => Input::get('first_name'),
-            'last_name' => Input::get('last_name'),
-            'gender' => Input::get('gender'),
-            'category' => Input::get('category'),
-            'date' => Input::get('date'),
-            'location' => Input::get('location'),
-            'predicted_time' => Input::get('predicted_time'),
-            'predicted_time_parsed' => Input::get('predicted_time_parsed'),
-            'actual_time' => Input::get('actual_time'),
-            'actual_time_parsed' => Input::get('actual_time_parsed'),
+            'athlete_id' => $request->input('athlete_id'),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'gender' => $request->input('gender'),
+            'category' => $request->input('category'),
+            'date' => $request->input('date'),
+            'location' => $request->input('location'),
+            'predicted_time' => $request->input('predicted_time'),
+            'predicted_time_parsed' => $request->input('predicted_time_parsed'),
+            'actual_time' => $request->input('actual_time'),
+            'actual_time_parsed' => $request->input('actual_time_parsed'),
         ]);
     }
 
-    public function create() {
+    public function create()
+    {
         return view('magicmile.create');
     }
 
-    public function delete(string $id) {
+    public function delete(string $id)
+    {
         $result = MagicMile::destroy($id);
         return response()->json($id);
     }
 
     // Fetches all results in specific format needed for Angular application
-    public function getAllLegacy() {
+    public function getAllLegacy()
+    {
         $results = DB::select("
             SELECT
                 m.id AS id,
@@ -97,5 +104,4 @@ class MagicMileController extends Controller {
 
         return response()->json($results);
     }
-
 }

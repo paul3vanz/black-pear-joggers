@@ -7,7 +7,6 @@ use App\Models\Athlete;
 use App\Models\Membership;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use SoapClient;
 use Log;
@@ -16,101 +15,101 @@ use DateTimeZone;
 
 class MembershipController extends Controller
 {
-  public function checkNameDob(string $firstName, string $lastName, string $dateOfBirth)
-  {
-    $date = date("Y-m-d");
+    public function checkNameDob(string $firstName, string $lastName, string $dateOfBirth)
+    {
+        $date = date("Y-m-d");
 
-    return response()->json(MembershipController::fetchUrl("/race-provider/individuals?firstname=$firstName&lastname=$lastName&dob=$dateOfBirth"));
-  }
-
-  public function responseCheckUrn(int $urn)
-  {
-    return response()->json($this->checkUrn($urn));
-  }
-
-  public function getClubs()
-  {
-    return response()->json(MembershipController::fetchUrl('/race-provider/clubs'));
-  }
-
-  public function getClubMembers(int $clubId = 1606)
-  {
-    $date = date("Y-m-d");
-
-    return response()->json(MembershipController::fetchUrl("/race-provider/clubs/$clubId/individuals?eventDate=$date"));
-  }
-
-  public function checkUrn(int $urn)
-  {
-    $date = date("Y-m-d");
-
-    return MembershipController::fetchUrl("/race-provider/individuals/$urn?eventDate=$date");
-  }
-
-  public function storeClubMembers()
-  {
-    $athletes = MembershipController::getClubMembers()->getData()->Athletes;
-
-    if (count($athletes)) {
-      Membership::truncate();
+        return response()->json(MembershipController::fetchUrl("/race-provider/individuals?firstname=$firstName&lastname=$lastName&dob=$dateOfBirth"));
     }
 
-    $members = collect($athletes)->each(function ($value, $key) {
-      Membership::firstOrCreate([
-        'urn' => $value->Urn,
-        'firstName' => $value->Firstname,
-        'lastName' => $value->Lastname,
-        'dob' => $value->Dob,
-        'gender' => $value->Gender,
-        'foreignFlag' => $value->ForeignFlag,
-        'competitiveRegStatus' => $value->CompetitiveRegStatus,
-        'firstClaimClubId' => $value->FirstClaimClubId,
-        'firstClaimClubName' => $value->FirstClaimClubName,
-        'firstClaimOtherId' => $value->FirstClaimOtherId,
-        'firstClaimOtherName' => $value->FirstClaimOtherName,
-        'higherClaimClubId' => $value->HigherClaimClubId,
-        'higherClaimClubName' => $value->HigherClaimClubName,
-        'secondClaimClubId' => $value->SecondClaimClubId,
-        'secondClaimClubName' => $value->SecondClaimClubName,
-      ]);
-    });
-
-    return response()->json([
-      'count' => count($members),
-    ]);
-  }
-
-  private function fetchUrl(string $url)
-  {
-    $url = env(env('UKA_ENVIRONMENT') . '_UKA_TRINITY_API_URL') . $url;
-
-    $client = new GuzzleClient();
-    $res = $client->get($url, [
-      'headers' => MembershipController::getHeaders(),
-      'cert' => MembershipController::getCertificate(),
-    ]);
-
-    if ($res->getStatusCode() === 200) {
-      $response = json_decode($res->getBody());
-      return $response;
-    } else {
-      return 'api error';
+    public function responseCheckUrn(int $urn)
+    {
+        return response()->json($this->checkUrn($urn));
     }
-  }
 
-  private function getHeaders()
-  {
-    $timestamp = gmdate("Y-m-d\TH:i:s");
+    public function getClubs()
+    {
+        return response()->json(MembershipController::fetchUrl('/race-provider/clubs'));
+    }
 
-    return [
-      'X-TRAPI-CALLKEY' => env(env('UKA_ENVIRONMENT') . '_UKA_HEADER_X_TRAPI_CALLKEY', null),
-      'X-TRAPI-CALLSECRET' => env(env('UKA_ENVIRONMENT') . '_UKA_HEADER_X_TRAPI_CALLSECRET', null),
-      'X-TRAPI-CALLDATETIME' => $timestamp,
-    ];
-  }
+    public function getClubMembers(int $clubId = 1606)
+    {
+        $date = date("Y-m-d");
 
-  private function getCertificate()
-  {
-    return getcwd() . DIRECTORY_SEPARATOR . env(env('UKA_ENVIRONMENT') . '_UKA_PEM_FILENAME');
-  }
+        return response()->json(MembershipController::fetchUrl("/race-provider/clubs/$clubId/individuals?eventDate=$date"));
+    }
+
+    public function checkUrn(int $urn)
+    {
+        $date = date("Y-m-d");
+
+        return MembershipController::fetchUrl("/race-provider/individuals/$urn?eventDate=$date");
+    }
+
+    public function storeClubMembers()
+    {
+        $athletes = MembershipController::getClubMembers()->getData()->Athletes;
+
+        if (count($athletes)) {
+            Membership::truncate();
+        }
+
+        $members = collect($athletes)->each(function ($value, $key) {
+            Membership::firstOrCreate([
+                'urn' => $value->Urn,
+                'firstName' => $value->Firstname,
+                'lastName' => $value->Lastname,
+                'dob' => $value->Dob,
+                'gender' => $value->Gender,
+                'foreignFlag' => $value->ForeignFlag,
+                'competitiveRegStatus' => $value->CompetitiveRegStatus,
+                'firstClaimClubId' => $value->FirstClaimClubId,
+                'firstClaimClubName' => $value->FirstClaimClubName,
+                'firstClaimOtherId' => $value->FirstClaimOtherId,
+                'firstClaimOtherName' => $value->FirstClaimOtherName,
+                'higherClaimClubId' => $value->HigherClaimClubId,
+                'higherClaimClubName' => $value->HigherClaimClubName,
+                'secondClaimClubId' => $value->SecondClaimClubId,
+                'secondClaimClubName' => $value->SecondClaimClubName,
+            ]);
+        });
+
+        return response()->json([
+            'count' => count($members),
+        ]);
+    }
+
+    private function fetchUrl(string $url)
+    {
+        $url = env(env('UKA_ENVIRONMENT') . '_UKA_TRINITY_API_URL') . $url;
+
+        $client = new GuzzleClient();
+        $res = $client->get($url, [
+            'headers' => MembershipController::getHeaders(),
+            'cert' => MembershipController::getCertificate(),
+        ]);
+
+        if ($res->getStatusCode() === 200) {
+            $response = json_decode($res->getBody());
+            return $response;
+        } else {
+            return 'api error';
+        }
+    }
+
+    private function getHeaders()
+    {
+        $timestamp = gmdate("Y-m-d\TH:i:s");
+
+        return [
+            'X-TRAPI-CALLKEY' => env(env('UKA_ENVIRONMENT') . '_UKA_HEADER_X_TRAPI_CALLKEY', null),
+            'X-TRAPI-CALLSECRET' => env(env('UKA_ENVIRONMENT') . '_UKA_HEADER_X_TRAPI_CALLSECRET', null),
+            'X-TRAPI-CALLDATETIME' => $timestamp,
+        ];
+    }
+
+    private function getCertificate()
+    {
+        return getcwd() . DIRECTORY_SEPARATOR . env(env('UKA_ENVIRONMENT') . '_UKA_PEM_FILENAME');
+    }
 }

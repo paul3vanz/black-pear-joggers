@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
 use App\Models\Athlete;
 use Illuminate\Support\Facades\Auth;
@@ -69,13 +68,13 @@ class AthleteController extends Controller
         $this->validateRequest($request);
 
         Athlete::create([
-            'id' => Input::get('id'),
-            'urn' => Input::get('urn'),
-            'athlete_id' => Input::get('athleteId'),
-            'first_name' => Input::get('firstName'),
-            'last_name' => Input::get('lastName'),
-            'gender' => Input::get('gender'),
-            'dob' => Input::get('dob')
+            'id' => $request->input('id'),
+            'urn' => $request->input('urn'),
+            'athlete_id' => $request->input('athleteId'),
+            'first_name' => $request->input('firstName'),
+            'last_name' => $request->input('lastName'),
+            'gender' => $request->input('gender'),
+            'dob' => $request->input('dob')
         ]);
     }
 
@@ -84,12 +83,12 @@ class AthleteController extends Controller
         $this->validateRequest($request);
 
         Athlete::find($id)->update([
-            'urn' => Input::get('urn'),
-            'athlete_id' => Input::get('athleteId'),
-            'first_name' => Input::get('firstName'),
-            'last_name' => Input::get('lastName'),
-            // 'gender' => Input::get('gender')
-            // 'dob' => Input::get('dob')
+            'urn' => $request->input('urn'),
+            'athlete_id' => $request->input('athleteId'),
+            'first_name' => $request->input('firstName'),
+            'last_name' => $request->input('lastName'),
+            // 'gender' => $request->input('gender')
+            // 'dob' => $request->input('dob')
         ]);
     }
 
