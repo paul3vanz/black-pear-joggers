@@ -6,91 +6,123 @@ use App\Models\AwardClaim;
 use App\Models\AwardClaimRace;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 
 class AwardClaimController extends Controller
 {
-  public function __construct() {}
+    public function __construct()
+    {
+    }
 
-  public function getAll() {
-    $claims = AwardClaim::query()->with('races')->get()->all();
-    return response()->json($claims);
-  }
+    public function getAll()
+    {
+        $claims = AwardClaim::query()->with('races')->get()->makeVisible(['email'])->all();
+        return response()->json($claims);
+    }
 
-  public function getClaim($id, $uniqueToken) {
-    $claim = AwardClaim::query()
-      ->where('id', '=', $id)
-      ->with('races')
-      ->first();
+    public function getClaim($id, $uniqueToken)
+    {
+        $claim = AwardClaim::query()
+            ->where('id', '=', $id)
+            ->with('races')
+            ->first();
 
-    return response()->json($claim);
-  }
+        return response()->json($claim);
+    }
 
-  public function toggleVerified($id) {
-    $claim = AwardClaim::query()
-      ->where('id', '=', $id)
-      ->with('races')
-      ->first();
+    public function toggleVerified($id)
+    {
+        $claim = AwardClaim::query()
+            ->where('id', '=', $id)
+            ->with('races')
+            ->first();
 
-    $claim->verified = !$claim->verified;
+        $claim->verified = !$claim->verified;
 
-    $claim->save();
+        $claim->save();
 
-    return response()->json($claim);
-  }
+        return response()->json($claim);
+    }
 
-  public function archive($id) {
-    $claim = AwardClaim::query()
-      ->where('id', '=', $id)
-      ->with('races')
-      ->first();
+    public function archive($id)
+    {
+        $claim = AwardClaim::query()
+            ->where('id', '=', $id)
+            ->with('races')
+            ->first();
 
-    $claim->archived = 1;
+        $claim->archived = 1;
 
-    $claim->save();
+        $claim->save();
 
-    return response()->json($claim);
-  }
+        return response()->json($claim);
+    }
 
-  public function delete($id) {
-    $claim = AwardClaim::destroy($id);
+    public function delete($id)
+    {
+        $claim = AwardClaim::destroy($id);
 
-    return response()->json($claim);
-  }
+        return response()->json($claim);
+    }
 
-  public function submitClaim(Request $request) {
-    $validatedData = $this->validate($request, [
-      'gender' => 'required',
-      'category' => 'required',
-      'award' => 'required',
-      'firstName' => 'required',
-      'lastName' => 'required',
-      'email' => 'required',
-      'races' => 'required',
-    ]);
+    public function update(Request $request)
+    {
+        $validatedData = $this->validate($request, [
+            'gender' => 'required',
+            'category' => 'required',
+            'award' => 'required',
+            'firstName' => 'required',
+            'lastName' => 'required',
+            'email' => 'required',
+            'races' => 'required',
+        ]);
 
-    $claim = AwardClaim::create([
-      'gender' => Input::get('gender'),
-      'category' => Input::get('category'),
-      'award' => Input::get('award'),
-      'firstName' => Input::get('firstName'),
-      'lastName' => Input::get('lastName'),
-      'email' => Input::get('email'),
-    ]);
+        $claim = AwardClaim::create([
+            'gender' => $request::input('gender'),
+            'category' => $request::input('category'),
+            'award' => $request::input('award'),
+            'firstName' => $request::input('firstName'),
+            'lastName' => $request::input('lastName'),
+            'email' => $request::input('email'),
+        ]);
 
-    $claim->races()->createMany(Input::get('races'));
+        return response()->json($claim);
+    }
 
-    return response()->json($claim);
-  }
+    public function submitClaim(Request $request)
+    {
+        $validatedData = $this->validate($request, [
+            'gender' => 'required',
+            'category' => 'required',
+            'award' => 'required',
+            'firstName' => 'required',
+            'lastName' => 'required',
+            'email' => 'required',
+            'races' => 'required',
+        ]);
 
-  public function submitClaimRace(Request $request, $awardClaimId) {
-    $race = AwardClaimRace::find(Input::get('id'));
+        $claim = AwardClaim::create([
+            'gender' => $request::input('gender'),
+            'category' => $request::input('category'),
+            'award' => $request::input('award'),
+            'firstName' => $request::input('firstName'),
+            'lastName' => $request::input('lastName'),
+            'email' => $request::input('email'),
+        ]);
 
-    $race->race = Input::get('race');
+        $claim->races()->createMany($request::input('races'));
 
-    $race->save();
+        return response()->json($claim);
+    }
 
-    return response()->json($race);
-  }
+    public function submitClaimRace(Request $request, $awardClaimId)
+    {
+        $race = AwardClaimRace::find($request::input('id'));
+
+        $race->race = $request::input('race');
+
+        $race->save();
+
+        return response()->json($race);
+    }
 }
