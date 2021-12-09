@@ -5,30 +5,42 @@ import { AwardClaim } from '../../services/award-claims.interface';
 import { StandardsBadge } from '../standards-badge';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCheckCircle,
+  faTimesCircle,
+  faPrint,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface AwardClaimsTableProps {
   search: string;
   awardClaims: AwardClaim[];
+  onToggleVerified: (awardClaim: AwardClaim) => void;
 }
 
 function AwardClaimsTable(props: AwardClaimsTableProps) {
   const [isRacesModalOpen, setIsRacesModalOpen] = useState(false);
   const [selectedAwardClaim, setSelectedAwardClaim] =
     useState<AwardClaim>(null);
+
+  console.log(props.awardClaims);
+
   const filteredAwardClaims = props.awardClaims
-    .sort((a, b) => (dateIsBefore(a.createdDate, b.createdDate) ? 0 : -1))
-    .filter((awardClaim) => !awardClaim.archived)
-    .filter((awardClaim) => {
-      if (!props.search) {
-        return true;
-      }
+    ? props.awardClaims
+        .sort((a, b) => (dateIsBefore(a.createdDate, b.createdDate) ? 0 : -1))
+        .filter((awardClaim) => !awardClaim.archived)
+        .filter((awardClaim) => {
+          if (!props.search) {
+            return true;
+          }
 
-      const search = props.search.toLowerCase();
-      const name =
-        `${awardClaim.firstName} ${awardClaim.lastName}`.toLowerCase();
+          const search = props.search.toLowerCase();
+          const name =
+            `${awardClaim.firstName} ${awardClaim.lastName}`.toLowerCase();
 
-      return name.includes(search);
-    });
+          return name.includes(search);
+        })
+    : [];
 
   return (
     <>
@@ -91,16 +103,41 @@ function AwardClaimsTable(props: AwardClaimsTableProps) {
                   {awardClaim.races.length}
                 </button>
               </td>
-              <td className="px-4 py-2">{awardClaim.verified && 'Yes'}</td>
               <td className="px-4 py-2">
-                <Link
-                  href={
-                    'https://black-pear-joggers.netlify.com/apps/club-standards/?certificateId=' +
-                    awardClaim.id
+                <button
+                  onClick={() => props.onToggleVerified(awardClaim)}
+                  className="cursor-pointer"
+                >
+                  {awardClaim.verified ? (
+                    <FontAwesomeIcon
+                      className="text-green-600"
+                      size="lg"
+                      icon={faCheckCircle}
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      className="text-red-600"
+                      size="lg"
+                      icon={faTimesCircle}
+                    />
+                  )}
+                </button>
+              </td>
+              <td className="px-4 py-2">
+                <button
+                  onClick={() =>
+                    window.open(
+                      'https://black-pear-joggers.netlify.com/apps/club-standards/?certificateId=' +
+                        awardClaim.id
+                    )
                   }
                 >
-                  Certificate
-                </Link>
+                  <FontAwesomeIcon
+                    className="cursor-pointer"
+                    size="lg"
+                    icon={faPrint}
+                  />
+                </button>
               </td>
             </tr>
           ))}

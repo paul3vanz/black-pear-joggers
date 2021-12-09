@@ -1,10 +1,12 @@
-import useSWRImmutable from 'swr';
+import useSWRImmutable from 'swr/immutable';
 import { config } from '../helpers/config';
-import { fetcher } from './fetcher';
+import { fetcher, post } from './fetcher';
 import { AwardClaim, AwardClaimRace, Standard } from './award-claims.interface';
 
+export const awardClaimsUrl = `${config.baseApiUrl}/awardclaim`;
+
 export function useAwardClaims() {
-    const { data, error } = useSWRImmutable<AwardClaim[], string>(`${config.baseApiUrl}/awardclaim`, fetcher);
+    const { data, error } = useSWRImmutable<AwardClaim[], string>(awardClaimsUrl, fetcher);
 
     return {
         awardClaims: data,
@@ -13,32 +15,23 @@ export function useAwardClaims() {
     }
 };
 
-// getCertificate(id: number, token: string): Observable<AwardClaim> {
-//     return this.http.get<AwardClaim>(
-//       `${this.API_URL}/awardclaim/${id}/${token}`
-//     );
-//   }
+export async function toggleVerified(awardClaim: AwardClaim): Promise<AwardClaim> {
+    const response = await post(`${config.baseApiUrl}/awardclaim/toggleverified/${awardClaim.id}`);
 
-//   toggleVerified(awardClaim: AwardClaim): Observable<AwardClaim> {
-//     return this.http.post<AwardClaim>(
-//       `${this.API_URL}/awardclaim/toggleverified/${awardClaim.id}`,
-//       null
-//     );
-//   }
+    return response.ok ? response.json() : null;
+}
 
-//   archive(awardClaim: AwardClaim): Observable<AwardClaim> {
-//     return this.http.post<AwardClaim>(
-//       `${this.API_URL}/awardclaim/archive/${awardClaim.id}`,
-//       null
-//     );
-//   }
+export async function archive(awardClaim: AwardClaim): Promise<boolean> {
+    const response = await post(`${config.baseApiUrl}/awardclaim/archive/${awardClaim.id}`);
 
-//   delete(awardClaim: AwardClaim): Observable<AwardClaim> {
-//     return this.http.post<AwardClaim>(
-//       `${this.API_URL}/awardclaim/delete/${awardClaim.id}`,
-//       null
-//     );
-//   }
+    return response.ok ? true : false;
+}
+
+export async function remove(awardClaim: AwardClaim): Promise<boolean> {
+    const response = await post(`${config.baseApiUrl}/awardclaim/delete/${awardClaim.id}`);
+
+    return response.ok ? true : false;
+}
 
 //   updateRace(awardClaimRace: AwardClaimRace) {
 //     return this.http.post<AwardClaimRace>(

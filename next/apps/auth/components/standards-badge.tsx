@@ -7,7 +7,7 @@ export function StandardsBadge(props: StandardsBadgeProps) {
 
   switch (props.standard) {
     case 'Bronze':
-      backgroundColourClass = 'bg-yellow-700';
+      backgroundColourClass = 'bg-yellow-600';
       break;
     case 'Silver':
       backgroundColourClass = 'bg-gray-300';
@@ -16,7 +16,7 @@ export function StandardsBadge(props: StandardsBadgeProps) {
       backgroundColourClass = 'bg-yellow-400';
       break;
     case 'Platinum':
-      backgroundColourClass = 'bg-gray-600';
+      backgroundColourClass = 'bg-gray-500';
       break;
   }
 
