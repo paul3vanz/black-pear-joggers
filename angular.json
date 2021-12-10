@@ -24,7 +24,14 @@
             "tsConfig": "apps/magic-mile/tsconfig.app.json",
             "assets": ["apps/magic-mile/src/favicon.ico", "apps/magic-mile/src/assets"],
             "styles": ["scss/main.scss", "apps/magic-mile/src/styles.scss"],
-            "scripts": []
+            "scripts": [],
+            "aot": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -51,7 +58,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -126,7 +134,14 @@
             "tsConfig": "apps/club-standards/tsconfig.app.json",
             "assets": ["apps/club-standards/src/favicon.ico", "apps/club-standards/src/assets"],
             "styles": ["scss/main.scss", "apps/club-standards/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "aot": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -153,7 +168,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -208,7 +224,14 @@
             "tsConfig": "apps/race-results/tsconfig.app.json",
             "assets": ["apps/race-results/src/favicon.ico", "apps/race-results/src/assets"],
             "styles": ["scss/main.scss", "apps/race-results/src/styles.scss"],
-            "scripts": []
+            "scripts": [],
+            "aot": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -235,7 +258,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -290,7 +314,14 @@
             "tsConfig": "apps/club-records/tsconfig.app.json",
             "assets": ["apps/club-records/src/favicon.ico", "apps/club-records/src/assets"],
             "styles": ["scss/main.scss", "apps/club-records/src/styles.scss"],
-            "scripts": []
+            "scripts": [],
+            "aot": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -317,7 +348,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -510,7 +542,14 @@
             "tsConfig": "apps/admin/tsconfig.app.json",
             "assets": ["apps/admin/src/favicon.ico", "apps/admin/src/assets"],
             "styles": ["scss/main.scss", "apps/admin/src/styles.scss"],
-            "scripts": []
+            "scripts": [],
+            "aot": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -537,7 +576,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
