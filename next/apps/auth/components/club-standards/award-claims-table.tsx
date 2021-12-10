@@ -14,6 +14,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {
   allEventsAreAllowedDistances,
+  checkRacesCompletedInCorrectCategory,
   checkRacesCompletedInSameCalendarYear,
   checkRacesMeetStandardClaimed,
   checkThreeOrMoreDistances,
@@ -243,13 +244,13 @@ function AwardClaimRaces(props: {
               props.awardClaim,
               props.standards
             )}
-            label="[Manual Check] Races meet the standard claimed"
+            label="Races meet the standard claimed"
           />
         </li>
 
         <li className="mb-2">
           <CheckResult
-            isSuccess={checkRacesMeetStandardClaimed(
+            isSuccess={checkRacesCompletedInCorrectCategory(
               props.awardClaim,
               props.standards
             )}

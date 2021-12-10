@@ -87,7 +87,15 @@ export function checkRacesMeetStandardClaimed(
   awardClaim: AwardClaim,
   standards: Standard[]
 ) {
-  return false;
+    return awardClaim.races.every((race) => {
+      const standardForEvent = standards.find((standard) => {
+        return standard.category === awardClaim.category && standard.gender === awardClaim.gender && standard.event === race.distance;
+      });
+
+      const targetTime = standardForEvent.time_parsed;
+
+      return targetTime ? (race.timeParsed <= Number(targetTime)) : false;
+    });
 }
 
 export function checkRacesCompletedInCorrectCategory(

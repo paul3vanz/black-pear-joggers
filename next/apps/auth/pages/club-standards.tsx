@@ -80,7 +80,7 @@ export function ClubStandards() {
   return (
     <Stack>
       <Container>
-        <h1>Athletes</h1>
+        <h1>Club standards award claims</h1>
 
         <SearchBar search={search} setSearch={setSearch} />
 

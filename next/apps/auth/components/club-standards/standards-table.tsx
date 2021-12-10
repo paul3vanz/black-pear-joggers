@@ -27,7 +27,8 @@ export function StandardsTable(props: {
             <th
               key={standard}
               className={
-                standard === props.standardClaimed ? 'bg-gray-200' : ''
+                'p-2 border ' +
+                (standard === props.standardClaimed ? 'bg-gray-200' : '')
               }
             >
               {standard}
@@ -38,12 +39,13 @@ export function StandardsTable(props: {
       <tbody>
         {filteredStandards.map((event, i) => (
           <tr key={i}>
-            <th>{event.name}</th>
+            <th className="p-2 border">{event.name}</th>
 
             {event.standards.map((standard, i) => (
               <td
                 className={
-                  props.standardClaimed === standard.name ? 'bg-gray-200' : ''
+                  'p-2 border ' +
+                  (props.standardClaimed === standard.name ? 'bg-gray-200' : '')
                 }
                 key={i}
               >
