@@ -110,7 +110,7 @@ export function CreateMagicMileResultForm(
       : [];
   }
 
-  useEffect(() => {}, [athleteId]);
+  // useEffect(() => {}, [athleteId]);
 
   return (
     <>

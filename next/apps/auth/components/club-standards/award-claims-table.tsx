@@ -1,24 +1,35 @@
-import { toTitleCase } from '../../helpers/formatters';
 import Link from 'next/link';
 import { friendlyDate, dateIsBefore } from '@black-pear-joggers/helpers';
-import { AwardClaim } from '../../services/award-claims.interface';
+import { AwardClaim, Standard } from '../../services/award-claims.interface';
 import { StandardsBadge } from '../standards-badge';
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
+import { AwardClaimDetailsModal } from './award-claim-details-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheckCircle,
   faTimesCircle,
   faPrint,
+  faArchive,
+  faTrash,
 } from '@fortawesome/free-solid-svg-icons';
+import {
+  allEventsAreAllowedDistances,
+  checkRacesCompletedInSameCalendarYear,
+  checkRacesMeetStandardClaimed,
+  checkThreeOrMoreDistances,
+} from '../../services/award-claims';
+import { StandardsTable } from './standards-table';
 
 interface AwardClaimsTableProps {
   search: string;
   awardClaims: AwardClaim[];
+  standards: Standard[];
   onToggleVerified: (awardClaim: AwardClaim) => void;
+  onDelete: (awardClaim: AwardClaim) => void;
+  onArchive: (awardClaim: AwardClaim) => void;
 }
 
-function AwardClaimsTable(props: AwardClaimsTableProps) {
+export function AwardClaimsTable(props: AwardClaimsTableProps) {
   const [isRacesModalOpen, setIsRacesModalOpen] = useState(false);
   const [selectedAwardClaim, setSelectedAwardClaim] =
     useState<AwardClaim>(null);
@@ -48,7 +59,10 @@ function AwardClaimsTable(props: AwardClaimsTableProps) {
         isOpen={isRacesModalOpen}
         onClose={() => setIsRacesModalOpen(false)}
       >
-        <AwardClaimRaces awardClaim={selectedAwardClaim} />
+        <AwardClaimRaces
+          awardClaim={selectedAwardClaim}
+          standards={props.standards}
+        />
       </AwardClaimDetailsModal>
 
       <p>
@@ -77,6 +91,7 @@ function AwardClaimsTable(props: AwardClaimsTableProps) {
               <td className="px-4 py-2">
                 {friendlyDate(awardClaim.createdDate)}
               </td>
+
               <td className="px-4 py-2">
                 {awardClaim.athleteId ? (
                   <Link href={`/athletes/${awardClaim.athleteId}`}>
@@ -86,12 +101,15 @@ function AwardClaimsTable(props: AwardClaimsTableProps) {
                   <>{awardClaim.firstName + ' ' + awardClaim.lastName}</>
                 )}
               </td>
+
               <td className="px-4 py-2">{awardClaim.category}</td>
+
               <td className="px-4 py-2">
                 {awardClaim.award && (
                   <StandardsBadge standard={awardClaim.award} />
                 )}
               </td>
+
               <td className="px-4 py-2">
                 <button
                   className="text-orange-400 font-bold"
@@ -103,6 +121,7 @@ function AwardClaimsTable(props: AwardClaimsTableProps) {
                   {awardClaim.races.length}
                 </button>
               </td>
+
               <td className="px-4 py-2">
                 <button
                   onClick={() => props.onToggleVerified(awardClaim)}
@@ -123,8 +142,11 @@ function AwardClaimsTable(props: AwardClaimsTableProps) {
                   )}
                 </button>
               </td>
+
               <td className="px-4 py-2">
                 <button
+                  className="mr-3"
+                  title="View certificate"
                   onClick={() =>
                     window.open(
                       'https://black-pear-joggers.netlify.com/apps/club-standards/?certificateId=' +
@@ -138,6 +160,29 @@ function AwardClaimsTable(props: AwardClaimsTableProps) {
                     icon={faPrint}
                   />
                 </button>
+
+                <button
+                  className="mr-3"
+                  title="Archive"
+                  onClick={() => props.onArchive(awardClaim)}
+                >
+                  <FontAwesomeIcon
+                    className="cursor-pointer"
+                    size="lg"
+                    icon={faArchive}
+                  />
+                </button>
+
+                <button
+                  title="Delete"
+                  onClick={() => props.onDelete(awardClaim)}
+                >
+                  <FontAwesomeIcon
+                    className="cursor-pointer"
+                    size="lg"
+                    icon={faTrash}
+                  />
+                </button>
               </td>
             </tr>
           ))}
@@ -147,72 +192,95 @@ function AwardClaimsTable(props: AwardClaimsTableProps) {
   );
 }
 
-function AwardClaimRaces(props: { awardClaim: AwardClaim }) {
-  return (
-    <div>
-      {props.awardClaim && (
-        <>
-          {props.awardClaim.races.map((race) => (
-            <p key={race.id}>
-              {race.date}: {race.race} ({race.distance}) = {race.time}
-            </p>
-          ))}
-        </>
-      )}
-    </div>
-  );
-}
-
-function AwardClaimDetailsModal(props: {
-  isOpen: boolean;
-  onClose: () => void;
-  children: JSX.Element;
+function AwardClaimRaces(props: {
+  awardClaim: AwardClaim;
+  standards: Standard[];
 }) {
-  const modalContainer = document.getElementById('modalContainer');
-
   return (
-    props.isOpen &&
-    createPortal(
-      <>
-        <div
-          className="fixed z-50 inset-0 overflow-y-auto"
-          aria-labelledby="modal-title"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div
-              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-              aria-hidden="true"
-            ></div>
-            <span
-              className="hidden sm:inline-block sm:align-middle sm:h-screen"
-              aria-hidden="true"
-            >
-              &#8203;
-            </span>
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="mt-3 text-center sm:mt-0 sm:text-left">
-                  {props.children}
-                </div>
-              </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  onClick={() => props.onClose()}
-                  type="button"
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>,
-      modalContainer
-    )
+    <>
+      <h2 className="text-2xl">Races</h2>
+
+      <div>
+        {props.awardClaim && (
+          <ul className="mb-4 list-disc list-inside">
+            {props.awardClaim.races.map((race) => (
+              <li key={race.id} className="mb-2">
+                <strong>{race.date}:</strong> {race.distance} - {race.race} ={' '}
+                {race.time}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <h2 className="text-2xl">Checks</h2>
+
+      <ul className="mb-4">
+        <li className="mb-2">
+          <CheckResult
+            isSuccess={checkRacesCompletedInSameCalendarYear(props.awardClaim)}
+            label="Races completed in the same calendar year"
+          />
+        </li>
+
+        <li className="mb-2">
+          <CheckResult
+            isSuccess={allEventsAreAllowedDistances(props.awardClaim)}
+            label="All event distances count (Mile, 5K, 10K, HM, Mar)"
+          />
+        </li>
+
+        <li className="mb-2">
+          <CheckResult
+            isSuccess={checkThreeOrMoreDistances(props.awardClaim)}
+            label="Three or more different distances completed"
+          />
+        </li>
+
+        <li className="mb-2">
+          <CheckResult
+            isSuccess={checkRacesMeetStandardClaimed(
+              props.awardClaim,
+              props.standards
+            )}
+            label="[Manual Check] Races meet the standard claimed"
+          />
+        </li>
+
+        <li className="mb-2">
+          <CheckResult
+            isSuccess={checkRacesMeetStandardClaimed(
+              props.awardClaim,
+              props.standards
+            )}
+            label="[Manual Check] All races completed in claimed category"
+          />
+        </li>
+      </ul>
+
+      <h2 className="text-2xl">Standards</h2>
+
+      <StandardsTable
+        standards={props.standards}
+        gender={props.awardClaim.gender}
+        category={props.awardClaim.category}
+        standardClaimed={props.awardClaim.award}
+      />
+    </>
   );
 }
 
-export default AwardClaimsTable;
+function CheckResult(props: { isSuccess: boolean; label: string }) {
+  return (
+    <>
+      <FontAwesomeIcon
+        size="lg"
+        className={props.isSuccess ? 'text-green-600' : 'text-red-600'}
+        icon={props.isSuccess ? faCheckCircle : faTimesCircle}
+        title={props.isSuccess ? 'Pass' : 'Fail'}
+      />
+
+      <span className="ml-2">{props.label}</span>
+    </>
+  );
+}
