@@ -35,8 +35,6 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
   const [selectedAwardClaim, setSelectedAwardClaim] =
     useState<AwardClaim>(null);
 
-  console.log(props.awardClaims);
-
   const filteredAwardClaims = props.awardClaims
     ? props.awardClaims
         .sort((a, b) => (dateIsBefore(a.createdDate, b.createdDate) ? 0 : -1))
@@ -199,6 +197,22 @@ function AwardClaimRaces(props: {
 }) {
   return (
     <>
+      <h2 className="text-2xl">Details</h2>
+
+      <ul className="mb-4 list-disc list-inside">
+        <li className="mb-2">
+          <strong>Name:</strong> {props.awardClaim.firstName}{' '}
+          {props.awardClaim.lastName}
+        </li>
+        <li className="mb-2">
+          <strong>Category:</strong> {props.awardClaim.gender}
+          {props.awardClaim.category}
+        </li>
+        <li className="mb-2">
+          <strong>Award:</strong> {props.awardClaim.award}
+        </li>
+      </ul>
+
       <h2 className="text-2xl">Races</h2>
 
       <div>
@@ -254,7 +268,7 @@ function AwardClaimRaces(props: {
               props.awardClaim,
               props.standards
             )}
-            label="[Manual Check] All races completed in claimed category"
+            label="[Manual Check] All races completed in claimed age category"
           />
         </li>
       </ul>

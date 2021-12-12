@@ -54,9 +54,13 @@ export default function AdminBar() {
             >
               <div className="flex items-center">
                 <div className="mr-2">
-                  <img src={user.picture} alt="" className="w-8 rounded-full" />
+                  <img
+                    src={user.picture}
+                    alt={user && user.name}
+                    className="w-8 rounded-full"
+                  />
                 </div>
-                <div>{user && user.name}</div>
+                <div className="">Logout</div>
               </div>
             </a>
           )}

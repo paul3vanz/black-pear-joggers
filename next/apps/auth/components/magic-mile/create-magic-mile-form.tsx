@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { MagicMileResult } from '../../services/magic-mile.interface';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { createMagicMileResult } from '../../services/magic-mile';
@@ -9,8 +9,10 @@ import { shortDate } from '@black-pear-joggers/helpers';
 import { useAthlete, useAthletes } from '../../services/athletes';
 import { useEffect, useState } from 'react';
 import { Athlete } from '../../services/athletes.interface';
+import { isBefore, parseISO } from 'date-fns';
 
 interface CreateMagicMileResultFormProps {
+  results: MagicMileResult[];
   magicMileResult?: MagicMileResult;
 }
 
@@ -70,13 +72,7 @@ const locations = [
 export function CreateMagicMileResultForm(
   props: CreateMagicMileResultFormProps
 ) {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { isValid, errors, isSubmitted },
-  } = useForm<FormData>();
+  const form = useForm<FormData>();
   let athleteId;
   const { athletes } = useAthletes();
   const { athlete } = useAthlete(athleteId);
@@ -89,10 +85,24 @@ export function CreateMagicMileResultForm(
 
     athleteId = athlete.id;
 
-    setValue('firstName', athlete.first_name);
-    setValue('lastName', athlete.last_name);
-    setValue('gender', athlete.gender);
-    setValue('category', athlete.category);
+    form.setValue('firstName', athlete.first_name);
+    form.setValue('lastName', athlete.last_name);
+    form.setValue('gender', athlete.gender);
+    form.setValue('category', athlete.category);
+
+    const latestResult =
+      getLatestResultByAthleteId(props.results, athlete.id) || 0;
+
+    form.setValue('actualTime', latestResult, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+    form.setValue('predictedTime', latestResult, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
   }
 
   function getAthleteOptionElements(athletes: Athlete[]) {
@@ -110,18 +120,16 @@ export function CreateMagicMileResultForm(
       : [];
   }
 
-  // useEffect(() => {}, [athleteId]);
-
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-lg">
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-lg">
         <div className="flex flex-wrap -mx-3 mb-3">
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <TextInput
               id="date"
               label="Date"
-              error={isSubmitted && errors.date}
-              registerField={register('date', {
+              //   error={form..isSubmitted && form.errors.date}
+              registerField={form.register('date', {
                 required: true,
                 pattern: /\d{4}-\d{2}-\d{2}/,
                 value: shortDate(),
@@ -133,7 +141,7 @@ export function CreateMagicMileResultForm(
             <Select
               id="location"
               label="Location"
-              registerField={register('location', {
+              registerField={form.register('location', {
                 required: true,
                 value: locations[2],
               })}
@@ -148,35 +156,35 @@ export function CreateMagicMileResultForm(
               <Select
                 id="athlete"
                 label="Name"
-                registerField={register('athleteId', {
+                registerField={form.register('athleteId', {
                   onChange: async (e) => {
-                    handleAthleteChange(setValue, athletes, e);
+                    handleAthleteChange(form.setValue, athletes, e);
                   },
                 })}
                 options={getAthleteOptionElements(athletes)}
               />
               <div className="mt-2">
-                <a
-                  href="#"
+                <button
+                  className="font-bold underline cursor-pointer"
                   onClick={() => {
                     setShowMembers(false);
-                    setValue('athleteId', null);
+                    form.setValue('athleteId', null);
                   }}
                 >
                   Not a member?
-                </a>
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {true && (
+        {!showMembers && (
           <div className="flex flex-wrap -mx-3 mb-3">
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <TextInput
                 id="firstName"
                 label="First name"
-                registerField={register('firstName', {
+                registerField={form.register('firstName', {
                   required: true,
                 })}
               />
@@ -186,7 +194,7 @@ export function CreateMagicMileResultForm(
               <TextInput
                 id="lastName"
                 label="Last name"
-                registerField={register('lastName', {
+                registerField={form.register('lastName', {
                   required: true,
                 })}
               />
@@ -205,12 +213,12 @@ export function CreateMagicMileResultForm(
             <Select
               id="gender"
               label="Gender"
-              registerField={register('gender', {
+              registerField={form.register('gender', {
                 required: true,
               })}
               options={[
                 { label: 'Male', value: 'M' },
-                { label: 'Female', value: 'F' },
+                { label: 'Female', value: 'W' },
               ]}
             />
           </div>
@@ -219,7 +227,7 @@ export function CreateMagicMileResultForm(
             <Select
               id="category"
               label="Category"
-              registerField={register('category', {
+              registerField={form.register('category', {
                 required: true,
                 value: 'SEN',
               })}
@@ -233,7 +241,8 @@ export function CreateMagicMileResultForm(
             <TimeInput
               id="predictedTime"
               label="Predicted time"
-              registerField={register('predictedTime')}
+              defaultValue="480"
+              registerField={form.register('predictedTime')}
             />
           </div>
 
@@ -241,7 +250,8 @@ export function CreateMagicMileResultForm(
             <TimeInput
               id="actualTime"
               label="Actual time"
-              registerField={register('actualTime')}
+              defaultValue="479"
+              registerField={form.register('actualTime')}
             />
           </div>
         </div>
@@ -249,12 +259,25 @@ export function CreateMagicMileResultForm(
         <div className="mb-6">
           <ButtonLightTextDarkBackground
             text="Save"
-            onClick={handleSubmit(onSubmit)}
+            onClick={form.handleSubmit(onSubmit)}
           />
         </div>
       </form>
-    </>
+    </FormProvider>
   );
+}
+
+function getLatestResultByAthleteId(
+  results: MagicMileResult[],
+  athleteId: number
+): number {
+  return results
+    ? results
+        .filter((result) => result.athleteId === athleteId)
+        .sort((a, b) =>
+          isBefore(parseISO(a.date), parseISO(b.date)) ? 0 : -1
+        )[0]?.actualTimeParsed
+    : null;
 }
 
 export default CreateMagicMileResultForm;

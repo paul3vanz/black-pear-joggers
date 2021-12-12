@@ -19,7 +19,7 @@ export function Tools() {
 
           <h2>Add a result</h2>
 
-          <CreateMagicMileResultForm />
+          <CreateMagicMileResultForm results={magicMileResults} />
         </Container>
       </Stack>
 
