@@ -23,31 +23,33 @@ class MagicMileController extends Controller
     public function store(Request $request)
     {
         $validatedData = $this->validate($request, [
-            'first_name' => 'required',
-            'last_name' => 'required',
+            'firstName' => 'required',
+            'lastName' => 'required',
             'gender' => 'required',
             'category' => 'required',
             'date' => 'required',
             'location' => 'required',
-            'predicted_time' => 'required',
-            'predicted_time_parsed' => 'required',
-            'actual_time' => 'required',
-            'actual_time_parsed' => 'required'
+            'predictedTime' => 'required',
+            'predictedTimeParsed' => 'required',
+            'actualTime' => 'required',
+            'actualTimeParsed' => 'required'
         ]);
 
-        $record = MagicMile::create([
-            'athlete_id' => $request->input('athlete_id'),
-            'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
+        $record = MagicMile::firstOrCreate([
+            'athlete_id' => $request->input('athleteId'),
+            'first_name' => $request->input('firstName'),
+            'last_name' => $request->input('lastName'),
             'gender' => $request->input('gender'),
             'category' => $request->input('category'),
             'date' => $request->input('date'),
             'location' => $request->input('location'),
-            'predicted_time' => $request->input('predicted_time'),
-            'predicted_time_parsed' => $request->input('predicted_time_parsed'),
-            'actual_time' => $request->input('actual_time'),
-            'actual_time_parsed' => $request->input('actual_time_parsed'),
+            'predicted_time' => $request->input('predictedTime'),
+            'predicted_time_parsed' => $request->input('predictedTimeParsed'),
+            'actual_time' => $request->input('actualTime'),
+            'actual_time_parsed' => $request->input('actualTimeParsed'),
         ]);
+
+        return response()->json($record);
     }
 
     public function create()

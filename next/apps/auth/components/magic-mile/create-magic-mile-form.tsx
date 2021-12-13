@@ -1,15 +1,17 @@
-import { FormProvider, useForm } from 'react-hook-form';
-import { MagicMileResult } from '../../services/magic-mile.interface';
+import { ageCategories, magicMileLocations } from '../../helpers/enums';
+import { Athlete } from '../../services/athletes.interface';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { createMagicMileResult } from '../../services/magic-mile';
+import { FormProvider, useForm } from 'react-hook-form';
+import { isBefore, parseISO } from 'date-fns';
+import { MagicMileResult } from '../../services/magic-mile.interface';
+import { Select } from '../../components/forms/select';
+import { shortDate, timeFormatted } from '@black-pear-joggers/helpers';
 import { TextInput } from '../../components/forms/text-input';
 import { TimeInput } from '../../components/forms/time-input';
-import { Select, SelectOption } from '../../components/forms/select';
-import { shortDate } from '@black-pear-joggers/helpers';
 import { useAthlete, useAthletes } from '../../services/athletes';
-import { useEffect, useState } from 'react';
-import { Athlete } from '../../services/athletes.interface';
-import { isBefore, parseISO } from 'date-fns';
+import { useState } from 'react';
+
 
 interface CreateMagicMileResultFormProps {
   results: MagicMileResult[];
@@ -28,46 +30,21 @@ interface FormData {
   actualTime: number;
 }
 
-function onSubmit(data) {
-  console.log(data);
-  return;
-
-  createMagicMileResult({
-    athleteId: 0,
-    firstName: '',
-    lastName: '',
-    gender: '',
-    category: '',
-    date: '',
-    location: '',
-    predictedTime: '',
-    predictedTimeParsed: 0,
-    actualTime: '',
-    actualTimeParsed: 0,
+async function onSubmit(data) {
+  const response = await createMagicMileResult({
+    athleteId: Number(data.athleteId),
+    firstName: data.firstName,
+    lastName: data.lastName,
+    gender: data.gender,
+    category: data.category,
+    date: data.date,
+    location: data.location,
+    predictedTime: timeFormatted(data.predictedTime),
+    predictedTimeParsed: data.predictedTime,
+    actualTime: timeFormatted(data.actualTime),
+    actualTimeParsed: data.actualTime,
   });
 }
-
-const categories = [
-  'U20',
-  'U23',
-  'SEN',
-  'V35',
-  'V40',
-  'V45',
-  'V50',
-  'V55',
-  'V60',
-  'V65',
-  'V70',
-];
-
-const locations = [
-  'Diglis Bridge',
-  'Grandstand, Pitchcroft',
-  'Nunnery Wood Track',
-  'Pitchcroft Reverse',
-  'Wainwright Road',
-];
 
 export function CreateMagicMileResultForm(
   props: CreateMagicMileResultFormProps
@@ -106,7 +83,7 @@ export function CreateMagicMileResultForm(
   }
 
   function getAthleteOptionElements(athletes: Athlete[]) {
-    return athletes
+    const athleteOptions = athletes
       ? athletes
           .sort((a, b) => {
             return a.first_name.localeCompare(b.first_name);
@@ -118,6 +95,8 @@ export function CreateMagicMileResultForm(
             };
           })
       : [];
+
+    return [{ value: '', label: '' }].concat(athleteOptions);
   }
 
   return (
@@ -143,9 +122,9 @@ export function CreateMagicMileResultForm(
               label="Location"
               registerField={form.register('location', {
                 required: true,
-                value: locations[2],
+                value: magicMileLocations[2],
               })}
-              options={locations}
+              options={magicMileLocations}
             />
           </div>
         </div>
@@ -231,7 +210,7 @@ export function CreateMagicMileResultForm(
                 required: true,
                 value: 'SEN',
               })}
-              options={categories}
+              options={ageCategories}
             />
           </div>
         </div>

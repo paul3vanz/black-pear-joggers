@@ -1,17 +1,11 @@
 import Link from 'next/link';
-import { friendlyDate, dateIsBefore } from '@black-pear-joggers/helpers';
 import { AwardClaim, Standard } from '../../services/award-claims.interface';
-import { StandardsBadge } from '../standards-badge';
-import { useState } from 'react';
 import { AwardClaimDetailsModal } from './award-claim-details-modal';
+import { dateIsBefore, friendlyDate } from '@black-pear-joggers/helpers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCheckCircle,
-  faTimesCircle,
-  faPrint,
-  faArchive,
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons';
+import { StandardsBadge } from '../standards-badge';
+import { StandardsTable } from './standards-table';
+import { useState } from 'react';
 import {
   allEventsAreAllowedDistances,
   checkRacesCompletedInCorrectCategory,
@@ -19,7 +13,14 @@ import {
   checkRacesMeetStandardClaimed,
   checkThreeOrMoreDistances,
 } from '../../services/award-claims';
-import { StandardsTable } from './standards-table';
+import {
+  faArchive,
+  faCheckCircle,
+  faPrint,
+  faTimesCircle,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
+
 
 interface AwardClaimsTableProps {
   search: string;

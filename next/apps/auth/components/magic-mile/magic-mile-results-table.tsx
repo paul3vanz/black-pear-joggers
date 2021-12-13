@@ -1,11 +1,14 @@
-import { toTitleCase } from '../../helpers/formatters';
 import Link from 'next/link';
-import { MagicMileResult } from '../../services/magic-mile.interface';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { friendlyDate } from '@black-pear-joggers/helpers';
+import { MagicMileResult } from '../../services/magic-mile.interface';
+import { toTitleCase } from '../../helpers/formatters';
 
 interface MagicMileResultsProps {
   search: string;
   magicMileResults: MagicMileResult[];
+  onDelete: (magicMileResult: MagicMileResult) => void;
 }
 
 function MagicMileResults(props: MagicMileResultsProps) {
@@ -34,6 +37,7 @@ function MagicMileResults(props: MagicMileResultsProps) {
             <th className="px-4 py-2">Gender</th>
             <th className="px-4 py-2">Category</th>
             <th className="px-4 py-2">Location</th>
+            <th></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-800">
@@ -54,6 +58,15 @@ function MagicMileResults(props: MagicMileResultsProps) {
               <td className="px-4 py-2">{toTitleCase(result.gender)}</td>
               <td className="px-4 py-2">{result.category}</td>
               <td className="px-4 py-2">{result.location}</td>
+              <td className="px-4 py-2">
+                <button title="Delete" onClick={() => props.onDelete(result)}>
+                  <FontAwesomeIcon
+                    className="cursor-pointer"
+                    size="lg"
+                    icon={faTrash}
+                  />
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

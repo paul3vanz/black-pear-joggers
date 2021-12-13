@@ -1,15 +1,42 @@
-import { Stack } from '@black-pear-joggers/stack';
-import { Container } from '@black-pear-joggers/container';
-import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { useMagicMileResults } from '../services/magic-mile';
-import { SearchBar } from '@black-pear-joggers/search-bar';
-import { useState } from 'react';
-import MagicMileResultsTable from '../components/magic-mile/magic-mile-results-table';
 import CreateMagicMileResultForm from '../components/magic-mile/create-magic-mile-form';
+import MagicMileResultsTable from '../components/magic-mile/magic-mile-results-table';
+import { Container } from '@black-pear-joggers/container';
+import { MagicMileResult } from '../services/magic-mile.interface';
+import { mutate } from 'swr';
+import { SearchBar } from '@black-pear-joggers/search-bar';
+import { Stack } from '@black-pear-joggers/stack';
+import { useState } from 'react';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
+import {
+  destroy,
+  magicMileResultsUrl,
+  useMagicMileResults,
+} from '../services/magic-mile';
 
-export function Tools() {
+
+export function MagicMilePage() {
   const { magicMileResults, isLoading, isError } = useMagicMileResults();
   const [search, setSearch] = useState('');
+
+  async function onDelete(magicMileResult: MagicMileResult) {
+    const response = await destroy(magicMileResult);
+
+    if (!response) {
+      alert('Failed to delete');
+
+      return;
+    }
+
+    const position = magicMileResults.findIndex(
+      (a) => a.id === magicMileResult.id
+    );
+
+    mutate(
+      magicMileResultsUrl,
+      magicMileResults.filter((a) => a.id !== magicMileResult.id),
+      false
+    );
+  }
 
   return (
     <>
@@ -35,6 +62,7 @@ export function Tools() {
             <MagicMileResultsTable
               search={search}
               magicMileResults={magicMileResults}
+              onDelete={onDelete}
             />
           )}
         </Container>
@@ -43,4 +71,4 @@ export function Tools() {
   );
 }
 
-export default withAuthenticationRequired(Tools);
+export default withAuthenticationRequired(MagicMilePage);

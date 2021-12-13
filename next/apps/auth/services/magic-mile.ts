@@ -1,10 +1,13 @@
 import useSWRImmutable from 'swr';
 import { config } from '../helpers/config';
+import { fetcher, post, remove } from './fetcher';
 import { MagicMileResult } from './magic-mile.interface';
-import { fetcher } from './fetcher';
+
+
+export const magicMileResultsUrl = `${config.baseApiUrl}/magicmile`;
 
 export function useMagicMileResults() {
-    const { data, error } = useSWRImmutable<MagicMileResult[], string>(`${config.baseApiUrl}/magicmile`, fetcher);
+    const { data, error } = useSWRImmutable<MagicMileResult[], string>(magicMileResultsUrl, fetcher);
 
     return {
         magicMileResults: data,
@@ -13,8 +16,8 @@ export function useMagicMileResults() {
     }
 };
 
-export function createMagicMileResult(magicMileResult: MagicMileResult) {
-    fetch(`${config.baseApiUrl}/magicmile`, {
+export function createMagicMileResult(magicMileResult: MagicMileResult): Promise<Response> {
+    return fetch(`${config.baseApiUrl}/magicmile`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -22,3 +25,11 @@ export function createMagicMileResult(magicMileResult: MagicMileResult) {
         body: JSON.stringify(magicMileResult),
     })
 }
+
+export async function destroy(awardClaim: MagicMileResult): Promise<boolean> {
+    const response = await remove(
+      `${config.baseApiUrl}/magicmile/${awardClaim.id}`
+    );
+
+    return response.ok ? true : false;
+  }

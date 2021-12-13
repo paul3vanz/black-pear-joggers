@@ -12,15 +12,19 @@ export const fetcher = async (url: string) => {
     });
 };
 
-export function post(url: string, data?: {}) {
+export function post(url: string, data?: {}, method = 'POST') {
     const accessToken = localStorage.getItem('bpj.token');
 
     return fetch(url, {
-        method: 'POST',
+        method,
         headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
         body: data && JSON.stringify(data),
     });
+}
+
+export function remove(url: string) {
+    return post(url, null, 'DELETE');
 }

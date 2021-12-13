@@ -79,3 +79,7 @@ export function shortDate(date?: string) {
 export function dateIsBefore(date: string, dateToCompare: string): boolean {
   return isBefore(parseISO(date), parseISO(dateToCompare));
 }
+
+export function timeFormatted(timeInSeconds: number): string {
+  return `${Math.floor(timeInSeconds / 60)}:${timeInSeconds % 60}`;
+}
