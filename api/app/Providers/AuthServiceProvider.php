@@ -42,7 +42,7 @@ class AuthServiceProvider extends ServiceProvider
                 $configuration = new SdkConfiguration([
                     'domain' => env('AUTH0_DOMAIN'),
                     'clientId' => env('AUTH0_CLIENT_ID'),
-                    'audience' => [ env('AUTH0_AUDIENCE') ],
+                    'audience' => [env('AUTH0_AUDIENCE')],
                     'clientSecret' => env('AUTH0_CLIENT_SECRET'),
                     'tokenAlgorithm' => 'HS256'
                 ]);
@@ -51,7 +51,7 @@ class AuthServiceProvider extends ServiceProvider
 
                 $decoded = $tokenVerifier->verify()->validate()->toArray();
 
-                return new GenericUser($decoded);
+                return $decoded;
             }
         });
     }

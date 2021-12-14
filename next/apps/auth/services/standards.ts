@@ -1,11 +1,11 @@
 import useSWRImmutable from 'swr';
 import { config } from '../helpers/config';
-import { Standard } from './standards.interface';
 import { fetcher } from './fetcher';
+import { Standard } from './standards.interface';
 
 export function useStandards() {
   const { data, error } = useSWRImmutable<Standard[], string>(
-    `${config.baseApiUrl}standards`,
+    `${config.baseApiUrl}/standards`,
     fetcher
   );
 
