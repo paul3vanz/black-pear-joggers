@@ -26,51 +26,65 @@ function MagicMileResults(props: MagicMileResultsProps) {
       <p>
         <strong>{filteredResults.length}</strong> results
       </p>
-      <table className="w-full">
-        <thead className="divide-y divide-gray-800">
-          <tr>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Predicted</th>
-            <th className="px-4 py-2">Actual</th>
-            <th className="px-4 py-2">Standard</th>
-            <th className="px-4 py-2">Date</th>
-            <th className="px-4 py-2">Gender</th>
-            <th className="px-4 py-2">Category</th>
-            <th className="px-4 py-2">Location</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-800">
-          {filteredResults.map((result, index) => (
-            <tr
-              key={result.id}
-              className={index % 2 === 0 ? 'bg-gray-800' : ''}
-            >
-              <td className="px-4 py-2">
-                <Link href={`/magic-mile/${result.id}`}>
-                  {result.firstName + ' ' + result.lastName}
-                </Link>
-              </td>
-              <td className="px-4 py-2">{result.predictedTime}</td>
-              <td className="px-4 py-2">{result.actualTime}</td>
-              <td className="px-4 py-2"></td>
-              <td className="px-4 py-2">{friendlyDate(result.date)}</td>
-              <td className="px-4 py-2">{toTitleCase(result.gender)}</td>
-              <td className="px-4 py-2">{result.category}</td>
-              <td className="px-4 py-2">{result.location}</td>
-              <td className="px-4 py-2">
-                <button title="Delete" onClick={() => props.onDelete(result)}>
-                  <FontAwesomeIcon
-                    className="cursor-pointer"
-                    size="lg"
-                    icon={faTrash}
-                  />
-                </button>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="divide-y divide-gray-800">
+            <tr>
+              <th className="px-1 sm:px-4 py-2">Name</th>
+              <th className="px-1 sm:px-4 py-2 hidden lg:table-cell">
+                Predicted
+              </th>
+              <th className="px-1 sm:px-4 py-2">Actual</th>
+              <th className="px-1 sm:px-4 py-2">Date</th>
+              <th className="px-1 sm:px-4 py-2 hidden lg:table-cell">Gender</th>
+              <th className="px-1 sm:px-4 py-2 hidden lg:table-cell">
+                Category
+              </th>
+              <th className="px-1 sm:px-4 py-2">Location</th>
+              <th></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-800">
+            {filteredResults.map((result, index) => (
+              <tr
+                key={result.id}
+                className={index % 2 === 0 ? 'bg-gray-800' : ''}
+              >
+                <td className="px-1 sm:px-4 py-2">
+                  <Link href={`/magic-mile/${result.id}`}>
+                    {result.firstName + ' ' + result.lastName}
+                  </Link>
+                </td>
+                <td className="px-1 sm:px-4 py-2 hidden lg:table-cell">
+                  {result.predictedTime}
+                </td>
+                <td className="px-1 sm:px-4 py-2">{result.actualTime}</td>
+                <td className="px-1 sm:px-4 py-2">
+                  {friendlyDate(result.date)}
+                </td>
+                <td className="px-1 sm:px-4 py-2 hidden lg:table-cell">
+                  {toTitleCase(result.gender)}
+                </td>
+                <td className="px-1 sm:px-4 py-2 hidden lg:table-cell">
+                  {result.category}
+                </td>
+                <td className="px-1 sm:px-4 py-2">
+                  {result.location.match(/\(.*?(?=\))/)[0].replace('(', '')}
+                </td>
+                <td className="px-1 sm:px-4 py-2">
+                  <button title="Delete" onClick={() => props.onDelete(result)}>
+                    <FontAwesomeIcon
+                      className="cursor-pointer"
+                      size="lg"
+                      icon={faTrash}
+                    />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

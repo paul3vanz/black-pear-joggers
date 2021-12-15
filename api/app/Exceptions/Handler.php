@@ -47,6 +47,6 @@ class Handler extends ExceptionHandler
     {
         $showException = $request->cookie(env('DEBUG_COOKIE_KEY')) == env('DEBUG_COOKIE_VALUE');
 
-        return parent::render($request, $e);
+        return $showException ? parent::render($request, $e) : response('Sorry, this request DNF\'d', 500);
     }
 }
