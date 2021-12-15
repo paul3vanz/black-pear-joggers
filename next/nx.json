@@ -40,10 +40,16 @@
     "container": {
       "tags": []
     },
+    "core-services": {
+      "tags": []
+    },
     "favicon": {
       "tags": []
     },
     "footer": {
+      "tags": []
+    },
+    "form-controls": {
       "tags": []
     },
     "header": {

@@ -124,6 +124,28 @@
         }
       }
     },
+    "core-services": {
+      "root": "libs/core-services",
+      "sourceRoot": "libs/core-services/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/core-services/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/core-services"],
+          "options": {
+            "jestConfig": "libs/core-services/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "favicon": {
       "root": "libs/favicon",
       "sourceRoot": "libs/favicon/src",
@@ -163,6 +185,28 @@
           "outputs": ["coverage/libs/footer"],
           "options": {
             "jestConfig": "libs/footer/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "form-controls": {
+      "root": "libs/form-controls",
+      "sourceRoot": "libs/form-controls/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/form-controls/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/form-controls"],
+          "options": {
+            "jestConfig": "libs/form-controls/jest.config.js",
             "passWithNoTests": true
           }
         }

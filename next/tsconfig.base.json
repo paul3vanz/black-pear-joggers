@@ -17,8 +17,10 @@
     "paths": {
       "@black-pear-joggers/button": ["libs/button/src/index.ts"],
       "@black-pear-joggers/container": ["libs/container/src/index.ts"],
+      "@black-pear-joggers/core-services": ["libs/core-services/src/index.ts"],
       "@black-pear-joggers/favicon": ["libs/favicon/src/index.ts"],
       "@black-pear-joggers/footer": ["libs/footer/src/index.ts"],
+      "@black-pear-joggers/form-controls": ["libs/form-controls/src/index.ts"],
       "@black-pear-joggers/header": ["libs/header/src/index.ts"],
       "@black-pear-joggers/helpers": ["libs/helpers/src/index.ts"],
       "@black-pear-joggers/lazy-load-image": [

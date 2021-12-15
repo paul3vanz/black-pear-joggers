@@ -5,10 +5,10 @@ import { createMagicMileResult } from '../../services/magic-mile';
 import { FormProvider, useForm } from 'react-hook-form';
 import { isBefore, parseISO } from 'date-fns';
 import { MagicMileResult } from '../../services/magic-mile.interface';
-import { Select } from '../../components/forms/select';
+import { Select } from '@black-pear-joggers/form-controls';
 import { shortDate, timeFormatted } from '@black-pear-joggers/helpers';
-import { TextInput } from '../../components/forms/text-input';
-import { TimeInput } from '../../components/forms/time-input';
+import { TextInput } from '@black-pear-joggers/form-controls';
+import { TimeInput } from '@black-pear-joggers/form-controls';
 import { useAthlete, useAthletes } from '../../services/athletes';
 import { useState } from 'react';
 
