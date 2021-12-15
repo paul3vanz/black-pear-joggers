@@ -55,6 +55,13 @@
     "lazy-load-image": {
       "tags": []
     },
+    "register": {
+      "tags": []
+    },
+    "register-e2e": {
+      "tags": [],
+      "implicitDependencies": ["register"]
+    },
     "search-bar": {
       "tags": []
     },

@@ -234,6 +234,84 @@
         }
       }
     },
+    "register": {
+      "root": "apps/register",
+      "sourceRoot": "apps/register",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "root": "apps/register",
+            "outputPath": "dist/apps/register"
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "register:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "register:build:production",
+              "dev": false
+            }
+          }
+        },
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "register:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/register"],
+          "options": {
+            "jestConfig": "apps/register/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/register/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "register-e2e": {
+      "root": "apps/register-e2e",
+      "sourceRoot": "apps/register-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/register-e2e/cypress.json",
+            "devServerTarget": "register:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "register:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/register-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
     "search-bar": {
       "root": "libs/search-bar",
       "sourceRoot": "libs/search-bar/src",
