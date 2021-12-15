@@ -1,11 +1,7 @@
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { FormProvider, useForm } from 'react-hook-form';
-import { isBefore, parseISO } from 'date-fns';
-import { Select } from '@black-pear-joggers/form-controls';
-import { shortDate, timeFormatted } from '@black-pear-joggers/helpers';
+import { shortDate } from '@black-pear-joggers/helpers';
 import { TextInput } from '@black-pear-joggers/form-controls';
-import { TimeInput } from '@black-pear-joggers/form-controls';
-import { useState } from 'react';
 
 
 interface FormData {
@@ -50,7 +46,7 @@ export function RegisterForm() {
 
         <div className="mb-6">
           <ButtonLightTextDarkBackground
-            text="Save"
+            text="Check"
             onClick={form.handleSubmit(onSubmit)}
           />
         </div>
