@@ -9,6 +9,7 @@ $router->get('/athlete/{id}', 'AthleteController@getAthlete');
 $router->post('/athlete', 'AthleteController@createAthlete');
 $router->put('/athlete/{id}', 'AthleteController@updateAthlete');
 $router->delete('/athlete/{id}', 'AthleteController@deleteAthlete');
+$router->get('/athleteIdvCheck', 'AthleteController@athleteIdvCheck');
 
 $router->get('/athlete/{id}/performances', 'PerformanceController@getPerformancesByAthlete');
 $router->get('/athletes/awards', 'AwardController@getAthleteAwards');

@@ -1,10 +1,17 @@
-import { intervalToDuration } from 'date-fns';
-import { createRef, RefObject, useEffect, useRef, useState } from 'react';
 import {
-  useFormContext,
+    createRef,
+    RefObject,
+    useEffect,
+    useRef,
+    useState
+    } from 'react';
+import { intervalToDuration } from 'date-fns';
+import {
   UseFormRegisterReturn,
+  useFormContext,
   useWatch,
 } from 'react-hook-form';
+
 
 export interface TimeInputProps {
   id: string;
@@ -47,7 +54,7 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
         <div className="flex flex-wrap -mx-3">
           <div className="w-full md:w-1/2 pl-3">
             <label className="sr-only" htmlFor={`input-minutes-${props.id}`}>
-              {props.label}
+              Minutes
             </label>
 
             <input
@@ -65,7 +72,7 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
 
           <div className="w-full md:w-1/2 pl-2 pr-3">
             <label className="sr-only" htmlFor={`input-seconds-${props.id}`}>
-              {props.label}
+              Seconds
             </label>
 
             <input

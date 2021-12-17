@@ -49,6 +49,18 @@ class AthleteController extends Controller
         return response()->json($athlete);
     }
 
+    public function athleteIdvCheck(Request $request)
+    {
+        $this->validate($request, [
+            'urn' => 'required|integer',
+            'dob' => 'required|date',
+        ]);
+
+        $athlete = Athlete::where('urn', $request->urn)->where('dob', $request->dob)->get()->all();
+
+        return response()->json($athlete);
+    }
+
     private function validateRequest(Request $request)
     {
         $this->validate($request, [
