@@ -8,20 +8,15 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
     }
 
-    public function getUser(Request $request)
+    public function getUser()
     {
-        $authSubject = Auth::user()['sub'];
+        $id = Auth::user()['sub'];
 
-        $user = User::firstOrCreate(['authSubject' => $authSubject])->with('athlete');
+        $user = User::find($id)->with('athlete')->first();
 
         return response()->json($user);
     }
@@ -32,18 +27,14 @@ class UserController extends Controller
             'athleteId' => 'required|integer'
         ]);
 
-        $authSubject = Auth::user()['sub'];
+        $id = Auth::user()['sub'];
 
-        $user = User::find($authSubject);
-
-        $user->athleteId = $request->athleteId;
-
-        $user->save();
+        $user = User::updateOrCreate(['id' => $id], ['athleteId' => $request->athleteId]);
 
         return response()->json($user);
     }
 
-    public function getToken(Request $request)
+    public function getToken()
     {
         $user = Auth::user();
 

@@ -10,92 +10,99 @@ use Illuminate\Support\Carbon;
 
 final class Athlete extends Model
 {
-  use \Awobaz\Compoships\Compoships;
+    use \Awobaz\Compoships\Compoships;
 
-  protected $fillable = [
-    'id',
-    'urn',
-    'athlete_id',
-    'first_name',
-    'last_name',
-    'gender',
-    'dob',
-  ];
+    protected $fillable = [
+        'id',
+        'urn',
+        'athlete_id',
+        'first_name',
+        'last_name',
+        'gender',
+        'dob',
+    ];
 
-  protected $hidden = [
-    'urn',
-    'dob',
-    'age',
-  ];
+    protected $hidden = [
+        'urn',
+        'dob',
+        'age',
+    ];
 
-  protected $appends = [
-    'age',
-    'category',
-  ];
+    protected $appends = [
+        'age',
+        'category',
+    ];
 
-  public function getAgeAttribute()
-  {
-    return (new \Carbon\Carbon($this->dob))->age;
-  }
-
-  public function getCategoryAttribute()
-  {
-    if ($this->age < 20) {
-      return 'U20';
-    } else if ($this->age < 23) {
-      return 'U23';
-    } else if ($this->age < 35) {
-      return 'SEN';
-    } else {
-      return 'V' . (floor($this->age / 5) * 5);
+    public function getAgeAttribute()
+    {
+        return (new \Carbon\Carbon($this->dob))->age;
     }
-  }
 
-  public function magicmiles()
-  {
-    return $this->hasMany('App\Models\MagicMile', 'athlete_id', 'id');
-  }
+    public function getCategoryAttribute()
+    {
+        if ($this->age < 20) {
+            return 'U20';
+        } else if ($this->age < 23) {
+            return 'U23';
+        } else if ($this->age < 35) {
+            return 'SEN';
+        } else {
+            return 'V' . (floor($this->age / 5) * 5);
+        }
+    }
 
-  public function performances()
-  {
-    return $this->hasMany('App\Models\Performance', 'athlete_id', 'id');
-  }
+    public function magicmiles()
+    {
+        return $this->hasMany('App\Models\MagicMile', 'athlete_id', 'id');
+    }
 
-  public function rankings()
-  {
-    return $this->hasMany('App\Models\Ranking', 'athlete_id', 'id');
-  }
+    public function performances()
+    {
+        return $this->hasMany('App\Models\Performance', 'athlete_id', 'id');
+    }
 
-  public function standards()
-  {
-    return $this->hasMany('App\Models\Standard', ['category', 'gender'], ['category', 'gender']);
-  }
+    public function rankings()
+    {
+        return $this->hasMany('App\Models\Ranking', 'athlete_id', 'id');
+    }
 
-  public function latestPerformance()
-  {
-    return $this->hasOne('App\Models\Performance', 'athlete_id', 'id')->latest('date');
-  }
+    public function standards()
+    {
+        return $this->hasMany('App\Models\Standard', ['category', 'gender'], ['category', 'gender']);
+    }
 
-  public function firstPerformance()
-  {
-    return $this->hasOne('App\Models\Performance', 'athlete_id', 'id')->oldest('date');
-  }
+    public function latestPerformance()
+    {
+        return $this->hasOne('App\Models\Performance', 'athlete_id', 'id')->latest('date');
+    }
 
-  public function latestRanking()
-  {
-    return $this->hasOne('App\Models\Ranking', 'athlete_id', 'id')->latest('date');
-  }
+    public function firstPerformance()
+    {
+        return $this->hasOne('App\Models\Performance', 'athlete_id', 'id')->oldest('date');
+    }
 
-	public function membership() {
-		return $this->belongsTo('App\Models\Membership', 'urn', 'urn');
-	}
+    public function latestRanking()
+    {
+        return $this->hasOne('App\Models\Ranking', 'athlete_id', 'id')->latest('date');
+    }
 
-	public function activeMembership() {
-		return $this->belongsTo('App\Models\Membership', 'urn', 'urn')->whereIn('competitiveRegStatus', [
-      'Registered',
-      'Registration Being Processed',
-      'Registration Being Processed By Club',
-      'Awaiting Registration with Club',
-    ]);
-	}
+    public function membership()
+    {
+        return $this->belongsTo('App\Models\Membership', 'urn', 'urn');
+    }
+
+    public function activeMembership()
+    {
+        return $this->belongsTo('App\Models\Membership', 'urn', 'urn')->whereIn('competitiveRegStatus', [
+            'Registered',
+            'Registration Being Processed',
+            'Registration Being Processed By Club',
+            'Awaiting Registration with Club',
+        ]);
+    }
+
+    public function users()
+    {
+        return $this->belongsTo('App\Models\User', 'athleteId', 'id');
+    }
 }

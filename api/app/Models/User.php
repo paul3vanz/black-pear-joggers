@@ -5,6 +5,7 @@
 namespace App\Models;
 
 use Awobaz\Compoships\Database\Eloquent\Model;
+use App\Models\Athlete;
 
 final class User extends Model
 {
@@ -21,6 +22,6 @@ final class User extends Model
 
     public function athlete()
     {
-        return $this->hasOne('App\Models\Athlete', 'athleteId', 'id');
+        return $this->hasOne(Athlete::class, 'id', 'athleteId');
     }
 }

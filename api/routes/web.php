@@ -84,4 +84,6 @@ $router->get('/uka', 'ScraperController@fetchMembers');
 
 $router->group(['middleware' => 'auth', 'prefix' => 'user'], function ($router) {
     $router->get('', 'UserController@getUser');
+    $router->put('', 'UserController@setUser');
+    $router->get('/token', 'UserController@getToken');
 });
