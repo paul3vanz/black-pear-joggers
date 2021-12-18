@@ -26,6 +26,23 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    public function setUser(Request $request)
+    {
+        $this->validate($request, [
+            'athleteId' => 'required|integer'
+        ]);
+
+        $authSubject = Auth::user()['sub'];
+
+        $user = User::find($authSubject);
+
+        $user->athleteId = $request->athleteId;
+
+        $user->save();
+
+        return response()->json($user);
+    }
+
     public function getToken(Request $request)
     {
         $user = Auth::user();

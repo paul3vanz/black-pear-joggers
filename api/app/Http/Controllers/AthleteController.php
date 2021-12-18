@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Athlete;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\ItemNotFoundException;
 
 class AthleteController extends Controller
 {
@@ -56,7 +57,11 @@ class AthleteController extends Controller
             'dob' => 'required|date',
         ]);
 
-        $athlete = Athlete::where('urn', $request->urn)->where('dob', $request->dob)->get()->all();
+        $athlete = Athlete::where('urn', $request->urn)->where('dob', $request->dob)->get()->first();
+
+        if (!$athlete) {
+            return response('', 404);
+        }
 
         return response()->json($athlete);
     }

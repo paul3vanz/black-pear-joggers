@@ -12,8 +12,10 @@ final class User extends Model
     const CREATED_AT = 'createdDate';
     const UPDATED_AT = 'updatedDate';
 
+    protected $keyType = 'string';
+
     protected $fillable = [
-        'authSubject',
+        'id',
         'athleteId'
     ];
 
