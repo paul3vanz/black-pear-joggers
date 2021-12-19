@@ -1,12 +1,48 @@
 import RegisterForm from '../components/register-form';
-import { Button } from '@black-pear-joggers/button';
+import { Athlete } from '../../auth/services/athletes.interface';
+import { ConfirmDetails } from '../components/confirm-details';
 import { Container } from '@black-pear-joggers/container';
+import { NotFound } from '../components/not-found';
+import { scrollIntoView } from '@black-pear-joggers/helpers';
+import { setAthlete } from '../../auth/services/user';
 import { Stack } from '@black-pear-joggers/stack';
-import { useState } from 'react';
+import { useAthleteIdvCheck } from '../../auth/services/athletes';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 
+
+export interface IdvDetails {
+  urn: number;
+  dateOfBirth: string;
+}
+
 function AdminHomePage() {
-  const [idvCheck, setIdvCheck] = useState<any>();
+  const [idvDetails, setIdvDetails] = useState<IdvDetails>();
+
+  const step1 = useRef<HTMLDivElement>();
+  const step2 = useRef<HTMLDivElement>();
+
+  const router = useRouter();
+
+  const { athlete, isError } = useAthleteIdvCheck(
+    idvDetails?.urn,
+    idvDetails?.dateOfBirth
+  );
+
+  useEffect(() => {
+    scrollIntoView(step2.current);
+  }, [athlete, isError]);
+
+  async function onConfirmDetails(athlete: Athlete) {
+    const success = await setAthlete(athlete.id);
+
+    if (success) {
+      router.push('/success');
+    } else {
+      alert('There was an error.');
+    }
+  }
 
   return (
     <>
@@ -23,27 +59,29 @@ function AdminHomePage() {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="light">
-        <Container>
-          <h2>Your details</h2>
+      <div ref={step1}>
+        <RegisterForm
+          onFormSubmit={(idvDetails) => setIdvDetails(idvDetails)}
+        />
+      </div>
 
-          <RegisterForm onIdvCheck={setIdvCheck} />
-        </Container>
-      </Stack>
+      <div ref={step2}>
+        {athlete && !isError && (
+          <ConfirmDetails
+            athlete={athlete}
+            onConfirmDetails={onConfirmDetails}
+          />
+        )}
 
-      {idvCheck ? (
-        <Stack backgroundColour="bright">
-          <Container>
-            <h2>Check your details</h2>
-
-            <p>We think we found you! Please check the details below.</p>
-
-            <pre className="mb-6">{JSON.stringify(idvCheck, null, '  ')}</pre>
-
-            <Button text="Confirm" onClick={console.log} />
-          </Container>
-        </Stack>
-      ) : null}
+        {isError && (
+          <NotFound
+            onGoBack={() => {
+              scrollIntoView(step1.current);
+              setIdvDetails(null);
+            }}
+          />
+        )}
+      </div>
     </>
   );
 }

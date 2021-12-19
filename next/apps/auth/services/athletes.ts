@@ -1,10 +1,11 @@
 import useSWRImmutable from 'swr/immutable';
 import { Athlete } from './athletes.interface';
 import { config } from '../helpers/config';
-import { fetcher } from './fetcher';
+import { fetcher, fetcherConfig } from './fetcher';
+
 
 export function useAthletes() {
-    const { data, error } = useSWRImmutable<Athlete[], string>(`${config.baseApiUrl}/athletes`, fetcher);
+    const { data, error } = useSWRImmutable<Athlete[], string>(`${config.baseApiUrl}/athletes`, fetcher, fetcherConfig);
 
     return {
         athletes: data,
@@ -14,11 +15,7 @@ export function useAthletes() {
 };
 
 export function useAthleteIdvCheck(urn: number, dateOfBirth: string) {
-    console.log('service', urn, dateOfBirth);
-
-    const { data, error } = useSWRImmutable<Athlete, string>((urn && dateOfBirth) ? `${config.baseApiUrl}/athleteIdvCheck?urn=${urn}&dob=${dateOfBirth}` : null, fetcher);
-
-    console.log(data);
+    const { data, error } = useSWRImmutable<Athlete, string>((urn && dateOfBirth) ? `${config.baseApiUrl}/athleteIdvCheck?urn=${urn}&dob=${dateOfBirth}` : null, fetcher, fetcherConfig);
 
     return {
         athlete: data,
@@ -28,7 +25,7 @@ export function useAthleteIdvCheck(urn: number, dateOfBirth: string) {
 };
 
 export function useAthlete(athleteId?: number) {
-    const { data, error } = useSWRImmutable<Athlete, string>(athleteId ? `${config.baseApiUrl}/athlete/${athleteId}` : null, fetcher);
+    const { data, error } = useSWRImmutable<Athlete, string>(athleteId ? `${config.baseApiUrl}/athlete/${athleteId}` : null, fetcher, fetcherConfig);
 
     return {
         athlete: data,

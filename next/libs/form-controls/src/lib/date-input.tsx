@@ -8,6 +8,7 @@ export interface DateInputProps {
   label: string;
   value?: string;
   registerField: UseFormRegisterReturn;
+  showHelp?: boolean;
   onChange: (date: string) => void;
 }
 
@@ -42,10 +43,16 @@ export function DateInput(props: DateInputProps): JSX.Element {
   return (
     <>
       <fieldset>
-        <legend className="block font-bold mb-1">{props.label}</legend>
+        <legend className="block font-bold mb-1" aria-describedby={``}>
+          {props.label}
+        </legend>
+
+        {props.showHelp && (
+          <p className="text-gray-500 mb-1">For example, 19 3 1987</p>
+        )}
 
         <div className="flex flex-wrap -mx-3">
-          <div className="w-full md:w-1/4 pl-3">
+          <div className="w-1/4 pl-3">
             <label className="mb-1 block" htmlFor={`input-day-${props.id}`}>
               Day
             </label>
@@ -62,7 +69,7 @@ export function DateInput(props: DateInputProps): JSX.Element {
             />
           </div>
 
-          <div className="w-full md:w-1/4 pl-2">
+          <div className="w-1/4 pl-2">
             <label className="mb-1 block" htmlFor={`input-month-${props.id}`}>
               Month
             </label>
@@ -79,7 +86,7 @@ export function DateInput(props: DateInputProps): JSX.Element {
             />
           </div>
 
-          <div className="w-full md:w-1/2 pl-2 pr-3">
+          <div className="w-1/2 pl-2 pr-3">
             <label className="mb-1 block" htmlFor={`input-seconds-${props.id}`}>
               Year
             </label>

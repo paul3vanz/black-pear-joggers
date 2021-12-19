@@ -1,13 +1,14 @@
+import AdminBar from '../components/admin-bar/admin-bar';
 import { AppProps } from 'next/app';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-
-import './styles.css';
-import { Header } from '@black-pear-joggers/header';
+import { Container } from '@black-pear-joggers/container';
 import { Footer } from '@black-pear-joggers/footer';
-import AdminBar from '../components/admin-bar/admin-bar';
+import { Header } from '@black-pear-joggers/header';
 import { PropsWithChildren, useEffect } from 'react';
 import { Stack } from '@black-pear-joggers/stack';
-import { Container } from '@black-pear-joggers/container';
+import './styles.css';
+
+
 
 let getAccessTokenSilently = null;
 
@@ -45,12 +46,14 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   }, [getAccessTokenSilently]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
       <AdminBar />
 
-      <main>{isLoading ? <LoadingContent /> : props.children}</main>
+      <main className="flex-1">
+        {isLoading ? <LoadingContent /> : props.children}
+      </main>
 
       <Footer />
     </div>

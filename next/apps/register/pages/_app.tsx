@@ -38,10 +38,12 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   }, [getAccessTokenSilently]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Header />
 
-      <main>{isLoading ? <LoadingContent /> : props.children}</main>
+      <main className="flex-1">
+        {isLoading ? <LoadingContent /> : props.children}
+      </main>
 
       <Footer />
     </div>

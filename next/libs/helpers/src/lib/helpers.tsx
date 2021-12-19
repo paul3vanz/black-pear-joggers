@@ -1,11 +1,10 @@
 import {
-  format,
-  formatRelative,
-  isBefore,
-  isToday,
-  isTomorrow,
-  parseISO,
-} from 'date-fns';
+    format,
+    isBefore,
+    isToday,
+    isTomorrow,
+    parseISO
+    } from 'date-fns';
 
 function moment(...test: any[]): any {
   return null;
@@ -82,4 +81,14 @@ export function dateIsBefore(date: string, dateToCompare: string): boolean {
 
 export function timeFormatted(timeInSeconds: number): string {
   return `${Math.floor(timeInSeconds / 60)}:${timeInSeconds % 60}`;
+}
+
+export function formatGender(gender: string): string {
+  return gender === 'M' ? 'Male' : gender === 'F' ? 'Female' : '';
+}
+
+export function scrollIntoView(element: Element): void {
+  element.scrollIntoView({
+    behavior: 'smooth',
+  });
 }

@@ -1,3 +1,15 @@
+interface HttpError extends Error {
+    status?: number;
+}
+
+export const fetcherConfig = {
+    onErrorRetry: (error) => {
+      if (error.status === 404) {
+          return;
+      }
+    }
+  };
+
 export const fetcher = async (url: string) => {
     const accessToken = localStorage.getItem('bpj.token');
 
@@ -5,10 +17,12 @@ export const fetcher = async (url: string) => {
         headers: accessToken && new Headers({
             'Authorization': `Bearer ${accessToken}`
         })
-    }).then((res) => {
-        const data = res.json();
+    }).then(async (response) => {
+        if (!response.ok) {
+            throw new Error(response.status.toString());
+        }
 
-        return data;
+        return response.json();
     });
 };
 
