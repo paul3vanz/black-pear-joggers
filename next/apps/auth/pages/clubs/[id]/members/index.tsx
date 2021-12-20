@@ -1,15 +1,15 @@
-import { Stack } from '@black-pear-joggers/stack';
-import { Container } from '@black-pear-joggers/container';
-import { withAuthenticationRequired } from '@auth0/auth0-react';
 import Link from 'next/link';
-import { useMembers } from '../../../../services/members';
-import { toTitleCase } from '../../../../helpers/formatters';
-import { useRouter } from 'next/dist/client/router';
-import { useClubs } from '../../../../services/clubs';
-import { Athlete } from '../../../../services/members.interface';
-import { SearchBar } from '@black-pear-joggers/search-bar';
-import { useState } from 'react';
 import MembersTable from '../../../../components/members-table';
+import { Athlete } from '@black-pear-joggers/core-services';
+import { Container } from '@black-pear-joggers/container';
+import { SearchBar } from '@black-pear-joggers/search-bar';
+import { Stack } from '@black-pear-joggers/stack';
+import { toTitleCase } from '../../../../helpers/formatters';
+import { useClubs } from '@black-pear-joggers/core-services';
+import { useMembers } from '@black-pear-joggers/core-services';
+import { useRouter } from 'next/dist/client/router';
+import { useState } from 'react';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
 
 function MembersPage() {
   const router = useRouter();

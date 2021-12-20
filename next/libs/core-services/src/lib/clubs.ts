@@ -1,6 +1,6 @@
 import useSWRImmutable from 'swr';
-import { config } from '../helpers/config';
 import { ClubsResponse } from './clubs.interface';
+import { config } from '../config';
 import { fetcher } from './fetcher';
 
 export function useClubs() {

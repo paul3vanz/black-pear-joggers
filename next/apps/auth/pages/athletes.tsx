@@ -1,10 +1,10 @@
-import { Stack } from '@black-pear-joggers/stack';
-import { Container } from '@black-pear-joggers/container';
-import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { useAthletes } from '../services/athletes';
-import { SearchBar } from '@black-pear-joggers/search-bar';
-import { useState } from 'react';
 import AthletesTable from '../components/athletes-table';
+import { Container } from '@black-pear-joggers/container';
+import { SearchBar } from '@black-pear-joggers/search-bar';
+import { Stack } from '@black-pear-joggers/stack';
+import { useAthletes } from '@black-pear-joggers/core-services';
+import { useState } from 'react';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
 
 function AthletesPage() {
   const { athletes, isLoading, isError } = useAthletes();

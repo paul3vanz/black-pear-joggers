@@ -1,7 +1,7 @@
 import CreateMagicMileResultForm from '../components/magic-mile/create-magic-mile-form';
 import MagicMileResultsTable from '../components/magic-mile/magic-mile-results-table';
 import { Container } from '@black-pear-joggers/container';
-import { MagicMileResult } from '../services/magic-mile.interface';
+import { MagicMileResult } from '@black-pear-joggers/core-services';
 import { mutate } from 'swr';
 import { SearchBar } from '@black-pear-joggers/search-bar';
 import { Stack } from '@black-pear-joggers/stack';
@@ -11,7 +11,7 @@ import {
   destroy,
   magicMileResultsUrl,
   useMagicMileResults,
-} from '../services/magic-mile';
+} from '@black-pear-joggers/core-services';
 
 
 export function MagicMilePage() {

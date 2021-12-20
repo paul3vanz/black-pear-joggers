@@ -3,7 +3,7 @@ interface HttpError extends Error {
 }
 
 export const fetcherConfig = {
-    onErrorRetry: (error) => {
+    onErrorRetry: (error: any) => {
       if (error.status === 404) {
           return;
       }
@@ -14,9 +14,9 @@ export const fetcher = async (url: string) => {
     const accessToken = localStorage.getItem('bpj.token');
 
     return fetch(url, {
-        headers: accessToken && new Headers({
+        headers: accessToken ? new Headers({
             'Authorization': `Bearer ${accessToken}`
-        })
+        }) : undefined
     }).then(async (response) => {
         if (!response.ok) {
             throw new Error(response.status.toString());
@@ -40,5 +40,5 @@ export function post(url: string, data?: {}, method = 'POST') {
 }
 
 export function remove(url: string) {
-    return post(url, null, 'DELETE');
+    return post(url, undefined, 'DELETE');
 }

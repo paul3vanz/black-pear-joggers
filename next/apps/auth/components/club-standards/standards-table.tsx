@@ -1,4 +1,4 @@
-import { Standard } from '../../services/award-claims.interface';
+import { Standard } from '@black-pear-joggers/core-services';
 
 export function StandardsTable(props: {
   gender: string;

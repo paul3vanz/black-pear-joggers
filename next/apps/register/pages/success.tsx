@@ -22,7 +22,7 @@ function SuccessPage(props: SuccessPageProps) {
 
           <h1>Registration complete</h1>
 
-          <p className="mb-6">You're now registered. </p>
+          <p className="mb-6">You&rsquo;re now registered. </p>
 
           <Button
             text="Go to your results"

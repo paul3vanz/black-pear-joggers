@@ -1,19 +1,19 @@
-import { Stack } from '@black-pear-joggers/stack';
-import { Container } from '@black-pear-joggers/container';
+import { AwardClaim } from '@black-pear-joggers/core-services';
 import { AwardClaimsTable } from '../components/club-standards/award-claims-table';
-import { withAuthenticationRequired } from '@auth0/auth0-react';
+import { Container } from '@black-pear-joggers/container';
 import { SearchBar } from '@black-pear-joggers/search-bar';
+import { Stack } from '@black-pear-joggers/stack';
+import { useStandards } from '@black-pear-joggers/core-services';
 import { useState } from 'react';
+import { useSWRConfig } from 'swr';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
 import {
   archive,
   awardClaimsUrl,
-  remove,
+  deleteClaim,
   toggleVerified,
   useAwardClaims,
-} from '../services/award-claims';
-import { useSWRConfig } from 'swr';
-import { AwardClaim } from '../services/award-claims.interface';
-import { useStandards } from '../services/standards';
+} from '@black-pear-joggers/core-services';
 
 export function ClubStandards() {
   const { awardClaims, isLoading: isAwardClaimsLoading } = useAwardClaims();
@@ -60,10 +60,10 @@ export function ClubStandards() {
   }
 
   async function onDelete(awardClaim: AwardClaim) {
-    const response = await remove(awardClaim);
+    const response = await deleteClaim(awardClaim);
 
     if (!response) {
-      alert('Failed to archive');
+      alert('Failed to delete');
 
       return;
     }

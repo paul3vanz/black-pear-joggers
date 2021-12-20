@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Club } from '../services/clubs.interface';
+import { Club } from '@black-pear-joggers/core-services';
 
 interface ClubsTableProps {
   search: string;

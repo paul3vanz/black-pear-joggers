@@ -1,7 +1,7 @@
-import { Stack } from '@black-pear-joggers/stack';
-import { Container } from '@black-pear-joggers/container';
 import { Button } from '@black-pear-joggers/button';
-import { config } from '../../helpers/config';
+import { config } from '@black-pear-joggers/core-services';
+import { Container } from '@black-pear-joggers/container';
+import { Stack } from '@black-pear-joggers/stack';
 
 export default function Tools() {
   return (

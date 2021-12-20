@@ -1,1 +1,16 @@
-export * from './lib/core-services';
+export * from './lib/athletes';
+export * from './lib/athletes.interface';
+export * from './lib/award-claims.interface';
+export * from './lib/award-claims';
+export * from './lib/clubs.interface';
+export * from './lib/clubs';
+export * from './lib/fetcher';
+export * from './lib/magic-mile';
+export * from './lib/magic-mile.interface';
+export * from './lib/members.interface';
+export * from './lib/members';
+export * from './lib/standards.interface';
+export * from './lib/standards';
+export * from './lib/user.interface';
+export * from './lib/user';
+export { config } from './config';

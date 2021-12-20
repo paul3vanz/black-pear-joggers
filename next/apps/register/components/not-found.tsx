@@ -11,14 +11,16 @@ export function NotFound(props: NotFoundProps) {
   return (
     <Stack backgroundColour="bright">
       <Container>
-        <h2>We can't find your details</h2>
+        <h2>We can&rsquo;t find your details</h2>
 
         <p>First, please check your details are correct.</p>
-        <p>If you've recently joined you may need to wait a little longer.</p>
+        <p>
+          If you&rsquo;ve recently joined you may need to wait a little longer.
+        </p>
         <p>
           If in doubt,{' '}
           <Link href="https://bpj.org.uk/contact-the-club">get in touch</Link>{' '}
-          and we'll look into it.
+          and we&rsquo;ll look into it.
         </p>
 
         <Button text="Back" onClick={props.onGoBack} />

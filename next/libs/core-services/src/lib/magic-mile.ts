@@ -1,6 +1,6 @@
 import useSWRImmutable from 'swr';
-import { config } from '../helpers/config';
-import { fetcher, post, remove } from './fetcher';
+import { config } from '../config';
+import { fetcher, remove } from './fetcher';
 import { MagicMileResult } from './magic-mile.interface';
 
 

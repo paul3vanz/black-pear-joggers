@@ -1,4 +1,4 @@
-    export interface Athlete {
+    export interface RegisteredAthlete {
         CompetitiveRegStatus: string;
         Dob: string;
         FirstClaimClubId: string;
@@ -17,12 +17,12 @@
     }
 
     export interface MembersResponse {
-        Athletes: Athlete[];
+        Athletes: RegisteredAthlete[];
         ResponseReference: string;
         ResponseStatus: string;
     }
 
-    export interface MemberResponse extends Athlete {
+    export interface MemberResponse extends RegisteredAthlete {
         ResponseReference: string;
         ResponseStatus: string;
     }

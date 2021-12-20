@@ -1,5 +1,5 @@
 import useSWRImmutable from 'swr';
-import { config } from '../helpers/config';
+import { config } from '../config';
 import { fetcher } from './fetcher';
 import { Standard } from './standards.interface';
 

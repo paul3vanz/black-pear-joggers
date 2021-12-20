@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { AwardClaim, Standard } from '../../services/award-claims.interface';
+import { AwardClaim, Standard } from '@black-pear-joggers/core-services';
 import { AwardClaimDetailsModal } from './award-claim-details-modal';
 import { dateIsBefore, friendlyDate } from '@black-pear-joggers/helpers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,7 +12,7 @@ import {
   checkRacesCompletedInSameCalendarYear,
   checkRacesMeetStandardClaimed,
   checkThreeOrMoreDistances,
-} from '../../services/award-claims';
+} from '@black-pear-joggers/core-services';
 import {
   faArchive,
   faCheckCircle,

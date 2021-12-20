@@ -1,12 +1,12 @@
-import { Stack } from '@black-pear-joggers/stack';
-import { Container } from '@black-pear-joggers/container';
+import Link from 'next/link';
+import { booleanLabels, toTitleCase } from '../../../../helpers/formatters';
 import { Button } from '@black-pear-joggers/button';
+import { Container } from '@black-pear-joggers/container';
+import { Stack } from '@black-pear-joggers/stack';
+import { useMember } from '@black-pear-joggers/core-services';
+import { useRouter } from 'next/dist/client/router';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 
-import Link from 'next/link';
-import { useRouter } from 'next/dist/client/router';
-import { useMember } from '../../../../services/members';
-import { booleanLabels, toTitleCase } from '../../../../helpers/formatters';
 
 function MemberDetailsPage() {
   const router = useRouter();

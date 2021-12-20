@@ -5,8 +5,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { shortDate } from '@black-pear-joggers/helpers';
 import { Stack } from '@black-pear-joggers/stack';
 
-
 interface RegisterFormProps {
+  isLoading: boolean;
   onFormSubmit: (idvDetails: FormData) => void;
 }
 
@@ -63,7 +63,7 @@ export function RegisterForm(props: RegisterFormProps) {
 
             <div className="mb-6">
               <ButtonLightTextDarkBackground
-                text="Check"
+                text={props.isLoading ? 'Checking...' : 'Check'}
                 onClick={form.handleSubmit(props.onFormSubmit)}
               />
             </div>

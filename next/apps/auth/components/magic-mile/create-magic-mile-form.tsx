@@ -1,15 +1,15 @@
 import { ageCategories, magicMileLocations } from '../../helpers/enums';
-import { Athlete } from '../../services/athletes.interface';
+import { Athlete } from '@black-pear-joggers/core-services';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
-import { createMagicMileResult } from '../../services/magic-mile';
+import { createMagicMileResult } from '@black-pear-joggers/core-services';
 import { FormProvider, useForm } from 'react-hook-form';
 import { isBefore, parseISO } from 'date-fns';
-import { MagicMileResult } from '../../services/magic-mile.interface';
+import { MagicMileResult } from '@black-pear-joggers/core-services';
 import { Select } from '@black-pear-joggers/form-controls';
 import { shortDate, timeFormatted } from '@black-pear-joggers/helpers';
 import { TextInput } from '@black-pear-joggers/form-controls';
 import { TimeInput } from '@black-pear-joggers/form-controls';
-import { useAthlete, useAthletes } from '../../services/athletes';
+import { useAthlete, useAthletes } from '@black-pear-joggers/core-services';
 import { useState } from 'react';
 
 
@@ -55,7 +55,11 @@ export function CreateMagicMileResultForm(
   const { athlete } = useAthlete(athleteId);
   const [showMembers, setShowMembers] = useState(true);
 
-  function handleAthleteChange(setValue, athletes: Athlete[], e: any) {
+  function handleAthleteChange(
+    setValue,
+    athletes: Athlete[],
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) {
     const athlete = athletes.find(
       (athlete) => athlete.id === Number(e.target.value)
     );
@@ -136,7 +140,7 @@ export function CreateMagicMileResultForm(
                 id="athlete"
                 label="Name"
                 registerField={form.register('athleteId', {
-                  onChange: async (e) => {
+                  onChange: async (e: React.ChangeEvent<HTMLSelectElement>) => {
                     handleAthleteChange(form.setValue, athletes, e);
                   },
                 })}

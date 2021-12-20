@@ -1,8 +1,4 @@
-import {
-  RegisterOptions,
-  UseFormRegister,
-  UseFormRegisterReturn,
-} from 'react-hook-form';
+import { UseFormRegisterReturn } from 'react-hook-form';
 
 export interface SelectOption {
   label: string;

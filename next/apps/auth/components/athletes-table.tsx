@@ -1,7 +1,7 @@
-import { toTitleCase } from '../helpers/formatters';
 import Link from 'next/link';
-import { Athlete } from '../services/athletes.interface';
+import { Athlete } from '@black-pear-joggers/core-services';
 import { friendlyDate } from '@black-pear-joggers/helpers';
+import { toTitleCase } from '../helpers/formatters';
 
 interface AthletesTableProps {
   search: string;

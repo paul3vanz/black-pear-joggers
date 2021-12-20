@@ -1,7 +1,8 @@
 import useSWRImmutable from 'swr';
-import { config } from '../helpers/config';
-import { MemberResponse, MembersResponse } from './members.interface';
+import { config } from '../config';
 import { fetcher } from './fetcher';
+import { MemberResponse, MembersResponse } from './members.interface';
+
 
 export function useMembers(clubId: number) {
     const { data, error } = useSWRImmutable<MembersResponse, string>(`${config.baseApiUrl}/clubs/${clubId}/members`, fetcher);

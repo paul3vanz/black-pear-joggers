@@ -1,25 +1,25 @@
 import useSWRImmutable from 'swr/immutable';
 import { Athlete } from './athletes.interface';
-import { config } from '../helpers/config';
+import { config } from '../config';
 import { fetcher, fetcherConfig } from './fetcher';
 
 
 export function useAthletes() {
-    const { data, error } = useSWRImmutable<Athlete[], string>(`${config.baseApiUrl}/athletes`, fetcher, fetcherConfig);
+    const { data, error, isValidating } = useSWRImmutable<Athlete[], string>(`${config.baseApiUrl}/athletes`, fetcher, fetcherConfig);
 
     return {
         athletes: data,
-        isLoading: !error && !data,
+        isLoading: isValidating,
         isError: error
     }
 };
 
 export function useAthleteIdvCheck(urn: number, dateOfBirth: string) {
-    const { data, error } = useSWRImmutable<Athlete, string>((urn && dateOfBirth) ? `${config.baseApiUrl}/athleteIdvCheck?urn=${urn}&dob=${dateOfBirth}` : null, fetcher, fetcherConfig);
+    const { data, error, isValidating } = useSWRImmutable<Athlete, string>((urn && dateOfBirth) ? `${config.baseApiUrl}/athleteIdvCheck?urn=${urn}&dob=${dateOfBirth}` : null, fetcher, fetcherConfig);
 
     return {
         athlete: data,
-        isLoading: !error && !data,
+        isLoading: isValidating,
         isError: error
     }
 };

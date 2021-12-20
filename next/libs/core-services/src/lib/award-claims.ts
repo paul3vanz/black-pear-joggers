@@ -1,8 +1,10 @@
 import useSWRImmutable from 'swr/immutable';
-import { config } from '../helpers/config';
+import { AwardClaim } from './award-claims.interface';
+import { config } from '../config';
 import { fetcher, post } from './fetcher';
-import { AwardClaim, Standard } from './award-claims.interface';
 import { getYear, isSameYear, parseISO } from 'date-fns';
+import { Standard } from './standards.interface';
+
 
 export const awardClaimsUrl = `${config.baseApiUrl}/awardclaim`;
 
@@ -37,7 +39,7 @@ export async function archive(awardClaim: AwardClaim): Promise<boolean> {
   return response.ok ? true : false;
 }
 
-export async function remove(awardClaim: AwardClaim): Promise<boolean> {
+export async function deleteClaim(awardClaim: AwardClaim): Promise<boolean> {
   const response = await post(
     `${config.baseApiUrl}/awardclaim/delete/${awardClaim.id}`
   );
@@ -92,7 +94,7 @@ export function checkRacesMeetStandardClaimed(
         return standard.category === awardClaim.category && standard.gender === awardClaim.gender && standard.event === race.distance;
       });
 
-      const targetTime = standardForEvent.time_parsed;
+      const targetTime = standardForEvent?.time_parsed;
 
       return targetTime ? (race.timeParsed <= Number(targetTime)) : false;
     });

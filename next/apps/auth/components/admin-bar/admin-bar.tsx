@@ -1,7 +1,6 @@
-import { useAuth0 } from '@auth0/auth0-react';
-import { Container } from '@black-pear-joggers/container';
-
 import Link from 'next/link';
+import { Container } from '@black-pear-joggers/container';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface MenuItemProps {
   link: string;

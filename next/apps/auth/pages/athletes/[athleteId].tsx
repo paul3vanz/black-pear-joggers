@@ -1,12 +1,11 @@
-import { Stack } from '@black-pear-joggers/stack';
-import { Container } from '@black-pear-joggers/container';
-import { Button } from '@black-pear-joggers/button';
-import { withAuthenticationRequired } from '@auth0/auth0-react';
-import { UpdateAthleteForm } from '../../components/athletes/update-athlete-form';
-
 import Link from 'next/link';
+import { Button } from '@black-pear-joggers/button';
+import { Container } from '@black-pear-joggers/container';
+import { Stack } from '@black-pear-joggers/stack';
+import { UpdateAthleteForm } from '../../components/athletes/update-athlete-form';
+import { useAthletes } from '@black-pear-joggers/core-services';
 import { useRouter } from 'next/dist/client/router';
-import { useAthletes } from '../../services/athletes';
+import { withAuthenticationRequired } from '@auth0/auth0-react';
 
 function AthleteDetailsPage() {
   const router = useRouter();

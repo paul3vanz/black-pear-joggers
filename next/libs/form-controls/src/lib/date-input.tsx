@@ -1,13 +1,11 @@
 import { getYear } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { UseFormRegisterReturn } from 'react-hook-form';
 
 
 export interface DateInputProps {
   id: string;
   label: string;
   value?: string;
-  registerField: UseFormRegisterReturn;
   showHelp?: boolean;
   onChange: (date: string) => void;
 }
@@ -16,7 +14,6 @@ export function DateInput(props: DateInputProps): JSX.Element {
   const [day, setDay] = useState<number>();
   const [month, setMonth] = useState<number>();
   const [year, setYear] = useState<number>();
-  const [date, setDate] = useState<string>();
 
   useEffect(() => {
     if (props.value) {

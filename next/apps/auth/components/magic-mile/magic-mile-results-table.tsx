@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { friendlyDate } from '@black-pear-joggers/helpers';
-import { MagicMileResult } from '../../services/magic-mile.interface';
+import { MagicMileResult } from '@black-pear-joggers/core-services';
 import { toTitleCase } from '../../helpers/formatters';
 
 interface MagicMileResultsProps {

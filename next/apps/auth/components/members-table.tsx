@@ -1,14 +1,14 @@
-import { toTitleCase } from '../helpers/formatters';
 import Link from 'next/link';
-import { Athlete } from '../services/members.interface';
+import { RegisteredAthlete } from '@black-pear-joggers/core-services';
+import { toTitleCase } from '../helpers/formatters';
 
 interface MembersTableProps {
   search: string;
   clubId: string;
-  members: Athlete[];
+  members: RegisteredAthlete[];
 }
 
-function getActiveMembers(members: Athlete[]): number {
+function getActiveMembers(members: RegisteredAthlete[]): number {
   return members.filter((member) => {
     return !['Resigned From Club', 'Membership with Club Lapsed'].includes(
       member.CompetitiveRegStatus

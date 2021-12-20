@@ -1,4 +1,4 @@
-import { Athlete } from '../../auth/services/athletes.interface';
+import { Athlete } from '@black-pear-joggers/core-services';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { formatGender } from '@black-pear-joggers/helpers';
@@ -6,6 +6,7 @@ import { Stack } from '@black-pear-joggers/stack';
 
 export interface ConfirmDetailsProps {
   athlete: Athlete;
+  isUpdating: boolean;
   onConfirmDetails: (athlete: Athlete) => void;
 }
 
@@ -33,7 +34,7 @@ export function ConfirmDetails(props: ConfirmDetailsProps) {
         </ul>
 
         <Button
-          text="Confirm"
+          text={props.isUpdating ? 'Please wait...' : 'Confirm'}
           onClick={() => props.onConfirmDetails(props.athlete)}
         />
       </Container>
