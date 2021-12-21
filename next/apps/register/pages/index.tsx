@@ -17,11 +17,14 @@ export interface IdvDetails {
 }
 
 function AdminHomePage() {
+  const [currentStep, setCurrentStep] = useState<string>();
   const [idvDetails, setIdvDetails] = useState<IdvDetails>();
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  const step1 = useRef<HTMLDivElement>();
-  const step2 = useRef<HTMLDivElement>();
+  const steps = {
+    form: useRef<HTMLDivElement>(),
+    result: useRef<HTMLDivElement>(),
+  };
 
   const router = useRouter();
 
@@ -31,14 +34,20 @@ function AdminHomePage() {
   );
 
   useEffect(() => {
-    scrollIntoView(step2.current);
-  }, [athlete, isError, isLoading]);
+    if (athlete || isError) {
+      setCurrentStep('result');
+    }
+  }, [athlete, isError]);
+
+  useEffect(() => {
+    if (currentStep) {
+      scrollIntoView(steps[currentStep].current);
+    }
+  }, [currentStep]);
 
   async function onConfirmDetails(athlete: Athlete) {
     setIsUpdating(true);
-
     const success = await setAthlete(athlete.id);
-
     setIsUpdating(false);
 
     if (success) {
@@ -63,7 +72,7 @@ function AdminHomePage() {
         </Container>
       </Stack>
 
-      <div ref={step1}>
+      <div ref={steps.form}>
         {isLoading}
         <RegisterForm
           onFormSubmit={(idvDetails) => setIdvDetails(idvDetails)}
@@ -71,7 +80,7 @@ function AdminHomePage() {
         />
       </div>
 
-      <div ref={step2}>
+      <div ref={steps.result}>
         {athlete && !isError && (
           <ConfirmDetails
             isUpdating={isUpdating}
@@ -83,7 +92,7 @@ function AdminHomePage() {
         {isError && (
           <NotFound
             onGoBack={() => {
-              scrollIntoView(step1.current);
+              setCurrentStep('form');
               setIdvDetails(null);
             }}
           />

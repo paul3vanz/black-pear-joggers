@@ -88,7 +88,11 @@ export function formatGender(gender: string): string {
 }
 
 export function scrollIntoView(element: Element): void {
-  element.scrollIntoView({
-    behavior: 'smooth',
-  });
+  setTimeout(
+    () =>
+      element.scrollIntoView({
+        behavior: 'smooth',
+      }),
+    0
+  );
 }
