@@ -16,9 +16,7 @@ export interface FormData {
 }
 
 export function RegisterForm(props: RegisterFormProps) {
-  const form = useForm<FormData>({
-    defaultValues: { dateOfBirth: '1983-02-05', urn: 3127917 },
-  });
+  const form = useForm<FormData>();
 
   return (
     <Stack backgroundColour="light">
