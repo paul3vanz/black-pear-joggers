@@ -1,11 +1,13 @@
-import { NavigationLinkItem, navigationLinks } from '../constants/navigation';
-import { useEffect, useState } from 'react';
-
 import Link from 'next/link';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { NavigationLinkItem, navigationLinks } from '../constants/navigation';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useEffect, useState } from 'react';
 
 const NavigationLink = (props: { link: string; text: string }) => (
   <a
-    className="text-gray-100 transition-all hover:bg-gray-700 hover:text-white px-3 py-1 inline-block rounded-sm font-bold no-underline"
+    className="text-gray-100 transition-all hover:bg-gray-700 hover:text-white px-3 py-1 inline-block rounded-sm font-bold no-underline text-center leading-tight"
     href={props.link}
   >
     {props.text}
@@ -122,7 +124,19 @@ const Logo = () => (
   </Link>
 );
 
+function UserIcon(props: { title?: string }) {
+  return (
+    <FontAwesomeIcon
+      className="text-white"
+      size="2x"
+      icon={faUserCircle}
+      title={props.title || 'Profile'}
+    />
+  );
+}
+
 export const Header = () => {
+  const { user, loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -145,6 +159,34 @@ export const Header = () => {
           {navigationLinks.map((item, index) => (
             <NavigationItem key={index} item={item}></NavigationItem>
           ))}
+
+          <li className="flex lg:ml-4 justify-center mt-3 lg:mt-0">
+            {isAuthenticated ? (
+              <button
+                onClick={() => {
+                  confirm('Are you sure you want to log out?')
+                    ? logout({ returnTo: window.location.origin })
+                    : false;
+                }}
+              >
+                {user?.picture ? (
+                  <>
+                    <img
+                      src={user?.picture}
+                      alt={user && user.name}
+                      className="w-8 rounded-full"
+                    />
+                  </>
+                ) : (
+                  <UserIcon />
+                )}
+              </button>
+            ) : (
+              <button onClick={() => loginWithRedirect()}>
+                <UserIcon title="Log in" />
+              </button>
+            )}
+          </li>
         </ul>
       </div>
     </nav>
