@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 interface FooterLinkProps {
@@ -17,15 +16,15 @@ const FooterLink = ({ link, text }: FooterLinkProps) => (
 export const Footer = () => (
   <>
     <div>
-      <Image
+      <img
         src="https://bpj.org.uk/wp-content/uploads/2012/03/montage-2017.jpg"
         alt=""
-        className=""
+        className="w-full"
         width="1080"
         height="212"
-        layout="responsive"
       />
     </div>
+
     <footer className="text-center bg-gray-900 text-white py-8">
       <img
         src="https://bpj.org.uk/wp-content/themes/BPJ/england-athletics-logo.svg"
