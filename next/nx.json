@@ -33,13 +33,13 @@
         ]
     },
     "projects": {
-        "auth": {
+        "admin": {
             "tags": []
         },
-        "auth-e2e": {
+        "admin-e2e": {
             "tags": [],
             "implicitDependencies": [
-                "auth"
+                "admin"
             ]
         },
         "button": {

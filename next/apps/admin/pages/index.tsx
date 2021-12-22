@@ -1,6 +1,6 @@
-import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
-import { Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
+import { Stack } from '@black-pear-joggers/stack';
+import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 
 function AdminHomePage() {
   return (
