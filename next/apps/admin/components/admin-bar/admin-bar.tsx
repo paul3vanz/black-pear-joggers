@@ -36,37 +36,15 @@ function Menu() {
 }
 
 export default function AdminBar() {
-  const { user, logout, isAuthenticated } = useAuth0();
-
-  return isAuthenticated ? (
+  return (
     <div className="py-3 bg-gray-200">
       <Container>
         <div className="flex justify-between items-center">
           <nav>
             <Menu />
           </nav>
-
-          {isAuthenticated && (
-            <a
-              href="#"
-              onClick={() => logout({ returnTo: window.location.origin })}
-            >
-              <div className="flex items-center">
-                <div className="mr-2">
-                  <img
-                    src={user.picture}
-                    alt={user && user.name}
-                    className="w-8 rounded-full"
-                  />
-                </div>
-                <div className="">Logout</div>
-              </div>
-            </a>
-          )}
         </div>
       </Container>
     </div>
-  ) : (
-    <></>
   );
 }

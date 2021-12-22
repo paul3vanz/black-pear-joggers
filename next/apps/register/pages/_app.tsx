@@ -1,13 +1,12 @@
 import { AppProps } from 'next/app';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
+import { config } from '@black-pear-joggers/core-services';
 import { Container } from '@black-pear-joggers/container';
 import { Footer } from '@black-pear-joggers/footer';
 import { Header } from '@black-pear-joggers/header';
 import { PropsWithChildren, useEffect } from 'react';
 import { Stack } from '@black-pear-joggers/stack';
 import './styles.css';
-
-
 
 function LoadingContent() {
   return (
@@ -28,7 +27,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
         localStorage.setItem(
           'bpj.token',
           await getAccessTokenSilently({
-            audience: 'https://bpj.org.uk',
+            audience: config.auth.audience,
           })
         );
       } catch (e) {
@@ -53,10 +52,10 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
     <Auth0Provider
-      domain="blackpearjoggers.us.auth0.com"
-      clientId="30P0GEyOCCjXjTI7VtJeAhYwovaJSKq1"
-      audience="https://bpj.org.uk"
-      redirectUri={typeof window !== 'undefined' && `${window.location.origin}${window.location.pathname}`}
+      {...config.auth}
+      redirectUri={
+        typeof window !== 'undefined' && `${window.location.origin}/register`
+      }
     >
       <div id="modalContainer"></div>
       <PageContent>

@@ -1,17 +1,9 @@
-import {
-    createRef,
-    RefObject,
-    useEffect,
-    useRef,
-    useState
-    } from 'react';
-import { intervalToDuration } from 'date-fns';
+import { useEffect, useRef, useState } from 'react';
 import {
   UseFormRegisterReturn,
   useFormContext,
   useWatch,
 } from 'react-hook-form';
-
 
 export interface TimeInputProps {
   id: string;
@@ -21,13 +13,14 @@ export interface TimeInputProps {
 }
 
 export function TimeInput(props: TimeInputProps): JSX.Element {
-  const [seconds, setSeconds] = useState<number>(null);
-  const [minutes, setMinutes] = useState<number>(null);
+  const [seconds, setSeconds] = useState<number>();
+  const [minutes, setMinutes] = useState<number>();
   const { getValues, setValue, control, watch } = useFormContext();
   const watchTime = watch(props.id, 0);
+
   const elements = {
-    minutes: useRef(null),
-    seconds: useRef(null),
+    minutes: useRef<HTMLInputElement>(null),
+    seconds: useRef<HTMLInputElement>(null),
   };
 
   const time = useWatch({
@@ -37,12 +30,18 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
   });
 
   useEffect(() => {
-    elements.minutes.current.value = Math.floor(watchTime / 60);
-    elements.seconds.current.value = Math.floor(watchTime % 60);
+    if (!elements.minutes.current || !elements.seconds.current || !watchTime) {
+      return;
+    }
+
+    elements.minutes.current.value = Math.floor(watchTime / 60).toString();
+    elements.seconds.current.value = Math.floor(watchTime % 60).toString();
   }, [watchTime]);
 
   useEffect(() => {
-    const timeInSeconds = ((minutes ? minutes * 60 : 0) + seconds).toString();
+    const timeInSeconds = (
+      (minutes ? minutes * 60 : 0) + (seconds || 0)
+    ).toString();
 
     setValue(props.id, timeInSeconds);
   }, [minutes, seconds]);
@@ -52,15 +51,14 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
       <fieldset>
         <legend className="block font-bold mb-1">{props.label}</legend>
         <div className="flex flex-wrap -mx-3">
-          <div className="w-full md:w-1/2 pl-3">
-            <label className="sr-only" htmlFor={`input-minutes-${props.id}`}>
+          <div className="w-1/2 pl-3">
+            <label className="mb-1" htmlFor={`input-minutes-${props.id}`}>
               Minutes
             </label>
 
             <input
               className="block w-full border rounded py-3 px-4 h-12"
               id={`input-minutes-${props.id}`}
-              placeholder="Minutes"
               ref={elements.minutes}
               min="0"
               max="59"
@@ -70,15 +68,14 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
             />
           </div>
 
-          <div className="w-full md:w-1/2 pl-2 pr-3">
-            <label className="sr-only" htmlFor={`input-seconds-${props.id}`}>
+          <div className="w-1/2 pl-2 pr-3">
+            <label className="mb-1" htmlFor={`input-seconds-${props.id}`}>
               Seconds
             </label>
 
             <input
               className="block w-full border rounded py-3 px-4 h-12"
               id={`input-seconds-${props.id}`}
-              placeholder="Seconds"
               ref={elements.seconds}
               min="0"
               max="59"

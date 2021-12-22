@@ -126,12 +126,7 @@ const Logo = () => (
 
 function UserIcon(props: { title?: string }) {
   return (
-    <FontAwesomeIcon
-      className="text-white"
-      size="2x"
-      icon={faUserCircle}
-      title={props.title || 'Profile'}
-    />
+    <FontAwesomeIcon className="text-white" size="2x" icon={faUserCircle} />
   );
 }
 
