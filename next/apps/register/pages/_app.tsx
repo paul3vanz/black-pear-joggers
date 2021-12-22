@@ -56,7 +56,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
       domain="blackpearjoggers.us.auth0.com"
       clientId="30P0GEyOCCjXjTI7VtJeAhYwovaJSKq1"
       audience="https://bpj.org.uk"
-      redirectUri={typeof window !== 'undefined' && window.location.origin}
+      redirectUri={typeof window !== 'undefined' && `${window.location.origin}${window.location.pathname}`}
     >
       <div id="modalContainer"></div>
       <PageContent>
