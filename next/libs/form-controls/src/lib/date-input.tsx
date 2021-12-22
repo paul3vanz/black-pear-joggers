@@ -1,10 +1,12 @@
+import { classNames } from '@black-pear-joggers/helpers';
 import { getYear } from 'date-fns';
 import { useEffect, useState } from 'react';
-
 
 export interface DateInputProps {
   id: string;
   label: string;
+  required?: boolean;
+  error?: string;
   value?: string;
   showHelp?: boolean;
   onChange: (date: string) => void;
@@ -40,7 +42,12 @@ export function DateInput(props: DateInputProps): JSX.Element {
   return (
     <>
       <fieldset>
-        <legend className="block font-bold mb-1" aria-describedby={``}>
+        <legend
+          className={classNames(
+            'block font-bold mb-1',
+            props.error && 'text-red-500'
+          )}
+        >
           {props.label}
         </legend>
 
@@ -50,56 +57,91 @@ export function DateInput(props: DateInputProps): JSX.Element {
 
         <div className="flex flex-wrap -mx-3">
           <div className="w-1/4 pl-3">
-            <label className="mb-1 block" htmlFor={`input-day-${props.id}`}>
+            <label
+              className={classNames(
+                'block mb-1',
+                props.error && 'text-red-500'
+              )}
+              htmlFor={`input-day-${props.id}`}
+            >
               Day
             </label>
 
             <input
-              className="block w-full border rounded py-3 px-4 h-12"
+              className={classNames(
+                'block w-full border rounded py-3 px-4 h-12',
+                props.error && 'bg-red-100 border-red-500'
+              )}
               id={`input-day-${props.id}`}
               min="1"
               max="31"
               step="1"
               value={day || ''}
+              required={props.required}
               onChange={(e) => setDay(Number(e.target.value))}
               type="number"
             />
           </div>
 
           <div className="w-1/4 pl-2">
-            <label className="mb-1 block" htmlFor={`input-month-${props.id}`}>
+            <label
+              className={classNames(
+                'block mb-1',
+                props.error && 'text-red-500'
+              )}
+              htmlFor={`input-month-${props.id}`}
+            >
               Month
             </label>
 
             <input
-              className="block w-full border rounded py-3 px-4 h-12"
+              className={classNames(
+                'block w-full border rounded py-3 px-4 h-12',
+                props.error && 'bg-red-100 border-red-500'
+              )}
               id={`input-month-${props.id}`}
               min="1"
               max="12"
               step="1"
               value={month || ''}
+              required={props.required}
               onChange={(e) => setMonth(Number(e.target.value))}
               type="number"
             />
           </div>
 
           <div className="w-1/2 pl-2 pr-3">
-            <label className="mb-1 block" htmlFor={`input-seconds-${props.id}`}>
+            <label
+              className={classNames(
+                'block mb-1',
+                props.error && 'text-red-500'
+              )}
+              htmlFor={`input-seconds-${props.id}`}
+            >
               Year
             </label>
 
             <input
-              className="block w-full border rounded py-3 px-4 h-12"
+              className={classNames(
+                'block w-full border rounded py-3 px-4 h-12',
+                props.error && 'bg-red-100 border-red-500'
+              )}
               id={`input-seconds-${props.id}`}
               min="1900"
               max={getYear(new Date())}
               step="1"
               value={year || ''}
+              required={props.required}
               onChange={(e) => setYear(Number(e.target.value))}
               type="number"
             />
           </div>
         </div>
+        {props.error && (
+          <div id={`error-${props.id}`} className="mt-1 text-sm text-red-500">
+            {props.error}
+          </div>
+        )}
       </fieldset>
     </>
   );

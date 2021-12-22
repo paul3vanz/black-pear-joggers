@@ -19,7 +19,7 @@ export const Footer = () => (
       <img
         src="https://bpj.org.uk/wp-content/uploads/2012/03/montage-2017.jpg"
         alt=""
-        className="w-full"
+        className="w-full object-cover h-64 sm:h-auto"
         width="1080"
         height="212"
       />

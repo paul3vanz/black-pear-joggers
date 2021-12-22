@@ -22,7 +22,7 @@ export function blogPostUrl(blogPost: any): string {
   ].join('/');
 }
 
-export function classNames(...classNames: string[]): string {
+export function classNames(...classNames: (string | undefined)[]): string {
   return classNames.filter(Boolean).join(' ');
 }
 
