@@ -21,6 +21,12 @@ function MagicMileResults(props: MagicMileResultsProps) {
       })
     : props.magicMileResults;
 
+  function formatLocation(location: string): string {
+    const search = location.match(/\(.*?(?=\))/);
+
+    return search ? search[0].replace('(', '') : location;
+  }
+
   return (
     <>
       <p>
@@ -69,7 +75,7 @@ function MagicMileResults(props: MagicMileResultsProps) {
                   {result.category}
                 </td>
                 <td className="px-1 sm:px-4 py-2">
-                  {result.location.match(/\(.*?(?=\))/)[0].replace('(', '')}
+                  {formatLocation(result.location)}
                 </td>
                 <td className="px-1 sm:px-4 py-2">
                   <button title="Delete" onClick={() => props.onDelete(result)}>
