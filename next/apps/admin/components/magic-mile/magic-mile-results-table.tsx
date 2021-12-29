@@ -68,7 +68,9 @@ function MagicMileResults(props: MagicMileResultsProps) {
                 <td className="px-1 sm:px-4 py-2 hidden lg:table-cell">
                   {result.category}
                 </td>
-                <td className="px-1 sm:px-4 py-2">{result.location}</td>
+                <td className="px-1 sm:px-4 py-2">
+                  {result.location.match(/\(.*?(?=\))/)[0].replace('(', '')}
+                </td>
                 <td className="px-1 sm:px-4 py-2">
                   <button title="Delete" onClick={() => props.onDelete(result)}>
                     <FontAwesomeIcon

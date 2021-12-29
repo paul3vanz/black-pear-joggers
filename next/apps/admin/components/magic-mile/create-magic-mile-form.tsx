@@ -12,7 +12,6 @@ import { TimeInput } from '@black-pear-joggers/form-controls';
 import { useAthlete, useAthletes } from '@black-pear-joggers/core-services';
 import { useState } from 'react';
 
-
 interface CreateMagicMileResultFormProps {
   results: MagicMileResult[];
   magicMileResult?: MagicMileResult;
@@ -128,7 +127,10 @@ export function CreateMagicMileResultForm(
                 required: true,
                 value: magicMileLocations[2],
               })}
-              options={magicMileLocations}
+              options={magicMileLocations.map((location) => ({
+                value: `Magic Mile (${location})`,
+                label: location,
+              }))}
             />
           </div>
         </div>
