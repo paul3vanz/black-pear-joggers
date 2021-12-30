@@ -30,20 +30,28 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
   });
 
   useEffect(() => {
-    if (!elements.minutes.current || !elements.seconds.current || !watchTime) {
+    console.log('watchTime effected');
+    if (!watchTime) {
       return;
     }
 
-    elements.minutes.current.value = Math.floor(watchTime / 60).toString();
-    elements.seconds.current.value = Math.floor(watchTime % 60).toString();
+    const minutes = Math.floor(watchTime / 60);
+    const seconds = Math.floor(watchTime % 60);
+
+    setMinutes(minutes);
+    setSeconds(seconds);
   }, [watchTime]);
 
   useEffect(() => {
-    const timeInSeconds = (
-      (minutes ? minutes * 60 : 0) + (seconds || 0)
-    ).toString();
+    const timeInSeconds = (minutes ? minutes * 60 : 0) + (seconds || 0);
 
-    setValue(props.id, timeInSeconds);
+    if (timeInSeconds !== watchTime) {
+      setValue(props.id, timeInSeconds, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+    }
   }, [minutes, seconds]);
 
   return (
@@ -59,11 +67,11 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
             <input
               className="block w-full border rounded py-3 px-4 h-12"
               id={`input-minutes-${props.id}`}
-              ref={elements.minutes}
               min="0"
               max="59"
               step="1"
               onChange={(e) => setMinutes(Number(e.target.value))}
+              value={minutes || '0'}
               type="number"
             />
           </div>
@@ -76,11 +84,11 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
             <input
               className="block w-full border rounded py-3 px-4 h-12"
               id={`input-seconds-${props.id}`}
-              ref={elements.seconds}
               min="0"
               max="59"
               step="1"
               onChange={(e) => setSeconds(Number(e.target.value))}
+              value={seconds || '0'}
               type="number"
             />
           </div>

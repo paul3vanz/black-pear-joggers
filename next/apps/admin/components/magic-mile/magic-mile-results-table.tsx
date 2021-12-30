@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { friendlyDate } from '@black-pear-joggers/helpers';
+import { friendlyDate, timeFormatted } from '@black-pear-joggers/helpers';
 import { MagicMileResult } from '@black-pear-joggers/core-services';
 import { toTitleCase } from '../../helpers/formatters';
 
@@ -62,9 +62,11 @@ function MagicMileResults(props: MagicMileResultsProps) {
                   </Link>
                 </td>
                 <td className="px-1 sm:px-4 py-2 hidden lg:table-cell">
-                  {result.predictedTime}
+                  {timeFormatted(result.predictedTimeParsed)}
                 </td>
-                <td className="px-1 sm:px-4 py-2">{result.actualTime}</td>
+                <td className="px-1 sm:px-4 py-2">
+                  {timeFormatted(result.actualTimeParsed)}
+                </td>
                 <td className="px-1 sm:px-4 py-2">
                   {friendlyDate(result.date)}
                 </td>

@@ -28,7 +28,7 @@ export default function Tools() {
         <p>
           <Button
             text="Sync magic mile"
-            link={`${config.baseApiUrl}/fetch/syncmagicmile`}
+            link={`${config.baseApiUrl}/performances/syncmagicmile`}
           ></Button>
         </p>
 

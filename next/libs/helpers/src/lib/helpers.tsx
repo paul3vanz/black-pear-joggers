@@ -49,14 +49,6 @@ export function hasTag(tags: string[], tag: string): boolean {
   return tags?.some((currentTag) => currentTag === tag);
 }
 
-export function friendlyTime(time: string) {
-  const timeAsMoment = moment(time, 'HH:mm');
-
-  return timeAsMoment.minutes()
-    ? timeAsMoment.format('h:mma')
-    : timeAsMoment.format('ha');
-}
-
 export function friendlyDate(dateString: string) {
   if (!dateString) return dateString;
 
@@ -80,7 +72,11 @@ export function dateIsBefore(date: string, dateToCompare: string): boolean {
 }
 
 export function timeFormatted(timeInSeconds: number): string {
-  return `${Math.floor(timeInSeconds / 60)}:${timeInSeconds % 60}`;
+  if (!timeInSeconds) return '';
+
+  return `${Math.floor(timeInSeconds / 60)}:${String(
+    timeInSeconds % 60
+  ).padStart(2, '0')}`;
 }
 
 export function formatGender(gender: string): string {

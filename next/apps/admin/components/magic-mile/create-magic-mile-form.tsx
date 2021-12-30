@@ -29,22 +29,6 @@ interface FormData {
   actualTime: number;
 }
 
-async function onSubmit(data) {
-  const response = await createMagicMileResult({
-    athleteId: Number(data.athleteId),
-    firstName: data.firstName,
-    lastName: data.lastName,
-    gender: data.gender,
-    category: data.category,
-    date: data.date,
-    location: data.location,
-    predictedTime: timeFormatted(data.predictedTime),
-    predictedTimeParsed: data.predictedTime,
-    actualTime: timeFormatted(data.actualTime),
-    actualTimeParsed: data.actualTime,
-  });
-}
-
 export function CreateMagicMileResultForm(
   props: CreateMagicMileResultFormProps
 ) {
@@ -53,6 +37,14 @@ export function CreateMagicMileResultForm(
   const { athletes } = useAthletes();
   const { athlete } = useAthlete(athleteId);
   const [showMembers, setShowMembers] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  function resetForm() {
+    form.setValue('firstName', '');
+    form.setValue('lastName', '');
+    form.setValue('athleteId', null);
+    form.setFocus('athleteId');
+  }
 
   function handleAthleteChange(
     setValue,
@@ -83,6 +75,34 @@ export function CreateMagicMileResultForm(
       shouldTouch: true,
       shouldValidate: true,
     });
+  }
+
+  async function onSubmit(data) {
+    setIsLoading(true);
+
+    const response = await createMagicMileResult({
+      athleteId: Number(data.athleteId),
+      firstName: data.firstName,
+      lastName: data.lastName,
+      gender: data.gender,
+      category: data.category,
+      date: data.date,
+      location: data.location,
+      predictedTime: timeFormatted(data.predictedTime),
+      predictedTimeParsed: data.predictedTime,
+      actualTime: timeFormatted(data.actualTime),
+      actualTimeParsed: data.actualTime,
+    });
+
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    setIsLoading(false);
+
+    if (response.ok) {
+      resetForm();
+    } else {
+      alert(`Error adding result: ${response.statusText}`);
+    }
   }
 
   function getAthleteOptionElements(athletes: Athlete[]) {
@@ -243,7 +263,7 @@ export function CreateMagicMileResultForm(
 
         <div className="mb-6">
           <ButtonLightTextDarkBackground
-            text="Save"
+            text={isLoading ? 'Saving...' : 'Save'}
             onClick={form.handleSubmit(onSubmit)}
           />
         </div>
