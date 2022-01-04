@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Effect, Actions, ofType } from '@ngrx/effects';
-import { DataPersistence } from '@nrwl/nx';
+import { DataPersistence } from '@nrwl/angular';
 
 import { ClubStandardsPartialState } from './club-standards.reducer';
 import {
@@ -43,7 +43,7 @@ export class ClubStandardsEffects {
     ofType(ClubStandardsActionTypes.ClubStandardsSetGender),
     map((action: ClubStandardsSetGender) => action.gender),
     withLatestFrom(this.store$.select(clubStandardsQuery.getActiveCategory)),
-    map(([ gender, category ]) => {
+    map(([gender, category]) => {
       return new LoadClubStandards(gender, category);
     })
   );
@@ -53,7 +53,7 @@ export class ClubStandardsEffects {
     ofType(ClubStandardsActionTypes.ClubStandardsSetCategory),
     map((action: ClubStandardsSetCategory) => action.category),
     withLatestFrom(this.store$.select(clubStandardsQuery.getActiveGender)),
-    map(([ category, gender ]) => {
+    map(([category, gender]) => {
       return new LoadClubStandards(gender, category);
     })
   );

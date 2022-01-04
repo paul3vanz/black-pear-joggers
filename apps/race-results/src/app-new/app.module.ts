@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { NxModule } from '@nrwl/nx';
+import { NxModule } from '@nrwl/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
 import { SharedPipesModule } from '@black-pear-joggers/shared-pipes';
@@ -14,7 +14,7 @@ import { environment } from '../environments/environment';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [ AppComponent ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     EffectsModule.forRoot([]),
@@ -31,6 +31,6 @@ import { FormsModule } from '@angular/forms';
     SharedPipesModule,
   ],
   providers: [],
-  bootstrap: [ AppComponent ],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -44,12 +44,6 @@
     "shared-pipes": {
       "tags": []
     },
-    "admin": {
-      "tags": []
-    },
-    "authentication": {
-      "tags": []
-    },
     "membership-data-access": {
       "tags": []
     }

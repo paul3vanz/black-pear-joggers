@@ -3,7 +3,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { NxModule } from '@nrwl/nx';
+import { NxModule } from '@nrwl/angular';
 import { RouterModule } from '@angular/router';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreModule } from '@ngrx/store';
@@ -60,7 +60,7 @@ import { RankingStatsTableComponent } from './components/ranking-stats-table/ran
     SearchResultsMeetingsComponent,
     StandardsPageComponent,
     StandardsTableComponent,
-    RankingStatsTableComponent
+    RankingStatsTableComponent,
   ],
   imports: [
     BrowserModule,
@@ -73,18 +73,18 @@ import { RankingStatsTableComponent } from './components/ranking-stats-table/ran
     RaceResultsDataAccessModule,
     ReactiveFormsModule,
     RouterModule.forRoot(appRoutes, {
-    useHash: true,
-    relativeLinkResolution: 'legacy'
-}),
+      useHash: true,
+      relativeLinkResolution: 'legacy',
+    }),
     SharedComponentsModule,
     SharedPipesModule,
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
-      logOnly: environment.production
-    })
+      logOnly: environment.production,
+    }),
   ],
   providers: [AthletesService, ResultsService, StandardsService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
