@@ -7,6 +7,9 @@
     "tslint.json": "*",
     "nx.json": "*"
   },
+  "affected": {
+    "defaultBase": "master"
+  },
   "projects": {
     "shared-components": {
       "tags": []
@@ -50,5 +53,13 @@
     "membership-data-access": {
       "tags": []
     }
+  },
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
   }
 }
