@@ -1,4 +1,4 @@
-import { LoadingState, LoadingStates } from 'libs/authentication/src/lib/models/loading-state.model';
+import { LoadingState, LoadingStates } from 'libs/race-results-data-access/src/lib/models/loading-state.model';
 import { createReducer, on } from '@ngrx/store';
 
 import { Membership } from '../models/membership.model';

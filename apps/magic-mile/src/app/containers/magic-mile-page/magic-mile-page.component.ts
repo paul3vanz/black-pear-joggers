@@ -4,7 +4,7 @@ import { loadResults, magicMileQuery, MagicMile } from '@black-pear-joggers/magi
 import { Store } from '@ngrx/store';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter, take } from 'rxjs/operators';
-import { LoadingState } from 'libs/authentication/src/lib/models/loading-state.model';
+import { LoadingState } from 'libs/race-results-data-access/src/lib/models/loading-state.model';
 
 @Component({
   selector: 'bpj-magic-mile-page',

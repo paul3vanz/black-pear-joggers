@@ -22,7 +22,6 @@
       "@black-pear-joggers/club-standards-data-access": ["libs/club-standards-data-access/src/index.ts"],
       "@black-pear-joggers/race-results-data-access": ["libs/race-results-data-access/src/index.ts"],
       "@black-pear-joggers/shared-pipes": ["libs/shared-pipes/src/index.ts"],
-      "@black-pear-joggers/authentication": ["libs/authentication/src/index.ts"],
       "@black-pear-joggers/membership-data-access": ["libs/membership-data-access/src/index.ts"]
     }
   },
