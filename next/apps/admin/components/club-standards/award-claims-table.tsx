@@ -21,7 +21,6 @@ import {
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 
-
 interface AwardClaimsTableProps {
   search: string;
   awardClaims: AwardClaim[];
@@ -93,13 +92,9 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
               </td>
 
               <td className="px-4 py-2">
-                {awardClaim.athleteId ? (
-                  <Link href={`/athletes/${awardClaim.athleteId}`}>
-                    {awardClaim.firstName + ' ' + awardClaim.lastName}
-                  </Link>
-                ) : (
-                  <>{awardClaim.firstName + ' ' + awardClaim.lastName}</>
-                )}
+                <Link href={`/club-standards/${awardClaim.id}`}>
+                  {awardClaim.firstName + ' ' + awardClaim.lastName}
+                </Link>
               </td>
 
               <td className="px-4 py-2">{awardClaim.category}</td>
