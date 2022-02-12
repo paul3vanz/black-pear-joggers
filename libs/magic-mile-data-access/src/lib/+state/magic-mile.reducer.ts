@@ -1,7 +1,7 @@
 import * as magicMileActions from './magic-mile.actions';
 import { MagicMile } from '../models/magic-mile.model';
 import { createReducer, on } from '@ngrx/store';
-import { LoadingState, LoadingStates } from 'libs/authentication/src/lib/models/loading-state.model';
+import { LoadingState, LoadingStates } from 'libs/race-results-data-access/src/lib/models/loading-state.model';
 
 export const FEATURE_KEY = 'magicMile';
 

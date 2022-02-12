@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { NxModule } from '@nrwl/nx';
+import { NxModule } from '@nrwl/angular';
 
 import { AppComponent } from './app.component';
 import { SharedComponentsModule } from '@black-pear-joggers/shared-components';
@@ -47,13 +47,13 @@ import { CertificateComponent } from './components/certificate/certificate.compo
       { clubStandards: clubStandardsReducer },
       {
         initialState: { clubStandards: clubStandardsInitialState },
-        metaReducers: !environment.production ? [ storeFreeze ] : [],
+        metaReducers: !environment.production ? [storeFreeze] : [],
       }
     ),
-    EffectsModule.forRoot([ ClubStandardsEffects ]),
+    EffectsModule.forRoot([ClubStandardsEffects]),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
   ],
   providers: [],
-  bootstrap: [ AppComponent ],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

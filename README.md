@@ -28,7 +28,7 @@ Run `ng generate component component-name --project=myapp` to generate a new com
 
 ## Build
 
-Run `ng build --project=myapp` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+`ng build --project=race-results --configuration production`
 
 ## Running unit tests
 

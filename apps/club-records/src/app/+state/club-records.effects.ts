@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Effect, Actions, ofType } from '@ngrx/effects';
-import { DataPersistence } from '@nrwl/nx';
+import { DataPersistence } from '@nrwl/angular';
 
 import { ClubRecordsPartialState } from './club-records.reducer';
 import {
@@ -49,7 +49,10 @@ export class ClubRecordsEffects {
   );
 
   @Effect()
-  SendQuerySuccess$ = this.actions$.pipe(ofType(ClubRecordsActionTypes.SendQuerySuccess), map(() => new fromClubRecordsActions.Load()));
+  SendQuerySuccess$ = this.actions$.pipe(
+    ofType(ClubRecordsActionTypes.SendQuerySuccess),
+    map(() => new fromClubRecordsActions.Load())
+  );
 
   constructor(
     private actions$: Actions,

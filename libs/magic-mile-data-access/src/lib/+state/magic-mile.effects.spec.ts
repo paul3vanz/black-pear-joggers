@@ -6,9 +6,9 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 
-import { NxModule } from '@nrwl/nx';
-import { DataPersistence } from '@nrwl/nx';
-import { hot } from '@nrwl/nx/testing';
+import { NxModule } from '@nrwl/angular';
+import { DataPersistence } from '@nrwl/angular';
+import { hot } from '@nrwl/angular/testing';
 
 import { MagicMileEffects } from './magic-mile.effects';
 import { LoadMagicMile, MagicMileLoaded } from './magic-mile.actions';
@@ -19,16 +19,8 @@ describe('MagicMileEffects', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        NxModule.forRoot(),
-        StoreModule.forRoot({}),
-        EffectsModule.forRoot([])
-      ],
-      providers: [
-        MagicMileEffects,
-        DataPersistence,
-        provideMockActions(() => actions)
-      ]
+      imports: [NxModule.forRoot(), StoreModule.forRoot({}), EffectsModule.forRoot([])],
+      providers: [MagicMileEffects, DataPersistence, provideMockActions(() => actions)],
     });
 
     effects = TestBed.get(MagicMileEffects);
@@ -37,9 +29,7 @@ describe('MagicMileEffects', () => {
   describe('loadMagicMile$', () => {
     it('should work', () => {
       actions = hot('-a-|', { a: new LoadMagicMile() });
-      expect(effects.loadMagicMile$).toBeObservable(
-        hot('-a-|', { a: new MagicMileLoaded([]) })
-      );
+      expect(effects.loadMagicMile$).toBeObservable(hot('-a-|', { a: new MagicMileLoaded([]) }));
     });
   });
 });
