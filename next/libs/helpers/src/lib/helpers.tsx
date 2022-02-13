@@ -5,6 +5,7 @@ import {
     isTomorrow,
     parseISO
     } from 'date-fns';
+import { MutableRefObject, useRef } from 'react';
 
 function moment(...test: any[]): any {
   return null;
@@ -90,5 +91,14 @@ export function scrollIntoView(element: Element): void {
         behavior: 'smooth',
       }),
     0
+  );
+}
+
+export function stepNamesToRefs(stepNames: string[]): {
+  [key: string]: MutableRefObject<HTMLDivElement>;
+} {
+  return stepNames.reduce(
+    (a, v) => ({ ...a, [v]: useRef<HTMLDivElement>() }),
+    {}
   );
 }
