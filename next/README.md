@@ -1,11 +1,8 @@
 # BlackPearJoggers
 
-This project was generated using [Nx](https://nx.dev).
+## Starting Sanity Studio
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
-
-🔎 **Smart, Extensible Build Framework**
-
+Go to `/apps/sanity-studio` and run `sanity start`, then go to [localhost:3333](http://localhost:3333)
 ## Adding capabilities to your workspace
 
 Nx supports many plugins which add capabilities for developing different types of applications and different tools.

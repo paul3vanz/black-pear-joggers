@@ -1,511 +1,521 @@
 {
-    "version": 2,
-    "projects": {
-        "admin": {
+  "version": 2,
+  "projects": {
+    "admin": {
+      "root": "apps/admin",
+      "sourceRoot": "apps/admin",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
             "root": "apps/admin",
-            "sourceRoot": "apps/admin",
-            "projectType": "application",
-            "targets": {
-                "build": {
-                    "executor": "@nrwl/next:build",
-                    "outputs": [
-                        "{options.outputPath}"
-                    ],
-                    "options": {
-                        "root": "apps/admin",
-                        "outputPath": "dist/apps/admin"
-                    },
-                    "configurations": {
-                        "production": {}
-                    }
-                },
-                "serve": {
-                    "executor": "@nrwl/next:server",
-                    "options": {
-                        "buildTarget": "admin:build",
-                        "dev": true
-                    },
-                    "configurations": {
-                        "production": {
-                            "buildTarget": "admin:build:production",
-                            "dev": false
-                        }
-                    }
-                },
-                "export": {
-                    "executor": "@nrwl/next:export",
-                    "options": {
-                        "buildTarget": "admin:build:production"
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/apps/admin"
-                    ],
-                    "options": {
-                        "jestConfig": "apps/admin/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                },
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "apps/admin/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                }
-            }
+            "outputPath": "dist/apps/admin"
+          },
+          "configurations": {
+            "production": {}
+          }
         },
-        "admin-e2e": {
-            "root": "apps/admin-e2e",
-            "sourceRoot": "apps/admin-e2e/src",
-            "projectType": "application",
-            "targets": {
-                "e2e": {
-                    "executor": "@nrwl/cypress:cypress",
-                    "options": {
-                        "cypressConfig": "apps/admin-e2e/cypress.json",
-                        "devServerTarget": "admin:serve",
-                        "tsConfig": "apps/admin-e2e/tsconfig.json"
-                    },
-                    "configurations": {
-                        "production": {
-                            "devServerTarget": "admin:serve:production"
-                        }
-                    }
-                },
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "apps/admin-e2e/**/*.{js,ts}"
-                        ]
-                    }
-                }
+        "serve": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "admin:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "admin:build:production",
+              "dev": false
             }
+          }
         },
-        "button": {
-            "root": "libs/button",
-            "sourceRoot": "libs/button/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/button/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/button"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/button/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "admin:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/admin"],
+          "options": {
+            "jestConfig": "apps/admin/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/admin/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "admin-e2e": {
+      "root": "apps/admin-e2e",
+      "sourceRoot": "apps/admin-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/admin-e2e/cypress.json",
+            "devServerTarget": "admin:serve",
+            "tsConfig": "apps/admin-e2e/tsconfig.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "admin:serve:production"
             }
+          }
         },
-        "container": {
-            "root": "libs/container",
-            "sourceRoot": "libs/container/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/container/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/container"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/container/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/admin-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "button": {
+      "root": "libs/button",
+      "sourceRoot": "libs/button/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/button/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/button"],
+          "options": {
+            "jestConfig": "libs/button/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "claim-award": {
+      "root": "apps/claim-award",
+      "sourceRoot": "apps/claim-award",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "root": "apps/claim-award",
+            "outputPath": "dist/apps/claim-award"
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "claim-award:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "claim-award:build:production",
+              "dev": false
             }
+          }
         },
-        "core-services": {
-            "root": "libs/core-services",
-            "sourceRoot": "libs/core-services/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/core-services/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/core-services"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/core-services/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "claim-award:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/claim-award"],
+          "options": {
+            "jestConfig": "apps/claim-award/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/claim-award/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "claim-award-e2e": {
+      "root": "apps/claim-award-e2e",
+      "sourceRoot": "apps/claim-award-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/claim-award-e2e/cypress.json",
+            "devServerTarget": "claim-award:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "claim-award:serve:production"
             }
+          }
         },
-        "favicon": {
-            "root": "libs/favicon",
-            "sourceRoot": "libs/favicon/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/favicon/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/favicon"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/favicon/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/claim-award-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "container": {
+      "root": "libs/container",
+      "sourceRoot": "libs/container/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/container/**/*.{ts,tsx,js,jsx}"]
+          }
         },
-        "footer": {
-            "root": "libs/footer",
-            "sourceRoot": "libs/footer/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/footer/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/footer"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/footer/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/container"],
+          "options": {
+            "jestConfig": "libs/container/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "core-services": {
+      "root": "libs/core-services",
+      "sourceRoot": "libs/core-services/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/core-services/**/*.{ts,tsx,js,jsx}"]
+          }
         },
-        "form-controls": {
-            "root": "libs/form-controls",
-            "sourceRoot": "libs/form-controls/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/form-controls/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/form-controls"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/form-controls/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/core-services"],
+          "options": {
+            "jestConfig": "libs/core-services/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "favicon": {
+      "root": "libs/favicon",
+      "sourceRoot": "libs/favicon/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/favicon/**/*.{ts,tsx,js,jsx}"]
+          }
         },
-        "header": {
-            "root": "libs/header",
-            "sourceRoot": "libs/header/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/header/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/header"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/header/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/favicon"],
+          "options": {
+            "jestConfig": "libs/favicon/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "footer": {
+      "root": "libs/footer",
+      "sourceRoot": "libs/footer/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/footer/**/*.{ts,tsx,js,jsx}"]
+          }
         },
-        "helpers": {
-            "root": "libs/helpers",
-            "sourceRoot": "libs/helpers/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/helpers/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/helpers"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/helpers/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/footer"],
+          "options": {
+            "jestConfig": "libs/footer/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "form-controls": {
+      "root": "libs/form-controls",
+      "sourceRoot": "libs/form-controls/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/form-controls/**/*.{ts,tsx,js,jsx}"]
+          }
         },
-        "lazy-load-image": {
-            "root": "libs/lazy-load-image",
-            "sourceRoot": "libs/lazy-load-image/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/lazy-load-image/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/lazy-load-image"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/lazy-load-image/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/form-controls"],
+          "options": {
+            "jestConfig": "libs/form-controls/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "header": {
+      "root": "libs/header",
+      "sourceRoot": "libs/header/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/header/**/*.{ts,tsx,js,jsx}"]
+          }
         },
-        "register": {
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/header"],
+          "options": {
+            "jestConfig": "libs/header/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "helpers": {
+      "root": "libs/helpers",
+      "sourceRoot": "libs/helpers/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/helpers/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/helpers"],
+          "options": {
+            "jestConfig": "libs/helpers/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "lazy-load-image": {
+      "root": "libs/lazy-load-image",
+      "sourceRoot": "libs/lazy-load-image/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/lazy-load-image/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/lazy-load-image"],
+          "options": {
+            "jestConfig": "libs/lazy-load-image/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "register": {
+      "root": "apps/register",
+      "sourceRoot": "apps/register",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
             "root": "apps/register",
-            "sourceRoot": "apps/register",
-            "projectType": "application",
-            "targets": {
-                "build": {
-                    "executor": "@nrwl/next:build",
-                    "outputs": [
-                        "{options.outputPath}"
-                    ],
-                    "options": {
-                        "root": "apps/register",
-                        "outputPath": "dist/apps/register"
-                    },
-                    "configurations": {
-                        "production": {}
-                    }
-                },
-                "serve": {
-                    "executor": "@nrwl/next:server",
-                    "options": {
-                        "buildTarget": "register:build",
-                        "dev": true
-                    },
-                    "configurations": {
-                        "production": {
-                            "buildTarget": "register:build:production",
-                            "dev": false
-                        }
-                    }
-                },
-                "export": {
-                    "executor": "@nrwl/next:export",
-                    "options": {
-                        "buildTarget": "register:build:production"
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/apps/register"
-                    ],
-                    "options": {
-                        "jestConfig": "apps/register/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                },
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "apps/register/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                }
-            }
+            "outputPath": "dist/apps/register"
+          },
+          "configurations": {
+            "production": {}
+          }
         },
-        "register-e2e": {
-            "root": "apps/register-e2e",
-            "sourceRoot": "apps/register-e2e/src",
-            "projectType": "application",
-            "targets": {
-                "e2e": {
-                    "executor": "@nrwl/cypress:cypress",
-                    "options": {
-                        "cypressConfig": "apps/register-e2e/cypress.json",
-                        "devServerTarget": "register:serve"
-                    },
-                    "configurations": {
-                        "production": {
-                            "devServerTarget": "register:serve:production"
-                        }
-                    }
-                },
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "apps/register-e2e/**/*.{js,ts}"
-                        ]
-                    }
-                }
+        "serve": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "register:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "register:build:production",
+              "dev": false
             }
+          }
         },
-        "search-bar": {
-            "root": "libs/search-bar",
-            "sourceRoot": "libs/search-bar/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/search-bar/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/search-bar"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/search-bar/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "register:build:production"
+          }
         },
-        "stack": {
-            "root": "libs/stack",
-            "sourceRoot": "libs/stack/src",
-            "projectType": "library",
-            "targets": {
-                "lint": {
-                    "executor": "@nrwl/linter:eslint",
-                    "outputs": [
-                        "{options.outputFile}"
-                    ],
-                    "options": {
-                        "lintFilePatterns": [
-                            "libs/stack/**/*.{ts,tsx,js,jsx}"
-                        ]
-                    }
-                },
-                "test": {
-                    "executor": "@nrwl/jest:jest",
-                    "outputs": [
-                        "coverage/libs/stack"
-                    ],
-                    "options": {
-                        "jestConfig": "libs/stack/jest.config.js",
-                        "passWithNoTests": true
-                    }
-                }
-            }
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/register"],
+          "options": {
+            "jestConfig": "apps/register/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/register/**/*.{ts,tsx,js,jsx}"]
+          }
         }
+      }
     },
-    "cli": {
-        "defaultCollection": "@nrwl/next"
-    },
-    "generators": {
-        "@nrwl/react": {
-            "application": {
-                "babel": true
+    "register-e2e": {
+      "root": "apps/register-e2e",
+      "sourceRoot": "apps/register-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/register-e2e/cypress.json",
+            "devServerTarget": "register:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "register:serve:production"
             }
+          }
         },
-        "@nrwl/next": {
-            "application": {
-                "style": "styled-components",
-                "linter": "eslint"
-            }
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/register-e2e/**/*.{js,ts}"]
+          }
         }
+      }
     },
-    "defaultProject": "admin"
+    "sanity": {
+      "root": "libs/sanity",
+      "sourceRoot": "libs/sanity/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/sanity/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/sanity"],
+          "options": {
+            "jestConfig": "libs/sanity/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "search-bar": {
+      "root": "libs/search-bar",
+      "sourceRoot": "libs/search-bar/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/search-bar/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/search-bar"],
+          "options": {
+            "jestConfig": "libs/search-bar/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "stack": {
+      "root": "libs/stack",
+      "sourceRoot": "libs/stack/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/stack/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/stack"],
+          "options": {
+            "jestConfig": "libs/stack/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/next"
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "babel": true
+      }
+    },
+    "@nrwl/next": {
+      "application": {
+        "style": "styled-components",
+        "linter": "eslint"
+      }
+    }
+  },
+  "defaultProject": "admin"
 }

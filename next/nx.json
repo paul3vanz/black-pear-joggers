@@ -1,88 +1,88 @@
 {
-    "npmScope": "black-pear-joggers",
-    "affected": {
-        "defaultBase": "master"
+  "npmScope": "black-pear-joggers",
+  "affected": {
+    "defaultBase": "master"
+  },
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
     },
-    "implicitDependencies": {
-        "package.json": {
-            "dependencies": "*",
-            "devDependencies": "*"
-        },
-        ".eslintrc.json": "*"
-    },
-    "tasksRunnerOptions": {
-        "default": {
-            "runner": "@nrwl/workspace/tasks-runners/default",
-            "options": {
-                "cacheableOperations": [
-                    "build",
-                    "export",
-                    "lint",
-                    "test",
-                    "e2e"
-                ]
-            }
-        }
-    },
-    "targetDependencies": {
-        "build": [
-            {
-                "target": "build",
-                "projects": "dependencies"
-            }
-        ]
-    },
-    "projects": {
-        "admin": {
-            "tags": []
-        },
-        "admin-e2e": {
-            "tags": [],
-            "implicitDependencies": [
-                "admin"
-            ]
-        },
-        "button": {
-            "tags": []
-        },
-        "container": {
-            "tags": []
-        },
-        "core-services": {
-            "tags": []
-        },
-        "favicon": {
-            "tags": []
-        },
-        "footer": {
-            "tags": []
-        },
-        "form-controls": {
-            "tags": []
-        },
-        "header": {
-            "tags": []
-        },
-        "helpers": {
-            "tags": []
-        },
-        "lazy-load-image": {
-            "tags": []
-        },
-        "register": {
-            "tags": []
-        },
-        "register-e2e": {
-            "tags": [],
-            "implicitDependencies": [
-                "register"
-            ]
-        },
-        "search-bar": {
-            "tags": []
-        },
-        "stack": {
-            "tags": []
-        }
+    ".eslintrc.json": "*"
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/workspace/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "export", "lint", "test", "e2e"]
+      }
     }
+  },
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
+  },
+  "projects": {
+    "admin": {
+      "tags": []
+    },
+    "admin-e2e": {
+      "tags": [],
+      "implicitDependencies": ["admin"]
+    },
+    "button": {
+      "tags": []
+    },
+    "claim-award": {
+      "tags": []
+    },
+    "claim-award-e2e": {
+      "tags": [],
+      "implicitDependencies": ["claim-award"]
+    },
+    "container": {
+      "tags": []
+    },
+    "core-services": {
+      "tags": []
+    },
+    "favicon": {
+      "tags": []
+    },
+    "footer": {
+      "tags": []
+    },
+    "form-controls": {
+      "tags": []
+    },
+    "header": {
+      "tags": []
+    },
+    "helpers": {
+      "tags": []
+    },
+    "lazy-load-image": {
+      "tags": []
+    },
+    "register": {
+      "tags": []
+    },
+    "register-e2e": {
+      "tags": [],
+      "implicitDependencies": ["register"]
+    },
+    "sanity": {
+      "tags": []
+    },
+    "search-bar": {
+      "tags": []
+    },
+    "stack": {
+      "tags": []
+    }
+  }
 }
