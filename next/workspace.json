@@ -334,6 +334,84 @@
         }
       }
     },
+    "kit": {
+      "root": "apps/kit",
+      "sourceRoot": "apps/kit",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "root": "apps/kit",
+            "outputPath": "dist/apps/kit"
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "kit:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "kit:build:production",
+              "dev": false
+            }
+          }
+        },
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "kit:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/kit"],
+          "options": {
+            "jestConfig": "apps/kit/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/kit/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "kit-e2e": {
+      "root": "apps/kit-e2e",
+      "sourceRoot": "apps/kit-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/kit-e2e/cypress.json",
+            "devServerTarget": "kit:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "kit:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/kit-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
     "lazy-load-image": {
       "root": "libs/lazy-load-image",
       "sourceRoot": "libs/lazy-load-image/src",

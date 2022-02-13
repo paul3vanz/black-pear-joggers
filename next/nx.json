@@ -65,6 +65,13 @@
     "helpers": {
       "tags": []
     },
+    "kit": {
+      "tags": []
+    },
+    "kit-e2e": {
+      "tags": [],
+      "implicitDependencies": ["kit"]
+    },
     "lazy-load-image": {
       "tags": []
     },
