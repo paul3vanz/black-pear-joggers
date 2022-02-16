@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@black-pear-joggers/button": ["libs/button/src/index.ts"],
+      "@black-pear-joggers/card": ["libs/card/src/index.ts"],
       "@black-pear-joggers/container": ["libs/container/src/index.ts"],
       "@black-pear-joggers/core-services": ["libs/core-services/src/index.ts"],
       "@black-pear-joggers/favicon": ["libs/favicon/src/index.ts"],

@@ -1,103 +1,82 @@
-import styled from 'styled-components';
+import { Card } from '@black-pear-joggers/card';
+import { Container } from '@black-pear-joggers/container';
+import { getCategories } from '../core/queries/getCategories';
+import { getClient } from '@black-pear-joggers/sanity';
+import { GetStaticPaths, GetStaticProps } from 'next';
+import { groq } from 'next-sanity';
+import { Stack } from '@black-pear-joggers/stack';
 
-const StyledPage = styled.div`
-  .page {
-  }
-`;
+type KitPageProps = {
+  categories: {
+    title: string;
+    description: string;
+    slug: {
+      current: string;
+    };
+    imageUrl: string;
+  }[];
+};
 
-export function Index() {
-  /*
-   * Replace the elements below with your own.
-   *
-   * Note: The corresponding styles are in the ./index.styled-components file.
-   */
+export function KitPage(props: KitPageProps) {
   return (
-    <StyledPage>
-      <h2>Resources &amp; Tools</h2>
-      <p>Thank you for using and showing some ♥ for Nx.</p>
-      <div className="flex github-star-container">
-        <a
-          href="https://github.com/nrwl/nx"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {' '}
-          If you like Nx, please give it a star:
-          <div className="github-star-badge">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/star.svg" className="material-icons" alt="" />
-            Star
+    <>
+      <Stack>
+        <Container>
+          <h1>Kit</h1>
+
+          <p>
+            Once you've{' '}
+            <a href="https://bpj.org.uk/joining-the-club/">become a BPJ</a>,
+            look the part with some club kit!
+          </p>
+        </Container>
+      </Stack>
+
+      <Stack backgroundColour="bright">
+        <Container>
+          <h2>Collecting your kit</h2>
+          <p>
+            We don't post kit, <strong>it must be collected</strong>. Once
+            you've paid for your kit, Avril Munday, our kit co-ordinator will
+            get in touch to give the next available collection date - usually at
+            the following Monday night club run at Old Elizabethans. If you're
+            unable to make any of the dates, you can arrange for a friend to
+            come and collect on your behalf.
+          </p>
+        </Container>
+      </Stack>
+
+      <Stack backgroundColour="light">
+        <Container>
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+            {props.categories.map((category) => {
+              return (
+                <Card
+                  imageUrl={
+                    category.imageUrl ||
+                    `https://bpj.org.uk/wp-content/uploads/2012/03/montage-2017.jpg`
+                  }
+                  link={category.slug.current}
+                  headline={category.title}
+                  key={category.slug.current}
+                />
+              );
+            })}
           </div>
-        </a>
-      </div>
-      <p>Here are some links to help you get started.</p>
-      <ul className="resources">
-        <li className="col-span-2">
-          <a
-            className="resource flex"
-            href="https://egghead.io/playlists/scale-react-development-with-nx-4038"
-          >
-            Scale React Development with Nx (Course)
-          </a>
-        </li>
-        <li className="col-span-2">
-          <a
-            className="resource flex"
-            href="https://nx.dev/latest/react/tutorial/01-create-application"
-          >
-            Interactive tutorial
-          </a>
-        </li>
-        <li className="col-span-2">
-          <a className="resource flex" href="https://nx.app/">
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 120 120"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M120 15V30C103.44 30 90 43.44 90 60C90 76.56 76.56 90 60 90C43.44 90 30 103.44 30 120H15C6.72 120 0 113.28 0 105V15C0 6.72 6.72 0 15 0H105C113.28 0 120 6.72 120 15Z"
-                fill="#0E2039"
-              />
-              <path
-                d="M120 30V105C120 113.28 113.28 120 105 120H30C30 103.44 43.44 90 60 90C76.56 90 90 76.56 90 60C90 43.44 103.44 30 120 30Z"
-                fill="white"
-              />
-            </svg>
-            <span className="gutter-left">Nx Cloud</span>
-          </a>
-        </li>
-      </ul>
-      <h2>Next Steps</h2>
-      <p>Here are some things you can do with Nx.</p>
-      <details open>
-        <summary>Add UI library</summary>
-        <pre>{`# Generate UI lib
-nx g @nrwl/react:lib ui
-
-# Add a component
-nx g @nrwl/react:component xyz --project ui`}</pre>
-      </details>
-      <details>
-        <summary>View dependency graph</summary>
-        <pre>{`nx dep-graph`}</pre>
-      </details>
-      <details>
-        <summary>Run affected commands</summary>
-        <pre>{`# see what's been affected by changes
-nx affected:dep-graph
-
-# run tests for current changes
-nx affected:test
-
-# run e2e tests for current changes
-nx affected:e2e
-`}</pre>
-      </details>
-    </StyledPage>
+        </Container>
+      </Stack>
+    </>
   );
 }
 
-export default Index;
+export const getStaticProps: GetStaticProps = async () => {
+  const categories = await getCategories();
+
+  return {
+    props: {
+      categories,
+    },
+  };
+};
+
+export default KitPage;

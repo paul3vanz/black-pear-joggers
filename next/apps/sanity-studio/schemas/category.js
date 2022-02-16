@@ -23,15 +23,20 @@ export default {
       type: 'text',
     },
     {
+      name: 'image',
+      title: 'Image',
+      type: 'image',
+    },
+    {
       name: 'parents',
       title: 'Parent categories',
       type: 'array',
       of: [
         {
           type: 'reference',
-          to: [{type: 'category'}],
+          to: [{ type: 'category' }],
         },
       ],
     },
   ],
-}
+};

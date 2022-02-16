@@ -1,8 +1,8 @@
+import styled from 'styled-components';
 import { classNames, mapClassNames } from '@black-pear-joggers/helpers';
-
 import { Container } from '@black-pear-joggers/container';
 import { PropsWithChildren } from 'react';
-import styled from 'styled-components';
+
 
 interface Props extends PropsWithChildren<{}> {
   backgroundColour?: string;
@@ -27,6 +27,7 @@ export function Section(props: Props) {
           larger: 'py-16 sm:py-32',
           sm: 'py-8',
           default: 'py-12 sm:py-16',
+          noBottom: 'pt-12 sm:pt-16',
         })
       )}
     >

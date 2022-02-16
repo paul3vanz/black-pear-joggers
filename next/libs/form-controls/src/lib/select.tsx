@@ -9,8 +9,9 @@ export interface SelectProps {
   id: string;
   label: string;
   defaultValue?: string;
-  registerField: UseFormRegisterReturn;
+  registerField?: UseFormRegisterReturn;
   options: SelectOption[] | string[];
+  onChange?: () => void;
 }
 
 export function Select(props: SelectProps): JSX.Element {
@@ -24,6 +25,7 @@ export function Select(props: SelectProps): JSX.Element {
         className="block w-full border rounded py-3 px-4 h-12"
         id={`input-${props.id}`}
         defaultValue={props.defaultValue}
+        onChange={props.onChange || undefined}
         {...props.registerField}
       >
         {props.options.map((option) => (
