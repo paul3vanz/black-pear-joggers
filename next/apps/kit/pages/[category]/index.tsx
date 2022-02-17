@@ -2,14 +2,12 @@ import Link from 'next/link';
 import { Container } from '@black-pear-joggers/container';
 import { GetCategories, getCategories } from '../../core/queries/getCategories';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { ProductStack } from 'apps/kit/components/product-stack';
+import { ProductStack } from '../../components/product-stack';
 import { Stack } from '@black-pear-joggers/stack';
-import { useRef } from 'react';
-
 import {
   GetProductsByCategory,
   getProductsByCategory,
-} from 'apps/kit/core/queries/getProduct';
+} from '../../core/queries/getProduct';
 
 type KitCategoryProps = {
   categories: GetCategories[];

@@ -25,7 +25,7 @@ export function KitPage(props: KitPageProps) {
           <h1>Kit</h1>
 
           <p>
-            Once you've{' '}
+            Once you&apos;ve{' '}
             <a href="https://bpj.org.uk/joining-the-club/">become a BPJ</a>,
             look the part with some club kit!
           </p>
@@ -36,12 +36,12 @@ export function KitPage(props: KitPageProps) {
         <Container>
           <h2>Collecting your kit</h2>
           <p>
-            We don't post kit, <strong>it must be collected</strong>. Once
-            you've paid for your kit, Avril Munday, our kit co-ordinator will
-            get in touch to give the next available collection date - usually at
-            the following Monday night club run at Old Elizabethans. If you're
-            unable to make any of the dates, you can arrange for a friend to
-            come and collect on your behalf.
+            We don&apos;t post kit, <strong>it must be collected</strong>. Once
+            you&apos;ve paid for your kit, Avril Munday, our kit co-ordinator
+            will get in touch to give the next available collection date -
+            usually at the following Monday night club run at Old Elizabethans.
+            If you&apos;re unable to make any of the dates, you can arrange for
+            a friend to come and collect on your behalf.
           </p>
         </Container>
       </Stack>
