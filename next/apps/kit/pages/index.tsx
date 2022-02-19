@@ -56,7 +56,7 @@ export function KitPage(props: KitPageProps) {
                     category.imageUrl ||
                     `https://bpj.org.uk/wp-content/uploads/2012/03/montage-2017.jpg`
                   }
-                  link={category.slug.current}
+                  link={`/${category.slug.current}`}
                   headline={category.title}
                   key={category.slug.current}
                 />

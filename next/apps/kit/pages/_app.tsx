@@ -38,7 +38,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
           })
         );
       } catch (e) {
-        console.error(e);
+        // console.error(e);
       }
     })();
   }, [getAccessTokenSilently]);
