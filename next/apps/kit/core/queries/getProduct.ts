@@ -33,6 +33,14 @@ export function getProduct(slug: string) {
     `);
   }
 
+export type Vendor = {
+    title: string;
+    slug: {
+        current: string;
+    };
+    logo: SanityImageSource;
+}
+
 export type Variant = {
     title: string;
     price: number;
@@ -49,7 +57,7 @@ export type Product = {
     description: string,
     price: number,
     slug: string,
-    vendor: any,
+    vendor: Vendor,
     body: any,
 }
 
@@ -78,7 +86,7 @@ export function getProductsByCategory(categorySlug: string) {
             variants,
             description,
             slug,
-            vendor
+            vendor->
             }
         }
     `)

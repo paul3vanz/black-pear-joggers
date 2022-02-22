@@ -18,17 +18,20 @@ export const ProductStack = ({
 }: ProductStackProps) => {
   const formReference = useRef<HTMLFormElement>();
   const [selectedVariant, setSelectedVariant] = useState<Variant>(
-    product.variants[0]
+    (product.variants && product.variants[0]) ||
+      product.defaultProductVariant ||
+      null
   );
 
   return (
     <Stack backgroundColour={backgroundColour}>
       <Container>
-        <div className="grid grid-cols-2 gap-16">
+        <div className="md:grid grid-cols-2 gap-16">
           <div className="flex-1">
             <img
               src={urlFor(product.defaultProductVariant.images[0]).url()}
               alt={product.title}
+              className="mb-6"
             />
           </div>
           <div className="flex-1">
@@ -39,6 +42,16 @@ export const ProductStack = ({
                 £{product.defaultProductVariant.price.toFixed(2)}
               </p>
             </div>
+
+            {product.vendor?.logo && (
+              <p>
+                <img
+                  src={urlFor(product.vendor.logo).url()}
+                  alt={product.vendor.title}
+                  className="h-10"
+                />
+              </p>
+            )}
 
             <PortableText value={product.body.en} />
 
