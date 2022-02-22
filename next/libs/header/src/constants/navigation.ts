@@ -5,7 +5,7 @@ export interface NavigationLinkItem {
 }
 
 export const navigationLinks: NavigationLinkItem[] = [
-    { link: '/membership', text: 'Membership' },
+    { link: 'https://bpj.org.uk/membership', text: 'Membership' },
     {
         link: '#',
         text: 'Club info',
@@ -25,12 +25,12 @@ export const navigationLinks: NavigationLinkItem[] = [
         link: '#',
         text: 'Racing/leagues',
         items: [
-            { link: 'https://black-pear-joggers.netlify.com/apps/club-standards/', text: 'Club Standards Awards' },
+            { link: 'https://apps.bpj.org.uk/club-standards/', text: 'Club Standards Awards' },
             { link: 'https://bpj.org.uk/leagues/cross-country/', text: 'Cross Country' },
-            { link: 'https://black-pear-joggers.netlify.com/apps/magic-mile/', text: 'Magic Mile' },
+            { link: 'https://apps.bpj.org.uk/magic-mile/', text: 'Magic Mile' },
             { link: 'https://bpj.org.uk/leagues/parkrun-tours/', text: 'parkrun tours' },
-            { link: 'https://black-pear-joggers.netlify.com/apps/club-records/', text: 'Club Records' },
-            { link: 'https://black-pear-joggers.netlify.com/apps/race-results/', text: 'Race Results' },
+            { link: 'https://apps.bpj.org.uk/club-records/', text: 'Club Records' },
+            { link: 'https://apps.bpj.org.uk/race-results/', text: 'Race Results' },
         ],
     },
     {
@@ -39,11 +39,10 @@ export const navigationLinks: NavigationLinkItem[] = [
         items: [
             { link: 'https://bpj.org.uk/our-races/croome-race/', text: 'Croome Capability Canter' },
             { link: 'https://bpj.org.uk/our-races/wild-race/', text: 'The Wild One' },
-            { link: 'https://bpj.org.uk/the-virtual-wild-one/', text: 'The Virtual One' },
         ],
     },
 
-    { link: '/news', text: 'News' },
+    { link: 'https://bpj.org.uk/news', text: 'News' },
     {
         link: '#',
         text: 'Contact',

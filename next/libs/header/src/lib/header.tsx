@@ -111,7 +111,7 @@ const MobileMenu = (props: MobileMenuProps) => (
 );
 
 const Logo = () => (
-  <Link href="/">
+  <Link href="https://bpj.org.uk">
     <a>
       <img
         className="h-8 sm:h-12 w-auto my-4"
