@@ -36,6 +36,8 @@ export function getProduct(slug: string) {
 export type Variant = {
     title: string;
     price: number;
+    stock: number;
+    buyUrl: string;
     images: SanityImageSource[];
 }
 
@@ -68,7 +70,7 @@ export function getProductsByCategory(categorySlug: string) {
         "products": *[
             _type=='product' &&
             references(^._id)
-        ] {
+        ] | order(order asc) {
             _id,
             title,
             body,

@@ -19,6 +19,11 @@ export default {
       type: 'number',
     },
     {
+      title: 'Buy URL',
+      name: 'buyUrl',
+      type: 'string',
+    },
+    {
       name: 'images',
       title: 'Images',
       type: 'array',

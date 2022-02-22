@@ -18,6 +18,11 @@ export default {
       },
     },
     {
+      title: 'Order',
+      name: 'order',
+      type: 'number',
+    },
+    {
       title: 'Default variant',
       name: 'defaultProductVariant',
       type: 'productVariant',
@@ -50,7 +55,7 @@ export default {
       name: 'vendor',
       title: 'Vendor',
       type: 'reference',
-      to: {type: 'vendor'},
+      to: { type: 'vendor' },
     },
     {
       name: 'blurb',
@@ -64,7 +69,7 @@ export default {
       of: [
         {
           type: 'reference',
-          to: {type: 'category'},
+          to: { type: 'category' },
         },
       ],
     },
@@ -82,4 +87,4 @@ export default {
       media: 'defaultProductVariant.images[0]',
     },
   },
-}
+};

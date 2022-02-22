@@ -11,7 +11,7 @@ export interface SelectProps {
   defaultValue?: string;
   registerField?: UseFormRegisterReturn;
   options: SelectOption[] | string[];
-  onChange?: () => void;
+  onChange?: (event: any) => void;
 }
 
 export function Select(props: SelectProps): JSX.Element {

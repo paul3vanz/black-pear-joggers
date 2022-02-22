@@ -18,7 +18,7 @@ export const ProductStack = ({
 }: ProductStackProps) => {
   const formReference = useRef<HTMLFormElement>();
   const [selectedVariant, setSelectedVariant] = useState<Variant>(
-    product.defaultProductVariant
+    product.variants[0]
   );
 
   return (
@@ -48,53 +48,68 @@ export const ProductStack = ({
                   label="Sizes"
                   id="variants"
                   options={product.variants.map((variant) => variant.title)}
-                  onChange={() => {
-                    console.log('changed');
+                  onChange={(i) => {
+                    setSelectedVariant(
+                      product.variants.find(
+                        (variant) => variant.title === i.target.value
+                      )
+                    );
                   }}
                 />
               </>
             )}
 
-            <form
-              action="https://www.paypal.com/cgi-bin/webscr"
-              encType="application/x-www-form-urlencoded"
-              method="post"
-              ref={formReference}
-            >
-              <input name="cmd" type="hidden" value="_cart" />
-              <input name="add" type="hidden" value="1" />
-              <input
-                name="business"
-                type="hidden"
-                value="kit@blackpearjoggers.org.uk"
-              />
-              <input
-                name="item_name"
-                type="hidden"
-                value={selectedVariant.title}
-              />
-              <input
-                name="amount"
-                type="hidden"
-                value={selectedVariant.price}
-              />
-              <input name="shipping" type="hidden" value="0" />
-              <input name="shipping2" type="hidden" value="0" />
-              <input name="currency_code" type="hidden" value="GBP" />
-              <input
-                name="return"
-                type="hidden"
-                value="https://bpj.org.uk/kit/order-successful/"
-              />
-              <input name="undefined_quantity" type="hidden" value="1" />
-
+            {selectedVariant.buyUrl ? (
               <div className="mt-6">
                 <Button
                   text={'Buy ' + product.title}
-                  onClick={() => console.log(formReference.current.submit())}
+                  onClick={() => {
+                    window.location.href = selectedVariant.buyUrl;
+                  }}
                 />
               </div>
-            </form>
+            ) : (
+              <form
+                action="https://www.paypal.com/cgi-bin/webscr"
+                encType="application/x-www-form-urlencoded"
+                method="post"
+                ref={formReference}
+              >
+                <input name="cmd" type="hidden" value="_cart" />
+                <input name="add" type="hidden" value="1" />
+                <input
+                  name="business"
+                  type="hidden"
+                  value="kit@blackpearjoggers.org.uk"
+                />
+                <input
+                  name="item_name"
+                  type="hidden"
+                  value={selectedVariant.title}
+                />
+                <input
+                  name="amount"
+                  type="hidden"
+                  value={selectedVariant.price}
+                />
+                <input name="shipping" type="hidden" value="0" />
+                <input name="shipping2" type="hidden" value="0" />
+                <input name="currency_code" type="hidden" value="GBP" />
+                <input
+                  name="return"
+                  type="hidden"
+                  value="https://bpj.org.uk/kit/order-successful/"
+                />
+                <input name="undefined_quantity" type="hidden" value="1" />
+
+                <div className="mt-6">
+                  <Button
+                    text={'Buy ' + product.title}
+                    onClick={() => formReference.current.submit()}
+                  />
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </Container>
