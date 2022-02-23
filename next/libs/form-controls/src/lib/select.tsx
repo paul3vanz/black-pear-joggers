@@ -3,6 +3,7 @@ import { UseFormRegisterReturn } from 'react-hook-form';
 export interface SelectOption {
   label: string;
   value?: string;
+  disabled?: boolean;
 }
 
 export interface SelectProps {
@@ -32,6 +33,7 @@ export function Select(props: SelectProps): JSX.Element {
           <option
             value={typeof option === 'object' ? option.value : option}
             key={typeof option === 'object' ? option.value : option}
+            disabled={typeof option === 'object' ? option.disabled : undefined}
           >
             {typeof option === 'object' ? option.label : option}
           </option>

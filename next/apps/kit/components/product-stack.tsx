@@ -60,7 +60,13 @@ export const ProductStack = ({
                 <Select
                   label="Sizes"
                   id="variants"
-                  options={product.variants.map((variant) => variant.title)}
+                  options={product.variants.map((variant) => ({
+                    value: variant.title,
+                    label: isOutOfStock(variant)
+                      ? `${variant.title} (out of stock)`
+                      : variant.title,
+                    disabled: isOutOfStock(variant) ? true : false,
+                  }))}
                   onChange={(i) => {
                     setSelectedVariant(
                       product.variants.find(
@@ -129,3 +135,7 @@ export const ProductStack = ({
     </Stack>
   );
 };
+
+function isOutOfStock(variant: Variant) {
+  return variant.stock === -1;
+}
