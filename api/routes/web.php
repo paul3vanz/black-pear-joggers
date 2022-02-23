@@ -41,6 +41,8 @@ $router->group(['middleware' => 'auth', 'prefix' => 'clubs'], function ($router)
 
 $router->get('/awards', 'AwardController@getAwards');
 
+$router->post('/checkout', 'CheckoutController@createSession');
+
 $router->get('/events', 'EventController@getEvents');
 
 $router->group(['middleware' => 'auth', 'prefix' => 'fetch'], function ($router) {
