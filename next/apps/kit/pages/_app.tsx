@@ -10,7 +10,7 @@ import { Stack } from '@black-pear-joggers/stack';
 import './styles.css';
 
 const tagManagerArgs = {
-  id: 'GTM-W8KBB3D',
+  gtmId: 'GTM-W8KBB3D',
 };
 
 let getAccessTokenSilently = null;
