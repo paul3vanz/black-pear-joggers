@@ -7,7 +7,8 @@ export interface TextInputProps {
   required?: boolean;
   error?: any;
   defaultValue?: string;
-  registerField: UseFormRegisterReturn;
+  registerField?: UseFormRegisterReturn;
+  onChange?: (event: any) => void;
 }
 
 export function TextInput(props: TextInputProps): JSX.Element {
@@ -35,6 +36,7 @@ export function TextInput(props: TextInputProps): JSX.Element {
         required={props.required}
         defaultValue={props.defaultValue}
         {...props.registerField}
+        onChange={props.onChange || undefined}
       />
       {props.error && (
         <div id={`error-${props.id}`} className="mt-1 text-sm text-red-500">

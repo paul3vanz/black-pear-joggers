@@ -52,6 +52,11 @@ export default {
       },
     },
     {
+      title: 'Include name printing',
+      name: 'namePrinting',
+      type: 'boolean',
+    },
+    {
       name: 'vendor',
       title: 'Vendor',
       type: 'reference',

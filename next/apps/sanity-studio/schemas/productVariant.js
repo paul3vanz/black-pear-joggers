@@ -24,6 +24,11 @@ export default {
       type: 'string',
     },
     {
+      title: 'Price ID',
+      name: 'priceId',
+      type: 'string',
+    },
+    {
       name: 'images',
       title: 'Images',
       type: 'array',

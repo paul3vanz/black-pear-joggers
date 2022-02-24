@@ -2,7 +2,7 @@ import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { PortableText } from '@portabletext/react';
 import { Product, Variant } from '../core/queries/getProduct';
-import { Select } from '@black-pear-joggers/form-controls';
+import { Select, TextInput } from '@black-pear-joggers/form-controls';
 import { Stack } from '@black-pear-joggers/stack';
 import { urlFor } from '@black-pear-joggers/sanity';
 import { useRef, useState } from 'react';
@@ -22,6 +22,8 @@ export const ProductStack = ({
       product.defaultProductVariant ||
       null
   );
+  const [namePrinting, setNamePrinting] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (
     <Stack backgroundColour={backgroundColour}>
@@ -56,7 +58,7 @@ export const ProductStack = ({
             <PortableText value={product.body.en} />
 
             {product.variants && (
-              <>
+              <div className="mb-4">
                 <Select
                   label="Sizes"
                   id="variants"
@@ -75,10 +77,31 @@ export const ProductStack = ({
                     );
                   }}
                 />
+              </div>
+            )}
+
+            {product.namePrinting && (
+              <>
+                <TextInput
+                  label="Include name printing (£2 extra)"
+                  id="namePrinting"
+                  onChange={(e) => setNamePrinting(e.target.value)}
+                />
               </>
             )}
 
-            {selectedVariant.buyUrl ? (
+            {selectedVariant.priceId ? (
+              <div className="mt-6">
+                isLoading: {isLoading}
+                <Button
+                  text={isLoading ? 'Loading...' : 'Buy ' + product.title}
+                  onClick={() => {
+                    setIsLoading(true);
+                    createCheckoutSession(selectedVariant, namePrinting);
+                  }}
+                />
+              </div>
+            ) : selectedVariant.buyUrl ? (
               <div className="mt-6">
                 <Button
                   text={'Buy ' + product.title}
@@ -134,6 +157,37 @@ export const ProductStack = ({
       </Container>
     </Stack>
   );
+
+  async function createCheckoutSession(
+    variant: Variant,
+    namePrinting?: string
+  ) {
+    const createCheckout = await fetch(
+      'https://bpj.org.uk/api/public/index.php/checkout',
+      {
+        method: 'POST',
+        headers: new Headers({
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify({
+          priceId: variant.priceId,
+          quantity: 1,
+          namePrinting: namePrinting || undefined,
+        }),
+      }
+    );
+
+    const response = await createCheckout.json();
+
+    setIsLoading(false);
+
+    if (response) {
+      window.location.href = response.url;
+    } else {
+      alert('Sorry, there was an error');
+    }
+  }
 };
 
 function isOutOfStock(variant: Variant) {

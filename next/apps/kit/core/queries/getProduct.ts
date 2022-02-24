@@ -45,6 +45,7 @@ export type Variant = {
     title: string;
     price: number;
     stock: number;
+    priceId: string;
     buyUrl: string;
     images: SanityImageSource[];
 }
@@ -59,6 +60,7 @@ export type Product = {
     slug: string,
     vendor: Vendor,
     body: any,
+    namePrinting: boolean;
 }
 
 export type GetProductsByCategory = {
@@ -83,6 +85,7 @@ export function getProductsByCategory(categorySlug: string) {
             title,
             body,
             defaultProductVariant,
+            namePrinting,
             variants,
             description,
             slug,
