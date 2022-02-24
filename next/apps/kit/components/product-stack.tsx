@@ -2,6 +2,7 @@ import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { PortableText } from '@portabletext/react';
 import { Product, Variant } from '../core/queries/getProduct';
+import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import { Select, TextInput } from '@black-pear-joggers/form-controls';
 import { Stack } from '@black-pear-joggers/stack';
 import { urlFor } from '@black-pear-joggers/sanity';
@@ -24,17 +25,33 @@ export const ProductStack = ({
   );
   const [namePrinting, setNamePrinting] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<SanityImageSource>(
+    product.defaultProductVariant.images[0]
+  );
 
   return (
     <Stack backgroundColour={backgroundColour}>
       <Container>
         <div className="md:grid grid-cols-2 gap-16">
-          <div className="flex-1">
+          <div className="flex flex-col justify-center">
             <img
-              src={urlFor(product.defaultProductVariant.images[0]).url()}
+              src={urlFor(selectedImage).url()}
               alt={product.title}
               className="mb-6"
             />
+            {product.defaultProductVariant.images.length > 1 && (
+              <div className="flex justify-center">
+                {product.defaultProductVariant.images.map((image, i) => (
+                  <button key={i} onClick={() => setSelectedImage(image)}>
+                    <img
+                      src={urlFor(image).url()}
+                      alt={product.title}
+                      className="mb-6 h-36"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div className="flex-1">
             <div className="flex w-full justify-between items-center">
@@ -92,7 +109,6 @@ export const ProductStack = ({
 
             {selectedVariant.priceId ? (
               <div className="mt-6">
-                isLoading: {isLoading}
                 <Button
                   text={isLoading ? 'Loading...' : 'Buy ' + product.title}
                   onClick={() => {
