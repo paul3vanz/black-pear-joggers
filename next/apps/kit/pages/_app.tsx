@@ -1,3 +1,4 @@
+import TagManager from 'react-gtm-module';
 import { AppProps } from 'next/app';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { config } from '@black-pear-joggers/core-services';
@@ -7,6 +8,10 @@ import { Header } from '@black-pear-joggers/header';
 import { PropsWithChildren, useEffect } from 'react';
 import { Stack } from '@black-pear-joggers/stack';
 import './styles.css';
+
+const tagManagerArgs = {
+  id: 'GTM-W8KBB3D',
+};
 
 let getAccessTokenSilently = null;
 
@@ -57,6 +62,10 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
 }
 
 function CustomApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    TagManager.initialize(tagManagerArgs);
+  }, []);
+
   return (
     <Auth0Provider
       {...config.auth}
