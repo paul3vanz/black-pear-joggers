@@ -23,8 +23,9 @@ export function Select(props: SelectProps): JSX.Element {
       </label>
 
       <select
-        className="block w-full border rounded py-3 px-4 h-12"
+        className="block w-full border rounded py-3 px-4 h-12 text-black"
         id={`input-${props.id}`}
+        name={props.id}
         defaultValue={props.defaultValue}
         onChange={props.onChange || undefined}
         {...props.registerField}

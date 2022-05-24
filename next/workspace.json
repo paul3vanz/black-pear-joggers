@@ -202,6 +202,84 @@
         }
       }
     },
+    "contact": {
+      "root": "apps/contact",
+      "sourceRoot": "apps/contact",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "root": "apps/contact",
+            "outputPath": "dist/apps/contact"
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "contact:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "contact:build:production",
+              "dev": false
+            }
+          }
+        },
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "contact:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/contact"],
+          "options": {
+            "jestConfig": "apps/contact/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/contact/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "contact-e2e": {
+      "root": "apps/contact-e2e",
+      "sourceRoot": "apps/contact-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/contact-e2e/cypress.json",
+            "devServerTarget": "contact:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "contact:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/contact-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
     "container": {
       "root": "libs/container",
       "sourceRoot": "libs/container/src",

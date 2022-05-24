@@ -47,6 +47,13 @@
       "tags": [],
       "implicitDependencies": ["claim-award"]
     },
+    "contact": {
+      "tags": []
+    },
+    "contact-e2e": {
+      "tags": [],
+      "implicitDependencies": ["contact"]
+    },
     "container": {
       "tags": []
     },

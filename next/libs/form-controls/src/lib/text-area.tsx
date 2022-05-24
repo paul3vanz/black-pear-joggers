@@ -1,7 +1,7 @@
 import { classNames } from '@black-pear-joggers/helpers';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
-export interface TextInputProps {
+export interface TextAreaProps {
   id: string;
   label: string;
   required?: boolean;
@@ -11,7 +11,7 @@ export interface TextInputProps {
   onChange?: (event: any) => void;
 }
 
-export function TextInput(props: TextInputProps): JSX.Element {
+export function TextArea(props: TextAreaProps): JSX.Element {
   return (
     <>
       <label
@@ -24,21 +24,20 @@ export function TextInput(props: TextInputProps): JSX.Element {
         {props.label}
       </label>
 
-      <input
+      <textarea
         className={classNames(
-          'block w-full border rounded py-3 px-4 h-12',
+          'block w-full border rounded py-3 px-4 h-48',
           props.error && 'bg-red-100 border-red-500'
         )}
         id={`input-${props.id}`}
         name={props.id}
-        type="text"
         aria-invalid={props.error && true}
         aria-describedby={props.error && `error-${props.id}`}
         required={props.required}
         defaultValue={props.defaultValue}
         {...props.registerField}
         onChange={props.onChange || undefined}
-      />
+      ></textarea>
       {props.error && (
         <div id={`error-${props.id}`} className="mt-1 text-sm text-red-500">
           {props.error}
