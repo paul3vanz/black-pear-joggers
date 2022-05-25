@@ -17,12 +17,13 @@ type ContactPageProps = {
 };
 
 function handleSubmit() {
-  let myForm = document.getElementById('contact') as HTMLFormElement;
-  let formData = new FormData(myForm);
+  const myForm = document.getElementById('contact') as HTMLFormElement;
+  const formData = new FormData(myForm);
   fetch('/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(formData).toString(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    body: new URLSearchParams(formData as any).toString(),
   })
     .then(() => console.log('Form successfully submitted'))
     .catch((error) => alert(error));
