@@ -3,33 +3,39 @@ import { Container } from '@black-pear-joggers/container';
 import { GetStaticProps } from 'next';
 import { Select, TextArea, TextInput } from '@black-pear-joggers/form-controls';
 import { Stack } from '@black-pear-joggers/stack';
+import { useState } from 'react';
 
 type ContactPageProps = {
-  isLoading: boolean;
-  categories: {
-    title: string;
-    description: string;
-    slug: {
-      current: string;
-    };
-    imageUrl: string;
-  }[];
+
 };
 
-function handleSubmit() {
-  const myForm = document.getElementById('contact') as HTMLFormElement;
-  const formData = new FormData(myForm);
-  fetch('/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    body: new URLSearchParams(formData as any).toString(),
-  })
-    .then(() => console.log('Form successfully submitted'))
-    .catch((error) => alert(error));
-}
-
 export function ContactPage(props: ContactPageProps) {
+
+  const [ isLoading, setIsLoading ] = useState(false);
+
+  function handleSubmit() {
+    setIsLoading(true);
+
+    const myForm = document.getElementById('contact') as HTMLFormElement;
+    const formData = new FormData(myForm);
+    fetch(location.href, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      body: new URLSearchParams(formData as any).toString(),
+    })
+      .then(() => {
+        // Bodged until I hook up formik or similar
+        (document.getElementById('input-name') as HTMLInputElement).value = '';
+        (document.getElementById('input-email') as HTMLInputElement).value = '';
+        (document.getElementById('input-message') as HTMLTextAreaElement).value = '';
+
+        alert('Your message was sent successfully. We\'ll be in touch soon.');
+      })
+      .catch((error) => alert(error))
+      .finally(() => setIsLoading(false));
+  }
+
   return (
     <>
       <Stack>
@@ -106,7 +112,7 @@ export function ContactPage(props: ContactPageProps) {
 
             <div className="mb-6">
               <ButtonLightTextDarkBackground
-                text={props.isLoading ? 'Sending...' : 'Send'}
+                text={isLoading ? 'Sending...' : 'Send'}
                 onClick={handleSubmit}
               />
             </div>
