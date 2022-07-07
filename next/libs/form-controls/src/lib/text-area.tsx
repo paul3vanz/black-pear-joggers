@@ -26,7 +26,7 @@ export function TextArea(props: TextAreaProps): JSX.Element {
 
       <textarea
         className={classNames(
-          'block w-full border rounded py-3 px-4 h-48',
+          'block w-full border rounded py-3 px-4 h-48 text-black',
           props.error && 'bg-red-100 border-red-500'
         )}
         id={`input-${props.id}`}

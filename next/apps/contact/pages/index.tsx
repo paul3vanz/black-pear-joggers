@@ -5,13 +5,10 @@ import { Select, TextArea, TextInput } from '@black-pear-joggers/form-controls';
 import { Stack } from '@black-pear-joggers/stack';
 import { useState } from 'react';
 
-type ContactPageProps = {
-
-};
+type ContactPageProps = {};
 
 export function ContactPage(props: ContactPageProps) {
-
-  const [ isLoading, setIsLoading ] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleSubmit() {
     setIsLoading(true);
@@ -28,9 +25,11 @@ export function ContactPage(props: ContactPageProps) {
         // Bodged until I hook up formik or similar
         (document.getElementById('input-name') as HTMLInputElement).value = '';
         (document.getElementById('input-email') as HTMLInputElement).value = '';
-        (document.getElementById('input-message') as HTMLTextAreaElement).value = '';
+        (
+          document.getElementById('input-message') as HTMLTextAreaElement
+        ).value = '';
 
-        alert('Your message was sent successfully. We\'ll be in touch soon.');
+        alert("Your message was sent successfully. We'll be in touch soon.");
       })
       .catch((error) => alert(error))
       .finally(() => setIsLoading(false));
@@ -53,6 +52,8 @@ export function ContactPage(props: ContactPageProps) {
       <Stack backgroundColour="dark">
         <Container>
           <form className="w-full max-w-lg" data-netlify="true" id="contact">
+            <input type="hidden" name="form-name" value="contact" />
+
             <div className="flex flex-wrap -mx-3 mb-6">
               <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
                 <TextInput
@@ -123,6 +124,7 @@ export function ContactPage(props: ContactPageProps) {
       <Stack backgroundColour="bright">
         <Container>
           <h2>Our Facebook community</h2>
+
           <p>
             We also have a very active{' '}
             <a href="https://www.facebook.com/groups/blackpearjoggers/">
