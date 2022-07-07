@@ -5,9 +5,7 @@ import { Select, TextArea, TextInput } from '@black-pear-joggers/form-controls';
 import { Stack } from '@black-pear-joggers/stack';
 import { useState } from 'react';
 
-type ContactPageProps = {};
-
-export function ContactPage(props: ContactPageProps) {
+export function ContactPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   function handleSubmit() {
