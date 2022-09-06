@@ -36,8 +36,9 @@ $router->group(['middleware' => 'auth', 'prefix' => 'membership'], function ($ro
 $router->group(['middleware' => 'auth', 'prefix' => 'clubs'], function ($router) {
     $router->get('', 'MembershipController@getClubs');
     $router->get('{clubId}/members', 'MembershipController@getClubMembers');
-    $router->get('store', 'MembershipController@storeClubMembers');
 });
+
+$router->get('storeClubMembers', 'MembershipController@storeClubMembers');
 
 $router->get('/awards', 'AwardController@getAwards');
 

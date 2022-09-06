@@ -356,7 +356,7 @@ class PerformanceController extends Controller
             INNER JOIN
               memberships m
               ON m.urn = a.urn
-              AND m.competitiveRegStatus IN ('Registered', 'Registration Being Processed', 'Registration Being Processed By Club', 'Awaiting Registration with Club')
+              AND m.competitiveRegStatus IN ('Registered')
           WHERE
             p.event = 'parkrun'
           GROUP BY a.athlete_id

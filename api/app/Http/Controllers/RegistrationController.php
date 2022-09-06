@@ -7,146 +7,145 @@ use App\Http\Controllers\MembershipController;
 use App\Jobs\RegisterAthleteJob;
 use App\Models\Athlete;
 use App\Models\Registration;
-use App\Models\Member;
 use DB;
 use Log;
 
 class RegistrationController extends Controller
 {
 
-  protected $membershipController;
+    protected $membershipController;
 
-  public function __construct(
-    MembershipController $membershipController
-  ) {
-    $this->membershipController = $membershipController;
-  }
-
-  public function queueAllRegistrations()
-  {
-    $registrations = Registration::get()->all();
-
-    foreach ($registrations as $registration) {
-      dispatch(new RegisterAthleteJob($this->membershipController, $registration));
+    public function __construct(
+        MembershipController $membershipController
+    ) {
+        $this->membershipController = $membershipController;
     }
 
-    return response()->json($registrations);
-  }
+    public function queueAllRegistrations()
+    {
+        $registrations = Registration::get()->all();
 
-  public function processRegistration(Registration $registration)
-  {
-    Log::info("processRegistration($registration->id)");
+        foreach ($registrations as $registration) {
+            dispatch(new RegisterAthleteJob($this->membershipController, $registration));
+        }
 
-    $error = null;
-    $athleteId = $this->fetchPowerOfTenAthleteId($registration->urn);
-
-    Log::info("Got athlete ID: $athleteId");
-
-    if ($athleteId) {
-      // Fetch athlete from uka
-      $membershipDetails = $this->membershipController->checkUrn($registration->urn);
-
-      Log::info("checkUrn: {$membershipDetails->Urn}");
-
-      // Check last name and age match against registration
-      if (strpos($membershipDetails->FirstClaimClubName, 'Black Pear Joggers') !== 0) {
-        $error = "Not listed in club: {$membershipDetails->FirstClaimClubName}";
-      }
-
-      if ($membershipDetails->Lastname !== $registration->lastName) {
-        $error = "No matching last name: {$membershipDetails->Lastname}";
-      }
-
-      if ($error) {
-        $registration->notes = $error;
-        $registration->save();
-
-        return;
-      }
-
-      // Add athlete to athlete table
-      $athlete = $this->createAthlete(
-        [
-          'urn' => $membershipDetails->Urn,
-          'id' => $athleteId,
-          'athlete_id' => $athleteId,
-          'first_name' => $membershipDetails->Firstname,
-          'last_name' => $membershipDetails->Lastname,
-          'gender' => $registration->gender,
-          'dob' => $registration->dateOfBirth,
-        ]
-      );
-
-      if ($athlete) {
-        $registration->forceDelete();
-      }
-    }
-  }
-
-  private function fetchPowerOfTenAthleteId($athleteUrn)
-  {
-    Log::info("fetchPowerOfTenProfile($athleteUrn)");
-
-    $fetchUrl = 'https://www.thepowerof10.info/athletes/profile.aspx?ukaurn=' . $athleteUrn;
-    $httpClient = new Client();
-    $html = $httpClient->request('GET', $fetchUrl);
-
-    $findProfileLink = $html->filter('a[id=cphBody_lnkEditAthlete]');
-
-    if ($findProfileLink->count()) {
-      $profileUrl = $findProfileLink->link()->getUri();
-      preg_match("/athleteid=(\d+)&/i", $profileUrl, $matches);
-      $athleteId = $matches[1];
-      Log::info("Found athlete ID: $athleteId");
-    } else {
-      return null;
+        return response()->json($registrations);
     }
 
-    return $athleteId;
-  }
+    public function processRegistration(Registration $registration)
+    {
+        Log::info("processRegistration($registration->id)");
 
-  public function createRegistrationsFromMemberships()
-  {
-    $members = collect($this->membershipController->getClubMembers()->getData()->Athletes)->filter(function ($value, $key) {
-      return !in_array($value->CompetitiveRegStatus, array('Membership with Club Lapsed', 'Resigned From Club'));
-    });
+        $error = null;
+        $athleteId = $this->fetchPowerOfTenAthleteId($registration->urn);
 
-    $existingAthletes = Athlete::query()->whereNotNull('urn')->get()->map(function ($value, $key) {
-      return $value->urn;
-    })->toArray();
+        Log::info("Got athlete ID: $athleteId");
 
-    $newMembers = $members->filter(function ($value, $key) use ($existingAthletes) {
-      return !in_array($value->Urn, $existingAthletes);
-    })->toArray();
+        if ($athleteId) {
+            // Fetch athlete from uka
+            $membershipDetails = $this->membershipController->checkUrn($registration->urn);
 
-    foreach ($newMembers as $newMember) {
-      Registration::withTrashed()->firstOrCreate(
-        [
-          'urn' => $newMember->Urn,
-        ],
-        [
-          'firstName' => $newMember->Firstname,
-          'lastName' => $newMember->Lastname,
-          'gender' => $newMember->Gender === 'MALE' ? 'M' : 'W',
-          'dateOfBirth' => preg_replace('/(\d*)\/(\d*)\/(\d*)/', '$3-$2-$1', $newMember->Dob),
-          'notes' => 'Added from membership list',
-        ]
-      )->restore();
+            Log::info("checkUrn: {$membershipDetails->Urn}");
+
+            // Check last name and age match against registration
+            if (strpos($membershipDetails->FirstClaimClubName, 'Black Pear Joggers') !== 0) {
+                $error = "Not listed in club: {$membershipDetails->FirstClaimClubName}";
+            }
+
+            if ($membershipDetails->Lastname !== $registration->lastName) {
+                $error = "No matching last name: {$membershipDetails->Lastname}";
+            }
+
+            if ($error) {
+                $registration->notes = $error;
+                $registration->save();
+
+                return;
+            }
+
+            // Add athlete to athlete table
+            $athlete = $this->createAthlete(
+                [
+                    'urn' => $membershipDetails->Urn,
+                    'id' => $athleteId,
+                    'athlete_id' => $athleteId,
+                    'first_name' => $membershipDetails->Firstname,
+                    'last_name' => $membershipDetails->Lastname,
+                    'gender' => $registration->gender,
+                    'dob' => $registration->dateOfBirth,
+                ]
+            );
+
+            if ($athlete) {
+                $registration->forceDelete();
+            }
+        }
     }
 
-    Log::info(count($newMembers) . ' new members added to registration');
+    private function fetchPowerOfTenAthleteId($athleteUrn)
+    {
+        Log::info("fetchPowerOfTenProfile($athleteUrn)");
 
-    return response()->json([
-      'count' => count($newMembers),
-    ]);
-  }
+        $fetchUrl = 'https://www.thepowerof10.info/athletes/profile.aspx?ukaurn=' . $athleteUrn;
+        $httpClient = new Client();
+        $html = $httpClient->request('GET', $fetchUrl);
 
-  private function createAthlete($athlete)
-  {
-    $record = Athlete::firstOrCreate([
-      'urn' => $athlete['urn'],
-    ], $athlete);
+        $findProfileLink = $html->filter('a[id=cphBody_lnkEditAthlete]');
 
-    return $record;
-  }
+        if ($findProfileLink->count()) {
+            $profileUrl = $findProfileLink->link()->getUri();
+            preg_match("/athleteid=(\d+)&/i", $profileUrl, $matches);
+            $athleteId = $matches[1];
+            Log::info("Found athlete ID: $athleteId");
+        } else {
+            return null;
+        }
+
+        return $athleteId;
+    }
+
+    public function createRegistrationsFromMemberships()
+    {
+        $members = collect($this->membershipController->getClubMembers()->getData()->Athletes)->filter(function ($value, $key) {
+            return in_array($value->CompetitiveRegStatus, array('Registered'));
+        });
+
+        $existingAthletes = Athlete::query()->whereNotNull('urn')->get()->map(function ($value, $key) {
+            return $value->urn;
+        })->toArray();
+
+        $newMembers = $members->filter(function ($value, $key) use ($existingAthletes) {
+            return !in_array($value->Urn, $existingAthletes);
+        })->toArray();
+
+        foreach ($newMembers as $newMember) {
+            Registration::withTrashed()->firstOrCreate(
+                [
+                    'urn' => $newMember->Urn,
+                ],
+                [
+                    'firstName' => $newMember->Firstname,
+                    'lastName' => $newMember->Lastname,
+                    'gender' => $newMember->Gender === 'MALE' ? 'M' : 'W',
+                    'dateOfBirth' => preg_replace('/(\d*)\/(\d*)\/(\d*)/', '$3-$2-$1', $newMember->Dob),
+                    'notes' => 'Added from membership list',
+                ]
+            )->restore();
+        }
+
+        Log::info(count($newMembers) . ' new members added to registration');
+
+        return response()->json([
+            'count' => count($newMembers),
+        ]);
+    }
+
+    private function createAthlete($athlete)
+    {
+        $record = Athlete::firstOrCreate([
+            'urn' => $athlete['urn'],
+        ], $athlete);
+
+        return $record;
+    }
 }

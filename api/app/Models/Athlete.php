@@ -95,9 +95,6 @@ final class Athlete extends Model
     {
         return $this->belongsTo('App\Models\Membership', 'urn', 'urn')->whereIn('competitiveRegStatus', [
             'Registered',
-            'Registration Being Processed',
-            'Registration Being Processed By Club',
-            'Awaiting Registration with Club',
         ]);
     }
 
