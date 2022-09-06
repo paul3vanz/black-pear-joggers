@@ -46,7 +46,7 @@ $router->post('/checkout', 'CheckoutController@createSession');
 
 $router->get('/events', 'EventController@getEvents');
 
-$router->group(['middleware' => 'auth', 'prefix' => 'fetch'], function ($router) {
+$router->group(['prefix' => 'fetch'], function ($router) {
     $router->get('performances/{athleteId}', 'FetchPerformancesController@fetchPerformances');
     $router->get('performances', 'FetchPerformancesController@queueAllFetchPerformances');
     $router->get('rankings/{athleteId}', 'FetchRankingsController@fetchRankings');
