@@ -10,9 +10,7 @@ interface MembersTableProps {
 
 function getActiveMembers(members: RegisteredAthlete[]): number {
   return members.filter((member) => {
-    return !['Resigned From Club', 'Membership with Club Lapsed'].includes(
-      member.CompetitiveRegStatus
-    );
+    return ['Registered'].includes(member.CompetitiveRegStatus);
   }).length;
 }
 
