@@ -112,4 +112,13 @@ class MembershipController extends Controller
     {
         return getcwd() . DIRECTORY_SEPARATOR . env(env('UKA_ENVIRONMENT') . '_UKA_PEM_FILENAME');
     }
+
+    public function getRegisteredMembers(Request $request)
+    {
+        $members = Membership::query()->where('competitiveRegStatus', 'Registered')->get();
+
+        $members = $members->all();
+
+        return response()->json($members);
+    }
 }

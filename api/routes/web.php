@@ -62,6 +62,7 @@ $router->post('/magicmile', 'MagicMileController@store');
 $router->delete('/magicmile/{id}', 'MagicMileController@delete');
 
 $router->get('/members/totals', 'AthleteController@getMembershipTotals');
+$router->get('/members/leaguemembers', 'MembershipController@getRegisteredMembers');
 
 $router->get('/parkrunalphabet', 'PerformanceController@getParkrunAlphabet');
 
