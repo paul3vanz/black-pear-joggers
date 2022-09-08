@@ -34,18 +34,18 @@ class RegistrationController extends Controller
 
     public function processRegistration(Registration $registration)
     {
-        Log::info("processRegistration($registration->id)");
+        Log::channel('slackInfo')->info("processRegistration($registration->id)");
 
         $error = null;
         $athleteId = $this->fetchPowerOfTenAthleteId($registration->urn);
 
-        Log::info("Got athlete ID: $athleteId");
+        Log::channel('slackInfo')->info("Got athlete ID: $athleteId");
 
         if ($athleteId) {
             // Fetch athlete from uka
             $membershipDetails = $this->membershipController->checkUrn($registration->urn);
 
-            Log::info("checkUrn: {$membershipDetails->Urn}");
+            Log::channel('slackInfo')->info("checkUrn: {$membershipDetails->Urn}");
 
             // Check last name and age match against registration
             if (strpos($membershipDetails->FirstClaimClubName, 'Black Pear Joggers') !== 0) {
@@ -84,7 +84,7 @@ class RegistrationController extends Controller
 
     private function fetchPowerOfTenAthleteId($athleteUrn)
     {
-        Log::info("fetchPowerOfTenProfile($athleteUrn)");
+        Log::channel('slackInfo')->info("fetchPowerOfTenProfile($athleteUrn)");
 
         $fetchUrl = 'https://www.thepowerof10.info/athletes/profile.aspx?ukaurn=' . $athleteUrn;
         $httpClient = new Client();
@@ -96,7 +96,7 @@ class RegistrationController extends Controller
             $profileUrl = $findProfileLink->link()->getUri();
             preg_match("/athleteid=(\d+)&/i", $profileUrl, $matches);
             $athleteId = $matches[1];
-            Log::info("Found athlete ID: $athleteId");
+            Log::channel('slackInfo')->info("Found athlete ID: $athleteId");
         } else {
             return null;
         }
@@ -133,7 +133,7 @@ class RegistrationController extends Controller
             )->restore();
         }
 
-        Log::info(count($newMembers) . ' new members added to registration');
+        Log::channel('slackInfo')->info(count($newMembers) . ' new members added to registration');
 
         return response()->json([
             'count' => count($newMembers),

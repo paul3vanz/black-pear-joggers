@@ -12,9 +12,8 @@ class QueueFetchPerformances extends Command
 
     public function handle()
     {
-        Log::info('QueueFetchPerformances');
+        Log::channel('slackInfo')->info('QueueFetchPerformances');
         $FetchPerformancesController = new FetchPerformancesController();
         $FetchPerformancesController->queueAllFetchPerformances();
     }
-
 }

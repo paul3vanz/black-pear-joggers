@@ -13,94 +13,94 @@ use DateTime;
 
 class FetchRankingsController extends Controller
 {
-  public function __construct()
-  {
-  }
-
-  public function queueAllFetchRankings()
-  {
-    $athleteIds = array();
-
-    $athletes = Athlete::whereNotNull('urn')
-      ->has('activeMembership')
-      ->get();
-
-    foreach ($athletes as $athlete) {
-      dispatch(new FetchRankingsJob($athlete));
-
-      $athleteIds[] = $athlete->athlete_id;
+    public function __construct()
+    {
     }
 
-    return response()->json($athleteIds);
-  }
+    public function queueAllFetchRankings()
+    {
+        $athleteIds = array();
 
-  public function fetchRankings($athleteId)
-  {
-    Log::info("fetchRankings($athleteId)");
-    $addedRankings = array();
+        $athletes = Athlete::whereNotNull('urn')
+            ->has('activeMembership')
+            ->get();
 
-    $athletes = Athlete::where('athlete_id', '=', $athleteId)->get();
+        foreach ($athletes as $athlete) {
+            dispatch(new FetchRankingsJob($athlete));
 
-    foreach ($athletes as $athlete) {
-      $html = $this->fetchRunBritainRankingsAthleteProfile($athlete->urn);
+            $athleteIds[] = $athlete->athlete_id;
+        }
 
-      $addedRankings = $this->parseRankingHistory($athlete, $html);
-
-      Log::info('Added ' . sizeof($addedRankings));
+        return response()->json($athleteIds);
     }
 
-    return response()->json($addedRankings);
-  }
+    public function fetchRankings($athleteId)
+    {
+        Log::channel('slackInfo')->info("fetchRankings($athleteId)");
+        $addedRankings = array();
 
-  private function fetchRunBritainRankingsAthleteProfile($athleteUrn)
-  {
-    Log::info("fetchRunBritainRankingsProfile($athleteUrn)");
+        $athletes = Athlete::where('athlete_id', '=', $athleteId)->get();
 
-    $fetchUrl = 'https://www.runbritainrankings.com/runners/profile.aspx?ukaurn=' . $athleteUrn;
-    $httpClient = new Client();
-    $html = $httpClient->request('GET', $fetchUrl);
+        foreach ($athletes as $athlete) {
+            $html = $this->fetchRunBritainRankingsAthleteProfile($athlete->urn);
 
-    return $html;
-  }
+            $addedRankings = $this->parseRankingHistory($athlete, $html);
 
-  private function createRanking($ranking)
-  {
-    return Ranking::firstOrCreate([
-      'athlete_id' => $ranking['athlete_id'],
-      'date' => $ranking['date'],
-      'ranking' => $ranking['ranking']
-    ]);
-  }
+            Log::channel('slackInfo')->info('Added ' . sizeof($addedRankings));
+        }
 
-  private function parseRankingHistory(Athlete $athlete, $html)
-  {
-
-    $addedRankings = array();
-
-    $rankingScriptData = $html->filter('div[id=cphBody_progressgraph_pnlMain] script')->eq(0)->text();
-
-    preg_match('/data: (.*]])/', $rankingScriptData, $rankingDataPoints);
-
-    $rankingDataPoints = json_decode($rankingDataPoints[1]);
-
-    // TODO: We want to keep all old data, just mark as old, not remove
-    $staleRankings = Ranking::where('athlete_id', $athlete->id)->delete();
-
-    if (!$rankingDataPoints) {
-      return;
+        return response()->json($addedRankings);
     }
 
-    foreach ($rankingDataPoints as $rankingDataPoint) {
-      $date = date('Y-m-d', substr($rankingDataPoint[0], 0, 10));
-      $ranking = $rankingDataPoint[1];
+    private function fetchRunBritainRankingsAthleteProfile($athleteUrn)
+    {
+        Log::channel('slackInfo')->info("fetchRunBritainRankingsProfile($athleteUrn)");
 
-      $addedRankings[] = $this->createRanking([
-        'athlete_id' => $athlete->id,
-        'date' => $date,
-        'ranking' => $ranking
-      ]);
+        $fetchUrl = 'https://www.runbritainrankings.com/runners/profile.aspx?ukaurn=' . $athleteUrn;
+        $httpClient = new Client();
+        $html = $httpClient->request('GET', $fetchUrl);
+
+        return $html;
     }
 
-    return $addedRankings;
-  }
+    private function createRanking($ranking)
+    {
+        return Ranking::firstOrCreate([
+            'athlete_id' => $ranking['athlete_id'],
+            'date' => $ranking['date'],
+            'ranking' => $ranking['ranking']
+        ]);
+    }
+
+    private function parseRankingHistory(Athlete $athlete, $html)
+    {
+
+        $addedRankings = array();
+
+        $rankingScriptData = $html->filter('div[id=cphBody_progressgraph_pnlMain] script')->eq(0)->text();
+
+        preg_match('/data: (.*]])/', $rankingScriptData, $rankingDataPoints);
+
+        $rankingDataPoints = json_decode($rankingDataPoints[1]);
+
+        // TODO: We want to keep all old data, just mark as old, not remove
+        $staleRankings = Ranking::where('athlete_id', $athlete->id)->delete();
+
+        if (!$rankingDataPoints) {
+            return;
+        }
+
+        foreach ($rankingDataPoints as $rankingDataPoint) {
+            $date = date('Y-m-d', substr($rankingDataPoint[0], 0, 10));
+            $ranking = $rankingDataPoint[1];
+
+            $addedRankings[] = $this->createRanking([
+                'athlete_id' => $athlete->id,
+                'date' => $date,
+                'ranking' => $ranking
+            ]);
+        }
+
+        return $addedRankings;
+    }
 }

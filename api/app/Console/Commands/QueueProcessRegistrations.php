@@ -9,13 +9,13 @@ use Log;
 
 class QueueProcessRegistrations extends Command
 {
-  protected $name = 'queue:registrations';
+    protected $name = 'queue:registrations';
 
-  public function handle()
-  {
-    Log::info('QueueProcessRegistrations');
-    $registrationController = new RegistrationController(new MembershipController());
-    $registrationController->createRegistrationsFromMemberships();
-    $registrationController->queueAllRegistrations();
-  }
+    public function handle()
+    {
+        Log::channel('slackInfo')->info('QueueProcessRegistrations');
+        $registrationController = new RegistrationController(new MembershipController());
+        $registrationController->createRegistrationsFromMemberships();
+        $registrationController->queueAllRegistrations();
+    }
 }

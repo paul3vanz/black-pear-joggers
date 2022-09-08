@@ -13,16 +13,19 @@ use DateTime;
 
 class FetchController extends Controller
 {
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
-    public function queueAllFetchPerformances() {
+    public function queueAllFetchPerformances()
+    {
         $athleteIds = array();
 
         $athletes = Athlete::whereNotNull('urn')
             ->has('activeMembership')
             ->get();
 
-        foreach($athletes as $athlete) {
+        foreach ($athletes as $athlete) {
             dispatch(new FetchPerformancesJob($athlete));
 
             $athleteIds[] = $athlete->id;
@@ -31,25 +34,27 @@ class FetchController extends Controller
         return response()->json($athleteIds);
     }
 
-    public function fetchPerformances($athleteId) {
-        Log::info("fetchPerformances($athleteId)");
+    public function fetchPerformances($athleteId)
+    {
+        Log::channel('slackInfo')->info("fetchPerformances($athleteId)");
         $addedPerformances = array();
 
         $athletes = Athlete::where('athlete_id', '=', $athleteId)->get();
 
-        foreach($athletes as $athlete) {
+        foreach ($athletes as $athlete) {
             $html = $this->fetchPowerOfTenAthleteProfile($athlete->urn);
 
             $addedPerformances = $this->parsePerformanceHistory($athlete, $html);
 
-            Log::info('Added ' . sizeof($addedPerformances));
+            Log::channel('slackInfo')->info('Added ' . sizeof($addedPerformances));
         }
 
         return response()->json($addedPerformances);
     }
 
-    private function fetchPowerOfTenAthleteProfile($athleteUrn) {
-        Log::info("fetchPowerOfTenProfile($athleteUrn)");
+    private function fetchPowerOfTenAthleteProfile($athleteUrn)
+    {
+        Log::channel('slackInfo')->info("fetchPowerOfTenProfile($athleteUrn)");
 
         $fetchUrl = 'https://www.thepowerof10.info/athletes/profile.aspx?ukaurn=' . $athleteUrn;
         $httpClient = new Client();
@@ -58,7 +63,8 @@ class FetchController extends Controller
         return $html;
     }
 
-    private function createPerformance($performance) {
+    private function createPerformance($performance)
+    {
         return Performance::firstOrCreate([
             'athlete_id' => $performance['athlete_id'],
             'category' => $performance['category'],
@@ -71,11 +77,13 @@ class FetchController extends Controller
         ]);
     }
 
-    private function rowIsYearAgeGroupHeader($tableRow) {
-        return strpos($tableRow,'colspan="12"') !== false;
+    private function rowIsYearAgeGroupHeader($tableRow)
+    {
+        return strpos($tableRow, 'colspan="12"') !== false;
     }
 
-    private function parsePerformanceHistory(Athlete $athlete, $html) {
+    private function parsePerformanceHistory(Athlete $athlete, $html)
+    {
 
         $addedPerformances = array();
 
@@ -90,7 +98,7 @@ class FetchController extends Controller
         $currentYear = '';
         $currentAgeGroup = '';
 
-        $tableRows->each(function($tableRow, $i) use ($athlete, &$addedPerformances) {
+        $tableRows->each(function ($tableRow, $i) use ($athlete, &$addedPerformances) {
             // Check if this is a new division by age group
             if ($this->rowIsYearAgeGroupHeader($tableRow->html())) {
                 $currentHeader = explode(' ', $tableRow->eq(0)->text());
@@ -98,11 +106,11 @@ class FetchController extends Controller
                 $currentAgeGroup = $currentHeader[1];
 
                 if (!$currentAgeGroup) {
-                    Log::info('Error extracting year/age group: ' . $tableRow->eq(0)->text());
+                    Log::channel('slackInfo')->info('Error extracting year/age group: ' . $tableRow->eq(0)->text());
                     die();
                 }
 
-                // Log::info('Found group of performances: ' . $currentYear . ', ' . $currentAgeGroup);
+                // Log::channel('slackInfo')->info('Found group of performances: ' . $currentYear . ', ' . $currentAgeGroup);
 
                 return;
             }
@@ -154,16 +162,17 @@ class FetchController extends Controller
         return $addedPerformances;
     }
 
-    private function parseTime($time) {
+    private function parseTime($time)
+    {
         $timeParts = explode(':', $time);
         $timePartCount = sizeof($timeParts);
 
         if ($timePartCount === 2) {
-            $timeParsed = ((int)$timeParts[0]*60) + ((float)$timeParts[1]);
+            $timeParsed = ((int)$timeParts[0] * 60) + ((float)$timeParts[1]);
         } else if ($timePartCount === 3) {
-            $timeParsed = ((int)$timeParts[0]*3600) + ((int)$timeParts[1]*60) + ((float)$timeParts[2]);
+            $timeParsed = ((int)$timeParts[0] * 3600) + ((int)$timeParts[1] * 60) + ((float)$timeParts[2]);
         } else {
-            Log::info('Unable to parse time: ' . $time);
+            Log::channel('slackInfo')->info('Unable to parse time: ' . $time);
 
             return false;
         }
@@ -171,15 +180,16 @@ class FetchController extends Controller
         return $timeParsed;
     }
 
-    private function ageGroup($age) {
+    private function ageGroup($age)
+    {
         if ($age < 20) {
-          return 'U20';
+            return 'U20';
         } else if ($age < 23) {
-          return 'U23';
+            return 'U23';
         } else if ($age < 35) {
-          return 'SEN';
+            return 'SEN';
         } else {
-          return 'V' . (floor($age/5) * 5);
+            return 'V' . (floor($age / 5) * 5);
         }
-      }
+    }
 }

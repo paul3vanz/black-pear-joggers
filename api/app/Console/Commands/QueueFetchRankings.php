@@ -12,9 +12,8 @@ class QueueFetchRankings extends Command
 
     public function handle()
     {
-        Log::info('QueueFetchRankings');
+        Log::channel('slackInfo')->info('QueueFetchRankings');
         $FetchRankingsController = new FetchRankingsController();
         $FetchRankingsController->queueAllFetchRankings();
     }
-
 }

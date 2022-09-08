@@ -29,6 +29,6 @@ class FetchPerformancesJob extends Job
         $fetchPerformancesController = new FetchPerformancesController();
         $fetchPerformancesController->fetchPerformances($this->athlete->id);
 
-        Log::info("Fetch performances athleteId #" . $this->athlete->id);
+        Log::channel('slackInfo')->info("Fetch performances athleteId #" . $this->athlete->id);
     }
 }

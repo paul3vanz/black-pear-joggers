@@ -43,16 +43,23 @@ return [
         'slackInfo' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL_INFO'),
-            'username' => 'Lumen Log',
+            'username' => 'BPJ Website Logging',
             'emoji' => ':running:',
             'level' => 'debug',
         ],
         'slackErrors' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL_ERRORS'),
-            'username' => 'Lumen Log',
+            'username' => 'BPJ Website Error',
             'emoji' => ':boom:',
             'level' => 'error',
+        ],
+        'slackAwardClaims' => [
+            'driver' => 'slack',
+            'url' => env('LOG_SLACK_WEBHOOK_URL_AWARD_CLAIMS'),
+            'username' => 'Award Claim Submitted',
+            'emoji' => ':trophy:',
+            'level' => 'info',
         ],
         'syslog' => [
             'driver' => 'syslog',

@@ -8,12 +8,12 @@ use Log;
 
 class QueueFetchMemberships extends Command
 {
-  protected $name = 'queue:fetch:memberships';
+    protected $name = 'queue:fetch:memberships';
 
-  public function handle()
-  {
-    Log::info('QueueFetchMemberships');
-    $membershipController = new MembershipController();
-    $membershipController->storeClubMembers();
-  }
+    public function handle()
+    {
+        Log::channel('slackInfo')->info('QueueFetchMemberships');
+        $membershipController = new MembershipController();
+        $membershipController->storeClubMembers();
+    }
 }
