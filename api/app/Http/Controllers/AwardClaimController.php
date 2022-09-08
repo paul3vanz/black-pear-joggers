@@ -7,6 +7,7 @@ use App\Models\AwardClaimRace;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Log;
 
 class AwardClaimController extends Controller
 {
@@ -109,6 +110,8 @@ class AwardClaimController extends Controller
             'lastName' => $request->input('lastName'),
             'email' => $request->input('email'),
         ]);
+
+        Log::channel('slackAwardClaims')->info("Club standards {$request->input('award')} award claim submitted by {$request->input('firstName')} {$request->input('lastName')}");
 
         $claim->races()->createMany($request->input('races'));
 
