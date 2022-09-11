@@ -12,9 +12,16 @@
   },
   "tasksRunnerOptions": {
     "default": {
-      "runner": "@nrwl/workspace/tasks-runners/default",
+      "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": ["build", "export", "lint", "test", "e2e"]
+        "cacheableOperations": [
+          "build",
+          "export",
+          "lint",
+          "test",
+          "e2e"
+        ],
+        "accessToken": "Y2UwY2VkZDEtYTg0Ny00YTQxLTkxNDItZjg2MmFhZTY1M2Q5fHJlYWQtd3JpdGU="
       }
     }
   },
@@ -32,7 +39,9 @@
     },
     "admin-e2e": {
       "tags": [],
-      "implicitDependencies": ["admin"]
+      "implicitDependencies": [
+        "admin"
+      ]
     },
     "button": {
       "tags": []
@@ -45,14 +54,18 @@
     },
     "claim-award-e2e": {
       "tags": [],
-      "implicitDependencies": ["claim-award"]
+      "implicitDependencies": [
+        "claim-award"
+      ]
     },
     "contact": {
       "tags": []
     },
     "contact-e2e": {
       "tags": [],
-      "implicitDependencies": ["contact"]
+      "implicitDependencies": [
+        "contact"
+      ]
     },
     "container": {
       "tags": []
@@ -80,7 +93,9 @@
     },
     "kit-e2e": {
       "tags": [],
-      "implicitDependencies": ["kit"]
+      "implicitDependencies": [
+        "kit"
+      ]
     },
     "lazy-load-image": {
       "tags": []
@@ -90,7 +105,9 @@
     },
     "register-e2e": {
       "tags": [],
-      "implicitDependencies": ["register"]
+      "implicitDependencies": [
+        "register"
+      ]
     },
     "sanity": {
       "tags": []
@@ -106,7 +123,9 @@
     },
     "vacancies-e2e": {
       "tags": [],
-      "implicitDependencies": ["vacancies"]
+      "implicitDependencies": [
+        "vacancies"
+      ]
     }
   }
 }

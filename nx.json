@@ -55,5 +55,13 @@
         "projects": "dependencies"
       }
     ]
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "accessToken": "ZWVlZGMyNGItYWVhZC00OTMxLWE5MGQtYTRkMjBmNDVmNmUwfHJlYWQtd3JpdGU="
+      }
+    }
   }
 }
