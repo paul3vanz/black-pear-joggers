@@ -677,6 +677,84 @@
           }
         }
       }
+    },
+    "vacancies": {
+      "root": "apps/vacancies",
+      "sourceRoot": "apps/vacancies",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "root": "apps/vacancies",
+            "outputPath": "dist/apps/vacancies"
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "vacancies:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "vacancies:build:production",
+              "dev": false
+            }
+          }
+        },
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "vacancies:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/vacancies"],
+          "options": {
+            "jestConfig": "apps/vacancies/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/vacancies/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "vacancies-e2e": {
+      "root": "apps/vacancies-e2e",
+      "sourceRoot": "apps/vacancies-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/vacancies-e2e/cypress.json",
+            "devServerTarget": "vacancies:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "vacancies:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["apps/vacancies-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
     }
   },
   "cli": {

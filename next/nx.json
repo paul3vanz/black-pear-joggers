@@ -100,6 +100,13 @@
     },
     "stack": {
       "tags": []
+    },
+    "vacancies": {
+      "tags": []
+    },
+    "vacancies-e2e": {
+      "tags": [],
+      "implicitDependencies": ["vacancies"]
     }
   }
 }
