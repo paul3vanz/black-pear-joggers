@@ -63,6 +63,7 @@
     "@angular/language-service": "^12.2.14",
     "@nrwl/cli": "12.10.1",
     "@nrwl/linter": "12.10.1",
+    "@nrwl/nx-cloud": "^12.5.4",
     "@nrwl/tao": "12.10.1",
     "@nrwl/web": "12.10.1",
     "@nrwl/workspace": "12.10.1",
