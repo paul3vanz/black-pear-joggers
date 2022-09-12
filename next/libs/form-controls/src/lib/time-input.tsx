@@ -23,6 +23,7 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
     seconds: useRef<HTMLInputElement>(null),
   };
 
+  // @ts-ignore
   const time = useWatch({
     control,
     name: props.id,
