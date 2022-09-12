@@ -1,23 +1,12 @@
 import { Card } from '@black-pear-joggers/card';
 import { Container } from '@black-pear-joggers/container';
-import { getClient } from '@black-pear-joggers/sanity';
-import { GetStaticPaths, GetStaticProps } from 'next';
-import { getVacancies } from '../core/queries/getVacancies';
-import { groq } from 'next-sanity';
+import { GetStaticProps } from 'next';
+import { GetVacancies, getVacancies } from '../core/queries/getVacancies';
 import { PortableText } from '@portabletext/react';
 import { Stack } from '@black-pear-joggers/stack';
 
 type KitPageProps = {
-  vacancies: {
-    title: string;
-    summary: string;
-    responsibilities: string;
-    howToApply: string;
-    slug: {
-      current: string;
-    };
-    imageUrl: string;
-  }[];
+  vacancies: GetVacancies[];
 };
 
 export function KitPage(props: KitPageProps) {
