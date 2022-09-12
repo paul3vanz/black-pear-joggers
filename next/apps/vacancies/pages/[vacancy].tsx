@@ -5,6 +5,7 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import { GetVacancies, getVacancies } from '../core/queries/getVacancies';
 import { PortableText } from '@portabletext/react';
 import { Stack } from '@black-pear-joggers/stack';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 type VacancyProps = {
@@ -23,7 +24,12 @@ const BackToVacanciesPage = () => (
 
 export const Vacancy = (props: VacancyProps) => {
   const { query } = useRouter();
-  const { activeVacancy } = query;
+  const { vacancy } = query;
+  const [activeVacancy, setActiveVacancy] = useState(null);
+
+  useEffect(() => {
+    setActiveVacancy(props.vacancies.find((_) => _.slug.current === vacancy));
+  }, [query]);
 
   if (!props.vacancies)
     return (
@@ -32,15 +38,17 @@ export const Vacancy = (props: VacancyProps) => {
       </div>
     );
 
+  if (!activeVacancy) return <div>Loading...</div>;
+
   return (
     <>
       <BackToVacanciesPage />
 
       <Stack>
         <Container>
-          <h1>Title</h1>
+          <h1>{activeVacancy.title}</h1>
 
-          <p>...</p>
+          <PortableText value={activeVacancy.summary} />
         </Container>
       </Stack>
 
@@ -48,7 +56,7 @@ export const Vacancy = (props: VacancyProps) => {
         <Container>
           <h2>Responsibilities</h2>
 
-          <p>...</p>
+          <PortableText value={activeVacancy.responsibilities} />
         </Container>
       </Stack>
 
@@ -56,7 +64,7 @@ export const Vacancy = (props: VacancyProps) => {
         <Container>
           <h2>How to apply</h2>
 
-          <p>...</p>
+          <PortableText value={activeVacancy.howToApply} />
         </Container>
       </Stack>
 
@@ -65,7 +73,7 @@ export const Vacancy = (props: VacancyProps) => {
           <h2>Other vacancies</h2>
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
             {props.vacancies
-              .filter((vacancy) => vacancy.slug.current !== activeVacancy)
+              .filter((_) => _.slug.current !== vacancy)
               .map((vacancy, index) => {
                 return (
                   <Card

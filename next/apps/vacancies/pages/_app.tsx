@@ -31,30 +31,28 @@ function LoadingContent() {
 }
 
 function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
-  const { isLoading, getAccessTokenSilently } = useAuth0();
+  //   const { isLoading, getAccessTokenSilently } = useAuth0();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        localStorage.setItem(
-          'bpj.token',
-          await getAccessTokenSilently({
-            audience: config.auth.audience,
-          })
-        );
-      } catch (e) {
-        // console.error(e);
-      }
-    })();
-  }, [getAccessTokenSilently]);
+  //   useEffect(() => {
+  //     (async () => {
+  //       try {
+  //         localStorage.setItem(
+  //           'bpj.token',
+  //           await getAccessTokenSilently({
+  //             audience: config.auth.audience,
+  //           })
+  //         );
+  //       } catch (e) {
+  //         // console.error(e);
+  //       }
+  //     })();
+  //   }, [getAccessTokenSilently]);
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <main className="flex-1">
-        {isLoading ? <LoadingContent /> : props.children}
-      </main>
+      <main className="flex-1">{props.children}</main>
 
       <Footer />
     </div>
