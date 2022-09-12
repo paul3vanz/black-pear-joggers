@@ -6,6 +6,7 @@ import {
     parseISO
     } from 'date-fns';
 import { MutableRefObject, useRef } from 'react';
+import { PortableTextBlock } from '@portabletext/types';
 
 function moment(...test: any[]): any {
   return null;
@@ -101,4 +102,16 @@ export function stepNamesToRefs(stepNames: string[]): {
     (a, v) => ({ ...a, [v]: useRef<HTMLDivElement>() }),
     {}
   );
+}
+
+export function toPlainText(blocks: PortableTextBlock[]) {
+  return blocks
+    .map((block) => {
+      if (block._type !== 'block' || !block.children) {
+        return '';
+      }
+
+      return block.children.map((child) => child.text).join('');
+    })
+    .join('\n\n');
 }

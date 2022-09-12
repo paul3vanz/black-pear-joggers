@@ -4,12 +4,13 @@ import { GetStaticProps } from 'next';
 import { GetVacancies, getVacancies } from '../core/queries/getVacancies';
 import { PortableText } from '@portabletext/react';
 import { Stack } from '@black-pear-joggers/stack';
+import { toPlainText } from '@black-pear-joggers/helpers';
 
-type KitPageProps = {
+type VacanciesPageProps = {
   vacancies: GetVacancies[];
 };
 
-export function KitPage(props: KitPageProps) {
+export function VacanciesPage(props: VacanciesPageProps) {
   return (
     <>
       <Stack>
@@ -19,7 +20,11 @@ export function KitPage(props: KitPageProps) {
           <p>
             The success of the club comes from the dedicated volunteers. The
             club regularly needs more volunteers; from leading groups on club
-            runs to joining the committee, check out...
+            runs to joining the committee, check out the vacancies below. If
+            there's some other way you feel you could help the club that isn't
+            listed below, please{' '}
+            <a href="https://bpj.org.uk/contact-the-club/">get in touch</a>{' '}
+            anyway.
           </p>
         </Container>
       </Stack>
@@ -29,6 +34,8 @@ export function KitPage(props: KitPageProps) {
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
             {props.vacancies
               ? props.vacancies.map((vacancy) => {
+                  const summary = toPlainText(vacancy.summary);
+
                   return (
                     <Card
                       imageUrl={
@@ -37,7 +44,13 @@ export function KitPage(props: KitPageProps) {
                       }
                       link={`/${vacancy.slug.current}`}
                       headline={vacancy.title}
-                      content={<PortableText value={vacancy.summary} />}
+                      content={
+                        <p>
+                          {summary.length > 150
+                            ? `${summary.substring(0, 150)}...`
+                            : summary}
+                        </p>
+                      }
                       key={vacancy.slug.current}
                     />
                   );
@@ -60,4 +73,4 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-export default KitPage;
+export default VacanciesPage;

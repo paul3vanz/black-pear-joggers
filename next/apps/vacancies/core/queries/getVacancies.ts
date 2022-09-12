@@ -5,9 +5,9 @@ import { PortableTextBlock } from '@portabletext/types';
 export type GetVacancies = {
   _id: string;
   title: string;
-  summary: PortableTextBlock;
-  responsibilities: PortableTextBlock;
-  howToApply: PortableTextBlock;
+  summary: PortableTextBlock[];
+  responsibilities: PortableTextBlock[];
+  howToApply: PortableTextBlock[];
   slug: {
     current: string
   };

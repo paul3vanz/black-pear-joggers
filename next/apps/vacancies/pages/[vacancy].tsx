@@ -42,6 +42,16 @@ export const Vacancy = (props: VacancyProps) => {
 
   return (
     <>
+      <div>
+        <img
+          src={activeVacancy.imageUrl}
+          alt=""
+          className="w-full object-cover h-64 sm:h-auto"
+          width="1080"
+          height="212"
+        />
+      </div>
+
       <BackToVacanciesPage />
 
       <Stack>
@@ -83,7 +93,6 @@ export const Vacancy = (props: VacancyProps) => {
                     }
                     link={`/${vacancy.slug.current}`}
                     headline={vacancy.title}
-                    content={<PortableText value={vacancy.summary} />}
                     key={vacancy.slug.current}
                   />
                 );
