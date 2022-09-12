@@ -20,7 +20,7 @@ export function Footer() {
     <>
       <div>
         <img
-          src="https://bpj.org.uk/wp-content/uploads/2012/03/montage-2017.jpg"
+          src="https://bpj.org.uk/wp-content/uploads/2022/09/club-photo.jpg"
           alt=""
           className="w-full object-cover h-64 sm:h-auto"
           width="1080"
