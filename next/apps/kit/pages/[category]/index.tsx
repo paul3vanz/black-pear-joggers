@@ -66,8 +66,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
     context.params.category.toString()
   );
 
-  console.log(categoryWithProducts);
-
   return {
     props: {
       categories,
