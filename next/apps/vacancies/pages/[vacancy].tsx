@@ -1,9 +1,12 @@
 import Link from 'next/link';
+import { Button } from '@black-pear-joggers/button';
 import { Card } from '@black-pear-joggers/card';
 import { Container } from '@black-pear-joggers/container';
+import { faChevronCircleLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { GetVacancies, getVacancies } from '../core/queries/getVacancies';
-import { PortableText } from '@portabletext/react';
+import { PortableText, PortableTextComponents } from '@portabletext/react';
 import { Stack } from '@black-pear-joggers/stack';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
@@ -12,11 +15,27 @@ type VacancyProps = {
   vacancies: GetVacancies[];
 };
 
+const portableTextComponents: PortableTextComponents = {
+  list: {
+    bullet: ({ children }) => <ul className="list-disc pl-5">{children}</ul>,
+  },
+  listItem: {
+    bullet: ({ children }) => <li className="mb-2">{children}</li>,
+  },
+};
+
 const BackToVacanciesPage = () => (
   <Stack padding="noBottom">
     <Container>
       <Link href="/">
-        <a>&laquo; Back to Vacancies</a>
+        <a>
+          <FontAwesomeIcon
+            className="pr-2"
+            size="lg"
+            icon={faChevronCircleLeft}
+          />
+          Back to Vacancies
+        </a>
       </Link>
     </Container>
   </Stack>
@@ -66,7 +85,10 @@ export const Vacancy = (props: VacancyProps) => {
         <Container>
           <h2>Responsibilities</h2>
 
-          <PortableText value={activeVacancy.responsibilities} />
+          <PortableText
+            value={activeVacancy.responsibilities}
+            components={portableTextComponents}
+          />
         </Container>
       </Stack>
 
@@ -75,6 +97,11 @@ export const Vacancy = (props: VacancyProps) => {
           <h2>How to apply</h2>
 
           <PortableText value={activeVacancy.howToApply} />
+
+          <Button
+            text="Get in touch"
+            link="https://bpj.org.uk/contact-the-club/"
+          />
         </Container>
       </Stack>
 
