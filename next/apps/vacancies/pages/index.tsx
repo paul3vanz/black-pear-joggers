@@ -21,8 +21,8 @@ export function VacanciesPage(props: VacanciesPageProps) {
             The success of the club comes from the dedicated volunteers. The
             club regularly needs more volunteers; from leading groups on club
             runs to joining the committee, check out the vacancies below. If
-            there's some other way you feel you could help the club that isn't
-            listed below, please{' '}
+            there&rsquo;s some other way you feel you could help the club that
+            isn&rsquo;t listed below, please{' '}
             <a href="https://bpj.org.uk/contact-the-club/">get in touch</a>{' '}
             anyway.
           </p>
