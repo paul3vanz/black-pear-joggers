@@ -50,7 +50,7 @@ export const Vacancy = (props: VacancyProps) => {
 
   useEffect(() => {
     setActiveVacancy(props.vacancies.find((_) => _.slug.current === vacancy));
-  }, [query]);
+  }, [query, props.vacancies, vacancy]);
 
   if (!props.vacancies)
     return (

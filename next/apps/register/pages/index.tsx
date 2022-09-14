@@ -43,7 +43,7 @@ function AdminHomePage() {
     if (currentStep) {
       scrollIntoView(steps[currentStep].current);
     }
-  }, [currentStep]);
+  }, [currentStep, steps]);
 
   async function onConfirmDetails(athlete: Athlete) {
     setIsUpdating(true);
