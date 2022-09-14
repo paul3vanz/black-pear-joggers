@@ -77,7 +77,7 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
             <th className="px-4 py-2">Award</th>
             <th className="px-4 py-2">Races</th>
             <th className="px-4 py-2">Verified</th>
-            <th className="px-4 py-2">Checks</th>
+            <th className="px-4 py-2">Actions</th>
           </tr>
         </thead>
 
