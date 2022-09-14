@@ -3,46 +3,46 @@ import { Container } from '@black-pear-joggers/container';
 import { GetStaticProps } from 'next';
 import { Select, TextArea, TextInput } from '@black-pear-joggers/form-controls';
 import { Stack } from '@black-pear-joggers/stack';
+import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+
+interface FormData {
+  name: string;
+  email: string;
+  reason: string;
+  message: string;
+}
 
 export function ContactPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  function handleSubmit() {
+  const {
+    getValues,
+    formState: { errors },
+    setValue,
+    register,
+    handleSubmit,
+  } = useForm<FormData>();
+
+  function submitEnquiry(formData: FormData) {
     setIsLoading(true);
     setIsError(false);
     setIsSuccess(false);
 
-    const myForm = document.getElementById('contact') as HTMLFormElement;
     fetch('https://contact.bpj.workers.dev/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: (document.getElementById('input-name') as HTMLInputElement).value,
-        email: (document.getElementById('input-email') as HTMLInputElement)
-          .value,
-        reason: (document.getElementById('input-reason') as HTMLInputElement)
-          .value,
-        message: (
-          document.getElementById('input-message') as HTMLTextAreaElement
-        ).value,
-      }),
+      body: JSON.stringify(formData),
     })
       .then((response) => response.json())
       .then((response) => {
         if (response.ok) {
           setIsSuccess(true);
-
-          // Bodged until I hook up formik or similar
-          (document.getElementById('input-name') as HTMLInputElement).value =
-            '';
-          (document.getElementById('input-email') as HTMLInputElement).value =
-            '';
-          (
-            document.getElementById('input-message') as HTMLTextAreaElement
-          ).value = '';
+          setValue('name', '');
+          setValue('email', '');
+          setValue('message', '');
         } else {
           setIsError(true);
         }
@@ -99,8 +99,13 @@ export function ContactPage() {
                 <TextInput
                   id="name"
                   label="Name"
-                  // error={errors.urn && 'Please enter a valid number'}
+                  placeholder="Name"
+                  labelHidden={true}
                   required={true}
+                  error={errors.name && 'Please enter your name'}
+                  registerField={register('name', {
+                    required: true,
+                  })}
                 />
               </div>
             </div>
@@ -110,8 +115,15 @@ export function ContactPage() {
                 <TextInput
                   id="email"
                   label="Email address"
-                  // error={errors.urn && 'Please enter a valid number'}
+                  placeholder="Email address"
+                  labelHidden={true}
                   required={true}
+                  error={errors.email && 'Please enter a valid email address'}
+                  registerField={register('email', {
+                    required: true,
+                    pattern:
+                      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                  })}
                 />
               </div>
             </div>
@@ -121,6 +133,7 @@ export function ContactPage() {
                 <Select
                   id="reason"
                   label="Reason for contacting"
+                  labelHidden={true}
                   options={[
                     'Joining / Membership enquiry',
                     'Send news / race report',
@@ -136,6 +149,9 @@ export function ContactPage() {
                     'Cross Country',
                     'Other',
                   ]}
+                  registerField={register('reason', {
+                    required: true,
+                  })}
                 />
               </div>
             </div>
@@ -145,8 +161,13 @@ export function ContactPage() {
                 <TextArea
                   id="message"
                   label="Message"
-                  // error={errors.urn && 'Please enter a valid number'}
+                  labelHidden={true}
+                  placeholder="Message"
                   required={true}
+                  error={errors.message && 'Please enter your message'}
+                  registerField={register('message', {
+                    required: true,
+                  })}
                 />
               </div>
             </div>
@@ -154,7 +175,7 @@ export function ContactPage() {
             <div className="mb-6">
               <ButtonLightTextDarkBackground
                 text={isLoading ? 'Sending...' : 'Send'}
-                onClick={handleSubmit}
+                onClick={handleSubmit(submitEnquiry)}
               />
             </div>
           </form>

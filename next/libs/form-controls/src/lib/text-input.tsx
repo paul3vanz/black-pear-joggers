@@ -4,6 +4,7 @@ import { UseFormRegisterReturn } from 'react-hook-form';
 export interface TextInputProps {
   id: string;
   label: string;
+  labelHidden?: boolean;
   required?: boolean;
   error?: any;
   defaultValue?: string;
@@ -11,13 +12,16 @@ export interface TextInputProps {
   onChange?: (event: any) => void;
 }
 
-export function TextInput(props: TextInputProps): JSX.Element {
+export function TextInput(
+  props: TextInputProps & Partial<HTMLInputElement>
+): JSX.Element {
   return (
     <>
       <label
         className={classNames(
           'block font-bold mb-1',
-          props.error && 'text-red-500'
+          props.error && 'text-red-500',
+          props.labelHidden && 'sr-only'
         )}
         htmlFor={`input-${props.id}`}
       >
@@ -32,6 +36,7 @@ export function TextInput(props: TextInputProps): JSX.Element {
         id={`input-${props.id}`}
         name={props.id}
         type="text"
+        placeholder={props.placeholder}
         aria-invalid={props.error && true}
         aria-describedby={props.error && `error-${props.id}`}
         required={props.required}

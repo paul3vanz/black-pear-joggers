@@ -4,6 +4,8 @@ import { UseFormRegisterReturn } from 'react-hook-form';
 export interface TextAreaProps {
   id: string;
   label: string;
+  labelHidden?: boolean;
+  placeholder?: string;
   required?: boolean;
   error?: any;
   defaultValue?: string;
@@ -17,7 +19,8 @@ export function TextArea(props: TextAreaProps): JSX.Element {
       <label
         className={classNames(
           'block font-bold mb-1',
-          props.error && 'text-red-500'
+          props.error && 'text-red-500',
+          props.labelHidden && 'sr-only'
         )}
         htmlFor={`input-${props.id}`}
       >
@@ -31,6 +34,7 @@ export function TextArea(props: TextAreaProps): JSX.Element {
         )}
         id={`input-${props.id}`}
         name={props.id}
+        placeholder={props.placeholder}
         aria-invalid={props.error && true}
         aria-describedby={props.error && `error-${props.id}`}
         required={props.required}

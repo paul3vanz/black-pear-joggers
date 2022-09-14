@@ -1,3 +1,4 @@
+import { classNames } from '@black-pear-joggers/helpers';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
 export interface SelectOption {
@@ -9,6 +10,7 @@ export interface SelectOption {
 export interface SelectProps {
   id: string;
   label: string;
+  labelHidden?: boolean;
   defaultValue?: string;
   registerField?: UseFormRegisterReturn;
   options: SelectOption[] | string[];
@@ -18,7 +20,13 @@ export interface SelectProps {
 export function Select(props: SelectProps): JSX.Element {
   return (
     <>
-      <label className="block font-bold mb-1" htmlFor={`input-${props.id}`}>
+      <label
+        className={classNames(
+          'block font-bold mb-1',
+          props.labelHidden && 'sr-only'
+        )}
+        htmlFor={`input-${props.id}`}
+      >
         {props.label}
       </label>
 

@@ -24,7 +24,9 @@ export function blogPostUrl(blogPost: any): string {
   ].join('/');
 }
 
-export function classNames(...classNames: (string | undefined)[]): string {
+export function classNames(
+  ...classNames: (string | undefined | null | boolean)[]
+): string {
   return classNames.filter(Boolean).join(' ');
 }
 
