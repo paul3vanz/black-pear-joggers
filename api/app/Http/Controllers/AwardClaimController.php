@@ -66,26 +66,24 @@ class AwardClaimController extends Controller
         return response()->json($claim);
     }
 
-    public function update(Request $request)
+    public function update($id, Request $request)
     {
-        $validatedData = $this->validate($request, [
-            'gender' => 'required',
-            'category' => 'required',
-            'award' => 'required',
-            'firstName' => 'required',
-            'lastName' => 'required',
-            'email' => 'required',
-            'races' => 'required',
-        ]);
+        $claim = AwardClaim::query()
+            ->where('id', '=', $id)
+            ->with('races')
+            ->first();;
 
-        $claim = AwardClaim::create([
-            'gender' => $request->input('gender'),
-            'category' => $request->input('category'),
-            'award' => $request->input('award'),
-            'firstName' => $request->input('firstName'),
-            'lastName' => $request->input('lastName'),
-            'email' => $request->input('email'),
-        ]);
+        $claim->update($request->all());
+
+        if ($request->input('races')) {
+            $races = $request->input('races');
+
+            foreach ($races as $race) {
+                $claimRace = $claim->races()->find($race['id']);
+
+                $claimRace->update($race);
+            }
+        }
 
         return response()->json($claim);
     }

@@ -26,6 +26,7 @@ $router->group([
     $router->post('archive/{id}', 'AwardClaimController@archive');
     $router->post('delete/{id}', 'AwardClaimController@delete');
     $router->get('', 'AwardClaimController@getAll');
+    $router->patch('{id}', 'AwardClaimController@update');
 });
 
 $router->group(['middleware' => 'auth', 'prefix' => 'membership'], function ($router) {
