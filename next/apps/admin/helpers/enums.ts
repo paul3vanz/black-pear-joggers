@@ -4,9 +4,9 @@ export const magicMileLocations = [
     'Nunnery Wood Track',
     'Pitchcroft Reverse',
     'Wainwright Road',
-  ];
+];
 
-  export const ageCategories = [
+export const ageCategories = [
     'U20',
     'U23',
     'SEN',
@@ -18,4 +18,19 @@ export const magicMileLocations = [
     'V60',
     'V65',
     'V70',
-  ];
+];
+
+export const awards = [
+    'Bronze',
+    'Silver',
+    'Gold',
+    'Platinum'
+];
+
+export const distances = [
+    'Mile',
+    '5K',
+    '10K',
+    'Half Marathon',
+    'Marathon'
+];

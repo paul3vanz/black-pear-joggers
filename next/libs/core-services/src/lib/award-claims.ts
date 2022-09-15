@@ -54,9 +54,9 @@ export async function deleteClaim(awardClaim: AwardClaim): Promise<boolean> {
 //     );
 //   }
 
-//   update(awardClaim: AwardClaim) {
-//     return this.http.post(`${this.API_URL}/awardclaim`, awardClaim);
-//   }
+  export function update(id: number, updatedFields: Partial<AwardClaim>) {
+    return post(`${config.baseApiUrl}/awardclaim/${id}`, updatedFields, 'PATCH');
+  }
 
 //   // MANUAL CHECKS
 //   // Matched up person with known member? - Need membership list/api

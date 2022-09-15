@@ -1,31 +1,33 @@
-import { AwardClaim } from '@black-pear-joggers/core-services';
+import { ageCategories, awards } from '../../helpers/enums';
+import { AwardClaim, update } from '@black-pear-joggers/core-services';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
-import { friendlyDate } from '@black-pear-joggers/helpers';
-import { updateAthlete } from '@black-pear-joggers/core-services';
+import { Select } from '@black-pear-joggers/form-controls';
 import { useForm } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
 
 interface UpdateClaimFormProps {
   awardClaim: AwardClaim;
 }
 
-function onSubmit(data) {
-  updateAthlete(data.id, {
-    athlete_id: data.athleteId,
-    first_name: data.firstName,
-    last_name: data.lastName,
-    urn: data.urn,
-  });
-}
-
 export function UpdateClaimForm({ awardClaim }: UpdateClaimFormProps) {
   const { register, handleSubmit } = useForm();
+
+  const { mutate, isLoading, isSuccess } = useMutation(
+    (updatedFields: Partial<AwardClaim>) => {
+      return update(awardClaim.id, updatedFields);
+    }
+  );
+
+  function onSubmit(updatedFields) {
+    mutate(updatedFields);
+  }
 
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-lg">
         <div className="flex flex-wrap -mx-3 mb-3">
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label className="block font-bold mb-2" htmlFor="grid-first-name">
+            <label className="block font-bold mb-1" htmlFor="grid-first-name">
               First name
             </label>
 
@@ -39,7 +41,7 @@ export function UpdateClaimForm({ awardClaim }: UpdateClaimFormProps) {
           </div>
 
           <div className="w-full md:w-1/2 px-3">
-            <label className="block font-bold mb-2" htmlFor="grid-last-name">
+            <label className="block font-bold mb-1" htmlFor="grid-last-name">
               Last name
             </label>
 
@@ -55,7 +57,7 @@ export function UpdateClaimForm({ awardClaim }: UpdateClaimFormProps) {
 
         <div className="flex flex-wrap -mx-3 mb-3">
           <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
-            <label className="block font-bold mb-2" htmlFor="athlete-id">
+            <label className="block font-bold mb-1" htmlFor="athlete-id">
               Athlete ID
             </label>
 
@@ -69,7 +71,7 @@ export function UpdateClaimForm({ awardClaim }: UpdateClaimFormProps) {
           </div>
 
           <div className="w-full md:w-3/4 px-3 mb-6 md:mb-0">
-            <label className="block font-bold mb-2" htmlFor="athlete-email">
+            <label className="block font-bold mb-1" htmlFor="athlete-email">
               Email address
             </label>
 
@@ -85,47 +87,35 @@ export function UpdateClaimForm({ awardClaim }: UpdateClaimFormProps) {
 
         <div className="flex flex-wrap -mx-3 mb-3">
           <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-            <label className="block font-bold mb-2" htmlFor="athlete-gender">
-              Gender
-            </label>
-
-            <input
-              className="block w-full border rounded py-3 px-4 mb-3"
+            <Select
+              label="Gender"
               id="athlete-gender"
-              type="text"
               defaultValue={awardClaim.gender}
-              {...register('gender')}
+              options={[
+                { label: 'Female', value: 'W' },
+                { label: 'Male', value: 'M' },
+              ]}
+              registerField={register('gender')}
             />
           </div>
 
           <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-            <label
-              className="block font-bold mb-2"
-              htmlFor="athlete-athlete-category"
-            >
-              Category
-            </label>
-
-            <input
-              className="block w-full border rounded py-3 px-4 mb-3"
-              id="athlete-athlete-category"
-              type="text"
+            <Select
+              label="Category"
+              id="athlete-category"
               defaultValue={awardClaim.category}
-              {...register('category')}
+              options={ageCategories}
+              registerField={register('category')}
             />
           </div>
 
           <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-            <label className="block font-bold mb-2" htmlFor="athlete-award">
-              Award
-            </label>
-
-            <input
-              className="block w-full border rounded py-3 px-4 mb-3"
+            <Select
+              label="Award"
               id="athlete-award"
-              type="text"
               defaultValue={awardClaim.award}
-              {...register('award')}
+              options={awards}
+              registerField={register('award')}
             />
           </div>
         </div>

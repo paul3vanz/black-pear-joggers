@@ -18,8 +18,6 @@ function AwardClaimDetailsPage() {
     ? awardClaims.find((awardClaim) => awardClaim.id === Number(id))
     : null;
 
-  console.log(awardClaim);
-
   if (isLoading) {
     return (
       <Stack>

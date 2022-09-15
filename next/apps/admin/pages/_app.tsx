@@ -6,8 +6,11 @@ import { Container } from '@black-pear-joggers/container';
 import { Footer } from '@black-pear-joggers/footer';
 import { Header } from '@black-pear-joggers/header';
 import { PropsWithChildren, useEffect } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from '@black-pear-joggers/stack';
 import './styles.css';
+
+const queryClient = new QueryClient();
 
 let getAccessTokenSilently = null;
 
@@ -67,10 +70,12 @@ function CustomApp({ Component, pageProps }: AppProps) {
         typeof window !== 'undefined' && `${window.location.origin}/admin`
       }
     >
-      <div id="modalContainer"></div>
-      <PageContent>
-        <Component {...pageProps} />
-      </PageContent>
+      <QueryClientProvider client={queryClient}>
+        <div id="modalContainer"></div>
+        <PageContent>
+          <Component {...pageProps} />
+        </PageContent>
+      </QueryClientProvider>
     </Auth0Provider>
   );
 }
