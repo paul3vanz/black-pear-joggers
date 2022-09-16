@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { AwardClaim, update } from '@black-pear-joggers/core-services';
 import { awards, distances } from '../../helpers/enums';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
+import { faExternalLinkSquareAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { friendlyDate } from '@black-pear-joggers/helpers';
 import { PaginatedResults } from '../../types/paginated-results';
 import { PerformanceSummary } from '../../types/performance-summary';
@@ -63,7 +65,8 @@ export function MatchingRaceResults(props: MatchingRaceResultsProps) {
                   href={`https://apps.bpj.org.uk/race-results/#/meeting/${result.date}/${result.meeting_id}`}
                 >
                   <a className="pl-4" target="_blank">
-                    View full results (opens in new window)
+                    View full results{' '}
+                    <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
                   </a>
                 </Link>
               </li>

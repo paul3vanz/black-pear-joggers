@@ -34,3 +34,8 @@ export const distances = [
     'Half Marathon',
     'Marathon'
 ];
+
+export const allowedRoles = [
+    'CommitteeX',
+    'Group leader'
+]

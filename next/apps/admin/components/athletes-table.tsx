@@ -9,14 +9,21 @@ interface AthletesTableProps {
 }
 
 function AthletesTable(props: AthletesTableProps) {
-  const filteredAthletes = props.search
-    ? props.athletes.filter((athlete) => {
-        const search = props.search.toLowerCase();
-        const name = `${athlete.first_name} ${athlete.last_name}`.toLowerCase();
+  const filteredAthletes = (
+    props.search
+      ? props.athletes.filter((athlete) => {
+          const search = props.search.toLowerCase();
+          const name =
+            `${athlete.first_name} ${athlete.last_name}`.toLowerCase();
 
-        return name.includes(search);
-      })
-    : props.athletes;
+          return name.includes(search);
+        })
+      : props.athletes
+  ).sort((a, b) => {
+    const result = a.first_name.localeCompare(b.first_name);
+
+    return result !== 0 ? result : a.last_name.localeCompare(b.last_name);
+  });
 
   return (
     <>

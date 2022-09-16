@@ -8,9 +8,12 @@ function AdminHomePage() {
   return (
     <Stack>
       <Container>
-        <h1>Black Pear Joggers Admin</h1>
+        <h1>Uh oh :-(</h1>
 
-        <p>Please use the menu above to navigate around.</p>
+        <p>
+          Sorry, you don't have access. Please speak to a committee member to
+          request access to the admin site.
+        </p>
       </Container>
     </Stack>
   );

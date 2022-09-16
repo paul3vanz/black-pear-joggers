@@ -5,9 +5,11 @@ import { config } from '@black-pear-joggers/core-services';
 import { Container } from '@black-pear-joggers/container';
 import { Footer } from '@black-pear-joggers/footer';
 import { Header } from '@black-pear-joggers/header';
+import { isAllowedUser, UserWithRoles } from '../helpers/auth';
 import { PropsWithChildren, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from '@black-pear-joggers/stack';
+import { useRouter } from 'next/dist/client/router';
 import './styles.css';
 
 const queryClient = new QueryClient({
@@ -36,7 +38,8 @@ function LoadingContent() {
 }
 
 function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
-  const { isLoading, getAccessTokenSilently } = useAuth0();
+  const { isLoading, user, getAccessTokenSilently } = useAuth0<UserWithRoles>();
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -52,6 +55,16 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
       }
     })();
   }, [getAccessTokenSilently]);
+
+  useEffect(() => {
+    console.log('checking');
+    if (!user) return;
+
+    if (!isAllowedUser(user)) {
+      console.log('forbidden');
+      router.push('/forbidden');
+    }
+  }, [user]);
 
   return (
     <div className="flex flex-col min-h-screen">
