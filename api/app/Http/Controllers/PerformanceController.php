@@ -126,6 +126,14 @@ class PerformanceController extends Controller
             $performances = $performances->where('performances.race', 'LIKE', "%$searchTerm%");
         }
 
+        if ($request->input('fromDate')) {
+            $performances = $performances->where('performances.date', '>=', $request->input('fromDate'));
+        }
+
+        if ($request->input('toDate')) {
+            $performances = $performances->where('performances.date', '<=', $request->input('toDate'));
+        }
+
         $performances = $performances->paginate(1000);
 
         return response()->json($performances);
