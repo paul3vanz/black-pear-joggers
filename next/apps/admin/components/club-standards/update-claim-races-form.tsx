@@ -1,3 +1,4 @@
+import MatchingRaceResults from './matching-race-results';
 import { AwardClaim, update } from '@black-pear-joggers/core-services';
 import { awards, distances } from '../../helpers/enums';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
@@ -14,7 +15,7 @@ interface UpdateClaimRacesFormProps {
 export function UpdateClaimRacesForm({
   awardClaim,
 }: UpdateClaimRacesFormProps) {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
 
   const { mutate, isLoading, isSuccess } = useMutation(
     (updatedFields: Partial<AwardClaim>) => {
@@ -100,12 +101,24 @@ export function UpdateClaimRacesForm({
                 />
               </div>
             </div>
+
+            <MatchingRaceResults
+              date={race.date}
+              distance={race.distance}
+              event={race.race}
+              firstName={awardClaim.firstName}
+              gender={awardClaim.gender}
+              lastName={awardClaim.lastName}
+              onSelect={(selectedRace) =>
+                setValue(`races[${index}].race`, selectedRace)
+              }
+            />
           </div>
         ))}
 
         <div className="mb-6">
           <ButtonLightTextDarkBackground
-            text="Save"
+            text={isLoading ? 'Saving...' : 'Save'}
             onClick={handleSubmit(onSubmit)}
           />
         </div>

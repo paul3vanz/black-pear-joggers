@@ -10,7 +10,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from '@black-pear-joggers/stack';
 import './styles.css';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 let getAccessTokenSilently = null;
 
