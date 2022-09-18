@@ -36,6 +36,6 @@ export const distances = [
 ];
 
 export const allowedRoles = [
-    'CommitteeX',
+    'Committee',
     'Group leader'
 ]
