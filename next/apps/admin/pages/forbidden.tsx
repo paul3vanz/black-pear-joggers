@@ -11,8 +11,8 @@ function AdminHomePage() {
         <h1>Uh oh :-(</h1>
 
         <p>
-          Sorry, you don't have access. Please speak to a committee member to
-          request access to the admin site.
+          Sorry, you don&apos;t have access. Please speak to a committee member
+          to request access to the admin site.
         </p>
       </Container>
     </Stack>

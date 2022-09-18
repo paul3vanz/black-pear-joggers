@@ -2,6 +2,8 @@ import Link from 'next/link';
 import MembersTable from '../../../../components/members-table';
 import { Athlete } from '@black-pear-joggers/core-services';
 import { Container } from '@black-pear-joggers/container';
+import { faChevronCircleLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SearchBar } from '@black-pear-joggers/search-bar';
 import { Stack } from '@black-pear-joggers/stack';
 import { toTitleCase } from '../../../../helpers/formatters';
@@ -34,8 +36,17 @@ function MembersPage() {
   return (
     <Stack>
       <Container>
-        <p>
-          <Link href="/clubs">Back to clubs</Link>
+        <p className="mb-8">
+          <Link href={`/clubs`}>
+            <a>
+              <FontAwesomeIcon
+                className="pr-2"
+                size="lg"
+                icon={faChevronCircleLeft}
+              />
+              Back to clubs
+            </a>
+          </Link>
         </p>
 
         <h1>{club?.ClubName}</h1>
