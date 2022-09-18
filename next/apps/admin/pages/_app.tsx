@@ -6,7 +6,7 @@ import { Container } from '@black-pear-joggers/container';
 import { Footer } from '@black-pear-joggers/footer';
 import { Header } from '@black-pear-joggers/header';
 import { isAllowedUser, UserWithRoles } from '../helpers/auth';
-import { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from '@black-pear-joggers/stack';
 import { useRouter } from 'next/dist/client/router';
@@ -39,6 +39,7 @@ function LoadingContent() {
 
 function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   const { isLoading, user, getAccessTokenSilently } = useAuth0<UserWithRoles>();
+  const [isAllowed, setIsAllowed] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -57,14 +58,16 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   }, [getAccessTokenSilently]);
 
   useEffect(() => {
-    console.log('checking');
-    if (!user) return;
+    if (!isLoading || !user) {
+      return;
+    }
 
-    if (!isAllowedUser(user)) {
-      console.log('forbidden');
+    setIsAllowed(isAllowedUser(user));
+
+    if (!isAllowed) {
       router.push('/forbidden');
     }
-  }, [user]);
+  }, [user, router]);
 
   return (
     <div className="flex flex-col min-h-screen">
