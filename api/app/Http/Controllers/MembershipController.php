@@ -8,6 +8,7 @@ use App\Models\Membership;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use SoapClient;
 use Log;
 use DateTime;
@@ -17,6 +18,10 @@ class MembershipController extends Controller
 {
     public function checkNameDob(string $firstName, string $lastName, string $dateOfBirth)
     {
+        if (!Gate::allows('members:read')) {
+            abort(403);
+        }
+
         $date = date("Y-m-d");
 
         return response()->json(MembershipController::fetchUrl("/race-provider/individuals?firstname=$firstName&lastname=$lastName&dob=$dateOfBirth"));
@@ -24,16 +29,27 @@ class MembershipController extends Controller
 
     public function responseCheckUrn(int $urn)
     {
+        if (!Gate::allows('members:read')) {
+            abort(403);
+        }
+
         return response()->json($this->checkUrn($urn));
     }
 
     public function getClubs()
     {
+        if (!Gate::allows('clubs:read')) {
+            abort(403);
+        }
         return response()->json(MembershipController::fetchUrl('/race-provider/clubs'));
     }
 
     public function getClubMembers(int $clubId = 1606)
     {
+        if (!Gate::allows('members:read')) {
+            abort(403);
+        }
+
         $date = date("Y-m-d");
 
         return response()->json(MembershipController::fetchUrl("/race-provider/clubs/$clubId/individuals?eventDate=$date"));

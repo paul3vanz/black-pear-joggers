@@ -54,5 +54,25 @@ class AuthServiceProvider extends ServiceProvider
                 return $decoded;
             }
         });
+
+        Gate::define('athletes:admin', function ($user) {
+            return in_array('athletes:admin', $user['permissions']);
+        });
+
+        Gate::define('clubs:read', function ($user) {
+            return in_array('clubs:read', $user['permissions']);
+        });
+
+        Gate::define('clubStandards:admin', function ($user) {
+            return in_array('clubStandards:admin', $user['permissions']);
+        });
+
+        Gate::define('magicMile:admin', function ($user) {
+            return in_array('members:read', $user['permissions']);
+        });
+
+        Gate::define('members:read', function ($user) {
+            return in_array('members:read', $user['permissions']);
+        });
     }
 }
