@@ -59,8 +59,14 @@ $router->get('/registrations/queue', 'RegistrationController@queueAllRegistratio
 $router->get('/registrations/createregistrationsfrommemberships', 'RegistrationController@createRegistrationsFromMemberships');
 
 $router->get('/magicmile', 'MagicMileController@getAllLegacy');
-$router->post('/magicmile', 'MagicMileController@store');
-$router->delete('/magicmile/{id}', 'MagicMileController@delete');
+
+$router->group([
+    'middleware' => 'auth',
+    'prefix' => 'magicmile',
+],  function ($router) {
+$router->post('', 'MagicMileController@store');
+$router->delete('{id}', 'MagicMileController@delete');
+});
 
 $router->get('/members/totals', 'AthleteController@getMembershipTotals');
 $router->get('/members/leaguemembers', 'MembershipController@getRegisteredMembers');
