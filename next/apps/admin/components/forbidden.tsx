@@ -1,8 +1,9 @@
 import { Container } from '@black-pear-joggers/container';
 import { Stack } from '@black-pear-joggers/stack';
-import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { UserWithRoles } from '../helpers/auth';
 
-function AdminHomePage() {
+export function Forbidden() {
   const { user } = useAuth0();
 
   return (
@@ -14,9 +15,11 @@ function AdminHomePage() {
           Sorry, you don&apos;t have access. Please speak to a committee member
           to request access to the admin site.
         </p>
+
+        <pre className="text-gray-300 text-xs">
+          Role(s): {(user as UserWithRoles).bpjRoles.join(', ')}
+        </pre>
       </Container>
     </Stack>
   );
 }
-
-export default withAuthenticationRequired(AdminHomePage);
