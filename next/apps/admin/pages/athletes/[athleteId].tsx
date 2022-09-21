@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
+import { LoadingSpinner } from 'apps/admin/components/loading-spinner';
 import { Stack } from '@black-pear-joggers/stack';
 import { UpdateAthleteForm } from '../../components/athletes/update-athlete-form';
 import { useAthletes } from '@black-pear-joggers/core-services';
@@ -20,7 +21,9 @@ function AthleteDetailsPage() {
     return (
       <Stack>
         <Container>
-          <p>Loading...</p>
+          <div className="flex justify-center">
+            <LoadingSpinner />
+          </div>
         </Container>
       </Stack>
     );

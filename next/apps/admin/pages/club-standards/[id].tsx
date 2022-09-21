@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Container } from '@black-pear-joggers/container';
 import { faChevronCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { LoadingSpinner } from 'apps/admin/components/loading-spinner';
 import { Stack } from '@black-pear-joggers/stack';
 import { UpdateClaimForm } from '../../components/club-standards/update-claim-form';
 import { UpdateClaimRacesForm } from '../../components/club-standards/update-claim-races-form';
@@ -22,7 +23,9 @@ function AwardClaimDetailsPage() {
     return (
       <Stack>
         <Container>
-          <p>Loading...</p>
+          <div className="flex justify-center">
+            <LoadingSpinner />
+          </div>
         </Container>
       </Stack>
     );

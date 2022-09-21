@@ -1,6 +1,7 @@
 import CreateMagicMileResultForm from '../components/magic-mile/create-magic-mile-form';
 import MagicMileResultsTable from '../components/magic-mile/magic-mile-results-table';
 import { Container } from '@black-pear-joggers/container';
+import { LoadingSpinner } from '../components/loading-spinner';
 import { MagicMileResult } from '@black-pear-joggers/core-services';
 import { mutate } from 'swr';
 import { SearchBar } from '@black-pear-joggers/search-bar';
@@ -12,7 +13,6 @@ import {
   magicMileResultsUrl,
   useMagicMileResults,
 } from '@black-pear-joggers/core-services';
-
 
 export function MagicMilePage() {
   const { magicMileResults, isLoading, isError } = useMagicMileResults();
@@ -57,7 +57,7 @@ export function MagicMilePage() {
           <SearchBar search={search} setSearch={setSearch} dark={true} />
 
           {isLoading ? (
-            <p>Loading...</p>
+            <LoadingSpinner />
           ) : (
             <MagicMileResultsTable
               search={search}
