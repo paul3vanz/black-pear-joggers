@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavigationLinkItem, navigationLinks } from '../constants/navigation';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 const NavigationLink = (props: { link: string; text: string }) => (
   <a
@@ -133,6 +134,7 @@ function UserIcon(props: { title?: string }) {
 export const Header = () => {
   const { user, loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <nav className="bg-gray-900">
@@ -157,13 +159,7 @@ export const Header = () => {
 
           <li className="flex lg:ml-4 justify-center mt-3 lg:mt-0">
             {isAuthenticated ? (
-              <button
-                onClick={() => {
-                  confirm('Are you sure you want to log out?')
-                    ? logout({ returnTo: window.location.origin })
-                    : false;
-                }}
-              >
+              <button onClick={() => router.push('/profile')}>
                 {user?.picture ? (
                   <>
                     <img

@@ -15,10 +15,6 @@ export function Forbidden() {
           Sorry, you don&apos;t have access. Please speak to a committee member
           to request access to the admin site.
         </p>
-
-        <pre className="text-gray-300 text-xs">
-          Role(s): {(user as UserWithRoles).bpjRoles.join(', ')}
-        </pre>
       </Container>
     </Stack>
   );

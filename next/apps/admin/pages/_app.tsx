@@ -11,7 +11,7 @@ import { LoadingSpinner } from '../components/loading-spinner';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from '@black-pear-joggers/stack';
-import { useRouter } from 'next/dist/client/router';
+import { useRouter } from 'next/router';
 import './styles.css';
 
 const queryClient = new QueryClient({
@@ -44,19 +44,20 @@ function LoadingContent() {
 function PageContent(props: PropsWithChildren<{}>) {
   const [isAllowed, setIsAllowed] = useState(false);
   const router = useRouter();
-  const { isLoading, user, getAccessTokenSilently } = useAuth0<UserWithRoles>();
+  const { isLoading, user, loginWithRedirect, getAccessTokenSilently } =
+    useAuth0<UserWithRoles>();
 
   useEffect(() => {
     (async () => {
       try {
-        localStorage.setItem(
-          'bpj.token',
-          await getAccessTokenSilently({
-            audience: config.auth.audience,
-          })
-        );
+        const accessToken = await getAccessTokenSilently({
+          audience: config.auth.audience,
+        });
+
+        localStorage.setItem('bpj.token', accessToken);
       } catch (e) {
-        console.error(e);
+        console.log('HERE');
+        loginWithRedirect(config.auth);
       }
     })();
   }, [getAccessTokenSilently]);
