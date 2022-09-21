@@ -41,7 +41,7 @@ function LoadingContent() {
   );
 }
 
-function PageContent(props: PropsWithChildren<{}>) {
+function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   const [isAllowed, setIsAllowed] = useState(false);
   const router = useRouter();
   const { isLoading, user, loginWithRedirect, getAccessTokenSilently } =
@@ -56,7 +56,6 @@ function PageContent(props: PropsWithChildren<{}>) {
 
         localStorage.setItem('bpj.token', accessToken);
       } catch (e) {
-        console.log('HERE');
         loginWithRedirect(config.auth);
       }
     })();
