@@ -6,6 +6,7 @@ use App\Models\MagicMile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class MagicMileController extends Controller
 {
@@ -22,6 +23,10 @@ class MagicMileController extends Controller
 
     public function store(Request $request)
     {
+        if (!Gate::allows('magicMile:admin')) {
+            abort(403);
+        }
+
         $validatedData = $this->validate($request, [
             'firstName' => 'required',
             'lastName' => 'required',
@@ -59,6 +64,10 @@ class MagicMileController extends Controller
 
     public function delete(string $id)
     {
+        if (!Gate::allows('magicMile:admin')) {
+            abort(403);
+        }
+
         $result = MagicMile::destroy($id);
         return response()->json($id);
     }

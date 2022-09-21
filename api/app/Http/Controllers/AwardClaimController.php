@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Log;
+use Illuminate\Support\Facades\Gate;
 
 class AwardClaimController extends Controller
 {
@@ -17,7 +18,14 @@ class AwardClaimController extends Controller
 
     public function getAll()
     {
-        $claims = AwardClaim::query()->with('races')->get()->makeVisible(['email'])->all();
+        $claims = AwardClaim::query()->with('races')->get();
+
+        if (Gate::allows('clubStandards:admin')) {
+            $claims->makeVisible(['email']);
+        }
+
+        $claims = $claims->all();
+
         return response()->json($claims);
     }
 
@@ -33,6 +41,10 @@ class AwardClaimController extends Controller
 
     public function toggleVerified($id)
     {
+        if (!Gate::allows('clubStandards:admin')) {
+            abort(403);
+        }
+
         $claim = AwardClaim::query()
             ->where('id', '=', $id)
             ->with('races')
@@ -47,6 +59,10 @@ class AwardClaimController extends Controller
 
     public function archive($id)
     {
+        if (!Gate::allows('clubStandards:admin')) {
+            abort(403);
+        }
+
         $claim = AwardClaim::query()
             ->where('id', '=', $id)
             ->with('races')
@@ -61,6 +77,10 @@ class AwardClaimController extends Controller
 
     public function delete($id)
     {
+        if (!Gate::allows('clubStandards:admin')) {
+            abort(403);
+        }
+
         $claim = AwardClaim::destroy($id);
 
         return response()->json($claim);
@@ -68,6 +88,10 @@ class AwardClaimController extends Controller
 
     public function update($id, Request $request)
     {
+        if (!Gate::allows('clubStandards:admin')) {
+            abort(403);
+        }
+
         $claim = AwardClaim::query()
             ->where('id', '=', $id)
             ->with('races')

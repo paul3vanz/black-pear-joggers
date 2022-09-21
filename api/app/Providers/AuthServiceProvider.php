@@ -68,7 +68,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('magicMile:admin', function ($user) {
-            return in_array('members:read', $user['permissions']);
+            return in_array('magicMile:admin', $user['permissions']);
         });
 
         Gate::define('members:read', function ($user) {

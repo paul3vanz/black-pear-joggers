@@ -7,13 +7,12 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Athlete;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ItemNotFoundException;
+use Illuminate\Support\Facades\Gate;
 
 class AthleteController extends Controller
 {
     public function getAthletes(Request $request)
     {
-        $user = Auth::check();
-
         $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
 
         if ($searchTerm) {
@@ -30,7 +29,7 @@ class AthleteController extends Controller
             $athletes = Athlete::query()->has('activeMembership')->get();
         }
 
-        if ($user) {
+        if (Gate::allows('athletes:admin')) {
             $athletes->makeVisible(['urn', 'dob', 'age']);
         }
 
@@ -82,6 +81,10 @@ class AthleteController extends Controller
 
     public function createAthlete(Request $request)
     {
+        if (!Gate::allows('athletes:admin')) {
+            abort(403);
+        }
+
         $this->validateRequest($request);
 
         Athlete::create([
@@ -97,6 +100,10 @@ class AthleteController extends Controller
 
     public function updateAthlete($id, $request)
     {
+        if (!Gate::allows('athletes:admin')) {
+            abort(403);
+        }
+
         $this->validateRequest($request);
 
         Athlete::find($id)->update([
@@ -111,6 +118,10 @@ class AthleteController extends Controller
 
     public function deleteAthlete($id)
     {
+        if (!Gate::allows('athletes:admin')) {
+            abort(403);
+        }
+
         $athlete = Athlete::find($id);
 
         $hasDeleted = $athlete->delete();
