@@ -1,6 +1,6 @@
 import ClubsTable from '../../components/clubs-table';
 import { Container } from '@black-pear-joggers/container';
-import { LoadingSpinner } from 'apps/admin/components/loading-spinner';
+import { LoadingSpinner } from '../../components/loading-spinner';
 import { SearchBar } from '@black-pear-joggers/search-bar';
 import { Stack } from '@black-pear-joggers/stack';
 import { toTitleCase } from '../../helpers/formatters';

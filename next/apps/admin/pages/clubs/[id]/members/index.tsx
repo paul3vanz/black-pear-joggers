@@ -3,7 +3,7 @@ import MembersTable from '../../../../components/members-table';
 import { Container } from '@black-pear-joggers/container';
 import { faChevronCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { LoadingSpinner } from 'apps/admin/components/loading-spinner';
+import { LoadingSpinner } from '../../../../components/loading-spinner';
 import { SearchBar } from '@black-pear-joggers/search-bar';
 import { Stack } from '@black-pear-joggers/stack';
 import { toTitleCase } from '../../../../helpers/formatters';

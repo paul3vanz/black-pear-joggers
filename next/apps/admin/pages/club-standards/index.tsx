@@ -1,7 +1,7 @@
 import { AwardClaim } from '@black-pear-joggers/core-services';
 import { AwardClaimsTable } from '../../components/club-standards/award-claims-table';
 import { Container } from '@black-pear-joggers/container';
-import { LoadingSpinner } from 'apps/admin/components/loading-spinner';
+import { LoadingSpinner } from '../../components/loading-spinner';
 import { SearchBar } from '@black-pear-joggers/search-bar';
 import { Stack } from '@black-pear-joggers/stack';
 import { useStandards } from '@black-pear-joggers/core-services';
