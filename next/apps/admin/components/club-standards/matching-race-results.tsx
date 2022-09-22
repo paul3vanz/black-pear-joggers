@@ -5,6 +5,7 @@ import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { faExternalLinkSquareAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { friendlyDate } from '@black-pear-joggers/helpers';
+import { LoadingSpinner } from '../loading-spinner';
 import { PaginatedResults } from '../../types/paginated-results';
 import { PerformanceSummary } from '../../types/performance-summary';
 import { Select, TextInput } from '@black-pear-joggers/form-controls';
@@ -44,7 +45,7 @@ export function MatchingRaceResults(props: MatchingRaceResultsProps) {
         Found the following potential matching results...
       </h3>
 
-      {isLoading ? <div>Loading...</div> : null}
+      {isLoading ? <LoadingSpinner /> : null}
 
       {error ? <div>{JSON.stringify(error)}</div> : null}
 

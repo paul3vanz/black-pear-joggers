@@ -2,11 +2,11 @@ import Link from 'next/link';
 import { booleanLabels, toTitleCase } from '../../../../helpers/formatters';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
+import { LoadingSpinner } from '../../../../components/loading-spinner';
 import { Stack } from '@black-pear-joggers/stack';
 import { useMember } from '@black-pear-joggers/core-services';
 import { useRouter } from 'next/dist/client/router';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-
 
 function MemberDetailsPage() {
   const router = useRouter();
@@ -17,7 +17,9 @@ function MemberDetailsPage() {
     return (
       <Stack>
         <Container>
-          <p>Loading...</p>
+          <div className="flex justify-center">
+            <LoadingSpinner />
+          </div>
         </Container>
       </Stack>
     );

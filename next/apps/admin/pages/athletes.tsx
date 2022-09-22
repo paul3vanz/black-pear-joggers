@@ -1,5 +1,6 @@
 import AthletesTable from '../components/athletes-table';
 import { Container } from '@black-pear-joggers/container';
+import { LoadingSpinner } from '../components/loading-spinner';
 import { SearchBar } from '@black-pear-joggers/search-bar';
 import { Stack } from '@black-pear-joggers/stack';
 import { useAthletes } from '@black-pear-joggers/core-services';
@@ -18,7 +19,7 @@ function AthletesPage() {
         <SearchBar search={search} setSearch={setSearch} />
 
         {isLoading ? (
-          <p>Loading...</p>
+          <LoadingSpinner />
         ) : (
           <AthletesTable search={search} athletes={athletes} />
         )}

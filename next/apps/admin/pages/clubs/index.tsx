@@ -1,5 +1,6 @@
 import ClubsTable from '../../components/clubs-table';
 import { Container } from '@black-pear-joggers/container';
+import { LoadingSpinner } from '../../components/loading-spinner';
 import { SearchBar } from '@black-pear-joggers/search-bar';
 import { Stack } from '@black-pear-joggers/stack';
 import { toTitleCase } from '../../helpers/formatters';
@@ -17,7 +18,7 @@ function MembersPage() {
         <h1>Clubs</h1>
 
         {isLoading ? (
-          <p>Loading...</p>
+          <LoadingSpinner />
         ) : (
           <>
             <SearchBar search={search} setSearch={setSearch} />
