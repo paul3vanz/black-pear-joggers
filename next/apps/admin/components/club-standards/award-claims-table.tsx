@@ -5,6 +5,7 @@ import { dateIsBefore, friendlyDate } from '@black-pear-joggers/helpers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { StandardsBadge } from '../standards-badge';
 import { StandardsTable } from './standards-table';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import {
   allEventsAreAllowedDistances,
@@ -16,6 +17,7 @@ import {
 import {
   faArchive,
   faCheckCircle,
+  faEnvelope,
   faPrint,
   faTimesCircle,
   faTrash,
@@ -31,6 +33,7 @@ interface AwardClaimsTableProps {
 }
 
 export function AwardClaimsTable(props: AwardClaimsTableProps) {
+  const router = useRouter();
   const [isRacesModalOpen, setIsRacesModalOpen] = useState(false);
   const [selectedAwardClaim, setSelectedAwardClaim] =
     useState<AwardClaim>(null);
@@ -153,6 +156,20 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
                     className="cursor-pointer"
                     size="lg"
                     icon={faPrint}
+                  />
+                </button>
+
+                <button
+                  className="mr-3"
+                  title="Email"
+                  onClick={() =>
+                    router.push(`/club-standards/${awardClaim.id}/email`)
+                  }
+                >
+                  <FontAwesomeIcon
+                    className="cursor-pointer"
+                    size="lg"
+                    icon={faEnvelope}
                   />
                 </button>
 
