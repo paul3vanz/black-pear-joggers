@@ -24,7 +24,16 @@ export default function Profile() {
           </li>
         </ul>
 
-        <Button text="Log out" onClick={() => logout()} />
+        <Button
+          text="Log out"
+          onClick={() =>
+            logout({
+              returnTo:
+                typeof window !== 'undefined' &&
+                `${window.location.origin}/admin`,
+            })
+          }
+        />
       </Container>
     </Stack>
   );

@@ -62,7 +62,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   }, [getAccessTokenSilently]);
 
   useEffect(() => {
-    if (!isLoading || !user) {
+    if (isLoading || !user) {
       return;
     }
 
