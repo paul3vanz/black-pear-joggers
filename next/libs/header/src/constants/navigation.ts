@@ -25,6 +25,7 @@ export const navigationLinks: NavigationLinkItem[] = [
         link: '#',
         text: 'Racing/leagues',
         items: [
+            { link: 'https://bpj.org.uk/leagues/champions-league/', text: 'Champions league' },
             { link: 'https://apps.bpj.org.uk/club-standards/', text: 'Club Standards Awards' },
             { link: 'https://bpj.org.uk/leagues/cross-country/', text: 'Cross Country' },
             { link: 'https://apps.bpj.org.uk/magic-mile/', text: 'Magic Mile' },
@@ -47,7 +48,7 @@ export const navigationLinks: NavigationLinkItem[] = [
         link: '#',
         text: 'Contact',
         items: [
-            { link: 'https://bpj.org.uk/contact-the-club/', text: 'Contact the Club' },
+            { link: 'https://bpj.org.uk/contact', text: 'Contact the Club' },
             { link: 'https://www.facebook.com/groups/blackpearjoggers/', text: 'Facebook Community' },
             { link: 'https://bpj.typeform.com/to/pIodcN', text: 'Incident Report Form' },
         ],
