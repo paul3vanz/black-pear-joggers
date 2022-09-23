@@ -6,6 +6,7 @@ import { NotFound } from '../components/not-found';
 import { scrollIntoView } from '@black-pear-joggers/helpers';
 import { setAthlete } from '@black-pear-joggers/core-services';
 import { Stack } from '@black-pear-joggers/stack';
+import { storeAthlete } from '../helpers/athlete-storage';
 import { useAthleteIdvCheck } from '@black-pear-joggers/core-services';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
@@ -51,6 +52,7 @@ function AdminHomePage() {
     setIsUpdating(false);
 
     if (success) {
+      storeAthlete(athlete);
       router.push('/success');
     } else {
       alert('There was an error.');
