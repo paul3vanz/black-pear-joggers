@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { AwardClaim, update } from '@black-pear-joggers/core-services';
 import { awards, distances } from '../../helpers/enums';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
-import { faExternalLinkSquareAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { friendlyDate } from '@black-pear-joggers/helpers';
 import { LoadingSpinner } from '../loading-spinner';
@@ -12,6 +11,10 @@ import { Select, TextInput } from '@black-pear-joggers/form-controls';
 import { updateAthlete } from '@black-pear-joggers/core-services';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  faCheckCircle,
+  faExternalLinkSquareAlt,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface MatchingRaceResultsProps {
   date: string;
@@ -55,12 +58,20 @@ export function MatchingRaceResults(props: MatchingRaceResultsProps) {
             <>
               <li>
                 {result.race}
-                <button
-                  className="font-bold pl-4 underline"
-                  onClick={() => props.onSelect(result.race)}
-                >
-                  Select
-                </button>
+
+                {result.race !== props.event ? (
+                  <button
+                    className="font-bold pl-4 underline"
+                    onClick={() => props.onSelect(result.race)}
+                  >
+                    Update
+                  </button>
+                ) : (
+                  <FontAwesomeIcon
+                    className="pl-4 text-green-600"
+                    icon={faCheckCircle}
+                  />
+                )}
 
                 <Link
                   href={`https://apps.bpj.org.uk/race-results/#/meeting/${result.date}/${result.meeting_id}`}

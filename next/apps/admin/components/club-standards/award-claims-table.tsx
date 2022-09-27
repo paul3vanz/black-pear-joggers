@@ -3,6 +3,7 @@ import { AwardClaim, Standard } from '@black-pear-joggers/core-services';
 import { AwardClaimDetailsModal } from './award-claim-details-modal';
 import { dateIsBefore, friendlyDate } from '@black-pear-joggers/helpers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Pill } from '@black-pear-joggers/ui/atoms/pill';
 import { StandardsBadge } from '../standards-badge';
 import { StandardsTable } from './standards-table';
 import { useRouter } from 'next/router';
@@ -32,16 +33,34 @@ interface AwardClaimsTableProps {
   onArchive: (awardClaim: AwardClaim) => void;
 }
 
+enum TableFilterStates {
+  All,
+  Active,
+  Archived,
+}
+
 export function AwardClaimsTable(props: AwardClaimsTableProps) {
   const router = useRouter();
   const [isRacesModalOpen, setIsRacesModalOpen] = useState(false);
+  const [tableFilterState, setTableFilterState] = useState<TableFilterStates>(
+    TableFilterStates.Active
+  );
   const [selectedAwardClaim, setSelectedAwardClaim] =
     useState<AwardClaim>(null);
 
   const filteredAwardClaims = props.awardClaims
     ? props.awardClaims
         .sort((a, b) => (dateIsBefore(a.createdDate, b.createdDate) ? 0 : -1))
-        .filter((awardClaim) => !awardClaim.archived)
+        .filter((awardClaim) => {
+          switch (tableFilterState) {
+            case TableFilterStates.Archived:
+              return awardClaim.archived;
+            case TableFilterStates.Active:
+              return !awardClaim.archived;
+            default:
+              return true;
+          }
+        })
         .filter((awardClaim) => {
           if (!props.search) {
             return true;
@@ -69,6 +88,21 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
 
       <p>
         <strong>{filteredAwardClaims.length}</strong> award claims
+      </p>
+
+      <p>
+        Show
+        {Object.keys(TableFilterStates)
+          .filter((v) => isNaN(v))
+          .map((filterState) => (
+            <Pill
+              onClick={() =>
+                setTableFilterState(TableFilterStates[filterState])
+              }
+              active={tableFilterState === TableFilterStates[filterState]}
+              text={filterState}
+            />
+          ))}
       </p>
 
       <table className="w-full">

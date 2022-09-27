@@ -1,131 +1,134 @@
 {
-  "npmScope": "black-pear-joggers",
-  "affected": {
-    "defaultBase": "master"
-  },
-  "implicitDependencies": {
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
+    "npmScope": "black-pear-joggers",
+    "affected": {
+        "defaultBase": "master"
     },
-    ".eslintrc.json": "*"
-  },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/nx-cloud",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "export",
-          "lint",
-          "test",
-          "e2e"
-        ],
-        "accessToken": "Y2UwY2VkZDEtYTg0Ny00YTQxLTkxNDItZjg2MmFhZTY1M2Q5fHJlYWQtd3JpdGU="
-      }
+    "implicitDependencies": {
+        "package.json": {
+            "dependencies": "*",
+            "devDependencies": "*"
+        },
+        ".eslintrc.json": "*"
+    },
+    "tasksRunnerOptions": {
+        "default": {
+            "runner": "@nrwl/nx-cloud",
+            "options": {
+                "cacheableOperations": [
+                    "build",
+                    "export",
+                    "lint",
+                    "test",
+                    "e2e"
+                ],
+                "accessToken": "Y2UwY2VkZDEtYTg0Ny00YTQxLTkxNDItZjg2MmFhZTY1M2Q5fHJlYWQtd3JpdGU="
+            }
+        }
+    },
+    "targetDependencies": {
+        "build": [
+            {
+                "target": "build",
+                "projects": "dependencies"
+            }
+        ]
+    },
+    "projects": {
+        "admin": {
+            "tags": []
+        },
+        "admin-e2e": {
+            "tags": [],
+            "implicitDependencies": [
+                "admin"
+            ]
+        },
+        "button": {
+            "tags": []
+        },
+        "card": {
+            "tags": []
+        },
+        "claim-award": {
+            "tags": []
+        },
+        "claim-award-e2e": {
+            "tags": [],
+            "implicitDependencies": [
+                "claim-award"
+            ]
+        },
+        "contact": {
+            "tags": []
+        },
+        "contact-e2e": {
+            "tags": [],
+            "implicitDependencies": [
+                "contact"
+            ]
+        },
+        "container": {
+            "tags": []
+        },
+        "core-services": {
+            "tags": []
+        },
+        "favicon": {
+            "tags": []
+        },
+        "footer": {
+            "tags": []
+        },
+        "form-controls": {
+            "tags": []
+        },
+        "header": {
+            "tags": []
+        },
+        "helpers": {
+            "tags": []
+        },
+        "kit": {
+            "tags": []
+        },
+        "kit-e2e": {
+            "tags": [],
+            "implicitDependencies": [
+                "kit"
+            ]
+        },
+        "lazy-load-image": {
+            "tags": []
+        },
+        "register": {
+            "tags": []
+        },
+        "register-e2e": {
+            "tags": [],
+            "implicitDependencies": [
+                "register"
+            ]
+        },
+        "sanity": {
+            "tags": []
+        },
+        "search-bar": {
+            "tags": []
+        },
+        "stack": {
+            "tags": []
+        },
+        "ui-atoms-pill": {
+            "tags": []
+        },
+        "vacancies": {
+            "tags": []
+        },
+        "vacancies-e2e": {
+            "tags": [],
+            "implicitDependencies": [
+                "vacancies"
+            ]
+        }
     }
-  },
-  "targetDependencies": {
-    "build": [
-      {
-        "target": "build",
-        "projects": "dependencies"
-      }
-    ]
-  },
-  "projects": {
-    "admin": {
-      "tags": []
-    },
-    "admin-e2e": {
-      "tags": [],
-      "implicitDependencies": [
-        "admin"
-      ]
-    },
-    "button": {
-      "tags": []
-    },
-    "card": {
-      "tags": []
-    },
-    "claim-award": {
-      "tags": []
-    },
-    "claim-award-e2e": {
-      "tags": [],
-      "implicitDependencies": [
-        "claim-award"
-      ]
-    },
-    "contact": {
-      "tags": []
-    },
-    "contact-e2e": {
-      "tags": [],
-      "implicitDependencies": [
-        "contact"
-      ]
-    },
-    "container": {
-      "tags": []
-    },
-    "core-services": {
-      "tags": []
-    },
-    "favicon": {
-      "tags": []
-    },
-    "footer": {
-      "tags": []
-    },
-    "form-controls": {
-      "tags": []
-    },
-    "header": {
-      "tags": []
-    },
-    "helpers": {
-      "tags": []
-    },
-    "kit": {
-      "tags": []
-    },
-    "kit-e2e": {
-      "tags": [],
-      "implicitDependencies": [
-        "kit"
-      ]
-    },
-    "lazy-load-image": {
-      "tags": []
-    },
-    "register": {
-      "tags": []
-    },
-    "register-e2e": {
-      "tags": [],
-      "implicitDependencies": [
-        "register"
-      ]
-    },
-    "sanity": {
-      "tags": []
-    },
-    "search-bar": {
-      "tags": []
-    },
-    "stack": {
-      "tags": []
-    },
-    "vacancies": {
-      "tags": []
-    },
-    "vacancies-e2e": {
-      "tags": [],
-      "implicitDependencies": [
-        "vacancies"
-      ]
-    }
-  }
 }
