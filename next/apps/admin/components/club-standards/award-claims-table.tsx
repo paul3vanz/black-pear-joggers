@@ -93,9 +93,10 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
       <p>
         Show
         {Object.keys(TableFilterStates)
-          .filter((v) => isNaN(v))
-          .map((filterState) => (
+          .filter((v) => isNaN(Number(v)))
+          .map((filterState, index) => (
             <Pill
+              key={index}
               onClick={() =>
                 setTableFilterState(TableFilterStates[filterState])
               }
