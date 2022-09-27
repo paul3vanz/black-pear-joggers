@@ -37,6 +37,23 @@ export default {
       title: 'How to apply',
       type: 'blockContent',
     },
+    {
+      name: 'status',
+      title: 'Status',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Recruiting', value: 'recruiting' },
+          { title: 'Filled', value: 'filled' },
+          { title: 'Hidden', value: 'hidden' },
+        ],
+      },
+    },
+    {
+      name: 'newRecruit',
+      title: 'New recruit',
+      type: 'string',
+    },
   ],
   preview: {
     select: {
