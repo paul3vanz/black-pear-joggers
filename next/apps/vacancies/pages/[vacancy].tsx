@@ -5,11 +5,15 @@ import { Container } from '@black-pear-joggers/container';
 import { faChevronCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { GetVacancies, getVacancies } from '../core/queries/getVacancies';
 import { PortableText, PortableTextComponents } from '@portabletext/react';
 import { Stack } from '@black-pear-joggers/stack';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import {
+  GetVacancies,
+  getVacancies,
+  VacancyStatus,
+} from '../core/queries/getVacancies';
 
 type VacancyProps = {
   vacancies: GetVacancies[];
@@ -46,7 +50,7 @@ const BackToVacanciesPage = () => (
 export const Vacancy = (props: VacancyProps) => {
   const { query } = useRouter();
   const { vacancy } = query;
-  const [activeVacancy, setActiveVacancy] = useState(null);
+  const [activeVacancy, setActiveVacancy] = useState<GetVacancies>(null);
 
   useEffect(() => {
     setActiveVacancy(props.vacancies.find((_) => _.slug.current === vacancy));
@@ -77,6 +81,14 @@ export const Vacancy = (props: VacancyProps) => {
 
       <Stack>
         <Container>
+          {activeVacancy.status === VacancyStatus.Filled ? (
+            <div className="p-6 bg-green-400 mb-16 rounded-sm">
+              This role has now been filled. A big thank you to{' '}
+              <strong>{activeVacancy.newRecruit}</strong> who will be taking on
+              this role.
+            </div>
+          ) : null}
+
           <h1>{activeVacancy.title}</h1>
 
           <PortableText value={activeVacancy.summary} />
@@ -94,18 +106,20 @@ export const Vacancy = (props: VacancyProps) => {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="bright">
-        <Container>
-          <h2>How to apply</h2>
+      {activeVacancy.status !== VacancyStatus.Filled ? (
+        <Stack backgroundColour="bright">
+          <Container>
+            <h2>How to apply</h2>
 
-          <PortableText value={activeVacancy.howToApply} />
+            <PortableText value={activeVacancy.howToApply} />
 
-          <Button
-            text="Get in touch"
-            link="https://bpj.org.uk/contact-the-club/"
-          />
-        </Container>
-      </Stack>
+            <Button
+              text="Get in touch"
+              link="https://bpj.org.uk/contact-the-club/"
+            />
+          </Container>
+        </Stack>
+      ) : null}
 
       <Stack backgroundColour="dark">
         <Container>
@@ -113,6 +127,7 @@ export const Vacancy = (props: VacancyProps) => {
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
             {props.vacancies
               .filter((_) => _.slug.current !== vacancy)
+              .filter((_) => _.status === VacancyStatus.Recruiting)
               .map((vacancy, index) => {
                 return (
                   <Card
