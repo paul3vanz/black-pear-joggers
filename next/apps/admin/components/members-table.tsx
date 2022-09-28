@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { classNames } from '@black-pear-joggers/helpers';
+import { Pill } from '@black-pear-joggers/ui/atoms/pill';
 import { RegisteredAthlete } from '@black-pear-joggers/core-services';
 import { toTitleCase } from '../helpers/formatters';
 import { useMemo, useState } from 'react';
@@ -12,21 +12,6 @@ interface MembersTableProps {
 
 function isActiveMember(member: RegisteredAthlete): boolean {
   return ['Registered'].includes(member.CompetitiveRegStatus);
-}
-
-function Pill(props) {
-  return (
-    <button
-      onClick={props.onClick}
-      className={classNames(
-        props.active && 'font-bold bg-green-600 text-white',
-        !props.active && 'bg-gray-200 text-black',
-        'inline-block px-2 py-1 ml-2 rounded-md'
-      )}
-    >
-      {props.text}
-    </button>
-  );
 }
 
 function MembersTable(props: MembersTableProps) {

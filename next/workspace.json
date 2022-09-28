@@ -678,6 +678,28 @@
         }
       }
     },
+    "ui-atoms-pill": {
+      "root": "libs/ui/atoms/pill",
+      "sourceRoot": "libs/ui/atoms/pill/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["libs/ui/atoms/pill/**/*.{ts,tsx,js,jsx}"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/ui/atoms/pill"],
+          "options": {
+            "jestConfig": "libs/ui/atoms/pill/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
     "vacancies": {
       "root": "apps/vacancies",
       "sourceRoot": "apps/vacancies",

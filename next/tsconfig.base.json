@@ -29,7 +29,8 @@
       ],
       "@black-pear-joggers/sanity": ["libs/sanity/src/index.ts"],
       "@black-pear-joggers/search-bar": ["libs/search-bar/src/index.ts"],
-      "@black-pear-joggers/stack": ["libs/stack/src/index.ts"]
+      "@black-pear-joggers/stack": ["libs/stack/src/index.ts"],
+      "@black-pear-joggers/ui/atoms/pill": ["libs/ui/atoms/pill/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

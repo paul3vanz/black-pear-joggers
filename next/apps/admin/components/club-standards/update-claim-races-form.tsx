@@ -87,12 +87,14 @@ export function UpdateClaimRacesForm({
                   className="block w-full border rounded py-3 px-4 mb-3"
                   id="grid-time"
                   type="text"
+                  disabled
                   defaultValue={race.time}
                 />
               </div>
 
               <div className="w-full md:w-1/12 px-3 mb-6 md:mb-0">
                 <Select
+                  disabled
                   label="Standard"
                   id={`race-standard-${index}`}
                   defaultValue={awardClaim.award}

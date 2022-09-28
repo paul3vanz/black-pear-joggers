@@ -1,14 +1,49 @@
 import { Card } from '@black-pear-joggers/card';
 import { Container } from '@black-pear-joggers/container';
 import { GetStaticProps } from 'next';
-import { GetVacancies, getVacancies } from '../core/queries/getVacancies';
 import { PortableText } from '@portabletext/react';
 import { Stack } from '@black-pear-joggers/stack';
 import { toPlainText } from '@black-pear-joggers/helpers';
+import {
+  GetVacancies,
+  getVacancies,
+  VacancyStatus,
+} from '../core/queries/getVacancies';
 
 type VacanciesPageProps = {
   vacancies: GetVacancies[];
 };
+
+function VacanciesCards(props: VacanciesPageProps) {
+  return (
+    <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+      {props.vacancies
+        ? props.vacancies.map((vacancy) => {
+            const summary = toPlainText(vacancy.summary);
+
+            return (
+              <Card
+                imageUrl={
+                  vacancy.imageUrl ||
+                  `https://bpj.org.uk/wp-content/uploads/2022/09/club-photo.jpg`
+                }
+                link={`/${vacancy.slug.current}`}
+                headline={vacancy.title}
+                content={
+                  <p>
+                    {summary.length > 150
+                      ? `${summary.substring(0, 150)}...`
+                      : summary}
+                  </p>
+                }
+                key={vacancy.slug.current}
+              />
+            );
+          })
+        : null}
+    </div>
+  );
+}
 
 export function VacanciesPage(props: VacanciesPageProps) {
   return (
@@ -31,32 +66,25 @@ export function VacanciesPage(props: VacanciesPageProps) {
 
       <Stack backgroundColour="light">
         <Container>
-          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {props.vacancies
-              ? props.vacancies.map((vacancy) => {
-                  const summary = toPlainText(vacancy.summary);
+          <h2>Open vacancies</h2>
 
-                  return (
-                    <Card
-                      imageUrl={
-                        vacancy.imageUrl ||
-                        `https://bpj.org.uk/wp-content/uploads/2022/09/club-photo.jpg`
-                      }
-                      link={`/${vacancy.slug.current}`}
-                      headline={vacancy.title}
-                      content={
-                        <p>
-                          {summary.length > 150
-                            ? `${summary.substring(0, 150)}...`
-                            : summary}
-                        </p>
-                      }
-                      key={vacancy.slug.current}
-                    />
-                  );
-                })
-              : null}
-          </div>
+          <VacanciesCards
+            vacancies={props.vacancies.filter(
+              (vacancy) => vacancy.status === VacancyStatus.Recruiting
+            )}
+          />
+        </Container>
+      </Stack>
+
+      <Stack backgroundColour="dark">
+        <Container>
+          <h2>Vacancies now filled</h2>
+
+          <VacanciesCards
+            vacancies={props.vacancies.filter(
+              (vacancy) => vacancy.status === VacancyStatus.Filled
+            )}
+          />
         </Container>
       </Stack>
     </>

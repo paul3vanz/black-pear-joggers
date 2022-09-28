@@ -19,7 +19,8 @@ function LoadingContent() {
 }
 
 function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
-  const { isLoading, getAccessTokenSilently } = useAuth0();
+  const { isLoading, user, loginWithRedirect, getAccessTokenSilently } =
+    useAuth0();
 
   useEffect(() => {
     (async () => {
@@ -31,7 +32,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
           })
         );
       } catch (e) {
-        console.error(e);
+        loginWithRedirect(config.auth);
       }
     })();
   }, [getAccessTokenSilently]);
