@@ -18,18 +18,18 @@
           <div class="column double">
             <div class="columns" formGroupName="finishTime">
               <div class="column formField">
-                <label for="hours">Hours</label>
-                <input formControlName="hours" required type="number" min="0" max="9">
+                <label [for]="'hours' + i">Hours</label>
+                <input [id]="'hours' + i" formControlName="hours" required type="number" min="0" max="9">
               </div>
 
               <div class="column formField">
-                <label for="minutes">Minutes</label>
-                <input formControlName="minutes" required type="number" min="0" max="59">
+                <label [for]="'minutes' + i">Minutes</label>
+                <input [id]="'minutes' + i" formControlName="minutes" required type="number" min="0" max="59">
               </div>
 
               <div class="column formField">
-                <label for="seconds">Seconds</label>
-                <input formControlName="seconds" required type="number" min="0" max="59">
+                <label [for]="'seconds' + i">Seconds</label>
+                <input [id]="'seconds' + i" formControlName="seconds" required type="number" min="0" max="59">
               </div>
             </div>
           </div>
