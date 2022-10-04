@@ -38,7 +38,7 @@ export function ContactPage() {
     })
       .then((response) => response.json())
       .then((response) => {
-        if (response.ok) {
+        if (response.send.ok) {
           setIsSuccess(true);
           setValue('name', '');
           setValue('email', '');
