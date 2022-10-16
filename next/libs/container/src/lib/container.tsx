@@ -1,5 +1,5 @@
-import { PropsWithChildren } from 'react';
 import styled from 'styled-components';
+import { PropsWithChildren } from 'react';
 
 const Wrapper = styled.div`
   & > *:last-child {
@@ -7,8 +7,10 @@ const Wrapper = styled.div`
   }
 `;
 
-export const Container = ({ children }: PropsWithChildren<{}>) => (
-  <div className="container mx-auto">
+interface Props {}
+
+export const Container = ({ children }: PropsWithChildren<Props>) => (
+  <div className="container mx-auto max-w-4xl">
     <div className="px-4">
       <Wrapper>{children}</Wrapper>
     </div>

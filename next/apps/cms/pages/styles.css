@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    font-size: 18px;
+}
+
+h1 {
+    @apply text-4xl font-bold mb-4;
+}
+
+h2 {
+    @apply text-3xl font-bold mb-4;
+}
+
+h3 {
+    @apply text-2xl font-bold mb-4;
+}
+
+p {
+    @apply mb-4;
+}
+
+a {
+    @apply font-bold underline cursor-pointer;
+}
+
+th {
+    @apply text-left;
+}

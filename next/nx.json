@@ -58,6 +58,15 @@
                 "claim-award"
             ]
         },
+        "cms": {
+            "tags": []
+        },
+        "cms-e2e": {
+            "tags": [],
+            "implicitDependencies": [
+                "cms"
+            ]
+        },
         "contact": {
             "tags": []
         },

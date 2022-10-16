@@ -71,6 +71,24 @@ export function shortDate(date?: string) {
   return format(date ? parseISO(date) : new Date(), 'yyyy-MM-dd');
 }
 
+export function longDate(date?: string) {
+  return format(
+    date ? parseISO(date) : new Date(),
+    'EEEE Do MMMM yyyy h:mmaaa'
+  );
+}
+
+export function timestamp(date?: string) {
+  return format(
+    date ? parseISO(date) : new Date(),
+    'EEEE Do MMMM yyyy h:mmaaa'
+  );
+}
+
+export function formatRelative(date?: string) {
+  return format(date ? parseISO(date) : new Date(), 'yyyy-MM-dd');
+}
+
 export function dateIsBefore(date: string, dateToCompare: string): boolean {
   return isBefore(parseISO(date), parseISO(dateToCompare));
 }
