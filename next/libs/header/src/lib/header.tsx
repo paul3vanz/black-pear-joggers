@@ -173,7 +173,7 @@ export const Header = () => {
                 )}
               </button>
             ) : (
-              <button onClick={() => loginWithRedirect()}>
+              <button onClick={() => router.push('/register')}>
                 <UserIcon title="Log in" />
               </button>
             )}

@@ -24,4 +24,11 @@ export interface Cta {
     title: string;
 }
 
-export type ContentItem = InfoRows | CtaPlug;
+export interface Illustration {
+    _type: 'illustration',
+    image: {
+        alt: string;
+    }
+}
+
+export type ContentItem = InfoRows | CtaPlug | Illustration;

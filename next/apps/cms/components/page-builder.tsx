@@ -1,7 +1,9 @@
 import { Container } from '@black-pear-joggers/container';
 import { CtaPlug } from './cta-plug';
 import { InfoRows } from './info-rows';
+import { LazyLoadImage } from '@black-pear-joggers/lazy-load-image';
 import { Stack } from '@black-pear-joggers/stack';
+import { urlFor } from '@black-pear-joggers/sanity';
 import {
   ContentItem,
   CtaPlug as CtaPlugType,
@@ -19,6 +21,24 @@ export function PageBuilder(props: PageBuilderProps) {
         return <InfoRows rows={contentItem.rows} />;
       case 'ctaPlug':
         return <CtaPlug {...contentItem} />;
+      case 'illustration':
+        return (
+          <LazyLoadImage>
+            <img
+              className="w-full object-cover sm:h-auto"
+              src={urlFor(contentItem.image).url()}
+              alt={contentItem.image.alt}
+            />
+          </LazyLoadImage>
+        );
+      default:
+        return (
+          <Stack>
+            <Container>
+              <pre>{JSON.stringify(contentItem, null, ' ')}</pre>
+            </Container>
+          </Stack>
+        );
     }
   });
 }

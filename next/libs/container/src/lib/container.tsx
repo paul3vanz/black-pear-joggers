@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { classNames } from '@black-pear-joggers/helpers';
 import { PropsWithChildren } from 'react';
 
 const Wrapper = styled.div`
@@ -7,12 +8,14 @@ const Wrapper = styled.div`
   }
 `;
 
-interface Props {}
+interface Props {
+  wide?: boolean;
+}
 
-export const Container = ({ children }: PropsWithChildren<Props>) => (
-  <div className="container mx-auto max-w-4xl">
+export const Container = (props: PropsWithChildren<Props>) => (
+  <div className={classNames('container mx-auto', !props.wide && 'max-w-4xl')}>
     <div className="px-4">
-      <Wrapper>{children}</Wrapper>
+      <Wrapper>{props.children}</Wrapper>
     </div>
   </div>
 );

@@ -25,10 +25,11 @@ export default {
         { type: 'pricing' },
         { type: 'uiComponentRef' },
         { type: 'hero' },
+        { type: 'illustration' },
         { type: 'infoRows' },
         { type: 'ctaColumns' },
         { type: 'ctaPlug' },
       ],
     },
   ],
-}
+};
