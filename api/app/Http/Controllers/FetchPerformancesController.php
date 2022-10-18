@@ -225,9 +225,10 @@ class FetchPerformancesController extends Controller
         } else if ($timePartCount === 3) {
             $timeParsed = ((int) $timeParts[0] * 3600) + ((int) $timeParts[1] * 60) + ((float) $timeParts[2]);
         } else {
-            Log::channel('slackInfo')->info('Unable to parse time: ' . $time);
+            $timeParsed = (float) $time;
+            // Log::channel('slackInfo')->info('Unable to parse time: ' . $time);
 
-            return false;
+            // return false;
         }
 
         return $timeParsed;
