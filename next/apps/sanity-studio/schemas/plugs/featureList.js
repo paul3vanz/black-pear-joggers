@@ -1,4 +1,4 @@
-import {MdList} from "react-icons/md"
+import { MdList } from 'react-icons/md';
 
 export default {
   name: 'featureList',
@@ -10,33 +10,33 @@ export default {
       title: 'Settings',
       options: {
         collapsible: true,
-        collapsed: true
-      }
+        collapsed: true,
+      },
     },
     {
       name: 'listSettings',
       title: 'List settings',
       options: {
         collapsible: true,
-        collapsed: true
-      }
-    }
+        collapsed: true,
+      },
+    },
   ],
   fields: [
     {
       name: 'label',
       type: 'string',
-      fieldset: 'settings'
+      fieldset: 'settings',
     },
     {
       name: 'title',
       type: 'string',
-      fieldset: 'settings'
+      fieldset: 'settings',
     },
     {
       name: 'subtitle',
       type: 'simpleBlockContent',
-      fieldset: 'settings'
+      fieldset: 'settings',
     },
     {
       title: 'Max columns',
@@ -53,40 +53,44 @@ export default {
       type: 'string',
       fieldset: 'listSettings',
       options: {
-        list: ['checkmark', 'ordered', 'customIcon']
-      }
-      
+        list: ['checkmark', 'ordered', 'customIcon'],
+      },
     },
     {
       name: 'features',
       type: 'array',
       of: [
         {
-          type: 'feature'
-        }
-      ]
+          type: 'string',
+        },
+      ],
     },
     {
       name: 'ctas',
       title: 'Call to actions',
       type: 'array',
-      of: [{
-        type: 'cta'
-      }]
-    }
+      of: [
+        {
+          type: 'cta',
+        },
+      ],
+    },
   ],
   preview: {
     select: {
       label: 'label',
       title: 'title',
-      features: 'features'
+      features: 'features',
     },
-    prepare({label, title, features}) {
+    prepare({ label, title, features }) {
       return {
-        title: title || label ? `Feature list: ${title || label}` : 'Untitled feature list',
-        subtitle: `Features: ${features.map(f => f.title).join(', ')}±`,
-        media: MdList
-      }
-    }
-  }
-}
+        title:
+          title || label
+            ? `Feature list: ${title || label}`
+            : 'Untitled feature list',
+        subtitle: `Features: ${features.map((f) => f.title).join(', ')}±`,
+        media: MdList,
+      };
+    },
+  },
+};

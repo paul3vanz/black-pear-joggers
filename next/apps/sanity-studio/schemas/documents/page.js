@@ -29,6 +29,8 @@ export default {
         { type: 'infoRows' },
         { type: 'ctaColumns' },
         { type: 'ctaPlug' },
+        { type: 'featureList' },
+        { type: 'quote' },
       ],
     },
   ],
