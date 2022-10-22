@@ -11,7 +11,7 @@ import {
 } from '../types/content.types';
 
 export interface PageBuilderProps {
-  content: ContentItem[];
+  content: any; // ContentItem[];
 }
 
 export function PageBuilder(props: PageBuilderProps) {

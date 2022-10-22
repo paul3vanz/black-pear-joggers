@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 
 export default function Page(props: Props) {
   const router = useRouter();
+
   return <PageBuilder content={props.route.page.content} />;
 }
 
