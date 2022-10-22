@@ -20,7 +20,7 @@ export function CtaPlug(props) {
         <PortableText components={portableTextComponents} value={props.body} />
 
         {props.ctas.map((cta) => (
-          <Button text={cta.title} link={cta.link} />
+          <Button key={cta.title} text={cta.title} link={cta.link} />
         ))}
       </Container>
     </Stack>
