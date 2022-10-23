@@ -14,8 +14,8 @@ export function FeatureList({ featureList }: FeatureListProps) {
     <Stack>
       <Container>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
-          {featureList.features.map((feature, index) => (
-            <div className="text-center">
+          {featureList.features.map((feature) => (
+            <div className="text-center" key={feature._key}>
               {feature.icon ? (
                 <FontAwesomeIcon
                   className="mb-4"
