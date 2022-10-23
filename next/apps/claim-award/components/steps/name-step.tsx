@@ -1,6 +1,6 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
-import { Stack } from '@black-pear-joggers/stack';
 import { TextInput } from '@black-pear-joggers/form-controls';
 import { useForm } from 'react-hook-form';
 
@@ -24,7 +24,7 @@ export function NameStep(props: NameStepProps) {
   } = useForm<NameStepFormData>();
 
   return (
-    <Stack backgroundColour="light">
+    <Stack backgroundColour={BackgroundColour.Light}>
       <Container>
         <h2>Your name</h2>
 

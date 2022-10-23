@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
 import { Card } from '@black-pear-joggers/card';
 import { Container } from '@black-pear-joggers/container';
@@ -6,7 +7,6 @@ import { faChevronCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { PortableText, PortableTextComponents } from '@portabletext/react';
-import { Stack } from '@black-pear-joggers/stack';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
@@ -95,7 +95,7 @@ export const Vacancy = (props: VacancyProps) => {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="light">
+      <Stack backgroundColour={BackgroundColour.Light}>
         <Container>
           <h2>Responsibilities</h2>
 
@@ -107,7 +107,7 @@ export const Vacancy = (props: VacancyProps) => {
       </Stack>
 
       {activeVacancy.status !== VacancyStatus.Filled ? (
-        <Stack backgroundColour="bright">
+        <Stack backgroundColour={BackgroundColour.Bright}>
           <Container>
             <h2>How to apply</h2>
 
@@ -121,7 +121,7 @@ export const Vacancy = (props: VacancyProps) => {
         </Stack>
       ) : null}
 
-      <Stack backgroundColour="dark">
+      <Stack backgroundColour={BackgroundColour.Dark}>
         <Container>
           <h2>Other vacancies</h2>
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">

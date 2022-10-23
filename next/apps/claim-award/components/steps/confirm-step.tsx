@@ -1,6 +1,6 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
-import { Stack } from '@black-pear-joggers/stack';
 
 export interface ConfirmStepProps {
   onNext: () => void;
@@ -8,7 +8,7 @@ export interface ConfirmStepProps {
 
 export function ConfirmStep(props: ConfirmStepProps) {
   return (
-    <Stack backgroundColour="dark">
+    <Stack backgroundColour={BackgroundColour.Dark}>
       <Container>
         <h2>Confirm your claim details</h2>
 

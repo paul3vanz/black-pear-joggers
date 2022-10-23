@@ -1,7 +1,9 @@
 import { Container } from '@black-pear-joggers/container';
 import { CtaPlug } from './cta-plug';
+import { FeatureList } from './feature-list';
 import { InfoRows } from './info-rows';
 import { LazyLoadImage } from '@black-pear-joggers/lazy-load-image';
+import { Quote } from './quote';
 import { ReactElement } from 'react';
 import { Stack } from '@black-pear-joggers/stack';
 import { urlFor } from '@black-pear-joggers/sanity';
@@ -23,7 +25,11 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
           case 'infoRows':
             return <InfoRows rows={contentItem.rows} />;
           case 'ctaPlug':
-            return <CtaPlug {...contentItem} />;
+            return <CtaPlug ctaPlug={contentItem} />;
+          case 'featureList':
+            return <FeatureList featureList={contentItem} />;
+          case 'quote':
+            return <Quote quote={contentItem} />;
           case 'illustration':
             return (
               <LazyLoadImage>

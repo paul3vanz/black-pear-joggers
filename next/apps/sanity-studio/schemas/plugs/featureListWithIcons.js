@@ -61,17 +61,16 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'feature',
+          name: 'icon',
+          type: 'string',
         },
-      ],
-    },
-    {
-      name: 'ctas',
-      title: 'Call to actions',
-      type: 'array',
-      of: [
         {
-          type: 'cta',
+          name: 'title',
+          type: 'string',
+        },
+        {
+          name: 'content',
+          type: 'simpleBlockContent',
         },
       ],
     },

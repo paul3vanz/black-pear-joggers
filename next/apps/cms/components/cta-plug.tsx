@@ -1,25 +1,28 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../core/portable-text/portable-text-components';
-import { Stack } from '@black-pear-joggers/stack';
 import {
   CtaPlug as CtaPlugType,
   TextWithIllustration,
 } from '../types/content.types';
 
-export interface InfoRowsProps {
-  ctaPlug: CtaPlugType[];
+interface CtaPlugProps {
+  ctaPlug: CtaPlugType;
 }
 
-export function CtaPlug(props) {
+export function CtaPlug({ ctaPlug }: CtaPlugProps) {
   return (
-    <Stack backgroundColour="bright">
+    <Stack backgroundColour={BackgroundColour.Bright}>
       <Container>
-        <h2>{props.title}</h2>
-        <PortableText components={portableTextComponents} value={props.body} />
+        <h2>{ctaPlug.title}</h2>
+        <PortableText
+          components={portableTextComponents}
+          value={ctaPlug.body}
+        />
 
-        {props.ctas.map((cta) => (
+        {ctaPlug.ctas.map((cta) => (
           <Button key={cta.title} text={cta.title} link={cta.link} />
         ))}
       </Container>

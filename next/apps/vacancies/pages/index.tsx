@@ -1,8 +1,8 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Card } from '@black-pear-joggers/card';
 import { Container } from '@black-pear-joggers/container';
 import { GetStaticProps } from 'next';
 import { PortableText } from '@portabletext/react';
-import { Stack } from '@black-pear-joggers/stack';
 import { toPlainText } from '@black-pear-joggers/helpers';
 import {
   GetVacancies,
@@ -64,7 +64,7 @@ export function VacanciesPage(props: VacanciesPageProps) {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="light">
+      <Stack backgroundColour={BackgroundColour.Light}>
         <Container>
           <h2>Open vacancies</h2>
 
@@ -76,7 +76,7 @@ export function VacanciesPage(props: VacanciesPageProps) {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="dark">
+      <Stack backgroundColour={BackgroundColour.Dark}>
         <Container>
           <h2>Vacancies now filled</h2>
 

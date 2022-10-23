@@ -1,10 +1,10 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Card } from '@black-pear-joggers/card';
 import { Container } from '@black-pear-joggers/container';
 import { getCategories } from '../core/queries/getCategories';
 import { getClient } from '@black-pear-joggers/sanity';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { groq } from 'next-sanity';
-import { Stack } from '@black-pear-joggers/stack';
 
 type KitPageProps = {
   categories: {
@@ -32,7 +32,7 @@ export function KitPage(props: KitPageProps) {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="bright">
+      <Stack backgroundColour={BackgroundColour.Bright}>
         <Container>
           <h2>Collecting your kit</h2>
           <p>
@@ -46,7 +46,7 @@ export function KitPage(props: KitPageProps) {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="light">
+      <Stack backgroundColour={BackgroundColour.Light}>
         <Container>
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
             {props.categories.map((category) => {

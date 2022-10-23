@@ -1,8 +1,8 @@
 import { Athlete } from '@black-pear-joggers/core-services';
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { formatGender } from '@black-pear-joggers/helpers';
-import { Stack } from '@black-pear-joggers/stack';
 
 export interface ConfirmDetailsProps {
   athlete: Athlete;
@@ -12,7 +12,7 @@ export interface ConfirmDetailsProps {
 
 export function ConfirmDetails(props: ConfirmDetailsProps) {
   return (
-    <Stack backgroundColour="bright">
+    <Stack backgroundColour={BackgroundColour.Bright}>
       <Container>
         <h2>Check your details</h2>
 

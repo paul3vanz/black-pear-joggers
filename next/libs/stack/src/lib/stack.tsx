@@ -3,9 +3,15 @@ import { classNames, mapClassNames } from '@black-pear-joggers/helpers';
 import { Container } from '@black-pear-joggers/container';
 import { PropsWithChildren } from 'react';
 
+export enum BackgroundColour {
+  White = 'white',
+  Dark = 'dark',
+  Light = 'light',
+  Bright = 'bright',
+}
 
 interface Props extends PropsWithChildren<{}> {
-  backgroundColour?: string;
+  backgroundColour?: BackgroundColour;
   backgroundImage?: string;
   children: any;
   heading?: string;
@@ -18,9 +24,9 @@ export function Section(props: Props) {
       className={classNames(
         'relative',
         mapClassNames(props.backgroundColour, {
-          dark: 'bg-gray-900 text-white',
-          bright: 'bg-primary',
-          light: 'bg-gray-100',
+          [BackgroundColour.Dark]: 'bg-gray-900 text-white',
+          [BackgroundColour.Bright]: 'bg-primary',
+          [BackgroundColour.Light]: 'bg-gray-100',
           default: 'bg-white',
         }),
         mapClassNames(props.padding, {

@@ -25,6 +25,7 @@ import { videoEmbed } from './objects/embeds';
 import cta from './objects/cta';
 import bodyPortableText from './objects/bodyPortableText';
 import excerptPortableText from './objects/excerptPortableText';
+import feature from './objects/feature';
 import mainImage from './objects/mainImage';
 import authorReference from './objects/authorReference';
 import link from './objects/link';
@@ -94,6 +95,7 @@ export default createSchema({
       videoEmbed,
       bodyPortableText,
       excerptPortableText,
+      feature,
     ])
     .concat(allPlugs),
 });

@@ -11,14 +11,26 @@ export default {
       name: 'name',
       type: 'string',
     },
+    {
+      name: 'backgroundColour',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'White', value: 'white' },
+          { title: 'Dark', value: 'dark' },
+          { title: 'Light', value: 'light' },
+          { title: 'Bright', value: 'bright' },
+        ],
+      },
+    },
   ],
   preview: {
     select: {
-      content: 'content',
+      content: 'name',
     },
     prepare({ content }) {
       return {
-        title: 'Quote',
+        title: `Quote - ${content}`,
       };
     },
   },

@@ -1,9 +1,9 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { DateInput, TextInput } from '@black-pear-joggers/form-controls';
 import { FormProvider, useForm } from 'react-hook-form';
 import { shortDate } from '@black-pear-joggers/helpers';
-import { Stack } from '@black-pear-joggers/stack';
 
 interface RegisterFormProps {
   isLoading: boolean;
@@ -25,7 +25,7 @@ export function RegisterForm(props: RegisterFormProps) {
   } = useForm<FormData>();
 
   return (
-    <Stack backgroundColour="light">
+    <Stack backgroundColour={BackgroundColour.Light}>
       <Container>
         <h2>Your details</h2>
         <form className="w-full max-w-lg">

@@ -1,7 +1,7 @@
 import Link from 'next/link';
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
-import { Stack } from '@black-pear-joggers/stack';
 
 export interface NotFoundProps {
   onGoBack: () => void;
@@ -9,7 +9,7 @@ export interface NotFoundProps {
 
 export function NotFound(props: NotFoundProps) {
   return (
-    <Stack backgroundColour="bright">
+    <Stack backgroundColour={BackgroundColour.Bright}>
       <Container>
         <h2>We can&rsquo;t find your details</h2>
 

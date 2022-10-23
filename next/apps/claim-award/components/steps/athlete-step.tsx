@@ -1,7 +1,7 @@
 import { Athlete, useAthletes } from '@black-pear-joggers/core-services';
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
-import { Stack } from '@black-pear-joggers/stack';
 
 export interface AthleteStepProps {
   firstName?: string;
@@ -14,7 +14,7 @@ export function AthleteStep(props: AthleteStepProps) {
   const { athletes } = useAthletes();
 
   return (
-    <Stack backgroundColour="light">
+    <Stack backgroundColour={BackgroundColour.Light}>
       <Container>
         <h2>Athlete details</h2>
 

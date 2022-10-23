@@ -1,11 +1,17 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { classNames } from '@black-pear-joggers/helpers';
 import { Container } from '@black-pear-joggers/container';
 import { LazyLoadImage } from '@black-pear-joggers/lazy-load-image';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../core/portable-text/portable-text-components';
-import { Stack } from '@black-pear-joggers/stack';
 import { TextWithIllustration } from '../types/content.types';
 import { urlFor } from '@black-pear-joggers/sanity';
+
+export interface InfoRowProps {
+  row: TextWithIllustration;
+  backgroundColour?: BackgroundColour;
+  reverse?: boolean;
+}
 
 export interface InfoRowsProps {
   rows: TextWithIllustration[];
@@ -21,10 +27,10 @@ export function InfoRowText(props) {
   );
 }
 
-export function InfoRow(props) {
+export function InfoRow(props: InfoRowProps) {
   return (
     <Stack backgroundColour={props.backgroundColour}>
-      {props.illustration ? (
+      {props.row.illustration ? (
         <Container wide={true}>
           <div
             className={classNames(
@@ -34,22 +40,31 @@ export function InfoRow(props) {
           >
             <div className="flex-1">
               <div className="md:mx-8 lg:mx-12 xl:mx-24">
-                <InfoRowText {...props} />
+                <InfoRowText {...props.row} />
               </div>
             </div>
 
-            <LazyLoadImage className="md:flex-1 h-56 xs:h-64 sm:h-96 mb-12 md:mb-0">
+            <LazyLoadImage
+              className={classNames(
+                'md:flex-1 mb-12 md:mb-0',
+                props.row.cropToFit && 'h-56 xs:h-64 sm:h-96'
+              )}
+            >
               <img
-                src={urlFor(props.illustration.image).url()}
-                alt=""
-                className="w-full h-56 xs:h-64 sm:h-96 object-cover object-center rounded-sm"
+                src={urlFor(props.row.illustration.image).url()}
+                alt={props.row.illustration.image.alt}
+                className={classNames(
+                  'w-full rounded-sm',
+                  props.row.cropToFit &&
+                    'h-56 xs:h-64 sm:h-96 object-cover object-center'
+                )}
               />
             </LazyLoadImage>
           </div>
         </Container>
       ) : (
         <Container>
-          <InfoRowText {...props} />
+          <InfoRowText {...props.row} />
         </Container>
       )}
     </Stack>
@@ -63,9 +78,13 @@ export function InfoRows(props: InfoRowsProps) {
         return (
           <InfoRow
             key={row.title}
-            {...row}
+            row={row}
             backgroundColour={
-              index % 3 === 0 ? null : index % 2 === 0 ? 'dark' : 'light'
+              index % 3 === 0
+                ? null
+                : index % 2 === 0
+                ? BackgroundColour.Dark
+                : BackgroundColour.Light
             }
             reverse={index % 2 === 0 ? false : true}
           />

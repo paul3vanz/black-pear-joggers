@@ -1,11 +1,11 @@
 import CreateMagicMileResultForm from '../components/magic-mile/create-magic-mile-form';
 import MagicMileResultsTable from '../components/magic-mile/magic-mile-results-table';
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
 import { LoadingSpinner } from '../components/loading-spinner';
 import { MagicMileResult } from '@black-pear-joggers/core-services';
 import { mutate } from 'swr';
 import { SearchBar } from '@black-pear-joggers/search-bar';
-import { Stack } from '@black-pear-joggers/stack';
 import { useState } from 'react';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import {
@@ -50,7 +50,7 @@ export function MagicMilePage() {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="dark">
+      <Stack backgroundColour={BackgroundColour.Dark}>
         <Container>
           <h2>Results</h2>
 

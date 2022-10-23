@@ -1,10 +1,15 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { GetStaticProps } from 'next';
-import { Select, TextArea, TextInput } from '@black-pear-joggers/form-controls';
-import { Stack } from '@black-pear-joggers/stack';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import {
+  BackgroundColour,
+  Select,
+  TextArea,
+  TextInput,
+} from '@black-pear-joggers/form-controls';
 
 interface FormData {
   name: string;
@@ -77,7 +82,7 @@ export function ContactPage() {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="dark">
+      <Stack backgroundColour={BackgroundColour.Dark}>
         <Container>
           <form className="w-full max-w-lg" data-netlify="true" id="contact">
             {isSuccess ? (
@@ -182,7 +187,7 @@ export function ContactPage() {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="bright">
+      <Stack backgroundColour={BackgroundColour.Bright}>
         <Container>
           <h2>Our Facebook community</h2>
 

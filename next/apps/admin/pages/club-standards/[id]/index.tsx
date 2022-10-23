@@ -1,9 +1,9 @@
 import Link from 'next/link';
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
 import { faChevronCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { LoadingSpinner } from '../../../components/loading-spinner';
-import { Stack } from '@black-pear-joggers/stack';
 import { UpdateClaimForm } from '../../../components/club-standards/update-claim-form';
 import { UpdateClaimRacesForm } from '../../../components/club-standards/update-claim-races-form';
 import { useAwardClaims } from '@black-pear-joggers/core-services';
@@ -69,7 +69,7 @@ function AwardClaimDetailsPage() {
         </Container>
       </Stack>
 
-      <Stack backgroundColour="light">
+      <Stack backgroundColour={BackgroundColour.Light}>
         <Container>
           <h2>Claim details</h2>
 

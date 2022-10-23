@@ -1,6 +1,6 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
-import { Stack } from '@black-pear-joggers/stack';
 
 export interface ContactStepProps {
   onNext: () => void;
@@ -8,7 +8,7 @@ export interface ContactStepProps {
 
 export function ContactStep(props: ContactStepProps) {
   return (
-    <Stack backgroundColour="light">
+    <Stack backgroundColour={BackgroundColour.Light}>
       <Container>
         <h2>Add your contact details</h2>
 
