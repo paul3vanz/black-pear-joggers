@@ -1,16 +1,16 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { PortableText } from '@portabletext/react';
 import { Product, Variant } from '../core/queries/getProduct';
 import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 import { Select, TextInput } from '@black-pear-joggers/form-controls';
-import { Stack } from '@black-pear-joggers/stack';
 import { urlFor } from '@black-pear-joggers/sanity';
 import { useRef, useState } from 'react';
 
 type ProductStackProps = {
   product: Product;
-  backgroundColour?: string;
+  backgroundColour?: BackgroundColour;
 };
 
 export const ProductStack = ({
