@@ -1,9 +1,9 @@
 import Link from 'next/link';
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
 import { GetCategories, getCategories } from '../../core/queries/getCategories';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { ProductStack } from '../../components/product-stack';
-import { Stack } from '@black-pear-joggers/stack';
 import {
   GetProductsByCategory,
   getProductsByCategory,
@@ -40,7 +40,7 @@ export const KitCategory = (props: KitCategoryProps) => {
         <ProductStack
           key={product._id}
           product={product}
-          backgroundColour={index % 2 === 0 ? '' : 'light'}
+          backgroundColour={index % 2 === 0 ? BackgroundColour.White : BackgroundColour.Light}
         />
       ))}
     </>
