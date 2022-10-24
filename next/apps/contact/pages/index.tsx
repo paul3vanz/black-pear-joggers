@@ -5,7 +5,6 @@ import { GetStaticProps } from 'next';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import {
-  BackgroundColour,
   Select,
   TextArea,
   TextInput,
