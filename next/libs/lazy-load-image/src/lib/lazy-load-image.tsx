@@ -1,6 +1,6 @@
-import { PropsWithChildren, useState } from 'react';
-
 import LazyLoad from 'react-lazy-load';
+import { classNames } from '@black-pear-joggers/helpers';
+import { PropsWithChildren, useState } from 'react';
 
 export const LazyLoadImage = (
   props: PropsWithChildren<{ rounded?: boolean; className?: string }>
@@ -9,12 +9,11 @@ export const LazyLoadImage = (
 
   return (
     <div
-      className={[
-        'bg-gray-100',
+      className={classNames(
         props.className,
         props.rounded && 'rounded-sm',
-        loading && 'animate-pulse',
-      ].join(' ')}
+        loading && 'bg-gray-100 animate-pulse'
+      )}
     >
       <LazyLoad offset={100} onContentVisible={() => setLoading(false)}>
         {props.children}

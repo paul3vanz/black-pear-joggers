@@ -38,7 +38,16 @@ export function InfoRow(props: InfoRowProps) {
               props.reverse ? 'md:flex-row-reverse' : 'md:flex-row'
             )}
           >
-            <div className="flex-1">
+            <div
+              className="flex-1"
+              style={
+                props.row.width === 'wide'
+                  ? { flexGrow: 0.5 }
+                  : props.row.width === 'narrow'
+                  ? { flexGrow: 2 }
+                  : null
+              }
+            >
               <div className="md:mx-8 lg:mx-12 xl:mx-24">
                 <InfoRowText {...props.row} />
               </div>
