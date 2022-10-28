@@ -46,10 +46,11 @@ export const getStaticPaths = async () => {
 
   return {
     paths: posts.map((post) => {
-      const year = getYear(new Date(post.publishedAt));
+      const year = getYear(new Date(post.publishedAt)).toString();
       const month = (getMonth(new Date(post.publishedAt)) + 1)
         .toString()
         .padStart(2, '0');
+
       return {
         params: { year, month, slug: post.slug.current },
       };
