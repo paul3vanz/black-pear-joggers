@@ -23,16 +23,18 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
       {props.content.map((contentItem) => {
         switch (contentItem._type) {
           case 'infoRows':
-            return <InfoRows rows={contentItem.rows} />;
+            return <InfoRows key={contentItem._key} rows={contentItem.rows} />;
           case 'ctaPlug':
-            return <CtaPlug ctaPlug={contentItem} />;
+            return <CtaPlug key={contentItem._key} ctaPlug={contentItem} />;
           case 'featureList':
-            return <FeatureList featureList={contentItem} />;
+            return (
+              <FeatureList key={contentItem._key} featureList={contentItem} />
+            );
           case 'quote':
-            return <Quote quote={contentItem} />;
+            return <Quote key={contentItem._key} quote={contentItem} />;
           case 'illustration':
             return (
-              <LazyLoadImage>
+              <LazyLoadImage key={contentItem._key}>
                 <img
                   className="w-full object-cover sm:h-auto"
                   src={urlFor(contentItem.image).url()}

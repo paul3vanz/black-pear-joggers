@@ -86,7 +86,7 @@ export function InfoRows(props: InfoRowsProps) {
       {props.rows.map((row, index) => {
         return (
           <InfoRow
-            key={row.title}
+            key={index}
             row={row}
             backgroundColour={
               index % 3 === 0
