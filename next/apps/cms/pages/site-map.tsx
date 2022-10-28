@@ -3,7 +3,7 @@ import { Container } from '@black-pear-joggers/container';
 import { getAllPosts } from '../core/queries/get-all-posts';
 import { getAllRoutes } from '../core/queries/get-all-routes';
 import { GetStaticPropsContext } from 'next';
-import { shortDate } from '@black-pear-joggers/helpers';
+import { newsPostUrl, shortDate } from '@black-pear-joggers/helpers';
 import { Stack } from '@black-pear-joggers/stack';
 import { useRouter } from 'next/router';
 
@@ -34,7 +34,7 @@ export default function Page(props: Props) {
         <ul className="list-disc ml-5">
           {props.posts?.map((post) => (
             <li key={post._id}>
-              <Link href={post.slug.current}>
+              <Link href={newsPostUrl(post.publishedAt, post.slug.current)}>
                 <a>
                   {shortDate(post.publishedAt)}: {post.title}
                 </a>
