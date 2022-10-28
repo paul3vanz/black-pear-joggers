@@ -11,22 +11,6 @@ import {
   parseISO,
 } from 'date-fns';
 
-function moment(...test: any[]): any {
-  return null;
-}
-
-export function blogPostUrl(blogPost: any): string {
-  const publishDate = moment(blogPost.fields.publishDate);
-
-  return [
-    '/news',
-    publishDate.format('YYYY'),
-    publishDate.format('MM'),
-    publishDate.format('DD'),
-    blogPost.fields.slug,
-  ].join('/');
-}
-
 export function classNames(
   ...classNames: (string | undefined | null | boolean)[]
 ): string {
