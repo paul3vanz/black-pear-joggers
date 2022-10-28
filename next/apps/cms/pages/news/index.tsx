@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Card } from '@black-pear-joggers/card';
 import { Cards } from '../../components/cards';
@@ -18,8 +19,11 @@ export default function SiteMap(
 
           <p className="mb-8">
             Stay up to date with important club news and updates.{' '}
-            <a href="/contact">Let us know</a> if you have some news that you’d
-            like to share. Also, check out our very active club{' '}
+            <Link href="/contact">
+              <a>Let us know</a>
+            </Link>{' '}
+            if you have some news that you&rsquo;d like to share. Also, check
+            out our very active club{' '}
             <a
               href="https://www.facebook.com/groups/blackpearjoggers/"
               target="_blank"
@@ -39,12 +43,10 @@ export default function SiteMap(
               <Card
                 key={post._id}
                 headline={post.title}
-                link={post.slug.current}
+                link={newsPostUrl(post.publishedAt, post.slug.current)}
                 imageUrl={post.imageUrl}
                 content={
                   <>
-                    <p>{newsPostUrl(post.publishedAt, post.slug.current)}</p>
-
                     <p className="mb-2 text-gray-500">
                       {formatRelative(post.publishedAt)}
                     </p>
