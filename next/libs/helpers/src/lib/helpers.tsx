@@ -77,14 +77,14 @@ export function shortDate(date?: string) {
 export function longDate(date?: string) {
   return format(
     date ? parseISO(date) : new Date(),
-    'EEEE Do MMMM yyyy h:mmaaa'
+    'EEEE do MMMM yyyy h:mmaaa'
   );
 }
 
 export function timestamp(date?: string) {
   return format(
     date ? parseISO(date) : new Date(),
-    'EEEE Do MMMM yyyy h:mmaaa'
+    'EEEE do MMMM yyyy h:mmaaa'
   );
 }
 
