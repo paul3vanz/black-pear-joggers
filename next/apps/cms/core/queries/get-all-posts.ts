@@ -7,10 +7,13 @@ export function getAllPosts(): Promise<Post[]> {
     *[
       _type=="post"
     ] |
-    order(title) {
+    order(publishedAt desc) {
       _id,
       title,
       slug,
+      body,
+      publishedAt,
+      "imageUrl": mainImage.asset->url,
     }
   `);
 }

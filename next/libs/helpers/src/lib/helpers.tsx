@@ -1,12 +1,15 @@
-import {
-    format,
-    isBefore,
-    isToday,
-    isTomorrow,
-    parseISO
-    } from 'date-fns';
 import { MutableRefObject, useRef } from 'react';
 import { PortableTextBlock } from '@portabletext/types';
+import {
+  format,
+  formatDistance,
+  getMonth,
+  getYear,
+  isBefore,
+  isToday,
+  isTomorrow,
+  parseISO,
+} from 'date-fns';
 
 function moment(...test: any[]): any {
   return null;
@@ -85,8 +88,12 @@ export function timestamp(date?: string) {
   );
 }
 
-export function formatRelative(date?: string) {
-  return format(date ? parseISO(date) : new Date(), 'yyyy-MM-dd');
+export function formatRelative(date: string): string {
+  const relativeString = formatDistance(new Date(), parseISO(date));
+
+  return `${relativeString.charAt(0).toUpperCase()}${relativeString.substr(
+    1
+  )} ago`;
 }
 
 export function dateIsBefore(date: string, dateToCompare: string): boolean {
@@ -134,4 +141,15 @@ export function toPlainText(blocks: PortableTextBlock[]) {
       return block.children.map((child) => child.text).join('');
     })
     .join('\n\n');
+}
+
+export function newsPostUrl(publishedAt: string, slug: string): string {
+  const publishedDate = new Date(publishedAt);
+
+  return [
+    '/news',
+    getYear(publishedDate),
+    `${getMonth(publishedDate)}`.padStart(2, '0'),
+    slug,
+  ].join('/');
 }

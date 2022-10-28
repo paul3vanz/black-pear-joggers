@@ -7,9 +7,12 @@ export function getAllRoutes(): Promise<Route[]> {
     *[
       _type=="route"
     ] |
-    order(path) {
-      "path": slug.current,
-      "pageRef": page._ref
+    order(path.current) {
+      slug,
+      page->{
+        _id,
+        title
+      }
     }
   `);
 }

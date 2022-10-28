@@ -18,8 +18,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: routes.map((route) => ({
       params: {
-        slug: route.path.split('/'),
-        pageRef: route.pageRef,
+        slug: route.slug.current.split('/'),
+        pageRef: route.page._id,
       },
     })),
     fallback: false,

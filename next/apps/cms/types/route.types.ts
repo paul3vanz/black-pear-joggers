@@ -1,8 +1,8 @@
 import { Page } from './page.types';
+import { Slug } from './slug.types';
 
 export interface Route {
     _id: string;
-    path: string;
     page: Page;
-    pageRef: string;
+    slug: Slug;
 }

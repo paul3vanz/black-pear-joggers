@@ -2,24 +2,15 @@ import { Container } from '@black-pear-joggers/container';
 import { Frontmatter } from '../../../../components/news/frontmatter/frontmatter';
 import { getAllPosts } from '../../../../core/queries/get-all-posts';
 import { getPostBySlug } from '../../../../core/queries/get-post-by-slug';
-import { GetStaticPaths } from 'next';
-import { PortableText, PortableTextComponents } from '@portabletext/react';
-import { Post } from '../../../../types';
+import { GetStaticPaths, InferGetStaticPropsType } from 'next';
+import { PortableText } from '@portabletext/react';
+import { portableTextComponents } from '../../../../core/portable-text/portable-text-components';
 import { Stack } from '@black-pear-joggers/stack';
 import { useRouter } from 'next/router';
 
-const portableTextComponents: PortableTextComponents = {
-  list: {
-    // eslint-disable-next-line react/display-name
-    bullet: ({ children }) => <ul className="list-disc pl-5">{children}</ul>,
-  },
-  listItem: {
-    // eslint-disable-next-line react/display-name
-    bullet: ({ children }) => <li className="mb-2">{children}</li>,
-  },
-};
-
-export default function NewsPost(props: Props) {
+export default function NewsPost(
+  props: InferGetStaticPropsType<typeof getStaticProps>
+) {
   const router = useRouter();
 
   return (
@@ -62,7 +53,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps = async (context) => {
+export async function getStaticProps(context) {
   const post = await getPostBySlug(context.params.slug.toString());
 
   return {
@@ -70,7 +61,4 @@ export const getStaticProps = async (context) => {
       post,
     },
   };
-};
-
-type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
-type Props = UnwrapPromise<ReturnType<typeof getStaticProps>>['props'];
+}
