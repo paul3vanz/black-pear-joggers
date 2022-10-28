@@ -149,7 +149,7 @@ export function newsPostUrl(publishedAt: string, slug: string): string {
   return [
     '/news',
     getYear(publishedDate),
-    `${getMonth(publishedDate)}`.padStart(2, '0'),
+    `${getMonth(publishedDate) + 1}`.padStart(2, '0'),
     slug,
   ].join('/');
 }

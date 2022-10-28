@@ -1,6 +1,7 @@
 import { Container } from '@black-pear-joggers/container';
 import { Frontmatter } from '../../../../components/news/frontmatter/frontmatter';
 import { getAllPosts } from '../../../../core/queries/get-all-posts';
+import { getMonth, getYear } from 'date-fns';
 import { getPostBySlug } from '../../../../core/queries/get-post-by-slug';
 import { GetStaticPaths, InferGetStaticPropsType } from 'next';
 import { PortableText } from '@portabletext/react';
@@ -40,13 +41,17 @@ export default function NewsPost(
   );
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths = async () => {
   const posts = await getAllPosts();
 
   return {
-    paths: (posts as any).map((post) => {
+    paths: posts.map((post) => {
+      const year = getYear(new Date(post.publishedAt));
+      const month = (getMonth(new Date(post.publishedAt)) + 1)
+        .toString()
+        .padStart(2, '0');
       return {
-        params: { year: '2022', month: '10', slug: post.slug.current },
+        params: { year, month, slug: post.slug.current },
       };
     }),
     fallback: false,
