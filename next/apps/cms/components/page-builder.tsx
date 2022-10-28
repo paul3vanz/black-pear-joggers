@@ -56,6 +56,7 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
                   <Cards>
                     {contentItem.cards.map((card) => (
                       <Card
+                        key={card._key}
                         headline={card.title}
                         link={card.link}
                         content={
