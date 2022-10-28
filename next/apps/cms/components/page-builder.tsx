@@ -1,11 +1,15 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
+import { Card } from './card';
+import { Cards } from './cards';
 import { Container } from '@black-pear-joggers/container';
 import { CtaPlug } from './cta-plug';
 import { FeatureList } from './feature-list';
 import { InfoRows } from './info-rows';
 import { LazyLoadImage } from '@black-pear-joggers/lazy-load-image';
+import { PortableText } from '@portabletext/react';
+import { portableTextComponents } from '../core/portable-text/portable-text-components';
 import { Quote } from './quote';
 import { ReactElement } from 'react';
-import { Stack } from '@black-pear-joggers/stack';
 import { urlFor } from '@black-pear-joggers/sanity';
 import {
   ContentItem,
@@ -41,6 +45,34 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
                   alt={contentItem.image.alt}
                 />
               </LazyLoadImage>
+            );
+          case 'cards':
+            return (
+              <Stack
+                key={contentItem._key}
+                backgroundColour={BackgroundColour.Light}
+              >
+                <Container wide={true}>
+                  <Cards>
+                    {contentItem.cards.map((card) => (
+                      <Card
+                        headline={card.title}
+                        link={card.link}
+                        content={
+                          <PortableText
+                            components={portableTextComponents}
+                            value={card.content}
+                          />
+                        }
+                        imageUrl={
+                          card.image?.externalUrl ||
+                          urlFor(card.image.asset).url()
+                        }
+                      />
+                    ))}
+                  </Cards>
+                </Container>
+              </Stack>
             );
           default:
             return (

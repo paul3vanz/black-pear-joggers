@@ -37,9 +37,15 @@ export interface Cta {
 
 export interface Illustration extends BaseType {
     _type: 'illustration',
-    image: {
-        alt: string;
-    }
+    image: Image;
+}
+
+export interface Image {
+    _type: 'mainImage',
+    alt: string;
+    externalUrl?: string;
+    asset?: SanityImageAsset;
+
 }
 
 export interface Quote extends BaseType {
@@ -64,6 +70,19 @@ export interface FeatureList {
     features: Feature[];
 }
 
+export interface Cards extends BaseType {
+    _key: string;
+    _type: 'cards',
+    cards: Card[];
+}
 
+export interface Card {
+    _key: string;
+    _type: 'card',
+    title: string;
+    content: PortableTextBlock[];
+    link: string;
+    image: Image;
+}
 
-export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList;
+export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards;

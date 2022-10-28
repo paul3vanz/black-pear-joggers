@@ -25,6 +25,7 @@ export default {
         { type: 'pricing' },
         { type: 'uiComponentRef' },
         { type: 'hero' },
+        { type: 'cards' },
         { type: 'illustration' },
         { type: 'infoRows' },
         { type: 'ctaColumns' },

@@ -26,6 +26,7 @@ import cta from './objects/cta';
 import bodyPortableText from './objects/bodyPortableText';
 import excerptPortableText from './objects/excerptPortableText';
 import feature from './objects/feature';
+import card from './objects/card';
 import mainImage from './objects/mainImage';
 import authorReference from './objects/authorReference';
 import link from './objects/link';
@@ -96,6 +97,7 @@ export default createSchema({
       bodyPortableText,
       excerptPortableText,
       feature,
+      card,
     ])
     .concat(allPlugs),
 });
