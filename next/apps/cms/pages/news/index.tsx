@@ -1,9 +1,9 @@
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Card } from '@black-pear-joggers/card';
-import { Cards } from 'apps/cms/components/cards';
+import { Cards } from '../../components/cards';
 import { Container } from '@black-pear-joggers/container';
 import { formatRelative, newsPostUrl } from '@black-pear-joggers/helpers';
-import { getAllPosts } from 'apps/cms/core/queries/get-all-posts';
+import { getAllPosts } from '../../core/queries/get-all-posts';
 import { InferGetStaticPropsType } from 'next';
 import { portableTextBlocksToText } from '../../core/portable-text/portable-text-components';
 
