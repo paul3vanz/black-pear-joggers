@@ -15,24 +15,6 @@ export default function Page(
 
   return (
     <>
-      <Hero
-        hero={{
-          heading: 'Welcome to Worcester’s friendly running club',
-          tagline: (
-            <p>
-              Groups for all abilities from jog/walk to faster paced running
-              groups. An England Athletics affiliated club, offering&nbsp;
-              <a href="https://bpj.org.uk/couch-to-5k/">Couch to 5K</a>
-              &nbsp;groups for beginners, a range of social and running events
-              and take part in many races and&nbsp;
-              <a href="https://bpj.org.uk/leagues/cross-country/">
-                cross country
-              </a>
-              &nbsp;leagues.
-            </p>
-          ),
-        }}
-      />
       <Stack>
         <Container>
           <h1>Welcome to Black Pear Joggers</h1>
