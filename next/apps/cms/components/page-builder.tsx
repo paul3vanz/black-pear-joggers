@@ -4,6 +4,7 @@ import { Cards } from './cards';
 import { Container } from '@black-pear-joggers/container';
 import { CtaPlug } from './cta-plug';
 import { FeatureList } from './feature-list';
+import { Hero } from './hero';
 import { InfoRows } from './info-rows';
 import { LazyLoadImage } from '@black-pear-joggers/lazy-load-image';
 import { PortableText } from '@portabletext/react';
@@ -36,12 +37,17 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
             );
           case 'quote':
             return <Quote key={contentItem._key} quote={contentItem} />;
+          case 'hero':
+            return <Hero key={contentItem._key} hero={contentItem} />;
           case 'illustration':
             return (
               <LazyLoadImage key={contentItem._key}>
                 <img
                   className="w-full object-cover sm:h-auto"
-                  src={urlFor(contentItem.image).url()}
+                  src={
+                    contentItem.image.externalUrl ||
+                    urlFor(contentItem.image).url()
+                  }
                   alt={contentItem.image.alt}
                 />
               </LazyLoadImage>
@@ -53,6 +59,19 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
                 backgroundColour={BackgroundColour.Light}
               >
                 <Container wide={true}>
+                  {contentItem.title || contentItem.subtitle ? (
+                    <div className="mb-8">
+                      {contentItem.title ? <h2>{contentItem.title}</h2> : null}
+
+                      {contentItem.subtitle ? (
+                        <PortableText
+                          components={portableTextComponents}
+                          value={contentItem.subtitle}
+                        />
+                      ) : null}
+                    </div>
+                  ) : null}
+
                   <Cards>
                     {contentItem.cards.map((card) => (
                       <Card

@@ -22,6 +22,7 @@ export function Section(props: Props) {
   return (
     <section
       className={classNames(
+        props.backgroundColour,
         'relative',
         mapClassNames(props.backgroundColour, {
           [BackgroundColour.Dark]: 'bg-gray-900 text-white',

@@ -49,35 +49,31 @@ export interface Image {
 }
 
 export interface Quote extends BaseType {
-    _key: string;
     _type: 'quote';
     content: PortableTextBlock[];
     name: string;
     backgroundColour: BackgroundColour;
 }
 
-export interface Feature {
-    _key: string;
-    _type: string;
+export interface Feature extends BaseType {
     subtitle: PortableTextBlock[];
     title: string;
     icon: string;
 }
 
-export interface FeatureList {
-    _key: string;
+export interface FeatureList extends BaseType {
     _type: 'featureList';
     features: Feature[];
 }
 
 export interface Cards extends BaseType {
-    _key: string;
     _type: 'cards',
     cards: Card[];
+    title: string;
+    subtitle: PortableTextBlock[];
 }
 
-export interface Card {
-    _key: string;
+export interface Card extends BaseType {
     _type: 'card',
     title: string;
     content: PortableTextBlock[];
@@ -85,4 +81,13 @@ export interface Card {
     image: Image;
 }
 
-export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards;
+export interface Hero extends BaseType {
+    _type: 'hero';
+    label: string;
+    heading: string;
+    tagline: PortableTextBlock[];
+    illustration: Illustration;
+    cta: Cta;
+}
+
+export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards | Hero;

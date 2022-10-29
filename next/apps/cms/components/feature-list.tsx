@@ -1,9 +1,9 @@
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
 import { FeatureList as FeatureListType } from '../types/content.types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../core/portable-text/portable-text-components';
-import { Stack } from '@black-pear-joggers/stack';
 
 interface FeatureListProps {
   featureList: FeatureListType;
@@ -11,7 +11,7 @@ interface FeatureListProps {
 
 export function FeatureList({ featureList }: FeatureListProps) {
   return (
-    <Stack>
+    <Stack backgroundColour={BackgroundColour.Light}>
       <Container>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
           {featureList.features.map((feature) => (

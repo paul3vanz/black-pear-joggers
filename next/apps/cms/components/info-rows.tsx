@@ -29,7 +29,11 @@ export function InfoRowText(props) {
 
 export function InfoRow(props: InfoRowProps) {
   return (
-    <Stack backgroundColour={props.backgroundColour}>
+    <Stack
+      backgroundColour={
+        props.backgroundColour || props.row.backgroundColour || null
+      }
+    >
       {props.row.illustration ? (
         <Container wide={true}>
           <div
@@ -60,7 +64,10 @@ export function InfoRow(props: InfoRowProps) {
               )}
             >
               <img
-                src={urlFor(props.row.illustration.image).url()}
+                src={
+                  props.row.illustration.image.externalUrl ||
+                  urlFor(props.row.illustration.image).url()
+                }
                 alt={props.row.illustration.image.alt}
                 className={classNames(
                   'w-full rounded-sm',
