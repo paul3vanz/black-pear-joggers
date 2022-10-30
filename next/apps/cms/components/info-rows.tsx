@@ -31,7 +31,7 @@ export function InfoRow(props: InfoRowProps) {
   return (
     <Stack
       backgroundColour={
-        props.backgroundColour || props.row.backgroundColour || null
+        props.row.backgroundColour || props.backgroundColour || null
       }
     >
       {props.row.illustration ? (
