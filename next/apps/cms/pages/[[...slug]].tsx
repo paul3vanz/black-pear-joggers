@@ -1,9 +1,7 @@
-import { Container } from '@black-pear-joggers/container';
 import { getAllRoutes } from '../core/queries/get-all-routes';
 import { getRouteBySlug } from '../core/queries/get-route-by-slug';
-import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from 'next';
+import { GetStaticPaths, GetStaticPropsContext } from 'next';
 import { PageBuilder } from '../components/page-builder';
-import { Stack } from '@black-pear-joggers/stack';
 import { useRouter } from 'next/router';
 
 export default function Page(props: Props) {
@@ -34,6 +32,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     props: {
       route,
     },
+    revalidate: 120,
   };
 };
 
