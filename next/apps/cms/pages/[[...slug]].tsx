@@ -20,7 +20,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
         pageRef: route.page._id,
       },
     })),
-    fallback: false,
+    fallback: 'blocking',
   };
 };
 
