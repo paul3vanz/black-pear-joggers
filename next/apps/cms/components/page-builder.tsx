@@ -72,7 +72,7 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
                     </div>
                   ) : null}
 
-                  <Cards>
+                  <Cards maxColumns={contentItem.maxColumns || null}>
                     {contentItem.cards.map((card) => (
                       <Card
                         key={card._key}

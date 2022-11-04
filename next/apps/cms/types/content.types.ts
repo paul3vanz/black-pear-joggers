@@ -64,6 +64,7 @@ export interface Feature extends BaseType {
 export interface FeatureList extends BaseType {
     _type: 'featureList';
     features: Feature[];
+    orientation: 'horizontal' | 'vertical';
 }
 
 export interface Cards extends BaseType {
@@ -71,6 +72,7 @@ export interface Cards extends BaseType {
     cards: Card[];
     title: string;
     subtitle: PortableTextBlock[];
+    maxColumns?: number;
 }
 
 export interface Card extends BaseType {

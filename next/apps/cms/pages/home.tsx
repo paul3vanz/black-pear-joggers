@@ -1,11 +1,8 @@
-import Link from 'next/link';
-import { Container } from '@black-pear-joggers/container';
+import Head from 'next/head';
 import { getAllPosts } from '../core/queries/get-all-posts';
-import { getAllRoutes } from '../core/queries/get-all-routes';
+import { getFrontPage } from '../core/queries/get-front-page';
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next';
-import { Hero } from '../components/hero';
-import { newsPostUrl, shortDate } from '@black-pear-joggers/helpers';
-import { Stack } from '@black-pear-joggers/stack';
+import { PageBuilder } from '../components/page-builder';
 import { useRouter } from 'next/router';
 
 export default function Page(
@@ -15,20 +12,24 @@ export default function Page(
 
   return (
     <>
-      <Stack>
-        <Container>
-          <h1>Welcome to Black Pear Joggers</h1>
-        </Container>
-      </Stack>
+      <Head>
+        <title>{props.page.title} | Black Pear Joggers</title>
+      </Head>
+
+      <PageBuilder content={props.page.content} />
     </>
   );
 }
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
-  const pages = await getAllRoutes();
+  const page = await getFrontPage();
   const posts = await getAllPosts();
 
   return {
-    props: {},
+    props: {
+      page,
+      posts,
+    },
+    revalidate: 120,
   };
 };

@@ -1,4 +1,5 @@
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
+import { classNames } from '@black-pear-joggers/helpers';
 import { Container } from '@black-pear-joggers/container';
 import { FeatureList as FeatureListType } from '../types/content.types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,26 +11,42 @@ interface FeatureListProps {
 }
 
 export function FeatureList({ featureList }: FeatureListProps) {
+  const isHorizontal = featureList.orientation !== 'vertical';
+
   return (
     <Stack backgroundColour={BackgroundColour.Light}>
       <Container>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+        <div
+          className={classNames(
+            'grid gap-4 grid-cols-1',
+            isHorizontal && 'sm:grid-cols-2 md:grid-cols-4'
+          )}
+        >
           {featureList.features.map((feature) => (
-            <div className="text-center" key={feature._key}>
+            <div
+              className={isHorizontal ? 'text-center' : 'flex'}
+              key={feature._key}
+            >
               {feature.icon ? (
-                <FontAwesomeIcon
-                  className="mb-4"
-                  size="4x"
-                  icon={['fas', feature.icon as any]}
-                />
+                <div>
+                  <FontAwesomeIcon
+                    className={classNames('mb-4', !isHorizontal && 'mr-4')}
+                    size="4x"
+                    icon={['fas', feature.icon as any]}
+                  />
+                </div>
               ) : null}
 
-              <h3 className="text-xl">{feature.title}</h3>
+              <div>
+                {feature.title ? (
+                  <h3 className="text-xl">{feature.title}</h3>
+                ) : null}
 
-              <PortableText
-                components={portableTextComponents}
-                value={feature.subtitle}
-              />
+                <PortableText
+                  components={portableTextComponents}
+                  value={feature.subtitle}
+                />
+              </div>
             </div>
           ))}
         </div>
