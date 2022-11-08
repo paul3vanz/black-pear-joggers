@@ -1,7 +1,10 @@
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Card } from './card';
 import { Cards } from './cards';
+import { ChampionsLeagueFixtures } from './champions-league/champions-league-fixtures';
+import { ChampionsLeagueResultsTables } from './champions-league/champions-league-results-tables';
 import { Container } from '@black-pear-joggers/container';
+import { ContentItem } from '../types/content.types';
 import { CtaPlug } from './cta-plug';
 import { FeatureList } from './feature-list';
 import { Hero } from './hero';
@@ -12,11 +15,6 @@ import { portableTextComponents } from '../core/portable-text/portable-text-comp
 import { Quote } from './quote';
 import { ReactElement } from 'react';
 import { urlFor } from '@black-pear-joggers/sanity';
-import {
-  ContentItem,
-  CtaPlug as CtaPlugType,
-  InfoRows as InfoRowsType,
-} from '../types/content.types';
 
 export interface PageBuilderProps {
   content: ContentItem[];
@@ -94,6 +92,12 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
                 </Container>
               </Stack>
             );
+          case 'uiComponentRef':
+            if (contentItem.name === 'ChampionsLeagueFixtures') {
+              return <ChampionsLeagueFixtures />;
+            } else if (contentItem.name === 'ChampionsLeagueResultsTables') {
+              return <ChampionsLeagueResultsTables />;
+            }
           default:
             return (
               <Stack>

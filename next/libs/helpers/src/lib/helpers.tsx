@@ -137,3 +137,7 @@ export function newsPostUrl(publishedAt: string, slug: string): string {
     slug,
   ].join('/');
 }
+
+export function hasWindow(): boolean {
+  return typeof window !== 'undefined';
+}
