@@ -209,13 +209,17 @@ export function ChampionsLeagueResultsTables() {
           <>
             <div className="grid grid-cols-2 gap-4 mb-6">
               {['men', 'women'].map((gender) => (
-                <div>
+                <div key={gender}>
                   <h3 className="mb-0">{result.year}</h3>
 
                   <h4 className="font-bold text-lg mb-4">Top 10 {gender}</h4>
 
                   <p>
-                    <a href={result.results[gender].url} target="_blank">
+                    <a
+                      href={result.results[gender].url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Download full results
                     </a>
                   </p>
@@ -230,12 +234,17 @@ export function ChampionsLeagueResultsTables() {
                       </tr>
                     </thead>
                     <tbody>
-                      {result.results[gender].topTen.map((x) => (
-                        <tr className={x.position === 1 ? 'font-bold' : null}>
-                          <td className="px-4 py-1">{x.position}</td>
-                          <td className="px-4 py-1">{x.name}</td>
-                          <td className="px-4 py-1">{x.races}</td>
-                          <td className="px-4 py-1">{x.points}</td>
+                      {result.results[gender].topTen.map((athlete) => (
+                        <tr
+                          className={
+                            athlete.position === 1 ? 'font-bold' : null
+                          }
+                          key={athlete.position}
+                        >
+                          <td className="px-4 py-1">{athlete.position}</td>
+                          <td className="px-4 py-1">{athlete.name}</td>
+                          <td className="px-4 py-1">{athlete.races}</td>
+                          <td className="px-4 py-1">{athlete.points}</td>
                         </tr>
                       ))}
                     </tbody>

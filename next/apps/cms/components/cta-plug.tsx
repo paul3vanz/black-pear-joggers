@@ -23,7 +23,7 @@ export function CtaPlug({ ctaPlug }: CtaPlugProps) {
         />
 
         {ctaPlug.ctas.map((cta) => (
-          <div className="inline-block xs:mr-4 mb-4 xs:mb-0">
+          <div className="inline-block xs:mr-4 mb-4 xs:mb-0" key={cta.title}>
             <Button key={cta.title} text={cta.title} link={cta.link} />
           </div>
         ))}

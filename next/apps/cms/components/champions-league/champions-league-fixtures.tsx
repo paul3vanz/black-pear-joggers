@@ -79,7 +79,7 @@ export function ChampionsLeagueFixtures() {
             </thead>
             <tbody>
               {data.map((fixture) => (
-                <tr>
+                <tr key={fixture.event}>
                   <td className="px-4 py-1 border-b-1">{fixture.event}</td>
                   <td className="px-4 py-1">{fixture.day}</td>
                   <td className="px-4 py-1">{fixture.date}</td>
