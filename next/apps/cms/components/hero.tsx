@@ -29,7 +29,12 @@ const StyledTaglineWrapper = styled.div`
 
 export function Hero({ hero }: HeroProps) {
   return (
-    <Stack backgroundImage={urlFor(hero.illustration.image).url()}>
+    <Stack
+      backgroundImage={
+        hero.illustration.image.externalUrl ||
+        urlFor(hero.illustration.image).url()
+      }
+    >
       <Container>
         <div className="flex flex-col content-center text-center text-white">
           <h1 className="mb-4 sm:mb-8 inline-block bg-gray-900 inline-block px-4 py-2 mx-auto text-3xl sm:text-4xl">
