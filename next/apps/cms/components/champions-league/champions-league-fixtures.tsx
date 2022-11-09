@@ -71,8 +71,8 @@ export function ChampionsLeagueFixtures() {
           <table className="w-full">
             <thead>
               <tr>
-                <th className="px-4 py-1">#</th>
-                <th className="px-4 py-1">Day</th>
+                <th className="px-4 py-1 hidden xs:table-cell">#</th>
+                <th className="px-4 py-1 hidden sm:table-cell">Day</th>
                 <th className="px-4 py-1">Date</th>
                 <th className="px-4 py-1">Race</th>
               </tr>
@@ -80,10 +80,16 @@ export function ChampionsLeagueFixtures() {
             <tbody>
               {data.map((fixture) => (
                 <tr key={fixture.event}>
-                  <td className="px-4 py-1 border-b-1">{fixture.event}</td>
-                  <td className="px-4 py-1">{fixture.day}</td>
-                  <td className="px-4 py-1">{fixture.date}</td>
-                  <td className="px-4 py-1">
+                  <td className="px-4 py-1 border-b-1 hidden xs:table-cell">
+                    {fixture.event}
+                  </td>
+                  <td className="px-4 py-1 border-b-1 hidden sm:table-cell">
+                    {fixture.day}
+                  </td>
+                  <td className="px-4 py-1 border-b-1 align-top whitespace-nowrap">
+                    {fixture.date}
+                  </td>
+                  <td className="px-4 py-1 border-b-1">
                     <button
                       className="font-bold underline text-left"
                       onClick={() => setActiveFixture(fixture)}

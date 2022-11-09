@@ -201,13 +201,14 @@ export function ChampionsLeagueResultsTables() {
         <h2>Previous years</h2>
 
         <p>
-          Thank you to Sarah Morris, Mark Dillon and Ben Dillon who have taken
-          on the administration of the league in recent years.
+          Thank you to <strong>Sarah Morris</strong>,{' '}
+          <strong>Mark Dillon</strong> and <strong>Ben Dillon</strong> who have
+          taken on the administration of the league in recent years.
         </p>
 
         {results.map((result) => (
           <>
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid sm:grid-cols-2 gap-4 mb-6">
               {['men', 'women'].map((gender) => (
                 <div key={gender}>
                   <h3 className="mb-0">{result.year}</h3>
@@ -229,7 +230,9 @@ export function ChampionsLeagueResultsTables() {
                       <tr>
                         <th className="px-4 py-1">#</th>
                         <th className="px-4 py-1">Name</th>
-                        <th className="px-4 py-1">Races</th>
+                        <th className="px-4 py-1 hidden xs:table-cell">
+                          Races
+                        </th>
                         <th className="px-4 py-1">Points</th>
                       </tr>
                     </thead>
@@ -243,7 +246,9 @@ export function ChampionsLeagueResultsTables() {
                         >
                           <td className="px-4 py-1">{athlete.position}</td>
                           <td className="px-4 py-1">{athlete.name}</td>
-                          <td className="px-4 py-1">{athlete.races}</td>
+                          <td className="px-4 py-1 hidden xs:table-cell">
+                            {athlete.races}
+                          </td>
                           <td className="px-4 py-1">{athlete.points}</td>
                         </tr>
                       ))}
