@@ -20,7 +20,7 @@ export interface InfoRowsProps {
 export function InfoRowText(props) {
   return (
     <>
-      <h2>{props.title}</h2>
+      {props.title ? <h2>{props.title}</h2> : null}
 
       <PortableText components={portableTextComponents} value={props.text} />
     </>
