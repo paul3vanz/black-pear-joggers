@@ -57,7 +57,7 @@ export function ChampionsLeagueFixtures() {
               <p>{activeFixture.description}</p>
 
               <p>
-                <a href={activeFixture.link} target="_blank">
+                <a href={activeFixture.link} target="_blank" rel="noreferrer">
                   Visit website
                 </a>
               </p>

@@ -97,6 +97,8 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
               return <ChampionsLeagueFixtures />;
             } else if (contentItem.name === 'ChampionsLeagueResultsTables') {
               return <ChampionsLeagueResultsTables />;
+            } else {
+              break;
             }
           default:
             return (
