@@ -5,7 +5,7 @@ import { Cards } from '../../components/cards';
 import { Container } from '@black-pear-joggers/container';
 import { getAllPosts } from '../../core/queries/get-all-posts';
 import { InferGetStaticPropsType } from 'next';
-import { legacyPosts } from 'apps/cms/data/legacyPosts';
+import { legacyPosts } from '../../data/legacyPosts';
 import { portableTextBlocksToText } from '../../core/portable-text/portable-text-components';
 import { urlFor } from '@black-pear-joggers/sanity';
 import {
