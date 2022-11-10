@@ -13,7 +13,7 @@ export function getAllPosts(): Promise<Post[]> {
       slug,
       body,
       publishedAt,
-      "imageUrl": mainImage.asset->url,
+      mainImage,
     }
   `);
 }

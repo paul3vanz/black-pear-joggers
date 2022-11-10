@@ -7,6 +7,7 @@ import { GetStaticPaths, InferGetStaticPropsType } from 'next';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../../../../core/portable-text/portable-text-components';
 import { Stack } from '@black-pear-joggers/stack';
+import { urlFor } from '@black-pear-joggers/sanity';
 import { useRouter } from 'next/router';
 
 export default function NewsPost(
@@ -24,8 +25,10 @@ export default function NewsPost(
           avatarUrl: props.post.authors[0].author.imageUrl,
         }}
         imageUrl={
-          props.post.imageUrl ||
-          'https://cdn.sanity.io/images/hojqww2q/production/c542d0e1d0c4f86bf40e84923b4e4bd4fd939048-1200x183.jpg'
+          props.post.mainImage
+            ? props.post.mainImage.externalUrl ||
+              urlFor(props.post.mainImage).url()
+            : 'https://cdn.sanity.io/images/hojqww2q/production/c542d0e1d0c4f86bf40e84923b4e4bd4fd939048-1200x183.jpg'
         }
       />
 

@@ -1,3 +1,4 @@
+import { Image } from './content.types';
 import { PortableTextBlock } from '@portabletext/types';
 import { Slug } from './slug.types';
 
@@ -7,7 +8,7 @@ export interface Post {
     slug: Slug;
     body: PortableTextBlock[];
     publishedAt: string;
-    imageUrl: string;
+    mainImage: Image;
     authors: any;
 }
 
