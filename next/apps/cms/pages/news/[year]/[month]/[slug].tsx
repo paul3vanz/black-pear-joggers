@@ -58,7 +58,7 @@ export const getStaticPaths = async () => {
         params: { year, month, slug: post.slug.current },
       };
     }),
-    fallback: false,
+    fallback: 'blocking',
   };
 };
 
@@ -69,5 +69,6 @@ export async function getStaticProps(context) {
     props: {
       post,
     },
+    revalidate: 3600,
   };
 }

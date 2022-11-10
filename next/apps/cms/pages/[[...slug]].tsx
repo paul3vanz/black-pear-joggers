@@ -54,6 +54,6 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     props: {
       route,
     },
-    revalidate: 120,
+    revalidate: 3600,
   };
 };
