@@ -4,7 +4,7 @@ import { Cards } from './cards';
 import { ChampionsLeagueFixtures } from './champions-league/champions-league-fixtures';
 import { ChampionsLeagueResultsTables } from './champions-league/champions-league-results-tables';
 import { Container } from '@black-pear-joggers/container';
-import { ContentItem } from '../types/content.types';
+import { ContentItem, UiComponent } from '../types/content.types';
 import { CtaPlug } from './cta-plug';
 import { FeatureList } from './feature-list';
 import { Hero } from './hero';
@@ -12,12 +12,15 @@ import { InfoRows } from './info-rows';
 import { LazyLoadImage } from '@black-pear-joggers/lazy-load-image';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../core/portable-text/portable-text-components';
+import { Post } from '../types';
 import { Quote } from './quote';
 import { ReactElement } from 'react';
+import { RecentNews } from './recent-news';
 import { urlFor } from '@black-pear-joggers/sanity';
 
 export interface PageBuilderProps {
   content: ContentItem[];
+  posts?: Post[];
 }
 
 export function PageBuilder(props: PageBuilderProps): ReactElement {
@@ -93,23 +96,28 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
               </Stack>
             );
           case 'uiComponentRef':
-            if (contentItem.name === 'ChampionsLeagueFixtures') {
-              return <ChampionsLeagueFixtures />;
-            } else if (contentItem.name === 'ChampionsLeagueResultsTables') {
-              return <ChampionsLeagueResultsTables />;
-            } else {
-              break;
+            switch (contentItem.name) {
+              case 'ChampionsLeagueFixtures':
+                return <ChampionsLeagueFixtures />;
+              case 'ChampionsLeagueResultsTables':
+                return <ChampionsLeagueResultsTables />;
+              case 'RecentNews':
+                return <RecentNews posts={props.posts} />;
+              default:
+                return <FallbackComponent contentItem={contentItem} />;
             }
           default:
-            return (
-              <Stack>
-                <Container>
-                  <pre>{JSON.stringify(contentItem, null, ' ')}</pre>
-                </Container>
-              </Stack>
-            );
+            return <FallbackComponent contentItem={contentItem} />;
         }
       })}
     </>
   );
 }
+
+const FallbackComponent = (props: { contentItem: UiComponent }) => (
+  <Stack>
+    <Container>
+      <pre>{JSON.stringify(props.contentItem, null, ' ')}</pre>
+    </Container>
+  </Stack>
+);

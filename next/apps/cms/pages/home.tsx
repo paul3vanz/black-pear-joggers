@@ -16,7 +16,7 @@ export default function Page(
         <title>{props.page.title} | Black Pear Joggers</title>
       </Head>
 
-      <PageBuilder content={props.page.content} />
+      <PageBuilder content={props.page.content} posts={props.posts} />
     </>
   );
 }
