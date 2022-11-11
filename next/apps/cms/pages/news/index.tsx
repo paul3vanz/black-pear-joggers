@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { Container } from '@black-pear-joggers/container';
 import { formatRelative, friendlyDate } from '@black-pear-joggers/helpers';
+import { formatRelative, friendlyDate } from '@black-pear-joggers/helpers';
 import { getAllPosts } from '../../core/queries/get-all-posts';
 import { InferGetStaticPropsType } from 'next';
-import { legacyPosts } from 'apps/cms/data/legacyPosts';
+import { legacyPosts } from '../../data/legacyPosts';
 import { RecentNews } from '../../components/recent-news';
 import { Stack } from '@black-pear-joggers/stack';
 
