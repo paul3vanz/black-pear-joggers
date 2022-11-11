@@ -16,7 +16,7 @@ export function getPostBySlug(slug: string): Promise<Post> {
       body,
       publishedAt,
       mainImage,
-      authors[]{author->{name, "imageUrl": image.asset->url}}
+      authors[]{author->{name, image}}
     }[0]
   `);
 }

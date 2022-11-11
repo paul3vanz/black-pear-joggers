@@ -3,7 +3,7 @@ import { Frontmatter } from '../../../../components/news/frontmatter/frontmatter
 import { getAllPosts } from '../../../../core/queries/get-all-posts';
 import { getMonth, getYear } from 'date-fns';
 import { getPostBySlug } from '../../../../core/queries/get-post-by-slug';
-import { GetStaticPaths, InferGetStaticPropsType } from 'next';
+import { InferGetStaticPropsType } from 'next';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../../../../core/portable-text/portable-text-components';
 import { Stack } from '@black-pear-joggers/stack';
@@ -13,8 +13,6 @@ import { useRouter } from 'next/router';
 export default function NewsPost(
   props: InferGetStaticPropsType<typeof getStaticProps>
 ) {
-  const router = useRouter();
-
   return (
     <>
       <Frontmatter
@@ -22,7 +20,9 @@ export default function NewsPost(
         publishDate={props.post.publishedAt}
         author={{
           name: props.post.authors[0].author.name,
-          avatarUrl: props.post.authors[0].author.imageUrl,
+          avatarUrl:
+            props.post.authors[0].author.image.externalUrl ||
+            urlFor(props.post.authors[0].author.image).url(),
         }}
         imageUrl={
           props.post.mainImage
