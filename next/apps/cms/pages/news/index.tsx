@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Container } from '@black-pear-joggers/container';
 import { formatRelative, friendlyDate } from '@black-pear-joggers/helpers';
-import { formatRelative, friendlyDate } from '@black-pear-joggers/helpers';
 import { getAllPosts } from '../../core/queries/get-all-posts';
 import { InferGetStaticPropsType } from 'next';
 import { legacyPosts } from '../../data/legacyPosts';
