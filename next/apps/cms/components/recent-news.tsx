@@ -15,6 +15,8 @@ export function RecentNews(props: RecentNewsProps) {
   return (
     <Stack backgroundColour={BackgroundColour.Dark}>
       <Container wide={true}>
+        <h2>Recent news</h2>
+
         <Cards maxColumns={props.posts?.length < 3 ? props.posts.length : 3}>
           {props.posts?.map((post) => (
             <Card

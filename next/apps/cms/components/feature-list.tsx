@@ -22,14 +22,14 @@ export function FeatureList({ featureList }: FeatureListProps) {
   return (
     <Stack backgroundColour={BackgroundColour.Light}>
       <Container>
-        <div
+        <ul
           className={classNames(
             'grid gap-4 grid-cols-1',
             isHorizontal && 'sm:grid-cols-2 md:grid-cols-4'
           )}
         >
           {featureList.features.map((feature) => (
-            <div
+            <li
               className={isHorizontal ? 'text-center' : 'flex'}
               key={feature._key}
             >
@@ -45,7 +45,9 @@ export function FeatureList({ featureList }: FeatureListProps) {
 
               <div>
                 {feature.title ? (
-                  <h3 className="text-xl">{feature.title}</h3>
+                  <p className="text-xl">
+                    <strong>{feature.title}</strong>
+                  </p>
                 ) : null}
 
                 <PortableText
@@ -53,9 +55,9 @@ export function FeatureList({ featureList }: FeatureListProps) {
                   value={feature.subtitle}
                 />
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </Container>
     </Stack>
   );
