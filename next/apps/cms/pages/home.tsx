@@ -28,7 +28,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   return {
     props: {
       page,
-      posts,
+      posts: posts.slice(0, 3),
     },
     revalidate: 120,
   };
