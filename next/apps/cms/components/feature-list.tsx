@@ -5,6 +5,12 @@ import { FeatureList as FeatureListType } from '../types/content.types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../core/portable-text/portable-text-components';
+import {
+  faChartLine,
+  faLightbulb,
+  faPeopleGroup,
+  faPersonRunning,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface FeatureListProps {
   featureList: FeatureListType;
@@ -32,7 +38,7 @@ export function FeatureList({ featureList }: FeatureListProps) {
                   <FontAwesomeIcon
                     className={classNames('mb-4', !isHorizontal && 'mr-4')}
                     size="4x"
-                    icon={['fas', feature.icon as any]}
+                    icon={getIcon(feature.icon)}
                   />
                 </div>
               ) : null}
@@ -53,4 +59,19 @@ export function FeatureList({ featureList }: FeatureListProps) {
       </Container>
     </Stack>
   );
+}
+
+function getIcon(icon: string) {
+  switch (icon) {
+    case 'person-running':
+      return faPersonRunning;
+    case 'chart-line':
+      return faChartLine;
+    case 'people-group':
+      return faPeopleGroup;
+    case 'lightbulb':
+      return faLightbulb;
+    default:
+      return faLightbulb;
+  }
 }

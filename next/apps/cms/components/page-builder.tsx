@@ -98,13 +98,20 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
           case 'uiComponentRef':
             switch (contentItem.name) {
               case 'ChampionsLeagueFixtures':
-                return <ChampionsLeagueFixtures />;
+                return <ChampionsLeagueFixtures key={contentItem._key} />;
               case 'ChampionsLeagueResultsTables':
-                return <ChampionsLeagueResultsTables />;
+                return <ChampionsLeagueResultsTables key={contentItem._key} />;
               case 'RecentNews':
-                return <RecentNews posts={props.posts} />;
+                return (
+                  <RecentNews key={contentItem._key} posts={props.posts} />
+                );
               default:
-                return <FallbackComponent contentItem={contentItem} />;
+                return (
+                  <FallbackComponent
+                    key={contentItem._key}
+                    contentItem={contentItem}
+                  />
+                );
             }
           default:
             return <FallbackComponent contentItem={contentItem} />;
