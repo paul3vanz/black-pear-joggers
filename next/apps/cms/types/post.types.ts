@@ -9,7 +9,10 @@ export interface Post {
     body: PortableTextBlock[];
     publishedAt: string;
     mainImage: Image;
-    authors: any;
+    authors: {
+        name: string;
+        image: Image;
+    };
 }
 
 
