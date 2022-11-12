@@ -6,10 +6,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../core/portable-text/portable-text-components';
 import {
+  faArrowPointer,
+  faCalendarDays,
+  faCar,
   faChartLine,
+  faCreditCard,
   faLightbulb,
   faPeopleGroup,
   faPersonRunning,
+  faStopwatch20,
+  faTrophy,
+  faVest,
 } from '@fortawesome/free-solid-svg-icons';
 
 interface FeatureListProps {
@@ -73,7 +80,23 @@ function getIcon(icon: string) {
       return faPeopleGroup;
     case 'lightbulb':
       return faLightbulb;
+    case 'arrow-pointer':
+      return faArrowPointer;
+    case 'trophy':
+      return faTrophy;
+    case 'credit-card':
+      return faCreditCard;
+    case 'person-running':
+      return faPersonRunning;
+    case 'car':
+      return faCar;
+    case 'calendar-days':
+      return faCalendarDays;
+    case 'stopwatch-20':
+      return faStopwatch20;
+    case 'vest':
+      return faVest;
     default:
-      return faLightbulb;
+      return null;
   }
 }
