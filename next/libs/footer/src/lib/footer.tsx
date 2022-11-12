@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LazyLoadImage } from '@black-pear-joggers/lazy-load-image';
 
 interface FooterLinkProps {
   link: string;
@@ -19,13 +20,15 @@ export function Footer() {
   return (
     <>
       <div>
-        <img
-          src="https://bpj.org.uk/wp-content/uploads/2022/09/club-photo.jpg"
-          alt=""
-          className="w-full object-cover h-64 sm:h-auto"
-          width="1080"
-          height="212"
-        />
+        <LazyLoadImage className="w-full h-64 sm:h-auto">
+          <img
+            src="https://bpj.org.uk/wp-content/uploads/2022/09/club-photo.jpg"
+            alt=""
+            className="w-full object-cover h-64 sm:h-auto"
+            width="1080"
+            height="212"
+          />
+        </LazyLoadImage>
       </div>
 
       <footer className="text-center bg-gray-900 text-white py-8">
