@@ -44,6 +44,8 @@ import productVariant from './productVariant';
 // Vacancy schemas
 import vacancy from './vacancy';
 
+import person from './person';
+
 import localeText from './locale/Text';
 import localeBlockContent from './locale/BlockContent';
 
@@ -68,6 +70,8 @@ export default createSchema({
       productVariant,
 
       vacancy,
+
+      person,
 
       // When added to this list, object types can be used as
       // { type: 'typename' } in other document schemas

@@ -1,6 +1,11 @@
 import S from '@sanity/desk-tool/structure-builder';
 import { MdMenu } from 'react-icons/md';
-import { GoBrowser as PageIcon, GoHome, GoSettings } from 'react-icons/go';
+import {
+  GoBrowser as PageIcon,
+  GoHome,
+  GoPerson,
+  GoSettings,
+} from 'react-icons/go';
 import blog from './src/structure/blog';
 import landingPages from './src/structure/landingPages';
 import PreviewIFrame from './src/components/previewIFrame';
@@ -21,6 +26,7 @@ const hiddenDocTypes = (listItem) =>
     'siteSettings',
     'author',
     'category',
+    'person',
   ].includes(listItem.getId());
 
 export default () =>
@@ -40,7 +46,7 @@ export default () =>
       S.documentListItem()
         .title('Frontpage')
         .schemaType('page')
-        .icon(GoHome)
+        .icon(GoPerson)
         .child(
           S.document()
             .schemaType('page')
@@ -49,6 +55,7 @@ export default () =>
         ),
       blog,
       landingPages,
+      S.documentTypeListItem('person').title('All people').icon(GoPerson),
       // This returns an array of all the document types
       // defined in schema.js. We filter out those that we have
       // defined the structure above
