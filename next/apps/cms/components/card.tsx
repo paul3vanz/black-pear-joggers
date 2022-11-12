@@ -49,9 +49,13 @@ export const Card = (props: CardProps) => (
         <>
           {props.headline && (
             <h3 className="mb-2 text-lg sm:text-xl underline">
-              <Link href={props.link}>
-                <a>{props.headline}</a>
-              </Link>
+              {props.link ? (
+                <Link href={props.link}>
+                  <a>{props.headline}</a>
+                </Link>
+              ) : (
+                props.headline
+              )}
             </h3>
           )}
           <div className="copy fade">{props.content && props.content}</div>
