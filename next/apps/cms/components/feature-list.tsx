@@ -86,8 +86,6 @@ function getIcon(icon: string) {
       return faTrophy;
     case 'credit-card':
       return faCreditCard;
-    case 'person-running':
-      return faPersonRunning;
     case 'car':
       return faCar;
     case 'calendar-days':
