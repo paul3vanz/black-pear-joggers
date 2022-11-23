@@ -46,6 +46,18 @@ export default {
       max: 4,
     },
     {
+      name: 'backgroundColour',
+      type: 'string',
+      fieldset: 'listSettings',
+      options: {
+        list: [
+          { title: 'Dark', value: 'dark' },
+          { title: 'Light', value: 'light' },
+          { title: 'Bright', value: 'bright' },
+        ],
+      },
+    },
+    {
       name: 'cards',
       type: 'array',
       of: [

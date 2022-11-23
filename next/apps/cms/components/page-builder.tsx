@@ -57,7 +57,9 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
             return (
               <Stack
                 key={contentItem._key}
-                backgroundColour={BackgroundColour.Light}
+                backgroundColour={
+                  contentItem.backgroundColour || BackgroundColour.Light
+                }
               >
                 <Container wide={true}>
                   {contentItem.title || contentItem.subtitle ? (

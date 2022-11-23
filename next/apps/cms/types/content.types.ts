@@ -78,6 +78,7 @@ export interface Cards extends BaseType {
     title: string;
     subtitle: PortableTextBlock[];
     maxColumns?: number;
+    backgroundColour: BackgroundColour;
 }
 
 export interface Card extends BaseType {
