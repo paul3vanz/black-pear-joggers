@@ -64,8 +64,8 @@ $router->group([
     'middleware' => 'auth',
     'prefix' => 'magicmile',
 ],  function ($router) {
-$router->post('', 'MagicMileController@store');
-$router->delete('{id}', 'MagicMileController@delete');
+    $router->post('', 'MagicMileController@store');
+    $router->delete('{id}', 'MagicMileController@delete');
 });
 
 $router->get('/members/totals', 'AthleteController@getMembershipTotals');
@@ -78,6 +78,8 @@ $router->get('/parkruntourists', 'PerformanceController@getParkrunTourists');
 $router->get('/performances', 'PerformanceController@getPerformanceSummaries');
 $router->get('/performances/{date}/{meeting}', 'PerformanceController@getPerformancesByMeeting');
 $router->get('/performances/syncmagicmile', 'PerformanceController@syncMagicMileResults');
+
+$router->get('/performancesindividual', 'PerformanceController@getPerformancesIndividual');
 
 $router->get('/rankings/{athleteId}', 'RankingController@getRankingsByAthlete');
 $router->get('/rankings/{athleteId}/{year}', 'RankingController@getRankingsByAthlete');

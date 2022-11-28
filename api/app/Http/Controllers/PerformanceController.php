@@ -19,6 +19,17 @@ class PerformanceController extends Controller
     {
     }
 
+    public function getPerformancesIndividual(Request $request)
+    {
+        $performances = Cache::remember('performancesIndividual', 28800, function () use ($request) {
+            $performances = $this->getPerformances($request);
+
+            return $performances->paginate(50);
+        });
+
+        return response()->json($performances);
+    }
+
     public function getPerformancesByAthlete($id, Request $request)
     {
         $performances = $this->getPerformances($request);
@@ -57,6 +68,10 @@ class PerformanceController extends Controller
                     ->on('standards.time_parsed', '>=', 'performances.time_parsed');
             })
             ->leftJoin('awards', 'standards.award_id', '=', 'awards.id')
+            ->join('memberships', function ($join) {
+                $join->on('athletes.urn', '=', 'memberships.urn')
+                    ->where('memberships.competitiveRegStatus', '=', 'Registered');
+            })
             ->groupBy('performances.id')
             ->select(
                 DB::raw(
@@ -66,6 +81,7 @@ class PerformanceController extends Controller
                 'athletes.first_name',
                 'athletes.last_name',
                 'athletes.gender',
+                'memberships.competitiveRegStatus',
                 'performances.id AS performance_id',
                 'performances.category',
                 'performances.event',
@@ -80,6 +96,10 @@ class PerformanceController extends Controller
         $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
         if ($searchTerm) {
             $performances = $performances->where('performances.race', 'LIKE', "%$searchTerm%");
+        }
+
+        if ($request->input('isPersonalBest')) {
+            $performances = $performances->where('performances.isPersonalBest', true);
         }
 
         if ($request->input('fromDate')) {
