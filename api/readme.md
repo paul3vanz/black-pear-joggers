@@ -52,6 +52,8 @@ Here is an overview of common endpoints for retrieving data. There's additional 
   - http://localhost:8000/performances
 - Search event name
   - http://localhost:8000/performances?search=croome
+- PBs
+  - http://localhost:8000/performancesindividual?isPersonalBest=1
 
 ### Club standards award standards
 
