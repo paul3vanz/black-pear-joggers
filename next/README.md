@@ -1,8 +1,33 @@
-# BlackPearJoggers
+# Black Pear Joggers
+
+## Apps
+
+### Admin
+
+The admin area of the website for committee and certain volunteers.
+
+### Claim award
+
+This is not finished. It will be a refresh of the form for members to submit a claim for a club standard certificate.
+
+### CMS
+
+The majority of content pages on the website. This aims to replace the old Wordpress website. This will load faster, allow others to easily update content on the site and allow better integration of dynamic data across the site such as results.
+
+`nx serve cms`
+
+### Contact
+
+### Kit
+
+### Register
+
+### Vacancies
 
 ## Starting Sanity Studio
 
 Go to `/apps/sanity-studio` and run `sanity start`, then go to [localhost:3333](http://localhost:3333)
+
 ## Adding capabilities to your workspace
 
 Nx supports many plugins which add capabilities for developing different types of applications and different tools.
