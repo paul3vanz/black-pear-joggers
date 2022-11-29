@@ -16,6 +16,7 @@ import { Post } from '../types';
 import { Quote } from './quote';
 import { ReactElement } from 'react';
 import { RecentNews } from './recent-news';
+import { RecentPersonalBests } from './personal-bests/recent-personal-bests';
 import { urlFor } from '@black-pear-joggers/sanity';
 
 export interface PageBuilderProps {
@@ -103,6 +104,8 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
                 return <ChampionsLeagueFixtures key={contentItem._key} />;
               case 'ChampionsLeagueResultsTables':
                 return <ChampionsLeagueResultsTables key={contentItem._key} />;
+              case 'RecentPersonalBests':
+                return <RecentPersonalBests key={contentItem._key} />;
               case 'RecentNews':
                 return (
                   <RecentNews key={contentItem._key} posts={props.posts} />
