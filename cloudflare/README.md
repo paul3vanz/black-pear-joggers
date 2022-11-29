@@ -14,6 +14,16 @@ http://127.0.0.1:8787/privacy-policy
 
 The path appended is any of the routes from the array in the `wrangler.toml` file.
 
-As new pages are created in the new CMS, add their path to the `wrangler.toml`
+As new pages are created in the new CMS, add their path to the `wrangler.toml`, e.g:
 
-To deploy changes to production, run `npx wrangler publish cms/src/index`
+```
+routes = [
+  "bpj.org.uk/page-to-affect*",
+]
+```
+
+Then test it locally to ensure the right page displays:
+
+http://127.0.0.1:8787/page-to-affect
+
+If it's all good, to deploy changes to production, run `npx wrangler publish cms/src/index`
