@@ -32,11 +32,16 @@ export function PersonalBestsTable() {
                   {result.first_name} {result.last_name}
                 </a>
               </Link>
-              <span className="font-bold text-lg mx-1">{result.time}</span>
               {result.award ? (
-                <AwardBadge award={result.award} />
-              ) : null} at {result.race}{' '}
-              <span className="text-gray-400">
+                <span className="ml-1">
+                  <AwardBadge award={result.award} />
+                </span>
+              ) : null}
+              <span className="block sm:inline">
+                <span className="font-bold text-lg sm:ml-1">{result.time}</span>{' '}
+                at {result.race}{' '}
+              </span>
+              <span className="text-gray-400 block sm:inline">
                 {formatRelative(result.date)}
               </span>
             </li>
