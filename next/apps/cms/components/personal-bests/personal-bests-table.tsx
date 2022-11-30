@@ -1,14 +1,7 @@
 import Link from 'next/link';
 import { AwardBadge } from './award-badge';
-import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
-import { Container } from '@black-pear-joggers/container';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import {
-  formatRelative,
-  friendlyDate,
-  shortDate,
-} from '@black-pear-joggers/helpers';
+import { formatRelative } from '@black-pear-joggers/helpers';
 import {
   getPersonalBests,
   Paginate,
@@ -16,10 +9,8 @@ import {
 } from '@black-pear-joggers/core-services';
 
 export function PersonalBestsTable() {
-  const [activeFixture, setActiveFixture] = useState<Paginate<Performance>>();
-
   const { isLoading, data } = useQuery<Paginate<Performance>>(
-    ['fixtures'],
+    ['personalBests'],
     () => getPersonalBests().then((response) => response.json())
   );
 
