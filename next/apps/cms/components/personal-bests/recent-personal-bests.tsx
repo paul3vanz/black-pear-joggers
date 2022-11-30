@@ -7,7 +7,14 @@ export function RecentPersonalBests() {
   return (
     <Stack>
       <Container>
-        <h2>Recent personal bests</h2>
+        <h2 className="flex">
+          <span>Recent personal bests</span>
+          <span className="flex items-center">
+            <span className="rounded-md bg-black text-white text-sm ml-4 px-3 py-1 font-mono">
+              BETA
+            </span>
+          </span>
+        </h2>
 
         <p>
           Well done to the following members who have recently ran PBs over

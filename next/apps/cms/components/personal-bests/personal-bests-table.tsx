@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { AwardBadge } from './award-badge';
-import { useQuery } from '@tanstack/react-query';
 import { formatRelative } from '@black-pear-joggers/helpers';
+import { useQuery } from '@tanstack/react-query';
 import {
   getPersonalBests,
   Paginate,
@@ -23,7 +23,7 @@ export function PersonalBestsTable() {
           {data.data.filter(filterCommonEvents).map((result) => (
             <li
               key={`${result.athlete_id}${result.meeting_id}`}
-              className="mb-1"
+              className="mb-2"
             >
               <Link
                 href={`https://apps.bpj.org.uk/race-results/#/athlete/${result.athlete_id}`}
@@ -31,10 +31,11 @@ export function PersonalBestsTable() {
                 <a>
                   {result.first_name} {result.last_name}
                 </a>
-              </Link>{' '}
-              {result.time}{' '}
-              {result.award ? <AwardBadge award={result.award} /> : null} at{' '}
-              {result.race}{' '}
+              </Link>
+              <span className="font-bold text-lg mx-1">{result.time}</span>
+              {result.award ? (
+                <AwardBadge award={result.award} />
+              ) : null} at {result.race}{' '}
               <span className="text-gray-400">
                 {formatRelative(result.date)}
               </span>
