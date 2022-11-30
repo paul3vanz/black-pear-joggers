@@ -21,7 +21,7 @@ class PerformanceController extends Controller
 
     public function getPerformancesIndividual(Request $request)
     {
-        $performances = Cache::remember('performancesIndividual', 28800, function () use ($request) {
+        $performances = Cache::remember('performancesIndividual-' . $request->input('fromDate') . '-' . $request->input('isPersonalBest'), 28800, function () use ($request) {
             $performances = $this->getPerformances($request);
 
             return $performances->paginate(50);
@@ -219,7 +219,7 @@ class PerformanceController extends Controller
             pf.`date` DESC
         ");
 
-        return response()->json($records);
+        return response()->json($results);
     }
 
     public function queryRecord(Request $request)
