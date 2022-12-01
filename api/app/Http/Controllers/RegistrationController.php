@@ -137,6 +137,7 @@ class RegistrationController extends Controller
 
         return response()->json([
             'count' => count($newMembers),
+            'members' => $newMembers,
         ]);
     }
 
