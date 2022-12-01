@@ -44,7 +44,7 @@ class MembershipController extends Controller
         return response()->json(MembershipController::fetchUrl('/race-provider/clubs'));
     }
 
-    public function getClubMembers(int $clubId = 1606, $skipAuthCheck = 0)
+    public function getClubMembers(int $clubId = 1606, $skipAuthCheck = false)
     {
         if (!Gate::allows('members:read') && !$skipAuthCheck) {
             abort(403);
@@ -64,7 +64,7 @@ class MembershipController extends Controller
 
     public function storeClubMembers()
     {
-        $athletes = MembershipController::getClubMembers()->getData()->Athletes;
+        $athletes = MembershipController::getClubMembers(1606, true)->getData()->Athletes;
 
         if (count($athletes)) {
             Membership::truncate();
