@@ -81,6 +81,12 @@ class FetchRankingsController extends Controller
 
         preg_match('/data: (.*]])/', $rankingScriptData, $rankingDataPoints);
 
+        if (!array_key_exists(1, $rankingDataPoints)) {
+            Log::channel('slackInfo')->info("no rankings for $athlete->id");
+
+            return;
+        }
+
         $rankingDataPoints = json_decode($rankingDataPoints[1]);
 
         // TODO: We want to keep all old data, just mark as old, not remove
