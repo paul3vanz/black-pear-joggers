@@ -182,7 +182,7 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
                   title="View certificate"
                   onClick={() =>
                     window.open(
-                      'https://black-pear-joggers.netlify.com/apps/club-standards/?certificateId=' +
+                      'https://apps.bpj.org.uk/club-standards/?certificateId=' +
                         awardClaim.id
                     )
                   }
