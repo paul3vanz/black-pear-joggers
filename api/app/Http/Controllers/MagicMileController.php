@@ -41,7 +41,7 @@ class MagicMileController extends Controller
         ]);
 
         $record = MagicMile::firstOrCreate([
-            'athlete_id' => $request->input('athleteId'),
+            'athlete_id' => $request->input('athleteId') || null,
             'first_name' => $request->input('firstName'),
             'last_name' => $request->input('lastName'),
             'gender' => $request->input('gender'),
