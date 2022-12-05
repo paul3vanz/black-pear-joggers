@@ -6,6 +6,46 @@ import { useState } from 'react';
 
 const results = [
   {
+    year: 2022,
+    results: {
+      men: {
+        url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYrj1dxjL2C6cbyL9C5oML9HIPvzeNqFqMNxtEy5M0cTb-t8LRZTH5z4dUZmubi8AUFJAIZWPEEes5/pubhtml?gid=454885501&single=true',
+        topTen: [
+          { position: 1, name: 'Rob Bowery', races: 13, points: 272 },
+          { position: 2, name: 'Jonathan Phillips', races: 13, points: 271 },
+          { position: 3, name: 'Adam Knights', races: 13, points: 257 },
+          { position: 4, name: 'Dale Bozward', races: 14, points: 242 },
+          { position: 5, name: 'Peter Darwen', races: 9, points: 210 },
+          { position: 6, name: 'Matthew Capel', races: 12, points: 203 },
+          { position: 7, name: 'Stuart Wakelam', races: 13, points: 199 },
+          { position: 8, name: 'Paul Naughton', races: 10, points: 196 },
+          { position: 9, name: 'Steve Bradley', races: 8, points: 178 },
+          { position: 10, name: 'Dave Williams', races: 7, points: 122 },
+        ],
+      },
+      women: {
+        url: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYrj1dxjL2C6cbyL9C5oML9HIPvzeNqFqMNxtEy5M0cTb-t8LRZTH5z4dUZmubi8AUFJAIZWPEEes5/pubhtml?gid=6426148&single=true',
+        topTen: [
+          { position: 1, name: 'Alison Walker', races: 13, points: 274 },
+          { position: 2, name: 'Katie Gromski', races: 11, points: 251 },
+          { position: 3, name: 'Deborah Band', races: 14, points: 238 },
+          { position: 4, name: 'Anya Lees', races: 12, points: 226 },
+          { position: 5, name: 'Rachael Lewis', races: 8, points: 203 },
+          { position: 6, name: 'Tamara Cullen', races: 9, points: 190 },
+          { position: 7, name: 'Ewelina Skolimowska', races: 5, points: 116 },
+          { position: 8, name: 'Claire Shacklock', races: 4, points: 85 },
+          { position: 9, name: 'Avril Munday', races: 4, points: 83 },
+          {
+            position: 10,
+            name: 'Sarah Williams-Hubbard',
+            races: 4,
+            points: 76,
+          },
+        ],
+      },
+    },
+  },
+  {
     year: 2019,
     results: {
       men: {
@@ -201,9 +241,10 @@ export function ChampionsLeagueResultsTables() {
         <h2>Previous years</h2>
 
         <p>
-          Thank you to <strong>Sarah Morris</strong>,{' '}
-          <strong>Mark Dillon</strong> and <strong>Ben Dillon</strong> who have
-          taken on the administration of the league in recent years.
+          Thank you to <strong>Peter Darwen</strong>,{' '}
+          <strong>Sarah Morris</strong>, <strong>Mark Dillon</strong> and{' '}
+          <strong>Ben Dillon</strong> who have taken on the administration of
+          the league in recent years.
         </p>
 
         {results.map((result) => (
