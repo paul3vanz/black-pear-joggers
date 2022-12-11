@@ -30,6 +30,7 @@ routes = [
   "bpj.org.uk/race-results*",
   "bpj.org.uk/club-records*",
   "bpj.org.uk/club-standards*",
+  "bpj.org.uk/couch-to-5k*",
   "bpj.org.uk/admin*",
   "bpj.org.uk/kit*",
   "bpj.org.uk/apps/*",
