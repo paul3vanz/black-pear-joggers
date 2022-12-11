@@ -17,7 +17,15 @@ export function Illustration(props: IllustrationProps) {
         <LazyLoadImage
           key={illustration.externalUrl || illustration.asset._id}
           className={
-            illustrations.length > 1 ? `w-1/${illustrations.length}` : 'w-full'
+            illustrations.length > 1
+              ? illustrations.length === 2
+                ? 'w-1/2'
+                : illustrations.length === 3
+                ? `w-1/3`
+                : illustrations.length === 4
+                ? `w-1/4`
+                : 'w-full'
+              : 'w-full'
           }
         >
           <img

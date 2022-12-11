@@ -13,9 +13,8 @@ export const LazyLoadImage = (
     <div
       className={classNames(
         props.className,
-        'flex items-center justify-center',
         props.rounded && 'rounded-sm',
-        loading && 'bg-gray-100 animate-pulse'
+        loading && 'bg-gray-100 animate-pulse flex items-center justify-center'
       )}
     >
       {loading ? (
