@@ -16,18 +16,21 @@ export const Steps = (props) => (
 
       <ul>
         {props.steps.steps.map((step, index) => (
-          <li key={index} className="mt-10">
+          <li key={index} className="mt-4">
             <div className="flex items-center">
-              <div className="w-9 h-9 mr-3 mb-5 text-2xl px-3 rounded-full bg-primary text-white font-bold flex items-center justify-center">
+              <div className="w-9 h-9 mr-3 text-2xl px-3 rounded-full bg-primary text-white font-bold flex items-center justify-center">
                 <span>{index + 1}</span>
               </div>
 
-              <h3>{step.title}</h3>
+              <h3 className="mt-5">{step.title}</h3>
             </div>
-            <PortableText
-              components={portableTextComponents}
-              value={step.content}
-            />
+
+            <div className="ml-12">
+              <PortableText
+                components={portableTextComponents}
+                value={step.content}
+              />
+            </div>
           </li>
         ))}
       </ul>
