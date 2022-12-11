@@ -28,6 +28,7 @@ export default {
         { type: 'cards' },
         { type: 'illustration' },
         { type: 'infoRows' },
+        { type: 'steps' },
         { type: 'ctaColumns' },
         { type: 'ctaPlug' },
         { type: 'featureList' },

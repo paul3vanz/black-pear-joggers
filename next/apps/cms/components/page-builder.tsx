@@ -8,6 +8,7 @@ import { ContentItem, UiComponent } from '../types/content.types';
 import { CtaPlug } from './cta-plug';
 import { FeatureList } from './feature-list';
 import { Hero } from './hero';
+import { Illustration } from './illustration';
 import { InfoRows } from './info-rows';
 import { LazyLoadImage } from '@black-pear-joggers/lazy-load-image';
 import { PortableText } from '@portabletext/react';
@@ -17,6 +18,7 @@ import { Quote } from './quote';
 import { ReactElement } from 'react';
 import { RecentNews } from './recent-news';
 import { RecentPersonalBests } from './personal-bests/recent-personal-bests';
+import { Steps } from './steps';
 import { urlFor } from '@black-pear-joggers/sanity';
 
 export interface PageBuilderProps {
@@ -41,18 +43,11 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
             return <Quote key={contentItem._key} quote={contentItem} />;
           case 'hero':
             return <Hero key={contentItem._key} hero={contentItem} />;
+          case 'steps':
+            return <Steps key={contentItem._key} steps={contentItem} />;
           case 'illustration':
             return (
-              <LazyLoadImage key={contentItem._key}>
-                <img
-                  className="w-full object-cover sm:h-auto"
-                  src={
-                    contentItem.image.externalUrl ||
-                    urlFor(contentItem.image).url()
-                  }
-                  alt={contentItem.image.alt}
-                />
-              </LazyLoadImage>
+              <Illustration key={contentItem._key} illustration={contentItem} />
             );
           case 'cards':
             return (

@@ -31,8 +31,10 @@ export function Hero({ hero }: HeroProps) {
   return (
     <Stack
       backgroundImage={
-        hero.illustration.image.externalUrl ||
-        urlFor(hero.illustration.image).url()
+        hero.illustration
+          ? hero.illustration.image.externalUrl ||
+            urlFor(hero.illustration.image).url()
+          : null
       }
     >
       <Container>

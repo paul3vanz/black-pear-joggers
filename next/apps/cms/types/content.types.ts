@@ -43,6 +43,7 @@ export interface UiComponent extends BaseType {
 export interface Illustration extends BaseType {
     _type: 'illustration',
     image: Image;
+    images: Image[];
 }
 
 export interface Image {
@@ -98,4 +99,16 @@ export interface Hero extends BaseType {
     cta: Cta;
 }
 
-export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards | Hero | UiComponent;
+export interface Steps extends BaseType {
+    _type: 'steps';
+    title: string;
+    subtitle: PortableTextBlock[];
+    steps: Step[];
+}
+
+export interface Step {
+    title: string;
+    content: PortableTextBlock[];
+}
+
+export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards | Hero | UiComponent | Steps;
