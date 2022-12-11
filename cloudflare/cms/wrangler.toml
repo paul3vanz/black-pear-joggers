@@ -24,6 +24,7 @@ routes = [
   "bpj.org.uk/cms/*",
   "bpj.org.uk/claim-award*",
   "bpj.org.uk/register*",
+  "bpj.org.uk/membership*",
   "bpj.org.uk/contact*",
   "bpj.org.uk/vacancies*",
   "bpj.org.uk/magic-mile*",
