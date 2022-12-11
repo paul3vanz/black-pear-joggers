@@ -45,6 +45,8 @@ import productVariant from './productVariant';
 import vacancy from './vacancy';
 
 import person from './person';
+import clubRun from './club-run';
+import venue from './venue';
 
 import localeText from './locale/Text';
 import localeBlockContent from './locale/BlockContent';
@@ -70,6 +72,9 @@ export default createSchema({
       productVariant,
 
       vacancy,
+
+      clubRun,
+      venue,
 
       person,
 
