@@ -24,7 +24,7 @@ export default function ProfilePage() {
           <h1>Profile</h1>
 
           <p>
-            You're currently logged in as <strong>{user?.email}</strong>.
+            You&rsquo;re currently logged in as <strong>{user?.email}</strong>.
           </p>
 
           {userProfile?.athleteId ? (
@@ -32,7 +32,7 @@ export default function ProfilePage() {
               <h2>Your details</h2>
 
               <p>
-                You've linked your membership details to your account. If you'd
+                You&rsquo;ve linked your membership details to your account. If you&rsquo;d
                 like to update your details, please{' '}
                 <a href="https://bpj.org.uk/contact?reason=website">
                   contact us
