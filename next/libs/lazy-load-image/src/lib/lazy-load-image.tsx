@@ -25,8 +25,8 @@ export const LazyLoadImage = (
         ></FontAwesomeIcon>
       ) : null}
 
-      <LazyLoad offset={100} onContentVisible={() => setLoading(true)}>
-        <span></span>
+      <LazyLoad offset={100} onContentVisible={() => setLoading(false)}>
+        {props.children}
       </LazyLoad>
     </div>
   );
