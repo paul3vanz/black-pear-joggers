@@ -16,7 +16,7 @@ type VacanciesPageProps = {
 
 function VacanciesCards(props: VacanciesPageProps) {
   return (
-    <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
       {props.vacancies
         ? props.vacancies.map((vacancy) => {
             const summary = toPlainText(vacancy.summary);
