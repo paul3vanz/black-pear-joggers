@@ -2,13 +2,10 @@ import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { GetStaticProps } from 'next';
+import { Select, TextArea, TextInput } from '@black-pear-joggers/form-controls';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
-import {
-  Select,
-  TextArea,
-  TextInput,
-} from '@black-pear-joggers/form-controls';
+import { useRouter } from 'next/router';
 
 interface FormData {
   name: string;
@@ -21,6 +18,25 @@ export function ContactPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const router = useRouter();
+  const { reason } = router.query;
+  const sendMessageStack = useRef(null);
+
+  const contactReasons = {
+    membership: 'Joining / Membership enquiry',
+    news: 'Send news / race report',
+    website: 'Problem with the website',
+    social: 'Social event enquiry',
+    croome: 'Race: Croome Capability Canter',
+    wildone: 'Race: The Wild One',
+    festivalrun: 'Race: Worcester Festival Run',
+    kit: 'Kit enquiry',
+    welfare: 'Welfare',
+    mentalhealth: 'Mental Health',
+    clubstandards: 'Club Standards Awards',
+    crosscountry: 'Cross Country',
+    other: 'Other',
+  };
 
   const {
     getValues,
@@ -29,6 +45,19 @@ export function ContactPage() {
     register,
     handleSubmit,
   } = useForm<FormData>();
+
+  useEffect(() => {
+    if (reason) {
+      setValue('reason', contactReasons[reason.toString()]);
+      setTimeout(
+        () =>
+          sendMessageStack.current.scrollIntoView({
+            behavior: 'smooth',
+          }),
+        1000
+      );
+    }
+  }, [reason]);
 
   function submitEnquiry(formData: FormData) {
     setIsLoading(true);
@@ -83,6 +112,8 @@ export function ContactPage() {
 
       <Stack backgroundColour={BackgroundColour.Dark}>
         <Container>
+          <h2 ref={sendMessageStack}>Send a message</h2>
+
           <form className="w-full max-w-lg" data-netlify="true" id="contact">
             {isSuccess ? (
               <p className="bg-green-300 px-6 py-4 text-black">
@@ -97,6 +128,20 @@ export function ContactPage() {
             ) : null}
 
             <input type="hidden" name="form-name" value="contact" />
+
+            <div className="flex flex-wrap -mx-3 mb-6">
+              <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
+                <Select
+                  id="reason"
+                  label="Reason for contacting"
+                  labelHidden={true}
+                  options={Object.values(contactReasons)}
+                  registerField={register('reason', {
+                    required: true,
+                  })}
+                />
+              </div>
+            </div>
 
             <div className="flex flex-wrap -mx-3 mb-6">
               <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
@@ -127,34 +172,6 @@ export function ContactPage() {
                     required: true,
                     pattern:
                       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                  })}
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-wrap -mx-3 mb-6">
-              <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
-                <Select
-                  id="reason"
-                  label="Reason for contacting"
-                  labelHidden={true}
-                  options={[
-                    'Joining / Membership enquiry',
-                    'Send news / race report',
-                    'Problem with the website',
-                    'Social event enquiry',
-                    'Race: Croome Capability Canter',
-                    'Race: The Wild One',
-                    'Race: Worcester Festival Run',
-                    'Kit enquiry',
-                    'Welfare',
-                    'Mental Health',
-                    'Club Standards Awards',
-                    'Cross Country',
-                    'Other',
-                  ]}
-                  registerField={register('reason', {
-                    required: true,
                   })}
                 />
               </div>
