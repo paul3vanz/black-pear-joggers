@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { Container } from '@black-pear-joggers/container';
+import { getAllClubRuns } from '../core/queries/get-all-club-runs';
 import { getAllRoutes } from '../core/queries/get-all-routes';
 import { getRouteBySlug } from '../core/queries/get-route-by-slug';
 import { PageBuilder } from '../components/page-builder';
@@ -21,7 +22,7 @@ export default function Page(
       <Head>
         <title>{props.route.page.title} | Black Pear Joggers</title>
       </Head>
-      <PageBuilder content={props.route.page.content} />
+      <PageBuilder content={props.route.page.content} runs={props.runs} />
     </>
   ) : (
     <Stack>
@@ -49,10 +50,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   const slug = context.params['slug'] as string[];
   const route = await getRouteBySlug(slug.join('/'));
+  const runs = await getAllClubRuns();
 
   return {
     props: {
       route,
+      runs,
     },
     revalidate: 3600,
   };

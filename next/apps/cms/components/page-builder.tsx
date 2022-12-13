@@ -3,6 +3,8 @@ import { Card } from './card';
 import { Cards } from './cards';
 import { ChampionsLeagueFixtures } from './champions-league/champions-league-fixtures';
 import { ChampionsLeagueResultsTables } from './champions-league/champions-league-results-tables';
+import { ClubRun } from '../types/club-run.types';
+import { ClubRunsOverview } from './club-runs/club-runs-overview';
 import { Container } from '@black-pear-joggers/container';
 import { ContentItem, UiComponent } from '../types/content.types';
 import { CtaPlug } from './cta-plug';
@@ -10,7 +12,6 @@ import { FeatureList } from './feature-list';
 import { Hero } from './hero';
 import { Illustration } from './illustration';
 import { InfoRows } from './info-rows';
-import { LazyLoadImage } from '@black-pear-joggers/lazy-load-image';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../core/portable-text/portable-text-components';
 import { Post } from '../types';
@@ -24,6 +25,7 @@ import { urlFor } from '@black-pear-joggers/sanity';
 export interface PageBuilderProps {
   content: ContentItem[];
   posts?: Post[];
+  runs?: ClubRun[];
 }
 
 export function PageBuilder(props: PageBuilderProps): ReactElement {
@@ -99,6 +101,8 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
                 return <ChampionsLeagueFixtures key={contentItem._key} />;
               case 'ChampionsLeagueResultsTables':
                 return <ChampionsLeagueResultsTables key={contentItem._key} />;
+              case 'ClubRunsOverview':
+                return <ClubRunsOverview runs={props.runs} />;
               case 'RecentPersonalBests':
                 return <RecentPersonalBests key={contentItem._key} />;
               case 'RecentNews':

@@ -1,6 +1,7 @@
 import { BackgroundColour } from '@black-pear-joggers/stack';
 import { PortableTextBlock } from '@portabletext/types';
 import { SanityImageAsset } from 'libs/sanity/src/lib/schema';
+import { Slug } from './slug.types';
 
 interface BaseType {
     _key: string;
