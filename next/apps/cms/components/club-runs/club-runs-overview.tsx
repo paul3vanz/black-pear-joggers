@@ -13,7 +13,7 @@ export function ClubRunsOverview(props: ClubRunsOverviewProps) {
   return (
     <Stack backgroundColour={BackgroundColour.Bright}>
       <Container wide={true}>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {props.runs.sort(sortByDayOfWeek).map((run) => {
             return (
               <div key={run._id} className="flex">
