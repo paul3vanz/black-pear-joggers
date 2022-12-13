@@ -1,7 +1,9 @@
 import RegisterForm from '../components/register-form';
-import { Athlete } from '@black-pear-joggers/core-services';
+import { Athlete, useUser } from '@black-pear-joggers/core-services';
+import { Button } from '@black-pear-joggers/button';
 import { ConfirmDetails } from '../components/confirm-details';
 import { Container } from '@black-pear-joggers/container';
+import { LoadingSpinner } from '../components/loading-spinner';
 import { NotFound } from '../components/not-found';
 import { scrollIntoView } from '@black-pear-joggers/helpers';
 import { setAthlete } from '@black-pear-joggers/core-services';
@@ -21,6 +23,8 @@ function AdminHomePage() {
   const [currentStep, setCurrentStep] = useState<string>();
   const [idvDetails, setIdvDetails] = useState<IdvDetails>();
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+
+  const { user, isUserLoading } = useUser();
 
   const steps = {
     form: useRef<HTMLDivElement>(),
@@ -57,6 +61,49 @@ function AdminHomePage() {
     } else {
       alert('There was an error.');
     }
+  }
+
+  if (isUserLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (user?.athleteId) {
+    return (
+      <Stack>
+        <Container>
+          <h1>Already registered</h1>
+
+          <p>
+            You've already linked your membership details to your account. If
+            you'd like to update your details, please{' '}
+            <a href="https://bpj.org.uk/contact?reason=website">contact us</a>.
+          </p>
+
+          <h2>Your details</h2>
+
+          <ul className="mb-6 list-inside list-disc">
+            <li>
+              <strong>First name:</strong> {user.athlete.first_name}
+            </li>
+            <li>
+              <strong>Last name:</strong> {user.athlete.last_name}
+            </li>
+            <li>
+              <strong>Gender:</strong>{' '}
+              {user.athlete.gender === 'M' ? 'Male' : 'Female'}
+            </li>
+            <li>
+              <strong>Category:</strong> {user.athlete.category}
+            </li>
+            <li>
+              <strong>Athlete ID:</strong> {user.athlete.athlete_id}
+            </li>
+          </ul>
+
+          <Button text="Go to dashboard" link="https://bpj.org.uk/profile" />
+        </Container>
+      </Stack>
+    );
   }
 
   return (

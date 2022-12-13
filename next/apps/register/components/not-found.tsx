@@ -19,8 +19,10 @@ export function NotFound(props: NotFoundProps) {
         </p>
         <p>
           If in doubt,{' '}
-          <Link href="https://bpj.org.uk/contact">get in touch</Link> and
-          we&rsquo;ll look into it.
+          <Link href="https://bpj.org.uk/contact?reason=website">
+            get in touch
+          </Link>{' '}
+          and we&rsquo;ll look into it.
         </p>
 
         <Button text="Back" onClick={props.onGoBack} />

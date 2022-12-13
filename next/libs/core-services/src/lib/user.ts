@@ -6,8 +6,8 @@ import { User } from './user.interface';
 
 export const userUrl = `${config.baseApiUrl}/user`;
 
-export function useUser() {
-    const { data, error, isValidating } = useSWRImmutable<User, string>(userUrl, fetcher);
+export function useUser(shouldFetch = true) {
+    const { data, error, isValidating } = useSWRImmutable<User, string>(shouldFetch ? userUrl : null, fetcher);
 
     return {
         user: data,
@@ -17,5 +17,5 @@ export function useUser() {
 };
 
 export function setAthlete(athleteId: number): Promise<Response> {
-    return post(`${config.baseApiUrl}/user`, {athleteId}, 'PUT');
+    return post(`${config.baseApiUrl}/user`, { athleteId }, 'PUT');
 }

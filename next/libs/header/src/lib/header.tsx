@@ -5,6 +5,7 @@ import { NavigationLinkItem, navigationLinks } from '../constants/navigation';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useUser } from '@black-pear-joggers/core-services';
 
 const NavigationLink = (props: { link: string; text: string }) => (
   <a
@@ -135,6 +136,7 @@ export const Header = () => {
   const { user, loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
+  const { user: userProfile } = useUser(isAuthenticated);
 
   return (
     <nav className="bg-gray-900">
@@ -159,12 +161,27 @@ export const Header = () => {
 
           <li className="flex lg:ml-4 justify-center mt-3 lg:mt-0">
             {isAuthenticated ? (
-              <button onClick={() => router.push('/profile')}>
+              <button
+                onClick={() => {
+                  window.location.href = `${window.location.origin}/${
+                    userProfile ? 'dashboard' : 'register'
+                  }`;
+                }}
+              >
                 {user?.picture ? (
                   <>
                     <img
                       src={user?.picture}
-                      alt={user && user.name}
+                      alt={
+                        userProfile
+                          ? `${userProfile.athlete.first_name} ${userProfile.athlete.last_name}`
+                          : user && user.name
+                      }
+                      title={
+                        userProfile
+                          ? `${userProfile.athlete.first_name} ${userProfile.athlete.last_name}`
+                          : user && user.name
+                      }
                       className="w-8 rounded-full"
                     />
                   </>
