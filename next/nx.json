@@ -29,7 +29,11 @@
   },
   "targetDefaults": {
     "build": {
-      "inputs": [{ "env": "CMS_CONTENT_VERSION" }]
+      "inputs": [
+        {
+          "env": "CMS_CONTENT_VERSION"
+        }
+      ]
     }
   },
   "projects": {
@@ -96,6 +100,9 @@
       "implicitDependencies": ["kit"]
     },
     "lazy-load-image": {
+      "tags": []
+    },
+    "profile": {
       "tags": []
     },
     "register": {

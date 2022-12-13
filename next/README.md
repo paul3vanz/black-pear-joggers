@@ -51,13 +51,16 @@ Below are our core plugins:
 
 There are also many [community plugins](https://nx.dev/community) you could add.
 
-## Generate an application
+## Generate a new Next.js application
 
-Run `nx g @nrwl/react:app my-app` to generate an application.
+Run `npx nx generate @nrwl/next:application app --e2eTestRunner=none` to generate an application (substitute app for your app name).
 
-> You can use any of the plugins above to generate applications as well.
+Manual steps to set up standard header, etc...
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+- Copy and paste a `_document.tsx` file from another app to this one
+- Copy and paste a `_app.tsx` file from another app to this one
+- Copy and paste a `styles.css` file from another app to this one
+- Copy and paste a `next.config.js` file from another app to this one and change the app name in `basePath`
 
 ## Generate a library
 
