@@ -100,7 +100,7 @@ function AdminHomePage() {
             </li>
           </ul>
 
-          <Button text="Go to dashboard" link="https://bpj.org.uk/profile" />
+          <Button text="Go to profile" link="https://bpj.org.uk/profile" />
         </Container>
       </Stack>
     );

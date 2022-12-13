@@ -164,7 +164,7 @@ export const Header = () => {
               <button
                 onClick={() => {
                   window.location.href = `${window.location.origin}/${
-                    userProfile ? 'dashboard' : 'register'
+                    userProfile ? 'profile' : 'register'
                   }`;
                 }}
               >
