@@ -19,14 +19,14 @@ export const LazyLoadImage = (
     >
       {loading ? (
         <FontAwesomeIcon
-          className="animate-spin text-primary-400 my-4"
+          className="animate-spin text-primary-400 my-4 w-8 h-8"
           size="2x"
           icon={faCircleNotch}
         ></FontAwesomeIcon>
       ) : null}
 
-      <LazyLoad offset={100} onContentVisible={() => setLoading(false)}>
-        {props.children}
+      <LazyLoad offset={100} onContentVisible={() => setLoading(true)}>
+        <span></span>
       </LazyLoad>
     </div>
   );

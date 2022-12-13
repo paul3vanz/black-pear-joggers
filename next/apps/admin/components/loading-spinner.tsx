@@ -9,7 +9,7 @@ export function LoadingSpinner(props: LoadingSpinnerProps) {
   return (
     <div className="text-xl flex">
       <FontAwesomeIcon
-        className="animate-spin text-primary-400"
+        className="animate-spin text-primary-400 w-8 h-8"
         size="lg"
         icon={faCircleNotch}
       ></FontAwesomeIcon>
