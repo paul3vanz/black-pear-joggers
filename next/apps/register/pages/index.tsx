@@ -74,8 +74,8 @@ function AdminHomePage() {
           <h1>Already registered</h1>
 
           <p>
-            You've already linked your membership details to your account. If
-            you'd like to update your details, please{' '}
+            You&rsquo;ve already linked your membership details to your account. If
+            you&rsquo;d like to update your details, please{' '}
             <a href="https://bpj.org.uk/contact?reason=website">contact us</a>.
           </p>
 
