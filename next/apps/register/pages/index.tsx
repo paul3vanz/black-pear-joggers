@@ -24,7 +24,7 @@ function AdminHomePage() {
   const [idvDetails, setIdvDetails] = useState<IdvDetails>();
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  const { user, isUserLoading } = useUser();
+  const { user, isLoading: isUserLoading } = useUser();
 
   const steps = {
     form: useRef<HTMLDivElement>(),
