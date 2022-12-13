@@ -29,8 +29,8 @@ export const navigationLinks: NavigationLinkItem[] = [
             { link: 'https://bpj.org.uk/leagues/cross-country', text: 'Cross country' },
             { link: 'https://apps.bpj.org.uk/magic-mile', text: 'Magic mile' },
             { link: 'https://bpj.org.uk/leagues/parkrun-tours', text: 'parkrun tours' },
-            { link: 'https://apps.bpj.org.uk/club-records', text: 'Club Records' },
-            { link: 'https://apps.bpj.org.uk/race-results', text: 'Race Results' },
+            { link: 'https://apps.bpj.org.uk/club-records', text: 'Club records' },
+            { link: 'https://apps.bpj.org.uk/race-results', text: 'Race results' },
         ],
     },
     {
