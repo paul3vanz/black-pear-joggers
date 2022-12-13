@@ -114,7 +114,7 @@ export function ContactPage() {
         <Container>
           <h2 ref={sendMessageStack}>Send a message</h2>
 
-          <form className="w-full max-w-lg" data-netlify="true" id="contact">
+          <form className="w-full max-w-xl" id="contact">
             {isSuccess ? (
               <p className="bg-green-300 px-6 py-4 text-black">
                 Your message was sent successfully.

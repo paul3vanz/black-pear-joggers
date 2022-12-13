@@ -57,14 +57,6 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
       </main>
 
       <Footer />
-
-      <form data-netlify="true">
-        <input type="hidden" name="form-name" value="contact" />
-        <input type="hidden" name="name" />
-        <input type="hidden" name="email" />
-        <input type="hidden" name="reason" />
-        <input type="hidden" name="message" />
-      </form>
     </div>
   );
 }
