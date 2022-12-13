@@ -40,7 +40,7 @@ const BackToVacanciesPage = () => (
             size="lg"
             icon={faChevronCircleLeft}
           />
-          Back to Vacancies
+          Back to vacancies
         </a>
       </Link>
     </Container>
