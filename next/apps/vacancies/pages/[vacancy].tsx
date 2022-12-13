@@ -113,10 +113,7 @@ export const Vacancy = (props: VacancyProps) => {
 
             <PortableText value={activeVacancy.howToApply} />
 
-            <Button
-              text="Get in touch"
-              link="https://bpj.org.uk/contact-the-club/"
-            />
+            <Button text="Get in touch" link="https://bpj.org.uk/contact" />
           </Container>
         </Stack>
       ) : null}

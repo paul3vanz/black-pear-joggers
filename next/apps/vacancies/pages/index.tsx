@@ -58,8 +58,7 @@ export function VacanciesPage(props: VacanciesPageProps) {
             runs to joining the committee, check out the vacancies below. If
             there&rsquo;s some other way you feel you could help the club that
             isn&rsquo;t listed below, please{' '}
-            <a href="https://bpj.org.uk/contact-the-club/">get in touch</a>{' '}
-            anyway.
+            <a href="https://bpj.org.uk/contact">get in touch</a> anyway.
           </p>
         </Container>
       </Stack>

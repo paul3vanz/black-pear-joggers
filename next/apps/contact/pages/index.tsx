@@ -104,8 +104,8 @@ export function ContactPage() {
 
           <p>
             If you&apos;re interested in joining, find out more about{' '}
-            <a href="https://bpj.org.uk/joining-the-club/">joining us</a>.
-            Otherwise, you can get in touch with the right contact below.
+            <a href="https://bpj.org.uk/membership">joining us</a>. Otherwise,
+            you can get in touch with the right contact below.
           </p>
         </Container>
       </Stack>

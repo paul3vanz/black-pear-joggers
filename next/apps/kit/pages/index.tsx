@@ -26,8 +26,8 @@ export function KitPage(props: KitPageProps) {
 
           <p>
             Once you&apos;ve{' '}
-            <a href="https://bpj.org.uk/joining-the-club/">become a BPJ</a>,
-            look the part with some club kit!
+            <a href="https://bpj.org.uk/membership">become a BPJ</a>, look the
+            part with some club kit!
           </p>
         </Container>
       </Stack>
