@@ -190,7 +190,9 @@ export const Header = () => {
                 )}
               </button>
             ) : (
-              <button onClick={() => router.push('/register')}>
+              <button onClick={() => {
+                  window.location.href = `${window.location.origin}/register`;
+                }}>
                 <UserIcon title="Log in" />
               </button>
             )}
