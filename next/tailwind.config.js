@@ -2,7 +2,7 @@ const colors = require('tailwindcss/colors');
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
-  purge: ['./**/*.html', './**/*.jsx', './**/*.tsx'],
+  content: ['./**/*.html', './**/*.jsx', './**/*.tsx'],
   theme: {
     extend: {
       margin: {
