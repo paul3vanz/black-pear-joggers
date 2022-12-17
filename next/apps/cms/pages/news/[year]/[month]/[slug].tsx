@@ -8,7 +8,6 @@ import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../../../../core/portable-text/portable-text-components';
 import { Stack } from '@black-pear-joggers/stack';
 import { urlFor } from '@black-pear-joggers/sanity';
-import { useRouter } from 'next/router';
 
 export default function NewsPost(
   props: InferGetStaticPropsType<typeof getStaticProps>
@@ -20,9 +19,10 @@ export default function NewsPost(
         publishDate={props.post.publishedAt}
         author={{
           name: props.post.authors[0].author.name,
-          avatarUrl:
-            props.post.authors[0].author.image.externalUrl ||
-            urlFor(props.post.authors[0].author.image).url(),
+          avatarUrl: props.post.authors[0].author.image
+            ? props.post.authors[0].author.image?.externalUrl ||
+              urlFor(props.post.authors[0].author.image).url()
+            : undefined,
         }}
         imageUrl={
           props.post.mainImage
