@@ -12,16 +12,30 @@ import { ServerStyleSheet } from 'styled-components';
 export default class CustomDocument extends Document<{
   styleTags: ReactElement[];
 }> {
-  static getInitialProps({ renderPage }) {
+  static async getInitialProps(context) {
     const sheet = new ServerStyleSheet();
+    const originalRenderPage = context.renderPage;
 
-    const page = renderPage(
-      (App) => (props) => sheet.collectStyles(<App {...props} />)
-    );
+    try {
+      context.renderPage = () =>
+        originalRenderPage({
+          enhanceApp: (App) => (props) =>
+            sheet.collectStyles(<App {...props} />),
+        });
 
-    const styleTags = sheet.getStyleElement();
-
-    return { ...page, styleTags };
+      const initialProps = await Document.getInitialProps(context);
+      return {
+        ...initialProps,
+        styles: (
+          <>
+            {initialProps.styles}
+            {sheet.getStyleElement()}
+          </>
+        ),
+      };
+    } finally {
+      sheet.seal();
+    }
   }
 
   render() {
