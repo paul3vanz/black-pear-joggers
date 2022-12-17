@@ -34,14 +34,12 @@ const BackToVacanciesPage = () => (
   <Stack padding="noBottom">
     <Container>
       <Link href="/">
-        <a>
-          <FontAwesomeIcon
-            className="pr-2"
-            size="lg"
-            icon={faChevronCircleLeft}
-          />
-          Back to vacancies
-        </a>
+        <FontAwesomeIcon
+          className="pr-2"
+          size="lg"
+          icon={faChevronCircleLeft}
+        />
+        Back to vacancies
       </Link>
     </Container>
   </Stack>

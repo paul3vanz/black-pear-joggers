@@ -17,9 +17,7 @@ type KitCategoryProps = {
 const BackToKitPage = () => (
   <Stack padding="noBottom">
     <Container>
-      <Link href="/">
-        <a>&laquo; Back to kit</a>
-      </Link>
+      <Link href="/">&laquo; Back to kit</Link>
     </Container>
   </Stack>
 );
@@ -40,7 +38,9 @@ export const KitCategory = (props: KitCategoryProps) => {
         <ProductStack
           key={product._id}
           product={product}
-          backgroundColour={index % 2 === 0 ? BackgroundColour.White : BackgroundColour.Light}
+          backgroundColour={
+            index % 2 === 0 ? BackgroundColour.White : BackgroundColour.Light
+          }
         />
       ))}
     </>

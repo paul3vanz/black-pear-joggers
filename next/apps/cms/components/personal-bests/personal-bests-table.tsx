@@ -28,9 +28,7 @@ export function PersonalBestsTable() {
               <Link
                 href={`https://apps.bpj.org.uk/race-results/#/athlete/${result.athlete_id}`}
               >
-                <a>
-                  {result.first_name} {result.last_name}
-                </a>
+                {result.first_name} {result.last_name}
               </Link>
               {result.award ? (
                 <span className="ml-1">

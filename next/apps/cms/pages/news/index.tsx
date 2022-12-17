@@ -18,11 +18,8 @@ export default function SiteMap(
 
           <p className="mb-8">
             Stay up to date with important club news and updates.{' '}
-            <Link href="/contact">
-              <a>Let us know</a>
-            </Link>{' '}
-            if you have some news that you&rsquo;d like to share. Also, check
-            out our very active club{' '}
+            <Link href="/contact">Let us know</Link> if you have some news that
+            you&rsquo;d like to share. Also, check out our very active club{' '}
             <a
               href="https://www.facebook.com/groups/blackpearjoggers/"
               target="_blank"

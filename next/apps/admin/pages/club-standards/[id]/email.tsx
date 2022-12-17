@@ -62,14 +62,12 @@ function AwardClaimDetailsPage() {
         <Container>
           <p className="mb-8">
             <Link href={`/club-standards`}>
-              <a>
-                <FontAwesomeIcon
-                  className="pr-2"
-                  size="lg"
-                  icon={faChevronCircleLeft}
-                />
-                Back to claims
-              </a>
+              <FontAwesomeIcon
+                className="pr-2"
+                size="lg"
+                icon={faChevronCircleLeft}
+              />
+              Back to claims
             </Link>
           </p>
 

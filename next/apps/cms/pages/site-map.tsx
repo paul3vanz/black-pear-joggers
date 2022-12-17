@@ -25,7 +25,7 @@ export default function Page(props: Props) {
                 <Link
                   href={page.slug.current === 'home' ? '/' : page.slug.current}
                 >
-                  <a>{page.page.title}</a>
+                  {page.page.title}
                 </Link>
               </li>
             ))}
@@ -37,9 +37,7 @@ export default function Page(props: Props) {
           {props.posts?.map((post) => (
             <li key={post._id}>
               <Link href={newsPostUrl(post.publishedAt, post.slug.current)}>
-                <a>
-                  {shortDate(post.publishedAt)}: {post.title}
-                </a>
+                {shortDate(post.publishedAt)}: {post.title}
               </Link>
             </li>
           ))}

@@ -38,14 +38,12 @@ function MembersPage() {
       <Container>
         <p className="mb-8">
           <Link href={`/clubs`}>
-            <a>
-              <FontAwesomeIcon
-                className="pr-2"
-                size="lg"
-                icon={faChevronCircleLeft}
-              />
-              Back to clubs
-            </a>
+            <FontAwesomeIcon
+              className="pr-2"
+              size="lg"
+              icon={faChevronCircleLeft}
+            />
+            Back to clubs
           </Link>
         </p>
 

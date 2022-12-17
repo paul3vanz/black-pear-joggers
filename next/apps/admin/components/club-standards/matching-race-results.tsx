@@ -75,11 +75,13 @@ export function MatchingRaceResults(props: MatchingRaceResultsProps) {
 
                 <Link
                   href={`https://apps.bpj.org.uk/race-results/#/meeting/${result.date}/${result.meeting_id}`}
+                  className="pl-4"
+                  target="_blank"
                 >
-                  <a className="pl-4" target="_blank">
+                  <>
                     View full results{' '}
                     <FontAwesomeIcon icon={faExternalLinkSquareAlt} />
-                  </a>
+                  </>
                 </Link>
               </li>
             </>

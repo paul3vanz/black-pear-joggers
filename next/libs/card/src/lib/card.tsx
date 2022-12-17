@@ -36,10 +36,8 @@ export const Card = (props: CardProps) => (
     {props.imageUrl && (
       <div>
         {props.link ? (
-          <Link href={props.link}>
-            <a aria-label={props.headline} tabIndex={-1}>
-              <Image src={props.imageUrl} />
-            </a>
+          <Link href={props.link} aria-label={props.headline} tabIndex={-1}>
+            <Image src={props.imageUrl} />
           </Link>
         ) : (
           <Image src={props.imageUrl} />
@@ -51,9 +49,7 @@ export const Card = (props: CardProps) => (
         <>
           {props.headline && (
             <h3 className="mb-2 text-lg sm:text-xl underline">
-              <Link href={props.link}>
-                <a>{props.headline}</a>
-              </Link>
+              <Link href={props.link}>{props.headline}</Link>
             </h3>
           )}
           <div className="copy fade">{props.content && props.content}</div>

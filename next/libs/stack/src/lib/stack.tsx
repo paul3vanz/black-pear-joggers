@@ -10,10 +10,9 @@ export enum BackgroundColour {
   Bright = 'bright',
 }
 
-interface Props extends PropsWithChildren<{}> {
+interface Props {
   backgroundColour?: BackgroundColour;
   backgroundImage?: string;
-  children: any;
   heading?: string;
   padding?: string;
 }
@@ -43,7 +42,7 @@ export function Section(props: Props) {
   );
 }
 
-export const Stack = (props: Props) => (
+export const Stack = (props: PropsWithChildren<Props>) => (
   <>
     <Section backgroundColour={props.backgroundColour} padding={props.padding}>
       {props.backgroundImage && (

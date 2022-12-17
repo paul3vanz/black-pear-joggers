@@ -114,15 +114,13 @@ const MobileMenu = (props: MobileMenuProps) => (
 
 const Logo = () => (
   <Link href="https://bpj.org.uk">
-    <a>
-      <img
-        className="h-8 sm:h-12 w-auto my-4"
-        src="https://bpj.org.uk/download-logo/bpj-logo-alt.svg"
-        alt="Black Pear Joggers Logo"
-        width="190"
-        height="54"
-      />
-    </a>
+    <img
+      className="h-8 sm:h-12 w-auto my-4"
+      src="https://bpj.org.uk/download-logo/bpj-logo-alt.svg"
+      alt="Black Pear Joggers Logo"
+      width="190"
+      height="54"
+    />
   </Link>
 );
 
@@ -190,9 +188,11 @@ export const Header = () => {
                 )}
               </button>
             ) : (
-              <button onClick={() => {
+              <button
+                onClick={() => {
                   window.location.href = `${window.location.origin}/register`;
-                }}>
+                }}
+              >
                 <UserIcon title="Log in" />
               </button>
             )}

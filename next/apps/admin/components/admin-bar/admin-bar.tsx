@@ -10,9 +10,7 @@ interface MenuItemProps {
 function MenuItem(props: MenuItemProps) {
   return (
     <li className="mr-4">
-      <Link href={props.link}>
-        <a>{props.title}</a>
-      </Link>
+      <Link href={props.link}>{props.title}</Link>
     </li>
   );
 }

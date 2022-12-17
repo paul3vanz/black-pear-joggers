@@ -9,8 +9,8 @@ interface FooterLinkProps {
 function FooterLink({ link, text }: FooterLinkProps) {
   return (
     <li>
-      <Link href={link}>
-        <a className="md:mx-3 no-underline hover:underline">{text}</a>
+      <Link href={link} className="md:mx-3 no-underline hover:underline">
+        {text}
       </Link>
     </li>
   );
