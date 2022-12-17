@@ -17,7 +17,7 @@ interface Props {
   padding?: string;
 }
 
-export function Section(props: Props) {
+export function Section(props: PropsWithChildren<Props>) {
   return (
     <section
       className={classNames(
@@ -47,13 +47,11 @@ export const Stack = (props: PropsWithChildren<Props>) => (
     <Section backgroundColour={props.backgroundColour} padding={props.padding}>
       {props.backgroundImage && (
         <div className="absolute z-10 top-0 bottom-0 w-full overflow-hidden pointer-events-none">
-          {/* <LazyLoad> */}
           <img
             className="w-full h-full object-cover object-center"
             src={props.backgroundImage}
             alt=""
           />
-          {/* </LazyLoad> */}
         </div>
       )}
       <div className="relative z-20">
@@ -67,10 +65,5 @@ export const Stack = (props: PropsWithChildren<Props>) => (
         {props.children}
       </div>
     </Section>
-    {/* <style jsx>{`
-      .image img {
-        mix-blend-mode: multiply;
-      }
-    `}</style> */}
   </>
 );
