@@ -1,10 +1,11 @@
-module.exports = {
-  displayName: 'cms',
+/* eslint-disable */
+export default {
+  displayName: 'contact',
   preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nrwl/react/plugins/jest',
     '^.+\\.[tj]sx?$': 'babel-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/apps/cms',
+  coverageDirectory: '../../coverage/apps/contact',
 };

@@ -1,10 +1,11 @@
-module.exports = {
-  displayName: 'claim-award',
+/* eslint-disable */
+export default {
+  displayName: 'cms',
   preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nrwl/react/plugins/jest',
     '^.+\\.[tj]sx?$': 'babel-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/apps/claim-award',
+  coverageDirectory: '../../coverage/apps/cms',
 };
