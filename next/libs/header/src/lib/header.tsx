@@ -2,8 +2,13 @@ import Link from 'next/link';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavigationLinkItem, navigationLinks } from '../constants/navigation';
+import {
+    RefObject,
+    useEffect,
+    useRef,
+    useState
+    } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useUser } from '@black-pear-joggers/core-services';
 
@@ -25,33 +30,16 @@ const SubmenuNavigationLink = (props: { link: string; text: string }) => (
   </a>
 );
 
-const NavigationItem = (props: { item: NavigationLinkItem }) => {
-  const [active, setActive] = useState(false);
-
-  const handleClick = (e: MouseEvent) => {
-    setActive(false);
-  };
-
-  useEffect(() => {
-    if (!active) {
-      return;
-    }
-
-    document.addEventListener('click', handleClick);
-
-    return () => {
-      document.removeEventListener('click', handleClick);
-    };
-  }, [handleClick, active]);
-
+const NavigationItem = (props: {
+  item: NavigationLinkItem;
+  active: boolean;
+  onClick: (e: any) => void;
+}) => {
   return (
-    <li
-      className="relative text-center lg:text-left"
-      onClick={() => setActive(!active)}
-    >
+    <li className="relative text-center lg:text-left" onClick={props.onClick}>
       <NavigationLink link={props.item.link} text={props.item.text} />
 
-      {props.item.items && active && (
+      {props.item.items && props.active && (
         <ul className="bg-gray-900 rounded-sm lg:absolute z-30 w-64 top-8 py-2">
           {props.item.items.map((item, index) => (
             <li key={index}>
@@ -133,8 +121,25 @@ function UserIcon(props: { title?: string }) {
 export const Header = () => {
   const { user, loginWithRedirect, logout, isAuthenticated } = useAuth0();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [active, setActive] = useState<number>();
   const router = useRouter();
   const { user: userProfile } = useUser(isAuthenticated);
+  const menu = useRef<HTMLUListElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menu.current && !menu.current.contains(event.target as Node)) {
+      setActive(undefined);
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [handleClickOutside, active]);
 
   return (
     <nav className="bg-gray-900">
@@ -148,13 +153,23 @@ export const Header = () => {
         </div>
 
         <ul
+          ref={menu}
           className={[
             !menuOpen && 'hidden',
             'lg:flex flex-shrink flex-col lg:flex-row lg:ml-6 items-center mb-4 lg:mb-0',
           ].join(' ')}
         >
           {navigationLinks.map((item, index) => (
-            <NavigationItem key={index} item={item}></NavigationItem>
+            <NavigationItem
+              key={index}
+              item={item}
+              active={active === index}
+              onClick={(e) => {
+                console.log(e);
+
+                setActive(index);
+              }}
+            ></NavigationItem>
           ))}
 
           <li className="flex lg:ml-4 justify-center mt-3 lg:mt-0">
