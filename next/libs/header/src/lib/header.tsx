@@ -165,8 +165,6 @@ export const Header = () => {
               item={item}
               active={active === index}
               onClick={(e) => {
-                console.log(e);
-
                 setActive(index);
               }}
             ></NavigationItem>
