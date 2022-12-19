@@ -29,6 +29,7 @@ routes = [
   "bpj.org.uk/clubmark*",
   "bpj.org.uk/contact*",
   "bpj.org.uk/vacancies*",
+  "bpj.org.uk/logo*",
   "bpj.org.uk/magic-mile*",
   "bpj.org.uk/race-results*",
   "bpj.org.uk/club-records*",
