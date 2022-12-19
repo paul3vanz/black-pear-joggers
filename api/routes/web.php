@@ -59,6 +59,7 @@ $router->get('/registrations/queue', 'RegistrationController@queueAllRegistratio
 $router->get('/registrations/createregistrationsfrommemberships', 'RegistrationController@createRegistrationsFromMemberships');
 
 $router->get('/magicmile', 'MagicMileController@getAllLegacy');
+$router->get('/magicmile/syncmagicmile', 'MagicMileController@syncMagicMileResults');
 
 $router->group([
     'middleware' => 'auth',
@@ -71,21 +72,26 @@ $router->group([
 $router->get('/members/totals', 'AthleteController@getMembershipTotals');
 $router->get('/members/leaguemembers', 'MembershipController@getRegisteredMembers');
 
-$router->get('/parkrunalphabet', 'PerformanceController@getParkrunAlphabet');
+$router->get('/parkrunalphabet', 'ParkrunController@getParkrunAlphabet'); // Deprecated
+$router->get('/parkruntourists', 'ParkrunController@getParkrunTourists'); // Deprecated
 
-$router->get('/parkruntourists', 'PerformanceController@getParkrunTourists');
+$router->group(['prefix' => 'parkrun'], function ($router) {
+    $router->get('alphabet', 'ParkrunController@getParkrunAlphabet');
+    $router->get('tourists', 'ParkrunController@getParkrunTourists');
+});
 
 $router->get('/performances', 'PerformanceController@getPerformanceSummaries');
 $router->get('/performances/{date}/{meeting}', 'PerformanceController@getPerformancesByMeeting');
-$router->get('/performances/syncmagicmile', 'PerformanceController@syncMagicMileResults');
 
 $router->get('/performancesindividual', 'PerformanceController@getPerformancesIndividual');
 
 $router->get('/rankings/{athleteId}', 'RankingController@getRankingsByAthlete');
 $router->get('/rankings/{athleteId}/{year}', 'RankingController@getRankingsByAthlete');
 
-$router->get('/records', 'PerformanceController@getRecords');
-$router->post('/records/query', 'PerformanceController@queryRecord');
+$router->group(['prefix' => 'records'], function ($router) {
+    $router->get('', 'RecordsController@getRecords');
+    $router->post('query', 'RecordsController@queryRecord');
+});
 
 $router->get('/standards', 'StandardController@getStandards');
 $router->get('/standards/{gender}', 'StandardController@getStandardsByGender');
