@@ -8,6 +8,10 @@ export enum BackgroundColour {
   Dark = 'dark',
   Light = 'light',
   Bright = 'bright',
+  Success = 'success',
+  Info = 'info',
+  Warning = 'warning',
+  Error = 'error',
 }
 
 interface Props {
@@ -27,6 +31,10 @@ export function Section(props: PropsWithChildren<Props>) {
           [BackgroundColour.Dark]: 'bg-gray-900 text-white',
           [BackgroundColour.Bright]: 'bg-primary',
           [BackgroundColour.Light]: 'bg-gray-100',
+          [BackgroundColour.Success]: 'bg-teal-100',
+          [BackgroundColour.Info]: 'bg-yellow-100',
+          [BackgroundColour.Warning]: 'bg-orange-100',
+          [BackgroundColour.Error]: 'bg-red-100',
           default: 'bg-white',
         }),
         mapClassNames(props.padding, {

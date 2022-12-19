@@ -1,3 +1,4 @@
+import { Alert } from './alert';
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Card } from './card';
 import { Cards } from './cards';
@@ -47,6 +48,8 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
             return <Hero key={contentItem._key} hero={contentItem} />;
           case 'steps':
             return <Steps key={contentItem._key} steps={contentItem} />;
+          case 'alert':
+            return <Alert key={contentItem._key} alert={contentItem} />;
           case 'illustration':
             return (
               <Illustration key={contentItem._key} illustration={contentItem} />

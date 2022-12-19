@@ -11,6 +11,7 @@ export { default as twoColumn } from './twoColumn';
 export { default as featureList } from './featureList';
 export { default as quote } from './quote';
 export { default as cards } from './cards';
+export { default as alert } from './alert';
 
 /*
 export { default as cta } from './cta'

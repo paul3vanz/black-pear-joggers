@@ -50,6 +50,7 @@ export interface Illustration extends BaseType {
 export interface Image {
     _type: 'mainImage',
     alt: string;
+    caption?: string;
     externalUrl?: string;
     asset?: SanityImageAsset;
 
@@ -112,4 +113,11 @@ export interface Step {
     content: PortableTextBlock[];
 }
 
-export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards | Hero | UiComponent | Steps;
+export interface Alert extends BaseType {
+    _type: 'alert';
+    title: string;
+    content: PortableTextBlock[];
+    type: 'success' | 'info' | 'warning' | 'error';
+}
+
+export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards | Hero | UiComponent | Steps | Alert;
