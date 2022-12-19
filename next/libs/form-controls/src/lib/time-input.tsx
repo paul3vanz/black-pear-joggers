@@ -31,7 +31,6 @@ export function TimeInput(props: TimeInputProps): JSX.Element {
   });
 
   useEffect(() => {
-    console.log('watchTime effected');
     if (!watchTime) {
       return;
     }

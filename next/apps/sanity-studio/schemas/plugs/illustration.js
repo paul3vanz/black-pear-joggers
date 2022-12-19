@@ -29,7 +29,6 @@ export default {
       let media = imageArray[0];
 
       if (!imageArray.length) {
-        console.log('no image');
         return { title: 'Illustration with no image' };
       }
       return {

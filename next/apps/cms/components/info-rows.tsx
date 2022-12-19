@@ -28,8 +28,6 @@ export function InfoRowText(props) {
 }
 
 export function InfoRow(props: InfoRowProps) {
-  console.log('props.row.illustration', props.row.illustration);
-
   const illustrations = props.row.illustration
     ? props.row.illustration.image
       ? [props.row.illustration.image]
