@@ -28,6 +28,14 @@ export function InfoRowText(props) {
 }
 
 export function InfoRow(props: InfoRowProps) {
+  console.log('props.row.illustration', props.row.illustration);
+
+  const illustrations = props.row.illustration
+    ? props.row.illustration.image
+      ? [props.row.illustration.image]
+      : props.row.illustration.images
+    : null;
+
   return (
     <Stack
       backgroundColour={
@@ -57,25 +65,33 @@ export function InfoRow(props: InfoRowProps) {
               </div>
             </div>
 
-            <LazyLoadImage
-              className={classNames(
-                'md:flex-1 mb-12 md:mb-0',
-                props.row.cropToFit && 'h-56 xs:h-64 sm:h-96'
-              )}
-            >
-              <img
-                src={
-                  props.row.illustration.image.externalUrl ||
-                  urlFor(props.row.illustration.image).url()
-                }
-                alt={props.row.illustration.image.alt}
+            {illustrations.map((illustration) => (
+              <div
                 className={classNames(
-                  'w-full rounded-sm',
-                  props.row.cropToFit &&
-                    'h-56 xs:h-64 sm:h-96 object-cover object-center'
+                  'md:flex-1 mb-12 md:mb-0',
+                  props.row.cropToFit && 'h-56 xs:h-64 sm:h-96'
                 )}
-              />
-            </LazyLoadImage>
+              >
+                <LazyLoadImage
+                  key={illustration.externalUrl || illustration.asset._id}
+                >
+                  <img
+                    src={illustration.externalUrl || urlFor(illustration).url()}
+                    alt={illustration.alt}
+                    className={classNames(
+                      'w-full rounded-sm',
+                      props.row.cropToFit &&
+                        'h-56 xs:h-64 sm:h-96 object-cover object-center'
+                    )}
+                  />
+                </LazyLoadImage>
+                {illustration.caption ? (
+                  <div className="mt-2 text-center text-sm italic">
+                    {illustration.caption}
+                  </div>
+                ) : null}
+              </div>
+            ))}
           </div>
         </Container>
       ) : (
