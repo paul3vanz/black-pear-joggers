@@ -6,10 +6,14 @@ export const portableTextComponents: PortableTextComponents = {
     bullet: ({ children }) => (
       <ul className="list-disc pl-5 mb-4">{children}</ul>
     ),
+    number: ({ children }) => (
+      <ol className="list-decimal pl-5 mb-4">{children}</ol>
+    ),
   },
   listItem: {
     // eslint-disable-next-line react/display-name
     bullet: ({ children }) => <li className="mb-2">{children}</li>,
+    number: ({ children }) => <li className="mb-2">{children}</li>,
   },
 };
 
