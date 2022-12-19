@@ -8,7 +8,13 @@ export default {
   fields: [
     {
       type: 'string',
+      name: 'label',
+      description: 'Not displayed, used for reference',
+    },
+    {
+      type: 'string',
       name: 'title',
+      description: 'Visible title of the section (shown as a <h2>)',
     },
     {
       type: 'simpleBlockContent',
@@ -45,4 +51,15 @@ export default {
       },
     },
   ],
+  preview: {
+    select: {
+      label: 'label',
+      title: 'title',
+    },
+    prepare({ label, title }) {
+      return {
+        title: label || title,
+      };
+    },
+  },
 };

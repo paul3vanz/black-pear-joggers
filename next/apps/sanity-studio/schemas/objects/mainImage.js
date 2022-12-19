@@ -38,7 +38,15 @@ export default {
   preview: {
     select: {
       imageUrl: 'asset.url',
-      title: 'caption',
+      externalUrl: 'externalUrl',
+      caption: 'caption',
+      alt: 'alt',
+    },
+    prepare({ imageUrl, caption, alt }) {
+      return {
+        title: caption || alt,
+        imageUrl: imageUrl || externalUrl,
+      };
     },
   },
 };

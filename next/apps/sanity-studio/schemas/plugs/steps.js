@@ -50,5 +50,10 @@ export default {
     select: {
       title: 'title',
     },
+    prepare({ title }) {
+      return {
+        title: `Steps: ${title || 'Title not set'}`,
+      };
+    },
   },
 };

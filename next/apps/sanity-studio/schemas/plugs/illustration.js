@@ -17,17 +17,25 @@ export default {
   preview: {
     select: {
       image: 'image',
+      images: 'images',
     },
-    prepare({ image }) {
-      if (!image) {
+    prepare({ image, images }) {
+      const imageArray = images ? images : [image];
+      let subtitle = imageArray
+        .map(
+          (image) => image.caption || image.alt || 'Missing capton or alt text'
+        )
+        .join(', ');
+      let media = imageArray[0];
+
+      if (!imageArray.length) {
+        console.log('no image');
         return { title: 'Illustration with no image' };
       }
       return {
-        title: `Illustration`,
-        subtitle: `${
-          image.caption || image.alt || 'Missing capton or alt text'
-        } | Size: ${image.size || 'default'}`,
-        media: image,
+        title: `Illustration: ${imageArray.length} images`,
+        subtitle,
+        media,
       };
     },
   },

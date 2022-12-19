@@ -5,12 +5,26 @@ export default {
   fields: [
     {
       type: 'string',
-      name: 'title'
+      name: 'title',
     },
     {
       type: 'array',
       name: 'rows',
-      of: [{ type: 'textWithIllustration' }]
-    }
-  ]
-}
+      of: [{ type: 'textWithIllustration' }],
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      rows: 'rows',
+    },
+    prepare({ title, rows }) {
+      return {
+        title: title ? `Info rows: ${title}` : 'Info rows',
+        subtitle: `${rows.length} row${rows.length > 1 ? 's' : ''}: ${rows
+          .map((row) => row.label || row.title || 'No label or title')
+          .join(', ')}`,
+      };
+    },
+  },
+};
