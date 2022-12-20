@@ -37,9 +37,10 @@ export const navigationLinks: NavigationLinkItem[] = [
         link: '#',
         text: 'Our races',
         items: [
-            { link: 'https://bpj.org.uk/our-races/croome-capability-canter', text: 'Croome Capability Canter' },
             { link: 'https://bpj.org.uk/our-races/the-wild-one', text: 'The Wild One' },
             { link: 'https://www.entrycentral.com/worcesterfestivalrun', text: 'Worcester Festival Run' },
+            { link: 'https://bpj.org.uk/our-races/croome-capability-canter', text: 'Croome Capability Canter' },
+            { link: 'https://bpj.org.uk/our-races/croome-by-night', text: 'Croome by Night' },
         ],
     },
 
