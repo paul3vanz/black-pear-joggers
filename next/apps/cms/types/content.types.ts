@@ -113,11 +113,18 @@ export interface Step {
     content: PortableTextBlock[];
 }
 
+export enum AlertTypes {
+    Success = 'success',
+    Info = 'info',
+    Warning = 'warning',
+    Error = 'error'
+}
+
 export interface Alert extends BaseType {
     _type: 'alert';
     title: string;
     content: PortableTextBlock[];
-    type: 'success' | 'info' | 'warning' | 'error';
+    type: AlertTypes;
 }
 
 export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards | Hero | UiComponent | Steps | Alert;
