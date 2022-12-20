@@ -1,4 +1,4 @@
-import { Alert as AlertType } from '../types/content.types';
+import { Alert as AlertType, AlertTypes } from '../types/content.types';
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,7 +21,7 @@ export const Alert = (props: { alert: AlertType }) => (
   >
     <Container>
       <div className="flex">
-        <Icon alert={props.alert} />
+        <Icon type={props.alert.type} />
         <div className="ml-4">
           <h2 className="mb-2">{props.alert.title}</h2>
 
@@ -35,15 +35,15 @@ export const Alert = (props: { alert: AlertType }) => (
   </Stack>
 );
 
-const Icon = (alert: AlertType) => {
-  switch (alert.type) {
-    case 'info':
+const Icon = (props: { type: AlertTypes }) => {
+  switch (props.type) {
+    case AlertTypes.Info:
       return <FontAwesomeIcon size="2x" icon={faExclamationCircle} />;
-    case 'warning':
+    case AlertTypes.Warning:
       return <FontAwesomeIcon size="2x" icon={faExclamationTriangle} />;
-    case 'success':
+    case AlertTypes.Success:
       return <FontAwesomeIcon size="2x" icon={faCheckCircle} />;
-    case 'error':
+    case AlertTypes.Error:
       return <FontAwesomeIcon size="2x" icon={faTimesCircle} />;
     default:
       return <FontAwesomeIcon size="2x" icon={faExclamationCircle} />;
