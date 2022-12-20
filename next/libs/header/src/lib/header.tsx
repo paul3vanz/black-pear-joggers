@@ -5,7 +5,7 @@ import { MobileMenu } from './components/mobile-menu';
 import { NavigationLinkItem, navigationLinks } from '../constants/navigation';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useRef, useState } from 'react';
-import { UserIcon, UserMenu } from './components/user-menu';
+import { UserMenu } from './components/user-menu';
 import { useRouter } from 'next/router';
 import { useUser } from '@black-pear-joggers/core-services';
 import {
