@@ -46,7 +46,11 @@ class FetchRankingsController extends Controller
 
             $addedRankings = $this->parseRankingHistory($athlete, $html);
 
-            Log::channel('slackInfo')->info('Added ' . sizeof($addedRankings));
+            if (isset($addedRankings) && is_array($addedRankings)) {
+              Log::channel('slackInfo')->info('Added ' . sizeof($addedRankings) . ' for athlete ' . $athleteId);
+            } else {
+              Log::channel('slackInfo')->info('Added no rankings for athlete ' . $athleteId);
+            }
         }
 
         return response()->json($addedRankings);
