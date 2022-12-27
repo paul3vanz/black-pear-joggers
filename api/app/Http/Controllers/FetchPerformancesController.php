@@ -106,7 +106,7 @@ class FetchPerformancesController extends Controller
 
     private function createPerformance($performance)
     {
-        $meetingId = Meeting::firstOrCreate(
+        $meeting = Meeting::firstOrCreate(
             [
                 'ukaMeetingId' => $performance['meeting_id'],
                 'event' => $performance['event'],
@@ -123,7 +123,7 @@ class FetchPerformancesController extends Controller
             'category' => $performance['category'],
             'date' => $performance['date'],
             'event' => $performance['event'],
-            'meetingId' => $meetingId,
+            'meetingId' => $meeting['id'],
             'meeting_id' => $performance['meeting_id'],
             'race' => $performance['race'],
             'time_parsed' => $performance['time_parsed'],
