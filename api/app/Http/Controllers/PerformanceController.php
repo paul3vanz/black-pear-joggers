@@ -161,7 +161,7 @@ class PerformanceController extends Controller
 
     public function getPerformance($id)
     {
-        $performance = Performance::query()->find($id);
+        $performance = Performance::query()->find($id)->with('meeting')->with('ukaMeeting');
         return response()->json($performance);
     }
 
