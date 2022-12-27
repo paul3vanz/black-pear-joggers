@@ -6,9 +6,11 @@ use Goutte\Client;
 use App\Jobs\FetchPerformancesJob;
 use App\Jobs\UpdatePersonalBestsJob;
 use App\Models\Athlete;
+use App\Models\Meeting;
 use App\Models\Performance;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Log;
 use DateTime;
 
@@ -104,6 +106,18 @@ class FetchPerformancesController extends Controller
 
     private function createPerformance($performance)
     {
+        $meetingId = Meeting::firstOrCreate(
+            [
+                'ukaMeetingId' => $performance['meeting_id'],
+                'event' => $performance['event'],
+                'name' => $performance['race'],
+                'date' => $performance['date']
+            ],
+            [
+                'id' => Str::uuid(),
+            ]
+        );
+
         return Performance::firstOrCreate([
             'athlete_id' => $performance['athlete_id'],
             'category' => $performance['category'],
@@ -193,7 +207,7 @@ class FetchPerformancesController extends Controller
                 $raceDate = new DateTime($date);
                 $birthDate = new DateTime($athlete->dob);
                 $ageAtRace = $raceDate->diff($birthDate);
-                $currentAgeGroup = $this->ageGroup((int) $ageAtRace->format('%y'));
+                $currentAgeGroup = $this->convertAgeToAgeGroup((int) $ageAtRace->format('%y'));
             }
 
             if (!$timeParsed) {
@@ -226,15 +240,12 @@ class FetchPerformancesController extends Controller
             $timeParsed = ((int) $timeParts[0] * 3600) + ((int) $timeParts[1] * 60) + ((float) $timeParts[2]);
         } else {
             $timeParsed = (float) $time;
-            // Log::channel('slackInfo')->info('Unable to parse time: ' . $time);
-
-            // return false;
         }
 
         return $timeParsed;
     }
 
-    private function ageGroup($age)
+    private function convertAgeToAgeGroup($age)
     {
         if ($age < 20) {
             return 'U20';
