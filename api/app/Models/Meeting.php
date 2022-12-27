@@ -14,6 +14,8 @@ final class Meeting extends Model
         'date',
     ];
 
+    public $incrementing = false;
+
     public function performances()
     {
         return $this->hasMany('App\Models\Performance', 'meeting', 'id');
