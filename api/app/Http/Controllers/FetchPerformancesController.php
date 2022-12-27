@@ -123,6 +123,7 @@ class FetchPerformancesController extends Controller
             'category' => $performance['category'],
             'date' => $performance['date'],
             'event' => $performance['event'],
+            'meetingId' => $meetingId,
             'meeting_id' => $performance['meeting_id'],
             'race' => $performance['race'],
             'time_parsed' => $performance['time_parsed'],
