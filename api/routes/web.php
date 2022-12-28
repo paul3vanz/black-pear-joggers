@@ -69,6 +69,11 @@ $router->group([
     $router->delete('{id}', 'MagicMileController@delete');
 });
 
+$router->group(['prefix' => 'meetings'], function ($router) {
+    $router->get('', 'MeetingController@getMeetings');
+    $router->get('{id}', 'MeetingController@getMeetingById');
+});
+
 $router->get('/members/totals', 'AthleteController@getMembershipTotals');
 $router->get('/members/leaguemembers', 'MembershipController@getRegisteredMembers');
 
