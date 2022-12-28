@@ -1,16 +1,7 @@
 import Link from 'next/link';
-import { AwardClaim, update } from '@black-pear-joggers/core-services';
-import { awards, distances } from '../../helpers/enums';
-import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { friendlyDate } from '@black-pear-joggers/helpers';
 import { LoadingSpinner } from '../loading-spinner';
-import { PaginatedResults } from '../../types/paginated-results';
-import { PerformanceSummary } from '../../types/performance-summary';
-import { Select, TextInput } from '@black-pear-joggers/form-controls';
-import { updateAthlete } from '@black-pear-joggers/core-services';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   faCheckCircle,
   faExternalLinkSquareAlt,
@@ -27,7 +18,6 @@ interface MatchingRaceResultsProps {
 }
 
 function findMatchingRaces(race?: string, date?: string) {
-  console.log('fetching');
   return fetch(
     `https://bpj.org.uk/api/public/index.php/performances?search=${race.substring(
       0,
@@ -37,7 +27,7 @@ function findMatchingRaces(race?: string, date?: string) {
 }
 
 export function MatchingRaceResults(props: MatchingRaceResultsProps) {
-  const { isLoading, error, data, isFetching } = useQuery(
+  const { isLoading, error, data } = useQuery(
     ['races', props.date, props.event],
     () => findMatchingRaces(props.event, props.date)
   );
