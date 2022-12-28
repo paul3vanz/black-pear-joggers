@@ -19,7 +19,7 @@ interface UserMenuProps {
 
 export const UserMenu = (props: UserMenuProps) => {
   const getUserDisplayName = (): string | undefined => {
-    return props.userProfile
+    return props.userProfile?.athlete
       ? `${props.userProfile.athlete.first_name} ${props.userProfile.athlete.last_name}`
       : props.user && props.user.name;
   };

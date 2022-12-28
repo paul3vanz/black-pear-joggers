@@ -1,13 +1,13 @@
 import useSWRImmutable from 'swr';
 import { config } from '../config';
-import { fetcher, post } from './fetcher';
+import { fetcher, fetcherConfig, post } from './fetcher';
 import { User } from './user.interface';
 
 
 export const userUrl = `${config.baseApiUrl}/user`;
 
 export function useUser(shouldFetch = true) {
-    const { data, error, isValidating } = useSWRImmutable<User, string>(shouldFetch ? userUrl : null, fetcher);
+    const { data, error, isValidating } = useSWRImmutable<User, string>(shouldFetch ? userUrl : null, fetcher, fetcherConfig);
 
     return {
         user: data,

@@ -3,12 +3,15 @@ interface HttpError extends Error {
 }
 
 export const fetcherConfig = {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
     onErrorRetry: (error: any) => {
-      if (error.status === 404) {
-          return;
-      }
+        if (error.status === 404) {
+            return;
+        }
     }
-  };
+};
 
 export const fetcher = async (url: string) => {
     const accessToken = localStorage.getItem('bpj.token');
@@ -34,7 +37,7 @@ export function post(url: string, data?: {}, method = 'POST') {
         headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          },
+        },
         body: data && JSON.stringify(data),
     });
 }
