@@ -49,7 +49,11 @@ class AuthServiceProvider extends ServiceProvider
 
                 $tokenVerifier = new Token($configuration, $bearerToken, 2);
 
-                $decoded = $tokenVerifier->verify()->validate()->toArray();
+                try {
+                    $decoded = $tokenVerifier->verify()->validate()->toArray();
+                } catch (\Exception $e) {
+                    return null;
+                }
 
                 return $decoded;
             }
