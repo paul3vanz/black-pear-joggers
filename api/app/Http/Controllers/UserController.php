@@ -16,7 +16,7 @@ class UserController extends Controller
     {
         $id = Auth::user()['sub'];
 
-        $user = User::find($id);
+        $user = User::where('id', $id);
 
         if ($user) {
             $user = $user->with('athlete')->first();
