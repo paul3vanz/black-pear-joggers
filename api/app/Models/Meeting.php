@@ -24,8 +24,8 @@ final class Meeting extends Model
         return $this->hasMany('App\Models\Performance', 'meetingId', 'id');
     }
 
-    public function firstPerformance()
+    public function athlete()
     {
-        return $this->hasMany('App\Models\Performance', 'meetingId', 'id');
+        return $this->hasManyThrough('App\Models\Athlete', 'App\Models\Performance', 'meetingId', 'athlete_id', 'id', 'athlete_id')->select('first_name', 'last_name');
     }
 }

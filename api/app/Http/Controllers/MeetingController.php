@@ -32,14 +32,14 @@ class MeetingController extends Controller
             $meetings = $meetings->where('date', '<=', $request->input('toDate'));
         }
 
-        $meetings = $meetings->with('firstPerformance')->withCount('performances as performancesCount')->get()->all();
+        $meetings = $meetings->with('athlete')->withCount('performances as performancesCount')->paginate(5);
 
         return response()->json($meetings);
     }
 
     public function getMeetingById($id)
     {
-        $meeting = Meeting::find($id)->with('performances')->withCount('performances as performancesCount')->first();
+        $meeting = Meeting::find($id)->with('athlete')->withCount('performances as performancesCount')->first();
         return response()->json($meeting);
     }
 }
