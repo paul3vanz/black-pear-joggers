@@ -12,7 +12,7 @@ interface SuccessPageProps {
 }
 
 function SuccessPage(props: SuccessPageProps) {
-  const { user, isLoading } = useUser();
+  const { data: user, isLoading } = useUser();
 
   return (
     <Stack>
@@ -26,17 +26,19 @@ function SuccessPage(props: SuccessPageProps) {
 
           <h1>Registration complete</h1>
 
-          <p className="mb-6">You&rsquo;re now registered. </p>
+          <p className="mb-6">You&rsquo;re now registered.</p>
 
           {isLoading ? (
             <div className="inline-block">
               <LoadingSpinner />
             </div>
-          ) : (
+          ) : user?.athleteId ? (
             <Button
               text="Go to your results"
-              link={`https://apps.bpj.org.uk/race-results/#/athlete/${user?.athleteId}`}
+              link={`https://apps.bpj.org.uk/race-results/#/athlete/${user.athleteId}`}
             />
+          ) : (
+            <p>Something went wrong - athlete ID unknown</p>
           )}
         </div>
       </Container>

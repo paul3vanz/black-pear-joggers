@@ -1,14 +1,13 @@
 import RegisterForm from '../components/register-form';
-import { Athlete, useUser } from '@black-pear-joggers/core-services';
+import { Athlete, userUrl, useUser } from '@black-pear-joggers/core-services';
 import { Button } from '@black-pear-joggers/button';
 import { ConfirmDetails } from '../components/confirm-details';
 import { Container } from '@black-pear-joggers/container';
 import { LoadingSpinner } from '../components/loading-spinner';
 import { NotFound } from '../components/not-found';
 import { scrollIntoView } from '@black-pear-joggers/helpers';
-import { setAthlete } from '@black-pear-joggers/core-services';
+import { setUserAthlete } from '@black-pear-joggers/core-services';
 import { Stack } from '@black-pear-joggers/stack';
-import { storeAthlete } from '../helpers/athlete-storage';
 import { useAthleteIdvCheck } from '@black-pear-joggers/core-services';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
@@ -24,7 +23,7 @@ function AdminHomePage() {
   const [idvDetails, setIdvDetails] = useState<IdvDetails>();
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  const { user, isLoading: isUserLoading } = useUser();
+  const { data: user, isLoading: isUserLoading } = useUser();
 
   const steps = {
     form: useRef<HTMLDivElement>(),
@@ -52,11 +51,10 @@ function AdminHomePage() {
 
   async function onConfirmDetails(athlete: Athlete) {
     setIsUpdating(true);
-    const success = await setAthlete(athlete.id);
+    const success = await setUserAthlete(athlete.id);
     setIsUpdating(false);
 
     if (success) {
-      storeAthlete(athlete);
       router.push('/success');
     } else {
       alert('There was an error.');
@@ -74,8 +72,8 @@ function AdminHomePage() {
           <h1>Already registered</h1>
 
           <p>
-            You&rsquo;ve already linked your membership details to your account. If
-            you&rsquo;d like to update your details, please{' '}
+            You&rsquo;ve already linked your membership details to your account.
+            If you&rsquo;d like to update your details, please{' '}
             <a href="https://bpj.org.uk/contact?reason=website">contact us</a>.
           </p>
 

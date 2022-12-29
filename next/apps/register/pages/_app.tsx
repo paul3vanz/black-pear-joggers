@@ -5,8 +5,17 @@ import { Container } from '@black-pear-joggers/container';
 import { Footer } from '@black-pear-joggers/footer';
 import { Header } from '@black-pear-joggers/header';
 import { PropsWithChildren, useEffect } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from '@black-pear-joggers/stack';
 import './styles.css';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function LoadingContent() {
   return (
@@ -52,17 +61,19 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
-    <Auth0Provider
-      {...config.auth}
-      redirectUri={
-        typeof window !== 'undefined' && `${window.location.origin}/register`
-      }
-    >
-      <div id="modalContainer"></div>
-      <PageContent>
-        <Component {...pageProps} />
-      </PageContent>
-    </Auth0Provider>
+    <QueryClientProvider client={queryClient}>
+      <Auth0Provider
+        {...config.auth}
+        redirectUri={
+          typeof window !== 'undefined' && `${window.location.origin}/register`
+        }
+      >
+        <div id="modalContainer"></div>
+        <PageContent>
+          <Component {...pageProps} />
+        </PageContent>
+      </Auth0Provider>
+    </QueryClientProvider>
   );
 }
 
