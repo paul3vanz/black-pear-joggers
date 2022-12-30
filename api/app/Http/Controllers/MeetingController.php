@@ -13,7 +13,7 @@ class MeetingController extends Controller
 
     public function getMeetings(Request $request)
     {
-        $meetings = Meeting::query();
+        $meetings = Meeting::query()->orderBy('date', 'desc');
 
         if ($request->input('year')) {
             $meetings = $meetings->whereYear('date', '=', $request->input('year'));
