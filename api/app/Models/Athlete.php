@@ -26,6 +26,7 @@ final class Athlete extends Model
         'urn',
         'dob',
         'age',
+        'laravel_through_key',
     ];
 
     protected $appends = [
@@ -40,6 +41,10 @@ final class Athlete extends Model
 
     public function getCategoryAttribute()
     {
+        if (!$this->age) {
+            return null;
+        }
+
         if ($this->age < 20) {
             return 'U20';
         } else if ($this->age < 23) {
