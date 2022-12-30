@@ -37,6 +37,6 @@ export function reducer(state = initialState, action: meetingsActions.MeetingsAc
     }
 }
 
-export const getState = (state: { [reducer: string]: any }) => state.events;
+export const getState = (state: { [reducer: string]: any }) => state.meetings;
 
 export const getLoading = createSelector(getState, (state: State) => state.loading);

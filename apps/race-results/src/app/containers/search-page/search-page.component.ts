@@ -36,7 +36,7 @@ export class SearchPageComponent implements OnInit {
 
     ngOnInit() {
         this.athletes$ = this.store$.select(athletesSelectors.getAllRecords);
-        this.meetings$ = this.store$.select(store => store.events.events);
+        this.meetings$ = this.store$.select(store => store.meetings.meetings);
 
         this.searchTerm$
             .pipe(

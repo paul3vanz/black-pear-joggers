@@ -18,13 +18,14 @@
           </tr>
         </thead>
         <tbody>
+            {{ meeting | json }}
           <tr *ngFor="let meeting of meetings.data">
-            <td class="nowrap">{{ performance.date | date: "DD/MM/YYYY" }}</td>
-            <td><a href="#/meeting/{{meeting.date}}/{{meeting.ukaMeetingId}}">{{meeting.race}}</a></td>
+            <td class="nowrap">{{ meeting.date | date: "DD/MM/YYYY" }}</td>
+            <td><a href="#/meeting/{{meeting.date}}/{{meeting.ukaMeetingId}}">{{meeting.name}}</a></td>
             <td class="nowrap">{{meeting.event}}</td>
             <td class="nowrap">
               <a href="#/meeting/{{meeting.date}}/{{meeting.ukaMeetingId}}">
-                {{ meeting.athlete.first_name }} {{ meeting.athlete.last_name }}
+                {{ meeting.athlete[0].first_name }} {{ meeting.athlete[0].last_name }}
                 <span *ngIf="meeting.performancesCount > 1">
                   and {{ meeting.performancesCount - 1 }} other<span *ngIf="meeting.performancesCount > 2">s</span>
                 </span>

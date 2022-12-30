@@ -1,4 +1,4 @@
-import * as eventsReducer from './meetings';
+import * as meetingsReducer from './meetings';
 import * as standardsReducer from './standards';
 import { ActionReducerMap } from '@ngrx/store';
 
@@ -6,13 +6,13 @@ import { resultsReducer } from 'libs/race-results-data-access/src/lib/+state/res
 
 
 export interface State {
-    events: eventsReducer.State;
+    meetings: meetingsReducer.State;
     results: resultsReducer.State;
     standards: standardsReducer.State;
 }
 
 export const reducers: ActionReducerMap<State> = {
-    events: eventsReducer.reducer,
+    meetings: meetingsReducer.reducer,
     results: resultsReducer.reducer,
     standards: standardsReducer.reducer,
 };
