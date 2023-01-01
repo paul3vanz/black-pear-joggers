@@ -32,7 +32,7 @@ class MeetingController extends Controller
             $meetings = $meetings->where('date', '<=', $request->input('toDate'));
         }
 
-        $meetings = $meetings->with('athlete')->withCount('performances as performancesCount')->paginate(50);
+        $meetings = $meetings->with('athlete')->withCount('performances as performancesCount')->paginate(100);
 
         return response()->json($meetings);
     }
