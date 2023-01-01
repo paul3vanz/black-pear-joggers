@@ -27,11 +27,6 @@ final class Performance extends Model
         return $this->belongsTo('App\Models\Meeting', 'id', 'meetingId');
     }
 
-    public function ukaMeeting()
-    {
-        return $this->belongsTo('App\Models\Meeting', 'ukaMeetingId', 'meeting_id');
-    }
-
     public function athlete()
     {
         return $this->belongsTo('App\Models\Athlete', 'athlete_id', 'athlete_id');
