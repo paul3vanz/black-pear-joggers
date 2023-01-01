@@ -21,7 +21,7 @@ class PerformanceController extends Controller
 
     public function getPerformancesIndividual(Request $request)
     {
-        $performances = Cache::remember('performancesIndividual-' . $request->input('fromDate') . '-' . $request->input('isPersonalBest'), 28800, function () use ($request) {
+        $performances = Cache::remember('performancesIndividual-v1-' . $request->input('fromDate') . '-' . $request->input('isPersonalBest'), 28800, function () use ($request) {
             $performances = $this->getPerformances($request);
 
             return $performances->paginate(50);
@@ -55,9 +55,6 @@ class PerformanceController extends Controller
 
     public function getPerformances(Request $request)
     {
-
-        $paginate = 50;
-
         $performances = DB::table('performances')
             ->join('athletes', 'performances.athlete_id', '=', 'athletes.id')
             ->leftJoin('events', 'performances.event', '=', 'events.alias')
@@ -72,24 +69,25 @@ class PerformanceController extends Controller
                 $join->on('athletes.urn', '=', 'memberships.urn')
                     ->where('memberships.competitiveRegStatus', '=', 'Registered');
             })
+            ->join('meetings', 'performances.meetingId', '=', 'meetings.id')
             ->groupBy('performances.id')
             ->select(
                 DB::raw(
                     'MAX(awards.id) AS award'
                 ),
-                'athletes.id AS athlete_id',
-                'athletes.first_name',
-                'athletes.last_name',
+                'athletes.id AS athleteId',
+                'athletes.first_name AS firstName',
+                'athletes.last_name AS lastName',
                 'athletes.gender',
-                'memberships.competitiveRegStatus',
-                'performances.id AS performance_id',
+                'meetings.date',
+                'meetings.event',
+                'meetings.name AS meetingName',
+                'memberships.competitiveRegStatus AS membershipStatus',
+                'performances.id AS performanceId',
                 'performances.category',
-                'performances.event',
                 'performances.time',
-                'performances.time_parsed',
-                'performances.meeting_id',
-                'performances.race',
-                'performances.date',
+                'performances.time_parsed AS timeParsed',
+                'performances.meetingId',
                 'performances.isPersonalBest'
             );
 

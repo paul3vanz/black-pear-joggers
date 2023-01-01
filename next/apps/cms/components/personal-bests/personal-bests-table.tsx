@@ -21,14 +21,11 @@ export function PersonalBestsTable() {
       ) : (
         <ul className="mb-6">
           {data.data.filter(filterCommonEvents).map((result) => (
-            <li
-              key={`${result.athlete_id}${result.meeting_id}`}
-              className="mb-2"
-            >
+            <li key={`${result.athleteId}${result.meetingId}`} className="mb-2">
               <Link
-                href={`https://apps.bpj.org.uk/race-results/#/athlete/${result.athlete_id}`}
+                href={`https://apps.bpj.org.uk/race-results/#/athlete/${result.athleteId}`}
               >
-                {result.first_name} {result.last_name}
+                {result.firstName} {result.lastName}
               </Link>
               {result.award ? (
                 <span className="ml-1">
@@ -37,7 +34,7 @@ export function PersonalBestsTable() {
               ) : null}
               <span className="block sm:inline">
                 <span className="font-bold text-lg sm:ml-1">{result.time}</span>{' '}
-                at {result.race}{' '}
+                at {result.meetingName}{' '}
               </span>
               <span className="text-gray-400 block sm:inline">
                 {formatRelative(result.date)}
