@@ -19,7 +19,7 @@ interface MatchingRaceResultsProps {
 
 function findMatchingRaces(race?: string, date?: string) {
   return fetch(
-    `https://bpj.org.uk/api/public/index.php/performances?search=${race.substring(
+    `https://bpj.org.uk/api/public/index.php/meetings?search=${race.substring(
       0,
       3
     )}&fromDate=${date}&toDate=${date}`
@@ -47,12 +47,12 @@ export function MatchingRaceResults(props: MatchingRaceResultsProps) {
           {data?.data?.map((result) => (
             <>
               <li>
-                {result.race}
+                {result.name}
 
-                {result.race !== props.event ? (
+                {result.name !== props.event ? (
                   <button
                     className="font-bold pl-4 underline"
-                    onClick={() => props.onSelect(result.race)}
+                    onClick={() => props.onSelect(result.name)}
                   >
                     Update
                   </button>
@@ -64,7 +64,7 @@ export function MatchingRaceResults(props: MatchingRaceResultsProps) {
                 )}
 
                 <Link
-                  href={`https://apps.bpj.org.uk/race-results/#/meeting/${result.date}/${result.meeting_id}`}
+                  href={`https://apps.bpj.org.uk/race-results/#/meeting/${result.date}/${result.id}`}
                   className="pl-4"
                   target="_blank"
                 >

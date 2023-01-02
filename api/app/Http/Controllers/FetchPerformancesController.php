@@ -108,7 +108,7 @@ class FetchPerformancesController extends Controller
     {
         $meeting = Meeting::firstOrCreate(
             [
-                'ukaMeetingId' => $performance['meeting_id'],
+                'ukaMeetingId' => $performance['ukaMeetingId'],
                 'event' => $performance['event'],
                 'name' => $performance['race'],
                 'date' => $performance['date']
@@ -121,11 +121,7 @@ class FetchPerformancesController extends Controller
         return Performance::firstOrCreate([
             'athlete_id' => $performance['athlete_id'],
             'category' => $performance['category'],
-            'date' => $performance['date'],
-            'event' => $performance['event'],
             'meetingId' => $meeting->id,
-            'meeting_id' => $performance['meeting_id'],
-            'race' => $performance['race'],
             'time_parsed' => $performance['time_parsed'],
             'time' => $performance['time']
         ]);
@@ -200,8 +196,8 @@ class FetchPerformancesController extends Controller
             $dateTimestamp = strtotime(trim($tableCells->eq(11)->text()));
             $date = date('Y-m-d', $dateTimestamp);
 
-            preg_match('/meetingid=([0-9]*)/i', $tableCells->eq(9)->filter('a')->first()->link()->getUri(), $meetingId);
-            $meetingId = $meetingId[1];
+            preg_match('/meetingid=([0-9]*)/i', $tableCells->eq(9)->filter('a')->first()->link()->getUri(), $ukaMeetingId);
+            $ukaMeetingId = $ukaMeetingId[1];
 
             // Correct age category if date of birth known
             if ($athlete->dob && $athlete->dob != '0000-00-00') {
@@ -223,7 +219,7 @@ class FetchPerformancesController extends Controller
                 'race' => $race,
                 'date' => $date,
                 'category' => $currentAgeGroup,
-                'meeting_id' => $meetingId,
+                'ukaMeetingId' => $ukaMeetingId,
             ]);
         });
 

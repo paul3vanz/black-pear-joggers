@@ -2,7 +2,12 @@ import * as rootReducer from '../../reducers';
 import * as standardsReducer from '../../reducers/standards';
 import { ActivatedRoute } from '@angular/router';
 import { Athlete } from '../../models/athlete';
-import { athletesActions, athletesSelectors, LoadingState } from '@black-pear-joggers/race-results-data-access';
+import {
+    athletesActions,
+    athletesSelectors,
+    LoadingState,
+    Result
+    } from '@black-pear-joggers/race-results-data-access';
 import { ClubRecord, clubRecordsActions, clubRecordsQuery } from '@black-pear-joggers/club-records-data-access';
 import { Component, OnInit } from '@angular/core';
 import { Meeting } from '../../models/meeting';
@@ -10,16 +15,10 @@ import { Observable } from 'rxjs';
 import { Paging } from '../../models/paging';
 import { Ranking } from '@black-pear-joggers/race-results-data-access';
 import { rankingsSelectors } from '@black-pear-joggers/race-results-data-access';
-import { Result } from '../../models/result';
 import { Standard } from '../../models/standard';
 import { Store } from '@ngrx/store';
 import { YearRankingStats } from 'libs/race-results-data-access/src/lib/models/ranking-stats.model';
-
 import { rankingsActions } from 'libs/race-results-data-access/src/lib/+state/rankings.actions';
-
-
-
-import { resultsReducer } from 'libs/race-results-data-access/src/lib/+state/results.reducer';
 import { resultsSelectors } from 'libs/race-results-data-access/src/lib/+state/results.selectors';
 import { resultsActions } from 'libs/race-results-data-access/src/lib/+state/results.actions';
 

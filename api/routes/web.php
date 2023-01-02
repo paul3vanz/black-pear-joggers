@@ -77,15 +77,11 @@ $router->group(['prefix' => 'meetings'], function ($router) {
 $router->get('/members/totals', 'AthleteController@getMembershipTotals');
 $router->get('/members/leaguemembers', 'MembershipController@getRegisteredMembers');
 
-$router->get('/parkrunalphabet', 'ParkrunController@getParkrunAlphabet'); // Deprecated
-$router->get('/parkruntourists', 'ParkrunController@getParkrunTourists'); // Deprecated
-
 $router->group(['prefix' => 'parkrun'], function ($router) {
     $router->get('alphabet', 'ParkrunController@getParkrunAlphabet');
     $router->get('tourists', 'ParkrunController@getParkrunTourists');
 });
 
-$router->get('/performances', 'PerformanceController@getPerformanceSummaries');
 $router->get('/performances/{date}/{meeting}', 'PerformanceController@getPerformancesByMeeting');
 $router->get('/performances/{id}', 'PerformanceController@getPerformance');
 

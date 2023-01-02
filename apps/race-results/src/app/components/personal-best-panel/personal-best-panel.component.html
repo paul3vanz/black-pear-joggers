@@ -13,7 +13,7 @@
         <div *ngFor="let personalBest of personalBests" class="card pb">
           <span class="pb__event">{{ personalBest?.name | eventName }}</span>
           <ng-container *ngIf="personalBest.best">
-            <span class="pb__time">{{ personalBest.best.time_parsed | finishTime }}</span>
+            <span class="pb__time">{{ personalBest.best.timeParsed | finishTime }}</span>
             <span class="pb__date u-hidden@max-xs">{{ personalBest.best.date | date : 'fromNow' }}</span>
             <a *ngIf="personalBest.best.award" href="https://apps.bpj.org.uk/club-standards/"
               class="pb__award pb__award--{{ personalBest.best.award | formatAward }}">{{ personalBest.best.award | formatAward }}</a>

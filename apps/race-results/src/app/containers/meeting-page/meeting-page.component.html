@@ -16,14 +16,14 @@
           </p>
 
           <h2>
-            {{ results?.data[0].race }}<br />
+            {{ results?.data[0].meetingName }}<br />
             <span class="meeting-page__subtitle">{{ results?.data[0].date | date: "Do MMMM YYYY" }}</span>
           </h2>
 
           <p><strong>{{ results?.data.length }}</strong> members in results</p>
 
           <p class="u-hidden@xs">
-            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results?.data[0].meeting_id }}">
+            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results?.data[0].ukaMeetingId }}">
               View full results on runbritain
             </a>
           </p>
@@ -31,13 +31,13 @@
 
         <div class="o-grid__item u-1/2 u-text-right u-hidden@max-xs">
           <p>
-            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results?.data[0].meeting_id }}">
+            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results?.data[0].ukaMeetingId }}">
               <img src="https://bpj.org.uk/wp-content/uploads/2015/11/run-britain-logo.png" alt="View full results on runbritain">
             </a>
           </p>
 
           <p>
-            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results?.data[0].meeting_id }}">
+            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results?.data[0].ukaMeetingId }}">
               View full results on runbritain
             </a>
           </p>
@@ -79,7 +79,7 @@
 
           <td
             class="nowrap"
-            attr.data-value="{{result.time_parsed}}"
+            attr.data-value="{{result.timeParsed}}"
           >
             {{result.time}}
 
@@ -88,11 +88,11 @@
 
           <td class="nowrap">
             <a
-              routerLink="/athlete/{{result.athlete_id}}"
+              routerLink="/athlete/{{result.athleteId}}"
               href="#"
-              (click)="selectAthlete(result.athlete_id)"
+              (click)="selectAthlete(result.athleteId)"
             >
-              {{result.first_name}} {{result.last_name}}
+              {{result.firstName}} {{result.lastName}}
             </a>
           </td>
         </tr>

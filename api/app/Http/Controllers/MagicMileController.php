@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\MagicMile;
+use App\Models\Meeting;
+use App\Models\Performance;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 class MagicMileController extends Controller
 {
@@ -118,42 +121,60 @@ class MagicMileController extends Controller
 
     public function syncMagicMileResults()
     {
-        $results = DB::affectingStatement("
-      INSERT INTO performances
-      (
-          athlete_id,
-          category,
-          meeting_id,
-          event,
-          time,
-          time_parsed,
-          race,
-          date,
-          manual,
-          isPersonalBest
-      )
-      SELECT
-          m.athlete_id,
-          m.category,
-          0,
-          '1M',
-          m.actual_time,
-          m.actual_time_parsed,
-          m.location,
-          m.date,
-          1,
-          0
-      FROM magicMile m
-      LEFT JOIN performances p2
-          ON m.athlete_id = p2.athlete_id
-          AND m.date = p2.date
-          AND m.location = p2.race
-          AND m.actual_time_parsed = p2.time_parsed
-      WHERE m.athlete_id IS NOT NULL
-      AND m.athlete_id != 0
-      AND p2.id IS NULL
-    ");
+        $results = MagicMile::query()->where(function ($query) {
+            $query->where('athlete_id', '!=', 0)
+                ->whereNotNull('athlete_id');
+        })->get()->all();
 
-        return response()->json(['recordsInserted' => $results]);
+        $meetingsCreated = [];
+        $performanceUpdated = [];
+        $performanceUntouched = [];
+        $performanceCreated = [];
+
+        foreach ($results as $result) {
+            $meeting = Meeting::firstOrCreate(
+                [
+                    'event' => '1M',
+                    'name' => $result['location'],
+                    'date' => $result['date'],
+                ],
+                [
+                    'id' => Str::uuid(),
+                ]
+            );
+
+            if ($meeting->wasRecentlyCreated) {
+                $meetingsCreated[] = $meeting;
+            }
+
+            $performance = Performance::updateOrCreate([
+                'athlete_id' => $result['athlete_id'],
+                'meetingId' => $meeting->id,
+                'manual' => 1,
+            ], [
+                'category' => $result['category'],
+                'time_parsed' => $result['actual_time_parsed'],
+                'time' => $result['actual_time'],
+            ]);
+
+            if (!$performance->wasRecentlyCreated && $performance->wasChanged()) {
+                $performanceUpdated[] = $performance;
+            }
+
+            if (!$performance->wasRecentlyCreated && !$performance->wasChanged()) {
+                $performanceUntouched[] = $performance;
+            }
+
+            if ($performance->wasRecentlyCreated) {
+                $performanceCreated[] = $performance;
+            }
+        }
+
+        return response()->json([
+            'meetingsCreated' => $meetingsCreated,
+            'performanceUpdated' => $performanceUpdated,
+            'performanceUntouched' => $performanceUntouched,
+            'performanceCreated' => $performanceCreated,
+        ]);
     }
 }

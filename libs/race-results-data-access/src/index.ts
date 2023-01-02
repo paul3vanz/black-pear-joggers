@@ -2,7 +2,7 @@ export * from './lib/race-results-data-access.module';
 
 export * from './lib/models/athlete.model';
 export * from './lib/models/event-with-result.model';
-export * from './lib/models/event.model';
+export * from './lib/models/meeting.model';
 export * from './lib/models/loading-state.model';
 export * from './lib/models/paging.model';
 export * from './lib/models/ranking.model';

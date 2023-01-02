@@ -46,8 +46,8 @@ class PerformanceController extends Controller
         $performances = $this->getPerformances($request);
         if ($date) {
             $paginate = 500;
-            $performances = $performances->where('performances.meeting_id', '=', $meeting);
-            $performances = $performances->where('performances.date', '=', $date);
+            $performances = $performances->where('meetings.id', '=', $meeting);
+            $performances = $performances->where('meetings.date', '=', $date);
         }
         $performances = $performances->paginate($paginate);
         return response()->json($performances);
@@ -81,6 +81,7 @@ class PerformanceController extends Controller
                 'athletes.gender',
                 'meetings.date',
                 'meetings.event',
+                'meetings.ukaMeetingId',
                 'meetings.name AS meetingName',
                 'memberships.competitiveRegStatus AS membershipStatus',
                 'performances.id AS performanceId',
@@ -122,39 +123,6 @@ class PerformanceController extends Controller
         }
 
         return $performances;
-    }
-
-    public function getPerformanceSummaries(Request $request)
-    {
-        $performances = Performance::query()
-            ->select('meeting_id', 'date', 'race', 'event', 'manual', 'first_name', 'last_name', 'performances.created_at', 'performances.updated_at')
-            ->addSelect(DB::raw('count(1) AS total_results'))
-            ->join('athletes', 'athletes.id', '=', 'performances.athlete_id')
-            ->groupBy('date', 'meeting_id')
-            ->orderBy('date', 'DESC')
-            ->orderBy('race', 'ASC')
-            ->orderBy('time_parsed', 'ASC');
-
-        if ($request->input('year')) {
-            $performances = $performances->whereYear('date', '=', $request->input('year'));
-        }
-
-        $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
-        if ($searchTerm) {
-            $performances = $performances->where('performances.race', 'LIKE', "%$searchTerm%");
-        }
-
-        if ($request->input('fromDate')) {
-            $performances = $performances->where('performances.date', '>=', $request->input('fromDate'));
-        }
-
-        if ($request->input('toDate')) {
-            $performances = $performances->where('performances.date', '<=', $request->input('toDate'));
-        }
-
-        $performances = $performances->paginate(1000);
-
-        return response()->json($performances);
     }
 
     public function getPerformance($id)

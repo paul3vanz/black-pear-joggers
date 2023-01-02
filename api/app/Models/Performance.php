@@ -12,12 +12,8 @@ final class Performance extends Model
         'athlete_id',
         'category',
         'meetingId',
-        'meeting_id',
-        'event',
         'time',
         'time_parsed',
-        'race',
-        'date',
         'manual',
         'isPersonalBest',
     ];
