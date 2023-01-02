@@ -5,7 +5,7 @@ export type Performance = {
     lastName: string;
     gender: string;
     membershipStatus: string;
-    performanceId: number;
+    id: number;
     category: string;
     event: string;
     time: string;

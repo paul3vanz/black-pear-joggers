@@ -11,7 +11,6 @@ $router->put('/athlete/{id}', 'AthleteController@updateAthlete');
 $router->delete('/athlete/{id}', 'AthleteController@deleteAthlete');
 $router->get('/athleteIdvCheck', 'AthleteController@athleteIdvCheck');
 
-$router->get('/athlete/{id}/performances', 'PerformanceController@getPerformancesByAthlete');
 $router->get('/athletes/awards', 'AwardController@getAthleteAwards');
 
 $router->get('/awardclaim/{id}/{uniqueToken}', 'AwardClaimController@getClaim');
@@ -82,10 +81,11 @@ $router->group(['prefix' => 'parkrun'], function ($router) {
     $router->get('tourists', 'ParkrunController@getParkrunTourists');
 });
 
-$router->get('/performances/{date}/{meeting}', 'PerformanceController@getPerformancesByMeeting');
-$router->get('/performances/{id}', 'PerformanceController@getPerformance');
-
-$router->get('/performancesindividual', 'PerformanceController@getPerformancesIndividual');
+$router->group(['prefix' => 'performances'], function ($router) {
+    $router->get('', 'PerformanceController@getPerformances');
+    $router->get('{id}', 'PerformanceController@getPerformance');
+    $router->get('{date}/{meeting}', 'PerformanceController@getPerformancesByMeeting');
+});
 
 $router->get('/rankings/{athleteId}', 'RankingController@getRankingsByAthlete');
 $router->get('/rankings/{athleteId}/{year}', 'RankingController@getRankingsByAthlete');

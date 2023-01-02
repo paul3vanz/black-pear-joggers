@@ -19,7 +19,7 @@ export class ResultsService {
     }
 
     getAthleteResults(athleteId: number, page?: number): Observable<Paging<Result>> {
-        return this.http.get<Paging<Result>>(`${this.apiRoot}/athlete/${athleteId}/performances?page=${page}`);
+        return this.http.get<Paging<Result>>(`${this.apiRoot}${this.performancesUrl}?athleteId=${athleteId}&limit=1000&page=${page}`);
     }
 
     getEvents(search: string): Observable<Paging<Meeting>> {

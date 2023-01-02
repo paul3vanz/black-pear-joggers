@@ -4,7 +4,7 @@ export interface Result {
     firstName: string;
     lastName: string;
     gender: string;
-    performanceId: string;
+    id: string;
     category: string;
     event: string;
     time: string;

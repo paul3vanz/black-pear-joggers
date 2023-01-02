@@ -3,42 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Performance;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class PerformanceController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+    public $allowedFilters = [
+        'athleteId',
+        'fromDate',
+        'isPersonalBest',
+        'limit',
+        'onlyAwards',
+        'search',
+        'sort',
+        'toDate',
+    ];
+
     public function __construct()
     {
-    }
-
-    public function getPerformancesIndividual(Request $request)
-    {
-        $performances = Cache::remember('performancesIndividual-v1-' . $request->input('fromDate') . '-' . $request->input('isPersonalBest'), 28800, function () use ($request) {
-            $performances = $this->getPerformances($request);
-
-            return $performances->paginate(50);
-        });
-
-        return response()->json($performances);
-    }
-
-    public function getPerformancesByAthlete($id, Request $request)
-    {
-        $performances = $this->getPerformances($request);
-        if ($id) {
-            $paginate = 1000;
-            $performances = $performances->where('performances.athlete_id', '=', $id);
-        }
-        $performances = $performances->paginate($paginate);
-        return response()->json($performances);
     }
 
     public function getPerformancesByMeeting($date, $meeting, Request $request)
@@ -55,74 +38,93 @@ class PerformanceController extends Controller
 
     public function getPerformances(Request $request)
     {
-        $performances = DB::table('performances')
-            ->join('athletes', 'performances.athlete_id', '=', 'athletes.id')
-            ->leftJoin('events', 'performances.event', '=', 'events.alias')
-            ->leftJoin('standards', function ($join) {
-                $join->on('athletes.gender', '=', 'standards.gender')
-                    ->on('standards.category', '=', 'performances.category')
-                    ->on('standards.event_id', '=', 'events.has_standard')
-                    ->on('standards.time_parsed', '>=', 'performances.time_parsed');
-            })
-            ->leftJoin('awards', 'standards.award_id', '=', 'awards.id')
-            ->join('memberships', function ($join) {
-                $join->on('athletes.urn', '=', 'memberships.urn')
-                    ->where('memberships.competitiveRegStatus', '=', 'Registered');
-            })
-            ->join('meetings', 'performances.meetingId', '=', 'meetings.id')
-            ->groupBy('performances.id')
-            ->select(
-                DB::raw(
-                    'MAX(awards.id) AS award'
-                ),
-                'athletes.id AS athleteId',
-                'athletes.first_name AS firstName',
-                'athletes.last_name AS lastName',
-                'athletes.gender',
-                'meetings.date',
-                'meetings.event',
-                'meetings.ukaMeetingId',
-                'meetings.name AS meetingName',
-                'memberships.competitiveRegStatus AS membershipStatus',
-                'performances.id AS performanceId',
-                'performances.category',
-                'performances.time',
-                'performances.time_parsed AS timeParsed',
-                'performances.meetingId',
-                'performances.isPersonalBest'
-            );
+        $filters = array_filter($request->all(), function ($item) {
+            return in_array($item, $this->allowedFilters);
+        }, ARRAY_FILTER_USE_KEY);
 
-        $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
-        if ($searchTerm) {
-            $performances = $performances->where('performances.race', 'LIKE', "%$searchTerm%");
-        }
+        ksort($filters);
 
-        if ($request->input('isPersonalBest')) {
-            $performances = $performances->where('performances.isPersonalBest', true);
-        }
+        $cacheKey = 'performances-v2-' . json_encode($filters);
 
-        if ($request->input('fromDate')) {
-            $performances = $performances->where('performances.date', '>=', $request->input('fromDate'));
-        }
+        $performances = Cache::remember($cacheKey, 5, function () use ($request) {
 
-        if ($request->input('toDate')) {
-            $performances = $performances->where('performances.date', '<=', $request->input('toDate'));
-        }
+            $performances = DB::table('performances')
+                ->join('athletes', 'performances.athlete_id', '=', 'athletes.id')
+                ->leftJoin('events', 'performances.event', '=', 'events.alias')
+                ->leftJoin('standards', function ($join) {
+                    $join->on('athletes.gender', '=', 'standards.gender')
+                        ->on('standards.category', '=', 'performances.category')
+                        ->on('standards.event_id', '=', 'events.has_standard')
+                        ->on('standards.time_parsed', '>=', 'performances.time_parsed');
+                })
+                ->leftJoin('awards', 'standards.award_id', '=', 'awards.id')
+                ->join('memberships', function ($join) {
+                    $join->on('athletes.urn', '=', 'memberships.urn')
+                        ->where('memberships.competitiveRegStatus', '=', 'Registered');
+                })
+                ->join('meetings', 'performances.meetingId', '=', 'meetings.id')
+                ->groupBy('performances.id')
+                ->select(
+                    DB::raw(
+                        'MAX(awards.id) AS award'
+                    ),
+                    'athletes.id AS athleteId',
+                    'athletes.first_name AS firstName',
+                    'athletes.last_name AS lastName',
+                    'athletes.gender',
+                    'meetings.date',
+                    'meetings.event',
+                    'meetings.ukaMeetingId',
+                    'meetings.name AS meetingName',
+                    'memberships.competitiveRegStatus AS membershipStatus',
+                    'performances.id',
+                    'performances.category',
+                    'performances.time',
+                    'performances.time_parsed AS timeParsed',
+                    'performances.meetingId',
+                    'performances.isPersonalBest'
+                );
 
-        if ($request->input('onlyAwards')) {
-            $performances = $performances->havingRaw('MAX(awards.id) IS NOT NULL');
-        }
+            $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
+            if ($searchTerm) {
+                $performances = $performances->where('performances.race', 'LIKE', "%$searchTerm%");
+            }
 
-        if ($request->input('sort') == 'athlete') {
-            $performances = $performances->orderBy('athletes.last_name', 'desc')
-                ->orderBy('athletes.first_name', 'desc')
-                ->orderBy('performances.date', 'desc')
-                ->orderBy('performances.time_parsed', 'asc');
-        } else {
-            $performances = $performances->orderBy('performances.date', 'desc')->orderBy('performances.time_parsed', 'asc');
-        }
+            if ($request->input('athleteId')) {
+                $performances = $performances->where('performances.athlete_id', '=', $request->input('athleteId'));
+            }
 
-        return $performances;
+            if ($request->input('isPersonalBest')) {
+                $performances = $performances->where('performances.isPersonalBest', true);
+            }
+
+            if ($request->input('fromDate')) {
+                $performances = $performances->where('performances.date', '>=', $request->input('fromDate'));
+            }
+
+            if ($request->input('toDate')) {
+                $performances = $performances->where('performances.date', '<=', $request->input('toDate'));
+            }
+
+            if ($request->input('onlyAwards')) {
+                $performances = $performances->havingRaw('MAX(awards.id) IS NOT NULL');
+            }
+
+            if ($request->input('sort') == 'athlete') {
+                $performances = $performances->orderBy('athletes.last_name', 'desc')
+                    ->orderBy('athletes.first_name', 'desc')
+                    ->orderBy('performances.date', 'desc')
+                    ->orderBy('performances.time_parsed', 'asc');
+            } else {
+                $performances = $performances->orderBy('performances.date', 'desc')->orderBy('performances.time_parsed', 'asc');
+            }
+
+            $paginate = $request->input('limit') ? $request->input('limit') : 500;
+
+            return $performances->paginate($paginate);
+        });
+
+        return response()->json($performances);
     }
 
     public function getPerformance($id)
