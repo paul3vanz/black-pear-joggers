@@ -6,7 +6,7 @@ import { useUser } from '@black-pear-joggers/core-services';
 
 export default function ProfilePage() {
   const { user, logout } = useAuth0();
-  const { user: userProfile } = useUser();
+  const { data: userProfile } = useUser();
 
   return (
     <>
@@ -32,8 +32,8 @@ export default function ProfilePage() {
               <h2>Your details</h2>
 
               <p>
-                You&rsquo;ve linked your membership details to your account. If you&rsquo;d
-                like to update your details, please{' '}
+                You&rsquo;ve linked your membership details to your account. If
+                you&rsquo;d like to update your details, please{' '}
                 <a href="https://bpj.org.uk/contact?reason=website">
                   contact us
                 </a>

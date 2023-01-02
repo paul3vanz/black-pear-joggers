@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { classNames } from '@black-pear-joggers/helpers';
 import { Logo } from './components/logo';
 import { MobileMenu } from './components/mobile-menu';
@@ -6,7 +5,6 @@ import { NavigationLinkItem, navigationLinks } from '../constants/navigation';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useRef, useState } from 'react';
 import { UserMenu } from './components/user-menu';
-import { useRouter } from 'next/router';
 import { useUser } from '@black-pear-joggers/core-services';
 import {
   NavigationLink,
@@ -39,7 +37,7 @@ export const Header = () => {
   const { user, isAuthenticated } = useAuth0();
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState<number>();
-  const { user: userProfile } = useUser(isAuthenticated);
+  const { data: userProfile } = useUser(isAuthenticated);
   const menu = useRef<HTMLUListElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
