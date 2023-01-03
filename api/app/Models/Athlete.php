@@ -78,12 +78,12 @@ final class Athlete extends Model
 
     public function latestPerformance()
     {
-        return $this->hasOne('App\Models\Performance', 'athlete_id', 'id')->latest('date');
+        return $this->hasOne('App\Models\Performance', 'athlete_id', 'id')->join('meetings', 'meetings.id', 'performances.meetingId')->latest('meetings.date');
     }
 
     public function firstPerformance()
     {
-        return $this->hasOne('App\Models\Performance', 'athlete_id', 'id')->oldest('date');
+        return $this->hasOne('App\Models\Performance', 'athlete_id', 'id')->join('meetings', 'meetings.id', 'performances.meetingId')->oldest('meetings.date');
     }
 
     public function latestRanking()
