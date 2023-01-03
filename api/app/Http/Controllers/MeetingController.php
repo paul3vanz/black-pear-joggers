@@ -24,6 +24,10 @@ class MeetingController extends Controller
             $meetings = $meetings->where('name', 'LIKE', "%$searchTerm%");
         }
 
+        if ($request->input('event')) {
+            $meetings = $meetings->where('event', '=', $request->input('event'));
+        }
+
         if ($request->input('fromDate')) {
             $meetings = $meetings->where('date', '>=', $request->input('fromDate'));
         }
