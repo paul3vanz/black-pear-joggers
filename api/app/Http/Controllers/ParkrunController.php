@@ -60,7 +60,7 @@ class ParkrunController extends Controller
               (m.`event` = 'parkrun')
               AND
               (
-                m.`name` regexp '^($challengeSeperatedByPipes)'
+                $eventNameFilter
               )
               AND
               (
