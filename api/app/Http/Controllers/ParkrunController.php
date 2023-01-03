@@ -27,6 +27,12 @@ class ParkrunController extends Controller
         $challengeSeperatedByPipes = join('|', str_split($challenge));
         $challengeSeparatedByCommasWithQuotes = '\'' . join('\', \'', str_split($challenge)) . '\'';
 
+        if (strpos($challenge, ' OR ') !== false) {
+          $eventNameFilter = 'm.name regexp \'^((' . join(')|(', explode(' OR ', $challenge)) . '))\'';
+        } else {
+          $eventNameFilter = 'm.name regexp \'^(' . $challengeSeperatedByPipes . ')\'';
+        }
+
         $results = DB::select("
       SELECT
         *
