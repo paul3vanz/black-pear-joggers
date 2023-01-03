@@ -14,6 +14,7 @@ class PerformanceController extends Controller
         'category',
         'event',
         'fromDate',
+        'gender',
         'isPersonalBest',
         'limit',
         'meetingId',
@@ -87,6 +88,10 @@ class PerformanceController extends Controller
 
             if ($request->input('meetingId')) {
                 $performances = $performances->where('performances.meetingId', '=', $request->input('meetingId'));
+            }
+
+            if ($request->input('gender')) {
+                $performances = $performances->where('athletes.gender', '=', $request->input('gender'));
             }
 
             if ($request->input('category')) {
