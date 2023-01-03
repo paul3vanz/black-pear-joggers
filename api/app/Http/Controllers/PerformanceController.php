@@ -22,6 +22,7 @@ class PerformanceController extends Controller
         'search',
         'sort',
         'toDate',
+        'year',
     ];
 
     public function __construct()
@@ -112,6 +113,10 @@ class PerformanceController extends Controller
 
             if ($request->input('toDate')) {
                 $performances = $performances->where('performances.date', '<=', $request->input('toDate'));
+            }
+
+            if ($request->input('year')) {
+                $performances = $performances->whereYear('date', '=', $request->input('year'));
             }
 
             if ($request->input('onlyAwards')) {
