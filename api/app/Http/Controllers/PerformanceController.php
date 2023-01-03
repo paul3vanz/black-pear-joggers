@@ -43,7 +43,7 @@ class PerformanceController extends Controller
 
             $performances = DB::table('performances')
                 ->join('athletes', 'performances.athlete_id', '=', 'athletes.id')
-                ->leftJoin('events', 'performances.event', '=', 'events.alias')
+                ->leftJoin('events', 'meetings.event', '=', 'events.alias')
                 ->leftJoin('standards', function ($join) {
                     $join->on('athletes.gender', '=', 'standards.gender')
                         ->on('standards.category', '=', 'performances.category')
