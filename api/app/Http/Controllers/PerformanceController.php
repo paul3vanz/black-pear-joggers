@@ -37,7 +37,7 @@ class PerformanceController extends Controller
 
         ksort($filters);
 
-        $cacheKey = 'performances-v4-' . json_encode($filters);
+        $cacheKey = 'performances-v5-' . json_encode($filters);
 
         $performances = Cache::remember($cacheKey, 5, function () use ($request) {
 
@@ -79,8 +79,18 @@ class PerformanceController extends Controller
                 );
 
             $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
+
             if ($searchTerm) {
-                $performances = $performances->where('performances.race', 'LIKE', "%$searchTerm%");
+                if (strpos($searchTerm, ' OR ') !== false) {
+                    $searchTermArray = explode(' OR ', $searchTerm);
+                    $performances = $performances->where(function ($query) use ($searchTermArray, $performances) {
+                        foreach ($searchTermArray as $term) {
+                            $query->orWhere('meetings.name', 'LIKE', "%$term%");
+                        }
+                    });
+                } else {
+                    $performances = $performances->where('meetings.name', 'LIKE', "%$searchTerm%");
+                }
             }
 
             if ($request->input('athleteId')) {
