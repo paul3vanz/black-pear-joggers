@@ -58,7 +58,7 @@ class ParkrunController extends Controller
               )
               AND
               (
-                YEAR(r.`DATE`) IN ($year)
+                YEAR(m.date) IN ($year)
               )
             )
           GROUP BY
