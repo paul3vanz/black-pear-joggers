@@ -33,39 +33,42 @@ class ParkrunController extends Controller
       FROM
         (
           SELECT
-            `a`.`id` AS `athlete_id`,
-            `a`.`first_name` AS `first_name`,
-            `a`.`last_name` AS `last_name`,
-            SUBSTR(`r`.`race`, 1, 1) AS `letter`,
-            `r`.`race` AS `race`,
-            `r`.`date` AS `date`
+            a.`id` AS `athlete_id`,
+            a.`first_name` AS `first_name`,
+            a.`last_name` AS `last_name`,
+            SUBSTR(m.`name`, 1, 1) AS `letter`,
+            m.`name` AS `race`,
+            m.`date` AS `date`
           FROM
             (
               `performances` `r`
               JOIN
                 `athletes` `a`
-                ON((`a`.`id` = `r`.`athlete_id`))
+                ON((a.`id` = r.`athlete_id`))
+              JOIN
+                meetings m
+                ON m.id = r.meetingId
             )
           WHERE
             (
-              (`r`.`event` = 'parkrun')
+              (r.`event` = 'parkrun')
               AND
               (
-                `r`.`race` regexp '^($challengeSeperatedByPipes)'
+                m.`name` regexp '^($challengeSeperatedByPipes)'
               )
               AND
               (
-                YEAR(`r`.`DATE`) IN ($year)
+                YEAR(r.`DATE`) IN ($year)
               )
             )
           GROUP BY
-            `a`.`id`,
-            r.`race`
+            a.`id`,
+            m.`name`
           ORDER BY
-            `a`.`last_name`,
-            `a`.`first_name`,
+            a.`last_name`,
+            a.`first_name`,
             FIELD(`letter`, $challengeSeparatedByCommasWithQuotes),
-            r.`DATE`
+            m.`date`
         )
         AS results
       GROUP BY
@@ -89,22 +92,25 @@ class ParkrunController extends Controller
             a.first_name,
             a.last_name,
             GROUP_CONCAT(
-              DISTINCT SUBSTRING(race, 1, POSITION(' parkrun #' IN race) - 1)
+              DISTINCT SUBSTRING(m.name, 1, POSITION(' parkrun #' IN m.name) - 1)
               ORDER BY
-                race separator ', '
+                m.name separator ', '
             ) AS events,
-            COUNT(DISTINCT SUBSTRING(race, 1, POSITION('#' IN race) - 2)) AS event_count
+            COUNT(DISTINCT SUBSTRING(m.name, 1, POSITION('#' IN m.name) - 2)) AS event_count
           FROM
             performances p
             INNER JOIN
               athletes a
               ON a.id = p.athlete_id
             INNER JOIN
+              meetings m
+              ON m.id = p.meetingId
+            INNER JOIN
               memberships m
               ON m.urn = a.urn
               AND m.competitiveRegStatus IN ('Registered')
           WHERE
-            p.event = 'parkrun'
+            m.event = 'parkrun'
           GROUP BY a.athlete_id
           HAVING event_count >= 10
           ORDER BY event_count DESC

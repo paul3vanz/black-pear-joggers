@@ -67,10 +67,11 @@ class FetchPerformancesController extends Controller
                     SELECT 1
                     FROM performances t1
                     LEFT JOIN events e1 ON e1.alias = t1.event
+                    INNER JOIN meetings m1 ON m1.id = t1.meetingId
                     WHERE
                         t1.athlete_id = t.athlete_id
                         AND e1.distance = e.distance
-                        AND t1.date < t.date
+                        AND m1.date < m.date
                         AND t1.time_parsed <= t.time_parsed
                 )
                     THEN FALSE
@@ -78,6 +79,7 @@ class FetchPerformancesController extends Controller
                 END calculateIsPersonalBest
             FROM performances t
             LEFT JOIN events e ON e.alias = t.event
+            INNER JOIN meetings m ON m.id = t.meetingId
             ORDER BY date
         ) pbs ON pbs.id = p2.id
         SET p2.isPersonalBest = pbs.calculateIsPersonalBest

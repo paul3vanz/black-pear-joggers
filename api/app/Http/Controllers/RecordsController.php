@@ -22,7 +22,7 @@ class RecordsController extends Controller
     /* Club records */
     public function getRecords(Request $request)
     {
-        $records = Cache::remember('records', 28800, function () use ($request) {
+        $records = Cache::remember('records-v1', 28800, function () use ($request) {
             $filters = [];
             $filterString = '';
             $groupString = '';
@@ -56,12 +56,13 @@ class RecordsController extends Controller
                     FROM (
                       SELECT
                         e.event,
-                        a.gender, p.category, CONCAT(a.gender, p.category) cat, p.time, a.first_name, a.last_name, p.race, p.date,
+                        a.gender, p.category, CONCAT(a.gender, p.category) cat, p.time, a.first_name, a.last_name, m.name, m.date,
                         p.time_parsed, e.distance, a.id AS athlete_id, p.meeting_id, p.id
                       FROM performances p
                       LEFT JOIN athletes a ON a.id = p.athlete_id
-                      INNER JOIN events e ON e.alias = p.event
-                      LEFT JOIN performanceFlags pf ON pf.athlete_id = p.athlete_id AND pf.meeting_id = p.meeting_id AND pf.`date` = p.`date` AND pf.approved IS NOT NULL
+                      INNER JOIN events e ON e.alias = m.event
+                      INNER JOIN meetings m ON m.id = p.meetingId
+                      LEFT JOIN performanceFlags pf ON pf.athlete_id = p.athlete_id AND pf.meeting_id = m.ukaMeetingId AND pf.`date` = m.`date` AND pf.approved IS NOT NULL
                       WHERE pf.flag IS NULL
                       AND p.category != ''
                       AND p.time_parsed IS NOT NULL
