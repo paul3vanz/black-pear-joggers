@@ -126,10 +126,10 @@ class PerformanceController extends Controller
             if ($request->input('sort') == 'athlete') {
                 $performances = $performances->orderBy('athletes.last_name', 'desc')
                     ->orderBy('athletes.first_name', 'desc')
-                    ->orderBy('performances.date', 'desc')
+                    ->orderBy('meetings.date', 'desc')
                     ->orderBy('performances.time_parsed', 'asc');
             } else {
-                $performances = $performances->orderBy('performances.date', 'desc')->orderBy('performances.time_parsed', 'asc');
+                $performances = $performances->orderBy('meetings.date', 'desc')->orderBy('performances.time_parsed', 'asc');
             }
 
             $paginate = $request->input('limit') ? $request->input('limit') : 500;

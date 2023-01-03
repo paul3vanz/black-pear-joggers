@@ -44,6 +44,8 @@
     "@ngrx/store": "12.5.1",
     "@ngrx/store-devtools": "^12.5.1",
     "@nrwl/angular": "12.10.1",
+    "@sentry/angular": "^7.28.1",
+    "@sentry/tracing": "^7.28.1",
     "@types/chart.js": "^2.9.35",
     "chart.js": "^2.9.4",
     "core-js": "^2.5.4",
