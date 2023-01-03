@@ -22,7 +22,7 @@ class RecordsController extends Controller
     /* Club records */
     public function getRecords(Request $request)
     {
-        $records = Cache::remember('records-v2', 28800, function () use ($request) {
+        $records = Cache::remember('records-v3', 28800, function () use ($request) {
             $filters = [];
             $filterString = '';
             $groupString = '';
@@ -60,8 +60,8 @@ class RecordsController extends Controller
                         p.time_parsed, e.distance, a.id AS athlete_id, m.ukaMeetingId, p.id
                       FROM performances p
                       LEFT JOIN athletes a ON a.id = p.athlete_id
-                      INNER JOIN events e ON e.alias = m.event
                       INNER JOIN meetings m ON m.id = p.meetingId
+                      INNER JOIN events e ON e.alias = m.event
                       LEFT JOIN performanceFlags pf ON pf.athlete_id = p.athlete_id AND pf.meeting_id = m.ukaMeetingId AND pf.`date` = m.`date` AND pf.approved IS NOT NULL
                       WHERE pf.flag IS NULL
                       AND p.category != ''
