@@ -11,6 +11,8 @@ class PerformanceController extends Controller
 {
     public $allowedFilters = [
         'athleteId',
+        'category',
+        'event',
         'fromDate',
         'isPersonalBest',
         'limit',
@@ -85,6 +87,14 @@ class PerformanceController extends Controller
 
             if ($request->input('meetingId')) {
                 $performances = $performances->where('performances.meetingId', '=', $request->input('meetingId'));
+            }
+
+            if ($request->input('category')) {
+                $performances = $performances->where('performances.category', '=', $request->input('category'));
+            }
+
+            if ($request->input('event')) {
+                $performances = $performances->where('meetings.event', '=', $request->input('event'));
             }
 
             if ($request->input('isPersonalBest')) {
