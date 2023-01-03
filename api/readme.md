@@ -25,6 +25,13 @@ Launch API server locally:
 The following tasks run on a schedule to keep things automated:
 
 - 00:00: queue:registrations
+
+  - Fetches all members direct from UKA API
+  - Filters to keep just Registered members
+  - Filters to remove members already in athletes table (matching against URN)
+  - Adds the remaining 'new' members to the registration table
+  - These will be picked up
+
 - 00:05: queue:fetch:memberships
 - 01:00: queue:fetch:performances
 - 04:00: queue:fetch:rankings
@@ -38,55 +45,71 @@ Here is an overview of common endpoints for retrieving data. There's additional 
 ### Athletes
 
 - All athletes
-  - http://localhost:8000/athletes
+  - https://bpj.org.uk/api/public/index.php/athletes
 - Specific athlete
-  - http://localhost:8000/athlete/450606
+  - https://bpj.org.uk/api/public/index.php/athlete/450606
 - Identity check
-  - http://localhost:8000/athleteIdvCheck?urn=1234567&dob=1983-01-01
+  - https://bpj.org.uk/api/public/index.php/athleteIdvCheck?urn=1234567&dob=1983-01-01
 
 ### Performances (results)
 
 - By athlete
-  - http://localhost:8000/athlete/450606/performances
+  - https://bpj.org.uk/api/public/index.php/athlete/450606/performances
 - All performances
-  - http://localhost:8000/performances
+  - https://bpj.org.uk/api/public/index.php/performances
 - Search event name
-  - http://localhost:8000/performances?search=croome
+  - https://bpj.org.uk/api/public/index.php/performances?search=croome
 - PBs
-  - http://localhost:8000/performancesindividual?isPersonalBest=1
+  - https://bpj.org.uk/api/public/index.php/performancesindividual?isPersonalBest=1
 
 ### Club standards award standards
 
 - All
-  - http://localhost:8000/standards
+  - https://bpj.org.uk/api/public/index.php/standards
 - By gender
-  - http://localhost:8000/standards/M
+  - https://bpj.org.uk/api/public/index.php/standards/M
 - By gender and category
-  - http://localhost:8000/standards/W/V60
+  - https://bpj.org.uk/api/public/index.php/standards/W/V60
 
 ### Club records
 
 - All records
-  - http://localhost:8000/records
+  - https://bpj.org.uk/api/public/index.php/records
 
 ### Rankings
 
 - By athlete
-  - http://localhost:8000/rankings/450606
+  - https://bpj.org.uk/api/public/index.php/rankings/450606
 - By athlete and year
-  - http://localhost:8000/rankings/450606/2013
+  - https://bpj.org.uk/api/public/index.php/rankings/450606/2013
 
 ### Events
 
 - All events
-  - http://localhost:8000/events
+  - https://bpj.org.uk/api/public/index.php/events
 
 ### Awards
 
 - All awards
-  - http://localhost:8000/awards
+  - https://bpj.org.uk/api/public/index.php/awards
 
 ### Magic mile
 
 - All magic mile results
-  - http://localhost:8000/magicmile
+  - https://bpj.org.uk/api/public/index.php/magicmile
+
+### Fetching data
+
+https://bpj.org.uk/api/public/index.php/fetch/performances/450606
+
+## Other commands locally
+
+### Migrations
+
+php artisan migrate
+php artisan migrate:status
+php artisan migrate --pretend
+php artisan migrate --force
+php artisan migrate:rollback
+php artisan schema:dump
+php artisan schema:dump --prune
