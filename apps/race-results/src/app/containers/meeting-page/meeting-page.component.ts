@@ -31,7 +31,7 @@ export class MeetingPageComponent implements OnInit {
         this.route.params
             .pipe(
                 switchMap((params: Params) =>
-                    this.resultsService.getMeetingResults(params['date'], params['id'])
+                    this.resultsService.getMeetingResults(params['id'])
                 )
             )
             .subscribe(results => (this.results = results));
