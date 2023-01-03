@@ -108,15 +108,15 @@ class PerformanceController extends Controller
             }
 
             if ($request->input('fromDate')) {
-                $performances = $performances->where('performances.date', '>=', $request->input('fromDate'));
+                $performances = $performances->where('meetings.date', '>=', $request->input('fromDate'));
             }
 
             if ($request->input('toDate')) {
-                $performances = $performances->where('performances.date', '<=', $request->input('toDate'));
+                $performances = $performances->where('meetings.date', '<=', $request->input('toDate'));
             }
 
             if ($request->input('year')) {
-                $performances = $performances->whereYear('date', '=', $request->input('year'));
+                $performances = $performances->whereYear('meetings.date', '=', $request->input('year'));
             }
 
             if ($request->input('onlyAwards')) {
