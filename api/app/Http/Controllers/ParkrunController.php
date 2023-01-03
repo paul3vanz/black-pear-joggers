@@ -51,7 +51,7 @@ class ParkrunController extends Controller
             )
           WHERE
             (
-              (r.`event` = 'parkrun')
+              (m.`event` = 'parkrun')
               AND
               (
                 m.`name` regexp '^($challengeSeperatedByPipes)'
