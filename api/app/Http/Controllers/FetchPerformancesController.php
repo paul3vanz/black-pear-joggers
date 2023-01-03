@@ -66,8 +66,8 @@ class FetchPerformancesController extends Controller
                 CASE WHEN exists(
                     SELECT 1
                     FROM performances t1
-                    LEFT JOIN events e1 ON e1.alias = t1.event
                     INNER JOIN meetings m1 ON m1.id = t1.meetingId
+                    LEFT JOIN events e1 ON e1.alias = m1.event
                     WHERE
                         t1.athlete_id = t.athlete_id
                         AND e1.distance = e.distance
@@ -78,8 +78,8 @@ class FetchPerformancesController extends Controller
                     ELSE TRUE
                 END calculateIsPersonalBest
             FROM performances t
-            LEFT JOIN events e ON e.alias = t.event
             INNER JOIN meetings m ON m.id = t.meetingId
+            LEFT JOIN events e ON e.alias = m.event
             ORDER BY date
         ) pbs ON pbs.id = p2.id
         SET p2.isPersonalBest = pbs.calculateIsPersonalBest
