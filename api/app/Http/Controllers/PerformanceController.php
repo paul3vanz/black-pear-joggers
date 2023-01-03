@@ -37,7 +37,7 @@ class PerformanceController extends Controller
 
         ksort($filters);
 
-        $cacheKey = 'performances-v3-' . json_encode($filters);
+        $cacheKey = 'performances-v4-' . json_encode($filters);
 
         $performances = Cache::remember($cacheKey, 5, function () use ($request) {
 
