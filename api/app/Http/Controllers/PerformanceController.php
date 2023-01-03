@@ -43,6 +43,7 @@ class PerformanceController extends Controller
 
             $performances = DB::table('performances')
                 ->join('athletes', 'performances.athlete_id', '=', 'athletes.id')
+                ->join('meetings', 'performances.meetingId', '=', 'meetings.id')
                 ->leftJoin('events', 'meetings.event', '=', 'events.alias')
                 ->leftJoin('standards', function ($join) {
                     $join->on('athletes.gender', '=', 'standards.gender')
@@ -55,7 +56,6 @@ class PerformanceController extends Controller
                     $join->on('athletes.urn', '=', 'memberships.urn')
                         ->where('memberships.competitiveRegStatus', '=', 'Registered');
                 })
-                ->join('meetings', 'performances.meetingId', '=', 'meetings.id')
                 ->groupBy('performances.id')
                 ->select(
                     DB::raw(
