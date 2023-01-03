@@ -14,6 +14,7 @@ class PerformanceController extends Controller
         'fromDate',
         'isPersonalBest',
         'limit',
+        'meetingId',
         'onlyAwards',
         'search',
         'sort',
@@ -22,18 +23,6 @@ class PerformanceController extends Controller
 
     public function __construct()
     {
-    }
-
-    public function getPerformancesByMeeting($date, $meeting, Request $request)
-    {
-        $performances = $this->getPerformances($request);
-        if ($date) {
-            $paginate = 500;
-            $performances = $performances->where('meetings.id', '=', $meeting);
-            $performances = $performances->where('meetings.date', '=', $date);
-        }
-        $performances = $performances->paginate($paginate);
-        return response()->json($performances);
     }
 
     public function getPerformances(Request $request)
@@ -92,6 +81,10 @@ class PerformanceController extends Controller
 
             if ($request->input('athleteId')) {
                 $performances = $performances->where('performances.athlete_id', '=', $request->input('athleteId'));
+            }
+
+            if ($request->input('meetingId')) {
+                $performances = $performances->where('performances.meetingId', '=', $request->input('meetingId'));
             }
 
             if ($request->input('isPersonalBest')) {

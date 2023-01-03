@@ -84,7 +84,6 @@ $router->group(['prefix' => 'parkrun'], function ($router) {
 $router->group(['prefix' => 'performances'], function ($router) {
     $router->get('', 'PerformanceController@getPerformances');
     $router->get('{id}', 'PerformanceController@getPerformance');
-    $router->get('{date}/{meeting}', 'PerformanceController@getPerformancesByMeeting');
 });
 
 $router->get('/rankings/{athleteId}', 'RankingController@getRankingsByAthlete');

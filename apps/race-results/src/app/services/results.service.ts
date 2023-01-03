@@ -14,8 +14,8 @@ export class ResultsService {
 
     constructor(private http: HttpClient) { }
 
-    getMeetingResults(date: string, meetingId: string): Observable<Paging<Result>> {
-        return this.http.get<Paging<Result>>(`${this.apiRoot}${this.performancesUrl}/${date}/${meetingId}`);
+    getMeetingResults(meetingId: string): Observable<Paging<Result>> {
+        return this.http.get<Paging<Result>>(`${this.apiRoot}${this.performancesUrl}?meetingId=${meetingId}`);
     }
 
     getAthleteResults(athleteId: number, page?: number): Observable<Paging<Result>> {
