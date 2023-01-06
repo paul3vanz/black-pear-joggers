@@ -1,38 +1,65 @@
-/* eslint-disable react/display-name */
 import Document, {
-  Html,
-  Head,
-  Main,
-  NextScript,
-  DocumentContext,
-  DocumentInitialProps,
-} from 'next/document';
+    Head,
+    Html,
+    Main,
+    NextScript
+    } from 'next/document';
+import { ReactElement } from 'react';
 import { ServerStyleSheet } from 'styled-components';
+/* eslint-disable react/display-name */
 
-export default class CustomDocument extends Document {
-  static async getInitialProps(
-    ctx: DocumentContext
-  ): Promise<DocumentInitialProps> {
-    const originalRenderPage = ctx.renderPage;
-
+export default class CustomDocument extends Document<{
+  styleTags: ReactElement[];
+}> {
+  static async getInitialProps(context) {
     const sheet = new ServerStyleSheet();
+    const originalRenderPage = context.renderPage;
 
-    ctx.renderPage = () =>
-      originalRenderPage({
-        enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />),
-        enhanceComponent: (Component) => Component,
-      });
+    try {
+      context.renderPage = () =>
+        originalRenderPage({
+          enhanceApp: (App) => (props) =>
+            sheet.collectStyles(<App {...props} />),
+        });
 
-    const intialProps = await Document.getInitialProps(ctx);
-    const styles = sheet.getStyleElement();
-
-    return { ...intialProps, styles };
+      const initialProps = await Document.getInitialProps(context);
+      return {
+        ...initialProps,
+        styles: (
+          <>
+            {initialProps.styles}
+            {sheet.getStyleElement()}
+          </>
+        ),
+      };
+    } finally {
+      sheet.seal();
+    }
   }
 
   render() {
     return (
       <Html>
-        <Head>{this.props.styles}</Head>
+        <Head>
+          {this.props.styleTags}
+
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin="anonymous"
+          />
+
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;800&amp;display=swap"
+          />
+
+          <script
+            async
+            src="https://kit.fontawesome.com/97736414dd.js"
+            crossOrigin="anonymous"
+          ></script>
+        </Head>
         <body>
           <Main />
           <NextScript />
