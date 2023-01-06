@@ -51,16 +51,47 @@ Here is an overview of common endpoints for retrieving data. There's additional 
 - Identity check
   - https://bpj.org.uk/api/public/index.php/athleteIdvCheck?urn=1234567&dob=1983-01-01
 
+### Meetings
+
+- All meetings (recent first)
+  - https://bpj.org.uk/api/public/index.php/meetings
+- Search event name (needs to be extended to allow multiple)
+  - https://bpj.org.uk/api/public/index.php/meetings?search=evesham
+- Filter on year
+  - https://bpj.org.uk/api/public/index.php/meetings?year=2015
+- Filter on event (needs to be extended to allow multiple)
+  - https://bpj.org.uk/api/public/index.php/meetings?event=parkrun
+- Filter on date (needs fixing to allow both from and to together)
+  - https://bpj.org.uk/api/public/index.php/meetings?fromDate=2022-12-30
+  - https://bpj.org.uk/api/public/index.php/meetings?toDate=2022-12-30
+
 ### Performances (results)
 
-- By athlete
-  - https://bpj.org.uk/api/public/index.php/athlete/450606/performances
 - All performances
   - https://bpj.org.uk/api/public/index.php/performances
+- Filter on athlete
+  - https://bpj.org.uk/api/public/index.php/performances?athleteId=450606
 - Search event name
   - https://bpj.org.uk/api/public/index.php/performances?search=croome
-- PBs
-  - https://bpj.org.uk/api/public/index.php/performancesindividual?isPersonalBest=1
+- Filter on age category
+  - https://bpj.org.uk/api/public/index.php/performances?category=V40
+- Filter on gender (e.g. M or W)
+  - https://bpj.org.uk/api/public/index.php/performances?category=M
+- Filter on event
+  - https://bpj.org.uk/api/public/index.php/performances?event=HM
+- Filter on date (needs fixing to allow both from and to together)
+  - https://bpj.org.uk/api/public/index.php/performances?fromDate=
+  - https://bpj.org.uk/api/public/index.php/performances?toDate=
+- Filter on PBs only
+  - https://bpj.org.uk/api/public/index.php/performances?isPersonalBest=1
+- Limit number of records for performance reasons (e.g. show latest 50)
+  - https://bpj.org.uk/api/public/index.php/performances?limit=
+- Results for specific meeting
+  - https://bpj.org.uk/api/public/index.php/performances?meetingId=6ed1ee94-d938-4762-8bb9-b2beb4f4c185
+- Filter by only awards (e.g. Bronze, Silver, etc)
+  - https://bpj.org.uk/api/public/index.php/performances?onlyAwards=
+- Override sort order (needs updating to allow more options, defaults to most recent date)
+  - https://bpj.org.uk/api/public/index.php/performances?sort=athlete
 
 ### Club standards award standards
 
