@@ -98,11 +98,14 @@ class MagicMileController extends Controller
                 MAX(awards.id) AS award
             FROM
                 magicMile m
+            LEFT JOIN meetings me
+                ON me.date = m.date
+                AND me.event = '1M'
             LEFT JOIN performances p
                 ON p.athlete_id = m.athlete_id
-                AND p.date = m.date
+                AND me.id = p.meetingId
                 AND p.time_parsed = m.actual_time_parsed
-            LEFT JOIN events ON p.event = events.alias
+            LEFT JOIN events ON me.event = events.alias
             LEFT JOIN standards
                 ON m.gender = standards.gender
                 AND standards.category = m.category
