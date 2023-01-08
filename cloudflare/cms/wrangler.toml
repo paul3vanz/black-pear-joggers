@@ -4,7 +4,7 @@ compatibility_date = "2022-11-27"
 routes = [
   "bpj.org.uk",
   "bpj.org.uk/_next*",
-  "bpj.org.uk/_next/*"
+  "bpj.org.uk/_next/*",
   "bpj.org.uk/",
   "bpj.org.uk/admin*",
   "bpj.org.uk/apps/*",
