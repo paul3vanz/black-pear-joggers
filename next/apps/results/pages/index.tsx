@@ -43,6 +43,7 @@ export function ResultsPage(props: ResultsPageProps) {
       limit: 30,
       page: formValues.page,
       year: formValues.year,
+      sort: formValues.sort,
     }).then((response) => response.json())
   );
 
@@ -141,7 +142,7 @@ export function ResultsPage(props: ResultsPageProps) {
             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <Select
                 id="isPersonalBest"
-                label="Personal Best"
+                label="Personal bests"
                 options={[
                   {
                     label: 'Any results',
@@ -173,6 +174,26 @@ export function ResultsPage(props: ResultsPageProps) {
                   })),
                 ]}
                 registerField={register('distance', {
+                  required: true,
+                })}
+              />
+            </div>
+
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+              <Select
+                id="sort"
+                label="Sort"
+                options={[
+                  {
+                    label: 'Finish time',
+                    value: 'time',
+                  },
+                  {
+                    label: 'Date',
+                    value: 'date',
+                  },
+                ]}
+                registerField={register('sort', {
                   required: true,
                 })}
               />

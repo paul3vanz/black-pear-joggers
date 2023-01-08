@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AwardBadge } from './award-badge';
 import { Performance } from '@black-pear-joggers/core-services';
 
 type ResultsTableProps = {
@@ -14,11 +15,12 @@ export const ResultsTable = ({ results }: ResultsTableProps) => {
         <tr>
           <th className="px-4 py-2">Date</th>
           <th className="px-4 py-2">Athlete</th>
-          <th className="px-4 py-2">Distance</th>
+          <th className="px-4 py-2">Event</th>
           <th className="px-4 py-2">Event name</th>
           <th className="px-4 py-2">Gender</th>
           <th className="px-4 py-2">Category</th>
           <th className="px-4 py-2">Time</th>
+          <th className="px-4 py-2">Standard</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-200">
@@ -46,6 +48,9 @@ export const ResultsTable = ({ results }: ResultsTableProps) => {
             <td className="px-4 py-2">{result.category}</td>
             <td className="px-4 py-2">
               {result.time} {result.isPersonalBest ? ' (PB)' : ''}
+            </td>
+            <td className="px-4 py-2">
+              <AwardBadge award={result.award} />
             </td>
           </tr>
         ))}

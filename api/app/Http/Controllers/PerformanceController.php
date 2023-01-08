@@ -144,6 +144,10 @@ class PerformanceController extends Controller
                     ->orderBy('athletes.first_name', 'desc')
                     ->orderBy('meetings.date', 'desc')
                     ->orderBy('performances.time_parsed', 'asc');
+            } else if ($request->input('sort') == 'time') {
+                $performances = $performances->orderBy('performances.time_parsed', 'asc')
+                    ->orderBy('meetings.date', 'asc')
+                    ->orderBy('athletes.last_name', 'asc');
             } else {
                 $performances = $performances->orderBy('meetings.date', 'desc')->orderBy('performances.time_parsed', 'asc');
             }
