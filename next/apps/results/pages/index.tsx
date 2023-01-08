@@ -29,7 +29,11 @@ export function ResultsPage(props: ResultsPageProps) {
     register,
     handleSubmit,
     watch,
-  } = useForm<PerformanceFilters>();
+  } = useForm<PerformanceFilters>({
+    defaultValues: {
+      sort: 'time',
+    },
+  });
 
   const formValues = watch();
 

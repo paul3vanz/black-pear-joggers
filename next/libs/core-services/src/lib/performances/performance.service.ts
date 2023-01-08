@@ -20,6 +20,7 @@ export function getPerformances(filters: Partial<PerformanceFilters>): Promise<R
         limit: filters.limit ? filters.limit.toString() : '',
         page: filters.page ? filters.page.toString() : '',
         year: filters.year ? filters.year.toString() : '',
+        sort: filters.sort || '',
         includeAllMembers: '1',
     }).toString();
 
