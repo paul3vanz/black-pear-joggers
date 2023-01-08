@@ -17,6 +17,9 @@ export function getPerformances(filters: Partial<PerformanceFilters>): Promise<R
         category: filters.category ? filters.category.toString() : '',
         isPersonalBest: filters.isPersonalBest ? '1' : '',
         limit: filters.limit ? filters.limit.toString() : '',
+        page: filters.page ? filters.page.toString() : '',
+        year: filters.year ? filters.year.toString() : '',
+        includeAllMembers: '1',
     }).toString();
 
     return fetch(`${apiBaseUrl}/performances?${params}`);

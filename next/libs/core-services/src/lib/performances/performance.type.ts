@@ -55,7 +55,9 @@ export type PerformanceFilters = {
     toDate: string;
     isPersonalBest: boolean;
     limit: number;
+    page: number;
     meetingId: string;
     onlyAwards: boolean;
-    sort: 'date' | 'athlete';
+    sort: 'date' | 'athlete' | 'time';
+    year: number;
 }

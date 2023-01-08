@@ -12,6 +12,7 @@ import {
   AgeCategory,
   Gender,
   getPerformances,
+  PerformanceFilters,
 } from '@black-pear-joggers/core-services';
 
 type ResultsPageProps = {};
@@ -27,12 +28,7 @@ export function ResultsPage(props: ResultsPageProps) {
     register,
     handleSubmit,
     watch,
-  } = useForm<{
-    search: string;
-    category: AgeCategory;
-    gender: Gender;
-    isPersonalBest: boolean;
-  }>();
+  } = useForm<PerformanceFilters>();
 
   const formValues = watch();
 
@@ -43,13 +39,15 @@ export function ResultsPage(props: ResultsPageProps) {
       gender: formValues.gender,
       isPersonalBest: formValues.isPersonalBest,
       limit: 30,
+      page: formValues.page,
+      year: formValues.year,
     }).then((response) => response.json())
   );
 
   return (
     <>
       <Stack>
-        <Container>
+        <Container wide={true}>
           <h1>Results</h1>
 
           <div className="flex flex-wrap -mx-3 mb-3">
@@ -100,9 +98,61 @@ export function ResultsPage(props: ResultsPageProps) {
             </div>
           </div>
 
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <Select
+                id="year"
+                label="Year"
+                options={[
+                  '2023',
+                  '2022',
+                  '2021',
+                  '2020',
+                  '2019',
+                  '2018',
+                  '2017',
+                  '2016',
+                  '2015',
+                  '2014',
+                  '2013',
+                  '2012',
+                  '2011',
+                  '2010',
+                  '2009',
+                  '2008',
+                  '2007',
+                  '2006',
+                  '2005',
+                  '2004',
+                  '2003',
+                ]}
+                registerField={register('year', {
+                  required: true,
+                })}
+              />
+            </div>
+          </div>
+
           {isLoading ? <LoadingSpinner /> : null}
 
-          <ResultsTable results={data?.data} />
+          {data?.data ? (
+            <>
+              <div className="mb-4">
+                <ResultsTable results={data?.data} />
+              </div>
+
+              <Select
+                id="page"
+                label={`Page ${data?.current_page} of ${data?.last_page}`}
+                options={[...Array(data?.last_page).keys()].map((i) =>
+                  (i + 1).toString()
+                )}
+                registerField={register('page', {
+                  required: true,
+                })}
+              />
+            </>
+          ) : null}
         </Container>
       </Stack>
     </>
