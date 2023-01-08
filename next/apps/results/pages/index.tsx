@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import {
   AgeCategory,
+  eventDistances,
   Gender,
   getPerformances,
   PerformanceFilters,
@@ -38,6 +39,7 @@ export function ResultsPage(props: ResultsPageProps) {
       category: formValues.category,
       gender: formValues.gender,
       isPersonalBest: formValues.isPersonalBest,
+      distance: formValues.distance,
       limit: 30,
       page: formValues.page,
       year: formValues.year,
@@ -51,7 +53,7 @@ export function ResultsPage(props: ResultsPageProps) {
           <h1>Results</h1>
 
           <div className="flex flex-wrap -mx-3 mb-3">
-            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <Select
                 id="gender"
                 label="Gender"
@@ -75,7 +77,7 @@ export function ResultsPage(props: ResultsPageProps) {
               />
             </div>
 
-            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <Select
                 id="category"
                 label="Category"
@@ -96,14 +98,16 @@ export function ResultsPage(props: ResultsPageProps) {
                 })}
               />
             </div>
-          </div>
 
-          <div className="flex flex-wrap -mx-3 mb-6">
-            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <Select
                 id="year"
                 label="Year"
                 options={[
+                  {
+                    label: 'Any year',
+                    value: '',
+                  },
                   '2023',
                   '2022',
                   '2021',
@@ -127,6 +131,48 @@ export function ResultsPage(props: ResultsPageProps) {
                   '2003',
                 ]}
                 registerField={register('year', {
+                  required: true,
+                })}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap -mx-3 mb-6">
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+              <Select
+                id="isPersonalBest"
+                label="Personal Best"
+                options={[
+                  {
+                    label: 'Any results',
+                    value: '',
+                  },
+                  {
+                    label: 'Just personal bests',
+                    value: '1',
+                  },
+                ]}
+                registerField={register('isPersonalBest', {
+                  required: true,
+                })}
+              />
+            </div>
+
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+              <Select
+                id="distance"
+                label="Distance"
+                options={[
+                  {
+                    label: 'Any distance',
+                    value: '',
+                  },
+                  ...eventDistances.map((event) => ({
+                    label: event.event.toString(),
+                    value: event.distance.toString(),
+                  })),
+                ]}
+                registerField={register('distance', {
                   required: true,
                 })}
               />

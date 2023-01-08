@@ -13,7 +13,7 @@ export interface SelectProps {
   labelHidden?: boolean;
   defaultValue?: string;
   registerField?: UseFormRegisterReturn;
-  options: SelectOption[] | string[];
+  options: SelectOption[] | string[] | Array<string | SelectOption>;
   disabled?: boolean;
   onChange?: (event: any) => void;
 }

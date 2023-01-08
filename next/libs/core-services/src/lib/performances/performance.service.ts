@@ -16,6 +16,7 @@ export function getPerformances(filters: Partial<PerformanceFilters>): Promise<R
         gender: filters.gender ? filters.gender.toString() : '',
         category: filters.category ? filters.category.toString() : '',
         isPersonalBest: filters.isPersonalBest ? '1' : '',
+        distance: filters.distance ? filters.distance.toString() : '',
         limit: filters.limit ? filters.limit.toString() : '',
         page: filters.page ? filters.page.toString() : '',
         year: filters.year ? filters.year.toString() : '',

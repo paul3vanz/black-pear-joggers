@@ -45,12 +45,36 @@ export enum Event {
     'Marathon'
 }
 
+export const eventDistances = [
+    {
+        event: 'Mile',
+        distance: 1609.34,
+    },
+    {
+        event: '5K',
+        distance: 5000,
+    },
+    {
+        event: '10K',
+        distance: 10000,
+    },
+    {
+        event: 'Half Marathon',
+        distance: 21097.5,
+    },
+    {
+        event: 'Marathon',
+        distance: 42195,
+    },
+];
+
 export type PerformanceFilters = {
     athleteId: number;
     search: string;
     category: AgeCategory;
     gender: Gender;
     event: Event;
+    distance: number;
     fromDate: string;
     toDate: string;
     isPersonalBest: boolean;
