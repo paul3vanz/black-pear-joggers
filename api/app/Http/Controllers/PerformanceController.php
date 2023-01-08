@@ -52,9 +52,11 @@ class PerformanceController extends Controller
                         ->on('standards.time_parsed', '>=', 'performances.time_parsed');
                 })
                 ->leftJoin('awards', 'standards.award_id', '=', 'awards.id')
-                ->join('memberships', function ($join) {
+                ->join('memberships', function ($join) use ($request) {
                     $join->on('athletes.urn', '=', 'memberships.urn')
-                        ->where('memberships.competitiveRegStatus', '=', 'Registered');
+                        ->when(!$request->input('includeAllMembers'), function ($query) {
+                            $query->where('memberships.competitiveRegStatus', '=', 'Registered');
+                        });
                 })
                 ->groupBy('performances.id')
                 ->select(
