@@ -115,6 +115,10 @@ class PerformanceController extends Controller
                 $performances = $performances->where('meetings.event', '=', $request->input('event'));
             }
 
+            if ($request->input('distance')) {
+                $performances = $performances->where('events.distance', '=', $request->input('distance'));
+            }
+
             if ($request->input('isPersonalBest')) {
                 $performances = $performances->where('performances.isPersonalBest', true);
             }
