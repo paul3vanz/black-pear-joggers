@@ -36,6 +36,7 @@ routes = [
   "bpj.org.uk/profile*",
   "bpj.org.uk/race-results*",
   "bpj.org.uk/register*",
+  "bpj.org.uk/results*",
   "bpj.org.uk/site-map*",
   "bpj.org.uk/social-events*",
   "bpj.org.uk/terms-of-use*",
