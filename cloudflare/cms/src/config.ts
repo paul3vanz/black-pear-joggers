@@ -16,6 +16,7 @@ export const mappings = [
     { request: 'vacancies', replace: `${cloudflarePages}/vacancies` },
     { request: 'claim-award', replace: `${cloudflarePages}/claim-award` },
     { request: 'register', replace: `${cloudflarePages}/register` },
+    { request: 'results', replace: `${cloudflarePages}/results` },
     { request: 'profile', replace: `${cloudflarePages}/profile` },
 
     { request: 'our-races/croome-race', replace: `${netlifyCms}/our-races/croome-capability-canter` },
