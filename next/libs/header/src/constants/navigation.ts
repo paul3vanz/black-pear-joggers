@@ -10,6 +10,7 @@ export const navigationLinks: NavigationLinkItem[] = [
         link: '#',
         text: 'Club info',
         items: [
+            { link: 'https://bpj.org.uk/club-runs', text: 'Club runs' },
             { link: 'https://bpj.org.uk/the-history-of-black-pear-joggers', text: 'Our history' },
             { link: 'https://bpj.org.uk/meet-the-joggers', text: 'Meet the joggers' },
             { link: 'https://bpj.org.uk/kit', text: 'Kit' },
