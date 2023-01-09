@@ -17,6 +17,10 @@ const queryClient = new QueryClient({
   },
 });
 
+const tagManagerArgs = {
+  gtmId: 'GTM-W8KBB3D',
+};
+
 function LoadingContent() {
   return (
     <Stack>
@@ -61,19 +65,19 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Auth0Provider
-        {...config.auth}
-        redirectUri={
-          typeof window !== 'undefined' && `${window.location.origin}/register`
-        }
-      >
+    <Auth0Provider
+      {...config.auth}
+      redirectUri={
+        typeof window !== 'undefined' && `${window.location.origin}/register`
+      }
+    >
+      <QueryClientProvider client={queryClient}>
         <div id="modalContainer"></div>
         <PageContent>
           <Component {...pageProps} />
         </PageContent>
-      </Auth0Provider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </Auth0Provider>
   );
 }
 

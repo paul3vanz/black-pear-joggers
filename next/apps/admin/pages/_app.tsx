@@ -22,6 +22,10 @@ const queryClient = new QueryClient({
   },
 });
 
+const tagManagerArgs = {
+  gtmId: 'GTM-W8KBB3D',
+};
+
 let getAccessTokenSilently = null;
 
 export const sec = {
