@@ -1,5 +1,8 @@
+const sentryConfig = require('../../next.config');
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const withNx = require('@nrwl/next/plugins/with-nx');
+const { withSentryConfig } = require('@sentry/nextjs');
 
 /**
  * @type {import('@nrwl/next/plugins/with-nx').WithNxOptions}
@@ -14,6 +17,16 @@ const nextConfig = {
   images: {
     domains: ['bpj.org.uk'],
   },
+  sentry: {
+    hideSourceMaps: true,
+  },
 };
 
-module.exports = withNx(nextConfig);
+const sentryWebpackPluginOptions = {
+  silent: true,
+};
+
+module.exports = withSentryConfig(
+  withNx(nextConfig),
+  sentryWebpackPluginOptions
+);
