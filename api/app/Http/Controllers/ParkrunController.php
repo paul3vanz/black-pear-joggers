@@ -28,10 +28,15 @@ class ParkrunController extends Controller
         $challengeSeparatedByCommasWithQuotes = '\'' . join('\', \'', str_split($challenge)) . '\'';
 
         if (strpos($challenge, ' OR ') !== false) {
-          $eventNameFilter = 'm.name regexp \'^((' . join(')|(', explode(' OR ', $challenge)) . '))\'';
+            $isAlphabet = false;
+            $eventNameFilter = 'm.name regexp \'^((' . join(')|(', explode(' OR ', $challenge)) . '))\'';
         } else {
-          $eventNameFilter = 'm.name regexp \'^(' . $challengeSeperatedByPipes . ')\'';
+            $isAlphabet = true;
+            $eventNameFilter = 'm.name regexp \'^(' . $challengeSeperatedByPipes . ')\'';
         }
+
+        $orderBy = $isAlphabet ? ",FIELD(`letter`, $challengeSeparatedByCommasWithQuotes)" : '';
+        $groupBy = $isAlphabet ? '`letter`' : '`date`';
 
         $results = DB::select("
       SELECT
@@ -72,19 +77,19 @@ class ParkrunController extends Controller
             m.`name`
           ORDER BY
             a.`last_name`,
-            a.`first_name`,
-            FIELD(`letter`, $challengeSeparatedByCommasWithQuotes),
+            a.`first_name`
+            $orderBy,
             m.`date`
         )
         AS results
       GROUP BY
         `last_name`,
         `first_name`,
-        `letter`
+        $groupBy
       ORDER BY
         `last_name`,
-        `first_name`,
-        FIELD(`letter`, $challengeSeparatedByCommasWithQuotes)
+        `first_name`
+        $orderBy
     ");
 
         return response()->json($results);
