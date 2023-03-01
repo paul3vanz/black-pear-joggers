@@ -33,6 +33,7 @@ export function ContactPage() {
     kit: 'Kit enquiry',
     welfare: 'Welfare',
     mentalhealth: 'Mental Health',
+    championsleague: 'Champions League',
     clubstandards: 'Club Standards Awards',
     crosscountry: 'Cross Country',
     other: 'Other',
