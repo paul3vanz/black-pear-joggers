@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('queue:registrations')->dailyAt('00:00');
-        $schedule->command('queue:fetch:memberships')->dailyAt('00:05');
+        $schedule->command('queue:fetch:memberships')->everyFourHours();
         $schedule->command('queue:fetch:performances')->dailyAt('01:00');
         $schedule->command('queue:fetch:rankings')->dailyAt('04:00');
         $schedule->command('queue:work --stop-when-empty')->dailyAt('05:00');
