@@ -14,7 +14,7 @@ interface Fixture {
 }
 
 const fixturesUrl =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQxZiDUnDXzlDia1oF0xjyiujVhIeGbKgi330Glq-RIiw0DEFJgj9ZSft1sCFyhTE5Q2y9PzFxuKFOj/pub?gid=0&single=true&output=csv';
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPaacvnGmYIFPZw6gHlH9JG8VDXQ4HimUjbsgJ_Lk9YDXfqtD82RoR_wj6r7Siwd-u2pLdkBo03dKX/pub?gid=0&single=true&output=csv';
 
 export function ChampionsLeagueFixtures() {
   const [activeFixture, setActiveFixture] = useState<Fixture>();
@@ -25,7 +25,7 @@ export function ChampionsLeagueFixtures() {
       .then((data) =>
         data
           .split('\n')
-          .filter((line) => !new RegExp('^(#|,)').test(line))
+          .filter((line) => new RegExp('^[0-9]').test(line))
           .map((line) => {
             const cells = line.match(/".*"|[^,"]+/g);
 
