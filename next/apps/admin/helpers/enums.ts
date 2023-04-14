@@ -18,6 +18,8 @@ export const ageCategories = [
     'V60',
     'V65',
     'V70',
+    'V75',
+    'V80',
 ];
 
 export const awards = [

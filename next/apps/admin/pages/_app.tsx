@@ -48,6 +48,7 @@ function LoadingContent() {
 
 function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   const [isAllowed, setIsAllowed] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
   const { isLoading, user, loginWithRedirect, getAccessTokenSilently } =
     useAuth0<UserWithRoles>();
@@ -55,13 +56,14 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   useEffect(() => {
     (async () => {
       try {
-        const accessToken = await getAccessTokenSilently({
-          audience: config.auth.audience,
-        });
-
-        localStorage.setItem('bpj.token', accessToken);
+        // const accessToken = await getAccessTokenSilently({
+        //   audience: config.auth.audience,
+        // });
+        // localStorage.setItem('bpj.token', accessToken);
       } catch (e) {
-        loginWithRedirect(config.auth);
+        console.log('redirect to login');
+        setIsRedirecting(true);
+        // loginWithRedirect(config.auth);
       }
     })();
   }, [getAccessTokenSilently]);
@@ -81,7 +83,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
       <AdminBar />
 
       <main className="flex-1">
-        {isLoading ? (
+        {isLoading || isRedirecting ? (
           <LoadingContent />
         ) : !isAllowed ? (
           <Forbidden />
