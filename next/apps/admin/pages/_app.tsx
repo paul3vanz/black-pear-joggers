@@ -56,14 +56,14 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
   useEffect(() => {
     (async () => {
       try {
-        // const accessToken = await getAccessTokenSilently({
-        //   audience: config.auth.audience,
-        // });
-        // localStorage.setItem('bpj.token', accessToken);
+        const accessToken = await getAccessTokenSilently({
+          audience: config.auth.audience,
+        });
+        localStorage.setItem('bpj.token', accessToken);
       } catch (e) {
         console.log('redirect to login');
         setIsRedirecting(true);
-        // loginWithRedirect(config.auth);
+        loginWithRedirect(config.auth);
       }
     })();
   }, [getAccessTokenSilently]);
