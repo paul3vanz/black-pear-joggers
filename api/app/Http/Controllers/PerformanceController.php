@@ -171,7 +171,7 @@ class PerformanceController extends Controller
         DB::table('performanceFlags')->insert(
             [
                 'athlete_id' => $request->input('record.athlete_id'),
-                'meeting_id' => $request->input('record.meeting_id'),
+                'meeting_id' => $request->input('record.ukaMeetingId'),
                 'date' => $request->input('record.date'),
                 'flag' => $request->input('reason'),
                 'notes' => $request->input('notes')
