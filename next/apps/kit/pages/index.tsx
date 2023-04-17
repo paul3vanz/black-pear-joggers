@@ -78,7 +78,7 @@ export function KitPage(props: KitPageProps) {
 
           <p>The following local companies offer name printing services:</p>
 
-          <h3 className="mb=0">
+          <h3 className="mb-0">
             <a href="https://www.blackpearapparel.co.uk/">Black Pear Apparel</a>
           </h3>
 
@@ -93,7 +93,7 @@ export function KitPage(props: KitPageProps) {
             <li>They also supply our club hoodies.</li>
           </ul>
 
-          <h3 className="mb=0">
+          <h3 className="mb-0">
             <a href="https://www.dyehard.co.uk/">Dyehard</a>
           </h3>
 
@@ -104,7 +104,7 @@ export function KitPage(props: KitPageProps) {
             <li>While you wait service.</li>
           </ul>
 
-          <h3 className="mb=0">
+          <h3 className="mb-0">
             <a href="http://www.jobtogs.co.uk/">Job togs</a>
           </h3>
 
