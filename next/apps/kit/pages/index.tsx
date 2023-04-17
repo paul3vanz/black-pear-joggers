@@ -78,13 +78,13 @@ export function KitPage(props: KitPageProps) {
 
           <p>The following local companies offer name printing services:</p>
 
-          <h3>
+          <h3 className="mb=0">
             <a href="https://www.blackpearapparel.co.uk/">Black Pear Apparel</a>
           </h3>
 
           <p>Unit 60c Blackpole Trading Est West, WR3 8TJ</p>
 
-          <ul>
+          <ul className="mb-6 list-disc list-inside">
             <li>£3.50-£5 depending on size.</li>
             <li>
               Contact them before to confirm and they can offer while you wait
@@ -93,24 +93,24 @@ export function KitPage(props: KitPageProps) {
             <li>They also supply our club hoodies.</li>
           </ul>
 
-          <h3>
+          <h3 className="mb=0">
             <a href="https://www.dyehard.co.uk/">Dyehard</a>
           </h3>
 
           <p>5 St Johns, WR2 5AE</p>
 
-          <ul>
+          <ul className="mb-6 list-disc list-inside">
             <li>£6 per name.</li>
             <li>While you wait service.</li>
           </ul>
 
-          <h3>
+          <h3 className="mb=0">
             <a href="http://www.jobtogs.co.uk/">Job togs</a>
           </h3>
 
           <p>44 The Tything, WR1 1JT</p>
 
-          <ul>
+          <ul className="mb-6 list-disc list-inside">
             <li>£5-£6 per print.</li>
             <li>Turnaround is about 7-10 days (leaving top with them).</li>
           </ul>
