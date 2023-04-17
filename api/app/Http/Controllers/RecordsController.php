@@ -97,6 +97,8 @@ class RecordsController extends Controller
             ]
         );
 
+        Cache::forget('records-v3');
+
         return response()->json($insert);
     }
 }
