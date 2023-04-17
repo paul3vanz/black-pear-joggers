@@ -65,6 +65,57 @@ export function KitPage(props: KitPageProps) {
           </div>
         </Container>
       </Stack>
+
+      <Stack backgroundColour={BackgroundColour.Dark}>
+        <Container>
+          <h2>Name printing</h2>
+
+          <p>
+            Once you've got your club kit, it's well worth getting your name
+            printed on the front of your top. The added cheers you get from
+            people shouting your name in races definitely help give you a boost!
+          </p>
+
+          <p>The following local companies offer name printing services:</p>
+
+          <h3>
+            <a href="https://www.blackpearapparel.co.uk/">Black Pear Apparel</a>
+          </h3>
+
+          <p>Unit 60c Blackpole Trading Est West, WR3 8TJ</p>
+
+          <ul>
+            <li>£3.50-£5 depending on size.</li>
+            <li>
+              Contact them before to confirm and they can offer while you wait
+              service.
+            </li>
+            <li>They also supply our club hoodies.</li>
+          </ul>
+
+          <h3>
+            <a href="https://www.dyehard.co.uk/">Dyehard</a>
+          </h3>
+
+          <p>5 St Johns, WR2 5AE</p>
+
+          <ul>
+            <li>£6 per name.</li>
+            <li>While you wait service.</li>
+          </ul>
+
+          <h3>
+            <a href="http://www.jobtogs.co.uk/">Job togs</a>
+          </h3>
+
+          <p>44 The Tything, WR1 1JT</p>
+
+          <ul>
+            <li>£5-£6 per print.</li>
+            <li>Turnaround is about 7-10 days (leaving top with them).</li>
+          </ul>
+        </Container>
+      </Stack>
     </>
   );
 }
