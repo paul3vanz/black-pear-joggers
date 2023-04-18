@@ -6,6 +6,7 @@ import { Slug } from './slug.types';
 interface BaseType {
     _key: string;
     _type: string;
+    disabled: boolean;
 }
 
 export interface InfoRows extends BaseType {
@@ -21,6 +22,7 @@ export interface TextWithIllustration {
     width: 'narrow' | 'wide';
     cropToFit: boolean;
     backgroundColour: BackgroundColour;
+    disabled: boolean;
 }
 
 export interface CtaPlug extends BaseType {

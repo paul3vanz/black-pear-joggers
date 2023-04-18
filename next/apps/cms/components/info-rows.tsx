@@ -105,7 +105,7 @@ export function InfoRows(props: InfoRowsProps) {
   return (
     <>
       {props.rows.map((row, index) => {
-        return (
+        return row.disabled ? null : (
           <InfoRow
             key={index}
             row={row}

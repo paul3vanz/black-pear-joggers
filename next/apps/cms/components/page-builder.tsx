@@ -32,98 +32,109 @@ export interface PageBuilderProps {
 export function PageBuilder(props: PageBuilderProps): ReactElement {
   return (
     <>
-      {props.content.map((contentItem) => {
-        switch (contentItem._type) {
-          case 'infoRows':
-            return <InfoRows key={contentItem._key} rows={contentItem.rows} />;
-          case 'ctaPlug':
-            return <CtaPlug key={contentItem._key} ctaPlug={contentItem} />;
-          case 'featureList':
-            return (
-              <FeatureList key={contentItem._key} featureList={contentItem} />
-            );
-          case 'quote':
-            return <Quote key={contentItem._key} quote={contentItem} />;
-          case 'hero':
-            return <Hero key={contentItem._key} hero={contentItem} />;
-          case 'steps':
-            return <Steps key={contentItem._key} steps={contentItem} />;
-          case 'alert':
-            return <Alert key={contentItem._key} alert={contentItem} />;
-          case 'illustration':
-            return (
-              <Illustration key={contentItem._key} illustration={contentItem} />
-            );
-          case 'cards':
-            return (
-              <Stack
-                key={contentItem._key}
-                backgroundColour={
-                  contentItem.backgroundColour || BackgroundColour.Light
-                }
-              >
-                <Container wide={true}>
-                  {contentItem.title || contentItem.subtitle ? (
-                    <div className="mb-8">
-                      {contentItem.title ? <h2>{contentItem.title}</h2> : null}
+      {props.content
+        .filter((contentItem) => !contentItem.disabled)
+        .map((contentItem) => {
+          switch (contentItem._type) {
+            case 'infoRows':
+              return (
+                <InfoRows key={contentItem._key} rows={contentItem.rows} />
+              );
+            case 'ctaPlug':
+              return <CtaPlug key={contentItem._key} ctaPlug={contentItem} />;
+            case 'featureList':
+              return (
+                <FeatureList key={contentItem._key} featureList={contentItem} />
+              );
+            case 'quote':
+              return <Quote key={contentItem._key} quote={contentItem} />;
+            case 'hero':
+              return <Hero key={contentItem._key} hero={contentItem} />;
+            case 'steps':
+              return <Steps key={contentItem._key} steps={contentItem} />;
+            case 'alert':
+              return <Alert key={contentItem._key} alert={contentItem} />;
+            case 'illustration':
+              return (
+                <Illustration
+                  key={contentItem._key}
+                  illustration={contentItem}
+                />
+              );
+            case 'cards':
+              return (
+                <Stack
+                  key={contentItem._key}
+                  backgroundColour={
+                    contentItem.backgroundColour || BackgroundColour.Light
+                  }
+                >
+                  <Container wide={true}>
+                    {contentItem.title || contentItem.subtitle ? (
+                      <div className="mb-8">
+                        {contentItem.title ? (
+                          <h2>{contentItem.title}</h2>
+                        ) : null}
 
-                      {contentItem.subtitle ? (
-                        <PortableText
-                          components={portableTextComponents}
-                          value={contentItem.subtitle}
-                        />
-                      ) : null}
-                    </div>
-                  ) : null}
-
-                  <Cards maxColumns={contentItem.maxColumns || null}>
-                    {contentItem.cards.map((card) => (
-                      <Card
-                        key={card._key}
-                        headline={card.title}
-                        link={card.link}
-                        content={
+                        {contentItem.subtitle ? (
                           <PortableText
                             components={portableTextComponents}
-                            value={card.content}
+                            value={contentItem.subtitle}
                           />
-                        }
-                        imageUrl={
-                          card.image?.externalUrl ||
-                          urlFor(card.image.asset).url()
-                        }
-                      />
-                    ))}
-                  </Cards>
-                </Container>
-              </Stack>
-            );
-          case 'uiComponentRef':
-            switch (contentItem.name) {
-              case 'ChampionsLeagueFixtures':
-                return <ChampionsLeagueFixtures key={contentItem._key} />;
-              case 'ChampionsLeagueResultsTables':
-                return <ChampionsLeagueResultsTables key={contentItem._key} />;
-              case 'ClubRunsOverview':
-                return <ClubRunsOverview runs={props.runs} />;
-              case 'RecentPersonalBests':
-                return <RecentPersonalBests key={contentItem._key} />;
-              case 'RecentNews':
-                return (
-                  <RecentNews key={contentItem._key} posts={props.posts} />
-                );
-              default:
-                return (
-                  <FallbackComponent
-                    key={contentItem._key}
-                    contentItem={contentItem}
-                  />
-                );
-            }
-          default:
-            return <FallbackComponent contentItem={contentItem} />;
-        }
-      })}
+                        ) : null}
+                      </div>
+                    ) : null}
+
+                    <Cards maxColumns={contentItem.maxColumns || null}>
+                      {contentItem.cards.map((card) => (
+                        <Card
+                          key={card._key}
+                          headline={card.title}
+                          link={card.link}
+                          content={
+                            <PortableText
+                              components={portableTextComponents}
+                              value={card.content}
+                            />
+                          }
+                          imageUrl={
+                            card.image?.externalUrl ||
+                            urlFor(card.image.asset).url()
+                          }
+                        />
+                      ))}
+                    </Cards>
+                  </Container>
+                </Stack>
+              );
+            case 'uiComponentRef':
+              switch (contentItem.name) {
+                case 'ChampionsLeagueFixtures':
+                  return <ChampionsLeagueFixtures key={contentItem._key} />;
+                case 'ChampionsLeagueResultsTables':
+                  return (
+                    <ChampionsLeagueResultsTables key={contentItem._key} />
+                  );
+                case 'ClubRunsOverview':
+                  return <ClubRunsOverview runs={props.runs} />;
+                case 'RecentPersonalBests':
+                  return <RecentPersonalBests key={contentItem._key} />;
+                case 'RecentNews':
+                  return (
+                    <RecentNews key={contentItem._key} posts={props.posts} />
+                  );
+                default:
+                  return (
+                    <FallbackComponent
+                      key={contentItem._key}
+                      contentItem={contentItem}
+                    />
+                  );
+              }
+            default:
+              return <FallbackComponent contentItem={contentItem} />;
+          }
+        })}
     </>
   );
 }
