@@ -105,7 +105,7 @@ export function KitPage(props: KitPageProps) {
           </ul>
 
           <h3 className="mb-0">
-            <a href="http://www.jobtogs.co.uk/">Job togs</a>
+            <a href="http://www.jobtogs.co.uk/">Jobtogs</a>
           </h3>
 
           <p>44 The Tything, WR1 1JT</p>
