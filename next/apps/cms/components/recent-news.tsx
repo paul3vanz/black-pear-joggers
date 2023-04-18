@@ -2,6 +2,7 @@ import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Card } from '@black-pear-joggers/card';
 import { Cards } from '../components/cards';
 import { Container } from '@black-pear-joggers/container';
+import { differenceInCalendarMonths, parseISO } from 'date-fns';
 import { formatRelative, newsPostUrl } from '@black-pear-joggers/helpers';
 import { portableTextBlocksToText } from '../core/portable-text/portable-text-components';
 import { Post } from '../types';
@@ -12,7 +13,12 @@ interface RecentNewsProps {
 }
 
 export function RecentNews(props: RecentNewsProps) {
-  return (
+  const monthsSinceLastPost = differenceInCalendarMonths(
+    new Date(),
+    parseISO(props.posts[0].publishedAt)
+  );
+
+  return monthsSinceLastPost <= 2 ? (
     <Stack backgroundColour={BackgroundColour.Dark}>
       <Container wide={true}>
         <h2>Recent news</h2>
@@ -42,5 +48,5 @@ export function RecentNews(props: RecentNewsProps) {
         </Cards>
       </Container>
     </Stack>
-  );
+  ) : null;
 }
