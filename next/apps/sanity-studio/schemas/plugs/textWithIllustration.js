@@ -55,10 +55,11 @@ export default {
     select: {
       label: 'label',
       title: 'title',
+      disabled: 'disabled',
     },
-    prepare({ label, title }) {
+    prepare({ label, title, disabled }) {
       return {
-        title: label || title,
+        title: `${disabled ? '🚫 ' : ''}${label || title}`,
       };
     },
   },

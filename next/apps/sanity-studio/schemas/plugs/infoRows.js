@@ -17,10 +17,13 @@ export default {
     select: {
       title: 'title',
       rows: 'rows',
+      disabled: 'disabled',
     },
-    prepare({ title, rows }) {
+    prepare({ title, rows, disabled }) {
       return {
-        title: title ? `Info rows: ${title}` : 'Info rows',
+        title: `${disabled ? '🚫 ' : ''}${
+          title ? `Info rows: ${title}` : 'Info rows'
+        }`,
         subtitle: `${rows.length} row${rows.length > 1 ? 's' : ''}: ${rows
           .map((row) => row.label || row.title || 'No label or title')
           .join(', ')}`,
