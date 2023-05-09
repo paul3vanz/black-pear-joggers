@@ -112,10 +112,10 @@ class FetchPerformancesController extends Controller
             [
                 'ukaMeetingId' => $performance['ukaMeetingId'],
                 'event' => $performance['event'],
-                'name' => $performance['race'],
                 'date' => $performance['date']
             ],
             [
+                'name' => $performance['race'],
                 'id' => Str::uuid(),
             ]
         );
