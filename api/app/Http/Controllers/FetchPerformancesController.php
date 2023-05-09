@@ -120,6 +120,11 @@ class FetchPerformancesController extends Controller
             ]
         );
 
+        if ($performance['race'] != $meeting->name) {
+            $meeting->name = $performance['race'];
+            $meeting->save();
+        }
+
         return Performance::firstOrCreate([
             'athlete_id' => $performance['athlete_id'],
             'category' => $performance['category'],
