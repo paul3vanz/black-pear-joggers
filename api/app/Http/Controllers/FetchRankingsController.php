@@ -46,6 +46,7 @@ class FetchRankingsController extends Controller
 
             if (strpos($html->text(), 'Profile not found') !== false) {
                 Log::channel('slackInfo')->info('No ranking profile for athlete ' . $athleteId);
+                break;
             }
 
             $addedRankings = $this->parseRankingHistory($athlete, $html);
