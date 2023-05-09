@@ -44,12 +44,16 @@ class FetchRankingsController extends Controller
         foreach ($athletes as $athlete) {
             $html = $this->fetchRunBritainRankingsAthleteProfile($athlete->urn);
 
+            if (strpos($html->text(), 'Profile not found') !== false) {
+                Log::channel('slackInfo')->info('No ranking profile for athlete ' . $athleteId);
+            }
+
             $addedRankings = $this->parseRankingHistory($athlete, $html);
 
             if (isset($addedRankings) && is_array($addedRankings)) {
-              Log::channel('slackInfo')->info('Added ' . sizeof($addedRankings) . ' for athlete ' . $athleteId);
+                Log::channel('slackInfo')->info('Added ' . sizeof($addedRankings) . ' for athlete ' . $athleteId);
             } else {
-              Log::channel('slackInfo')->info('Added no rankings for athlete ' . $athleteId);
+                Log::channel('slackInfo')->info('Added no rankings for athlete ' . $athleteId);
             }
         }
 
