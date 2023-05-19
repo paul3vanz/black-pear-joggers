@@ -14,6 +14,8 @@ function onSubmit(data) {
     firstName: data.firstName,
     lastName: data.lastName,
     urn: data.urn,
+    gender: data.gender,
+    dob: data.dob,
   });
 }
 

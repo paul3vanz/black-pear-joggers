@@ -98,7 +98,7 @@ class AthleteController extends Controller
         ]);
     }
 
-    public function updateAthlete($id, $request)
+    public function updateAthlete($id, Request $request)
     {
         if (!Gate::allows('athletes:admin')) {
             abort(403);
@@ -111,8 +111,8 @@ class AthleteController extends Controller
             'athlete_id' => $request->input('athleteId'),
             'first_name' => $request->input('firstName'),
             'last_name' => $request->input('lastName'),
-            // 'gender' => $request->input('gender')
-            // 'dob' => $request->input('dob')
+            'gender' => $request->input('gender'),
+            'dob' => $request->input('dob')
         ]);
     }
 
