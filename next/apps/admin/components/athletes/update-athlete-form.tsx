@@ -10,6 +10,7 @@ interface UpdateAthleteFormProps {
 
 function onSubmit(data) {
   updateAthlete(data.id, {
+    id: data.athleteId,
     athleteId: data.athleteId,
     firstName: data.firstName,
     lastName: data.lastName,
