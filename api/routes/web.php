@@ -7,7 +7,7 @@ $router->get('/', function () use ($router) {
 $router->get('/athletes', 'AthleteController@getAthletes');
 $router->get('/athlete/{id}', 'AthleteController@getAthlete');
 $router->post('/athlete', 'AthleteController@createAthlete');
-$router->put('/athlete/{id}', 'AthleteController@updateAthlete');
+$router->patch('/athlete/{id}', 'AthleteController@updateAthlete');
 $router->delete('/athlete/{id}', 'AthleteController@deleteAthlete');
 $router->get('/athleteIdvCheck', 'AthleteController@athleteIdvCheck');
 

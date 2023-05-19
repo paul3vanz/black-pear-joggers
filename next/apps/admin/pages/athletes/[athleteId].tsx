@@ -45,6 +45,13 @@ function AthleteDetailsPage() {
         <div className="mb-4">
           <span className="mr-4">
             <Button
+              text="BPJ Race Results"
+              link={`https://apps.bpj.org.uk/race-results/#/athlete/${athleteId}`}
+            ></Button>
+          </span>
+
+          <span className="mr-4">
+            <Button
               text="Power of 10"
               link={`https://thepowerof10.info/athletes/profile.aspx?athleteid=${athleteId}`}
             ></Button>

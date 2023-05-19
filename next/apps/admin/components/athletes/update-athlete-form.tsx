@@ -10,9 +10,9 @@ interface UpdateAthleteFormProps {
 
 function onSubmit(data) {
   updateAthlete(data.id, {
-    athlete_id: data.athleteId,
-    first_name: data.firstName,
-    last_name: data.lastName,
+    athleteId: data.athleteId,
+    firstName: data.firstName,
+    lastName: data.lastName,
     urn: data.urn,
   });
 }

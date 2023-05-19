@@ -36,10 +36,10 @@ export function useAthlete(athleteId?: number) {
 
 export function updateAthlete(id: number, athlete: any) {
     fetch(`${config.baseApiUrl}/athletes/${id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-          },
+        },
         body: JSON.stringify(athlete),
     })
 }
