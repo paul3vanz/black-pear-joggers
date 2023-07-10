@@ -22,6 +22,7 @@ import { RecentNews } from './recent-news';
 import { RecentPersonalBests } from './personal-bests/recent-personal-bests';
 import { Steps } from './steps';
 import { urlFor } from '@black-pear-joggers/sanity';
+import { CountdownTimer } from './countdown-timer';
 
 export interface PageBuilderProps {
   content: ContentItem[];
@@ -122,6 +123,10 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
                 case 'RecentNews':
                   return (
                     <RecentNews key={contentItem._key} posts={props.posts} />
+                  );
+                case 'CountdownTimer':
+                  return (
+                    <CountdownTimer />
                   );
                 default:
                   return (

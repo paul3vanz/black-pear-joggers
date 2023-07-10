@@ -104,8 +104,9 @@ export function InfoRow(props: InfoRowProps) {
 export function InfoRows(props: InfoRowsProps) {
   return (
     <>
-      {props.rows.map((row, index) => {
-        return row.disabled ? null : (
+      {props.rows
+        .filter((row) => !row.disabled)
+        .map((row, index) => (
           <InfoRow
             key={index}
             row={row}
@@ -118,8 +119,7 @@ export function InfoRows(props: InfoRowsProps) {
             }
             reverse={index % 2 === 0 ? false : true}
           />
-        );
-      })}
+        ))}
     </>
   );
 }
