@@ -21,8 +21,8 @@ export function CountdownTimer() {
 
 function CountdownElement(props: { value: number; label: string }) {
   return (
-    <li className="border border-orange-500 flex flex-col content-center px-10 py-4 mr-4">
-      <strong className="text-4xl">{props.value}</strong>
+    <li className="border border-orange-500 flex flex-col content-center px-2 sm:px-10 py-4 mr-4">
+      <strong className="text-3xl sm:text-4xl">{props.value}</strong>
       <span className="">{props.label}</span>
     </li>
   );

@@ -126,7 +126,7 @@ export function PageBuilder(props: PageBuilderProps): ReactElement {
                   );
                 case 'CountdownTimer':
                   return (
-                    <CountdownTimer />
+                    <CountdownTimer key={contentItem._key} />
                   );
                 default:
                   return (
