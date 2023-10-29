@@ -22,15 +22,15 @@ class AthleteController extends Controller
                     ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'LIKE', "%$searchTerm%");
             });
 
-            $athletes = $athletes->has('activeMembership')->with('latestRanking');
+            $athletes = $athletes->with('latestRanking');
 
-            $athletes = $athletes->get();
+            $athletes = $athletes->get()->filter(function ($item) { return $item->active; });
         } else {
-            $athletes = Athlete::query()->has('activeMembership')->get();
+            $athletes = Athlete::query()->get()->filter(function ($item) { return $item->active; });
         }
 
         if (Gate::allows('athletes:admin')) {
-            $athletes->makeVisible(['urn', 'dob', 'age']);
+            $athletes->makeVisible(['urn', 'dob', 'age', 'payments', 'membership']);
         }
 
         $athletes = $athletes->all();

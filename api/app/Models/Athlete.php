@@ -26,12 +26,16 @@ final class Athlete extends Model
         'urn',
         'dob',
         'age',
+        'payments',
+        'membership',
         'laravel_through_key',
     ];
 
     protected $appends = [
         'age',
         'category',
+        'affiliated',
+        'active',
     ];
 
     public function getAgeAttribute()
@@ -54,6 +58,26 @@ final class Athlete extends Model
         } else {
             return 'V' . (floor($this->age / 5) * 5);
         }
+    }
+
+    public function getAffiliatedAttribute() {
+        $isRegisteredCompetitive = $this->membership && $this->membership->competitiveRegStatus === 'Registered' ? true : false;
+        $isPaidUpMember = count($this->payments) && $this->payments[0]->paymentStatus === 'Paid';
+        $hasPaidAffiliated = $isPaidUpMember && !strpos($this->payments[0]->membershipType, 'basic');
+
+        return $isRegisteredCompetitive || $hasPaidAffiliated;
+    }
+
+    public function getActiveAttribute() {
+        $isRegisteredCompetitive = $this->membership && $this->membership->competitiveRegStatus === 'Registered' ? true : false;
+        $isPaidUpMember = count($this->payments) && $this->payments[0]->paymentStatus === 'Paid';
+
+        return $isRegisteredCompetitive || $isPaidUpMember;
+    }
+
+    public function payments()
+    {
+        return $this->hasMany('App\Models\Payment', 'urn', 'urn');
     }
 
     public function magicmiles()
@@ -94,13 +118,6 @@ final class Athlete extends Model
     public function membership()
     {
         return $this->belongsTo('App\Models\Membership', 'urn', 'urn');
-    }
-
-    public function activeMembership()
-    {
-        return $this->belongsTo('App\Models\Membership', 'urn', 'urn')->whereIn('competitiveRegStatus', [
-            'Registered',
-        ]);
     }
 
     public function users()
