@@ -22,8 +22,9 @@ class FetchRankingsController extends Controller
         $athleteIds = array();
 
         $athletes = Athlete::whereNotNull('urn')
-            ->has('activeMembership')
-            ->get();
+            ->get()
+            ->filter(function ($item) { return $item->affiliated; })
+            ->values();
 
         foreach ($athletes as $athlete) {
             dispatch(new FetchRankingsJob($athlete));
