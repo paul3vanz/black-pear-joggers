@@ -7,10 +7,10 @@ export interface MagicMileResult {
     category: string;
     date: string;
     location: string;
-    predictedTime: string;
-    predictedTimeParsed: number;
-    actualTime: string;
-    actualTimeParsed: number;
-    createdAt?: string;
-    updatedAt?: string;
+    predictedTime: number;
+    actualTime: number;
+    predictedTimeFormatted: string;
+    actualTimeFormatted: string;
+    createdDate?: string;
+    updatedDate?: string;
   }

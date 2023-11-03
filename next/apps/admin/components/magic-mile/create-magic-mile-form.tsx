@@ -277,7 +277,7 @@ function getLatestResultByAthleteId(
         .filter((result) => result.athleteId === athleteId)
         .sort((a, b) =>
           isBefore(parseISO(a.date), parseISO(b.date)) ? 0 : -1
-        )[0]?.actualTimeParsed
+        )[0]?.actualTime
     : null;
 }
 

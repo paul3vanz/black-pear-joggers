@@ -15,7 +15,7 @@ export class ResultsTableComponent implements OnChanges {
 
   ngOnChanges() {
     if (this.sort === 'fastest') {
-      this.sortedResults = this.results.slice(0).sort((result1, result2) => (result1.actualTimeParsed < result2.actualTimeParsed ? -1 : 0));
+      this.sortedResults = this.results.slice(0).sort((result1, result2) => (result1.actualTime < result2.actualTime ? -1 : 0));
     } else {
       this.sortedResults = this.results;
     }
