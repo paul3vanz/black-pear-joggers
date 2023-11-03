@@ -106,9 +106,7 @@ class RegistrationController extends Controller
 
     public function createRegistrationsFromMemberships()
     {
-        $members = collect($this->membershipController->getClubMembers(1606, true)->getData()->Athletes)->filter(function ($value, $key) {
-            return in_array($value->CompetitiveRegStatus, array('Registered'));
-        });
+        $members = collect($this->membershipController->getClubMembers(1606, true)->getData()->Athletes);
 
         $existingAthletes = Athlete::query()->whereNotNull('urn')->get()->map(function ($value, $key) {
             return $value->urn;
