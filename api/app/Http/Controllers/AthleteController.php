@@ -24,9 +24,23 @@ class AthleteController extends Controller
 
             $athletes = $athletes->with('latestRanking');
 
-            $athletes = $athletes->get()->filter(function ($item) { return $item->affiliated; })->values();
+            $athletes = $athletes
+                ->get()
+                ->filter(function ($item) use ($request) {
+                    return $request->input('includeAllMembers')
+                        ? true
+                        : $item->affiliated;
+                })
+                ->values();
         } else {
-            $athletes = Athlete::query()->get()->filter(function ($item) { return $item->affiliated; })->values();
+            $athletes = Athlete::query()
+                ->get()
+                ->filter(function ($item) use ($request) {
+                    return $request->input('includeAllMembers')
+                        ? true
+                        : $item->affiliated;
+                })
+                ->values();
         }
 
         if (Gate::allows('athletes:admin')) {
