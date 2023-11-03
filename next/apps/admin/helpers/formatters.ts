@@ -26,3 +26,7 @@ export function toAgeCategory(dateOfBirth: string): string {
         return 'V' + (Math.floor(age / 5) * 5);
     }
 }
+
+export function formatGender(gender: string): string {
+    return gender === 'M' ? 'Male' : gender === 'W' ? 'Female' : gender;
+}

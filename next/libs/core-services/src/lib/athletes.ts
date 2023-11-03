@@ -5,7 +5,7 @@ import { fetcher, fetcherConfig } from './fetcher';
 
 
 export function useAthletes() {
-    const { data, error, isValidating } = useSWRImmutable<Athlete[], string>(`${config.baseApiUrl}/athletes`, fetcher, fetcherConfig);
+    const { data, error, isValidating } = useSWRImmutable<Athlete[], string>(`${config.baseApiUrl}/athletes?includeAllMembers=1`, fetcher, fetcherConfig);
 
     return {
         athletes: data,
