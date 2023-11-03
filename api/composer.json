@@ -20,7 +20,8 @@
         "rebing/graphql-laravel": "^8.0",
         "guzzlehttp/psr7": "^2.1",
         "auth0/auth0-php": "^8.0",
-        "stripe/stripe-php": "^7.114"
+        "stripe/stripe-php": "^7.114",
+        "doctrine/dbal": "^3.7"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9.2",

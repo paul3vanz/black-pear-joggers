@@ -46,6 +46,8 @@ $router->post('/checkout', 'CheckoutController@createSession');
 
 $router->get('/events', 'EventController@getEvents');
 
+$router->get('/payments', 'PaymentsController@getPayments');
+
 $router->group(['prefix' => 'fetch'], function ($router) {
     $router->get('performances/{athleteId}', 'FetchPerformancesController@fetchPerformances');
     $router->get('performances', 'FetchPerformancesController@queueAllFetchPerformances');
@@ -57,7 +59,7 @@ $router->group(['prefix' => 'fetch'], function ($router) {
 $router->get('/registrations/queue', 'RegistrationController@queueAllRegistrations');
 $router->get('/registrations/createregistrationsfrommemberships', 'RegistrationController@createRegistrationsFromMemberships');
 
-$router->get('/magicmile', 'MagicMileController@getAllLegacy');
+$router->get('/magicmile', 'MagicMileController@getAll');
 $router->get('/magicmile/syncmagicmile', 'MagicMileController@syncMagicMileResults');
 
 $router->group([

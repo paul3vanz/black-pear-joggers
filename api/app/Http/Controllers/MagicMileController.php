@@ -20,7 +20,35 @@ class MagicMileController extends Controller
 
     public function getAll()
     {
-        $results = MagicMile::query()->get()->all();
+        $query = MagicMile::query()
+        ->select('magicmile.*', 'performances.isPersonalBest', DB::raw('MAX(awards.id) AS award'))
+        ->leftJoin('meetings', function ($join) {
+            $join->on('meetings.date', '=', 'magicmile.date')
+                 ->where('meetings.event', '=', '1M');
+        })
+        ->leftJoin('performances', function ($join) {
+            $join->on('performances.athlete_id', '=', 'magicmile.athleteId')
+                 ->on('meetings.id', '=', 'performances.meetingId');
+        })
+        ->leftJoin('events', function ($join) {
+            $join->on('meetings.event', '=', 'events.alias');
+        })
+        ->leftJoin('standards', function ($join) {
+            $join->on('magicmile.gender', '=', 'standards.gender')
+                ->on('standards.category', '=', 'magicmile.category')
+                ->on('standards.event_id', '=', 'events.has_standard')
+                ->on('standards.time_parsed', '>=', 'magicmile.actualTime');
+        })
+        ->leftJoin('awards', function ($join) {
+            $join->on('standards.award_id', '=', 'awards.id');
+        })
+        ->groupBy('magicmile.id')
+        ->orderBy('magicmile.date', 'desc')
+        ->orderBy('magicmile.actualTime')
+        ->orderBy('magicmile.lastName');
+
+        $results = $query->get()->all();
+
         return response()->json($results);
     }
 
@@ -38,23 +66,19 @@ class MagicMileController extends Controller
             'date' => 'required',
             'location' => 'required',
             'predictedTime' => 'required',
-            'predictedTimeParsed' => 'required',
             'actualTime' => 'required',
-            'actualTimeParsed' => 'required'
         ]);
 
         $record = MagicMile::firstOrCreate([
-            'athlete_id' => $request->input('athleteId') || null,
-            'first_name' => $request->input('firstName'),
-            'last_name' => $request->input('lastName'),
+            'athleteId' => $request->input('athleteId') || null,
+            'firstName' => $request->input('firstName'),
+            'lastName' => $request->input('lastName'),
             'gender' => $request->input('gender'),
             'category' => $request->input('category'),
             'date' => $request->input('date'),
             'location' => $request->input('location'),
-            'predicted_time' => $request->input('predictedTime'),
-            'predicted_time_parsed' => $request->input('predictedTimeParsed'),
-            'actual_time' => $request->input('actualTime'),
-            'actual_time_parsed' => $request->input('actualTimeParsed'),
+            'predictedTime' => $request->input('predictedTime'),
+            'actualTime' => $request->input('actualTime'),
         ]);
 
         return response()->json($record);
@@ -75,58 +99,12 @@ class MagicMileController extends Controller
         return response()->json($id);
     }
 
-    // Fetches all results in specific format needed for Angular application
-    public function getAllLegacy()
-    {
-        $results = DB::select("
-            SELECT
-                m.id AS id,
-                m.athlete_id AS athleteId,
-                m.first_name AS firstName,
-                m.last_name AS lastName,
-                m.gender AS gender,
-                m.category AS category,
-                m.date AS date,
-                m.location AS location,
-                m.predicted_time AS predictedTime,
-                m.predicted_time_parsed AS predictedTimeParsed,
-                m.actual_time AS actualTime,
-                m.actual_time_parsed AS actualTimeParsed,
-                m.created_at AS createdAt,
-                m.updated_at AS updatedAt,
-                p.isPersonalBest,
-                MAX(awards.id) AS award
-            FROM
-                magicMile m
-            LEFT JOIN meetings me
-                ON me.date = m.date
-                AND me.event = '1M'
-            LEFT JOIN performances p
-                ON p.athlete_id = m.athlete_id
-                AND me.id = p.meetingId
-                AND p.time_parsed = m.actual_time_parsed
-            LEFT JOIN events ON me.event = events.alias
-            LEFT JOIN standards
-                ON m.gender = standards.gender
-                AND standards.category = m.category
-                AND standards.event_id = events.has_standard
-                AND standards.time_parsed >= m.actual_time_parsed
-            LEFT JOIN awards ON standards.award_id = awards.id
-            GROUP BY m.id
-            ORDER BY
-                date DESC,
-                actual_time_parsed ASC,
-                last_name ASC
-        ");
-
-        return response()->json($results);
-    }
-
     public function syncMagicMileResults()
     {
         $results = MagicMile::query()->where(function ($query) {
-            $query->where('athlete_id', '!=', 0)
-                ->whereNotNull('athlete_id');
+            $query
+                ->where('athleteId', '>', 1)
+                ->whereNotNull('athleteId');
         })->get()->all();
 
         $meetingsCreated = [];
@@ -151,14 +129,17 @@ class MagicMileController extends Controller
             }
 
             $performance = Performance::updateOrCreate([
-                'athlete_id' => $result['athlete_id'],
+                'athlete_id' => $result['athleteId'],
                 'meetingId' => $meeting->id,
                 'manual' => 1,
             ], [
                 'category' => $result['category'],
-                'time_parsed' => $result['actual_time_parsed'],
-                'time' => $result['actual_time'],
+                'time_parsed' => $result['actualTime'],
             ]);
+
+            if ($performance->wasRecentlyCreated) {
+                $performanceCreated[] = $performance;
+            }
 
             if (!$performance->wasRecentlyCreated && $performance->wasChanged()) {
                 $performanceUpdated[] = $performance;
@@ -167,17 +148,13 @@ class MagicMileController extends Controller
             if (!$performance->wasRecentlyCreated && !$performance->wasChanged()) {
                 $performanceUntouched[] = $performance;
             }
-
-            if ($performance->wasRecentlyCreated) {
-                $performanceCreated[] = $performance;
-            }
         }
 
         return response()->json([
             'meetingsCreated' => $meetingsCreated,
+            'performanceCreated' => $performanceCreated,
             'performanceUpdated' => $performanceUpdated,
             'performanceUntouched' => $performanceUntouched,
-            'performanceCreated' => $performanceCreated,
         ]);
     }
 }
