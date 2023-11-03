@@ -62,7 +62,6 @@ export class MagicMileEffects {
   private mapResultToPayload(result: MagicMile): any {
     return {
       actual_time: result.actualTime,
-      actual_time_parsed: result.actualTimeParsed,
       athlete_id: result.athleteId,
       category: result.category,
       date: result.date,
@@ -71,7 +70,6 @@ export class MagicMileEffects {
       last_name: result.lastName,
       location: result.location,
       predicted_time: result.predictedTime,
-      predicted_time_parsed: result.predictedTimeParsed,
     };
   }
 

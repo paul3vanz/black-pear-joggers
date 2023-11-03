@@ -34,10 +34,10 @@
         </ng-template>
       </td>
 
-      <td [attr.data-sort-value]="result.predictedTimeParsed">{{ result.predictedTimeParsed | finishTime }}</td>
+      <td [attr.data-sort-value]="result.predictedTime">{{ result.predictedTime | finishTime }}</td>
 
-      <td [attr.data-sort-value]="result.actualTimeParsed">
-        {{ result.actualTimeParsed | finishTime }}
+      <td [attr.data-sort-value]="result.actualTime">
+        {{ result.actualTime | finishTime }}
 
         <span class="pb" *ngIf="result.isPersonalBest">PB</span>
       </td>
