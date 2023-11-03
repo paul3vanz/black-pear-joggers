@@ -21,31 +21,31 @@ class MagicMileController extends Controller
     public function getAll()
     {
         $query = MagicMile::query()
-        ->select('magicmile.*', 'performances.isPersonalBest', DB::raw('MAX(awards.id) AS award'))
+        ->select('magicMile.*', 'performances.isPersonalBest', DB::raw('MAX(awards.id) AS award'))
         ->leftJoin('meetings', function ($join) {
-            $join->on('meetings.date', '=', 'magicmile.date')
+            $join->on('meetings.date', '=', 'magicMile.date')
                  ->where('meetings.event', '=', '1M');
         })
         ->leftJoin('performances', function ($join) {
-            $join->on('performances.athlete_id', '=', 'magicmile.athleteId')
+            $join->on('performances.athlete_id', '=', 'magicMile.athleteId')
                  ->on('meetings.id', '=', 'performances.meetingId');
         })
         ->leftJoin('events', function ($join) {
             $join->on('meetings.event', '=', 'events.alias');
         })
         ->leftJoin('standards', function ($join) {
-            $join->on('magicmile.gender', '=', 'standards.gender')
-                ->on('standards.category', '=', 'magicmile.category')
+            $join->on('magicMile.gender', '=', 'standards.gender')
+                ->on('standards.category', '=', 'magicMile.category')
                 ->on('standards.event_id', '=', 'events.has_standard')
-                ->on('standards.time_parsed', '>=', 'magicmile.actualTime');
+                ->on('standards.time_parsed', '>=', 'magicMile.actualTime');
         })
         ->leftJoin('awards', function ($join) {
             $join->on('standards.award_id', '=', 'awards.id');
         })
-        ->groupBy('magicmile.id')
-        ->orderBy('magicmile.date', 'desc')
-        ->orderBy('magicmile.actualTime')
-        ->orderBy('magicmile.lastName');
+        ->groupBy('magicMile.id')
+        ->orderBy('magicMile.date', 'desc')
+        ->orderBy('magicMile.actualTime')
+        ->orderBy('magicMile.lastName');
 
         $results = $query->get()->all();
 
@@ -134,6 +134,7 @@ class MagicMileController extends Controller
                 'manual' => 1,
             ], [
                 'category' => $result['category'],
+                'time' => $result['actualTimeFormatted'],
                 'time_parsed' => $result['actualTime'],
             ]);
 
