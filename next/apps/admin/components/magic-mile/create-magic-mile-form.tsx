@@ -88,13 +88,9 @@ export function CreateMagicMileResultForm(
       category: data.category,
       date: data.date,
       location: data.location,
-      predictedTime: timeFormatted(data.predictedTime),
-      predictedTimeParsed: data.predictedTime,
-      actualTime: timeFormatted(data.actualTime),
-      actualTimeParsed: data.actualTime,
+      predictedTime: data.predictedTime,
+      actualTime: data.actualTime,
     });
-
-    // await new Promise((resolve) => setTimeout(resolve, 1000));
 
     setIsLoading(false);
 

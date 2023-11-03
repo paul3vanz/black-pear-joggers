@@ -62,10 +62,10 @@ function MagicMileResults(props: MagicMileResultsProps) {
                   </Link>
                 </td>
                 <td className="px-1 sm:px-4 py-2 hidden lg:table-cell">
-                  {timeFormatted(result.predictedTimeParsed)}
+                  {timeFormatted(result.predictedTime)}
                 </td>
                 <td className="px-1 sm:px-4 py-2">
-                  {timeFormatted(result.actualTimeParsed)}
+                  {timeFormatted(result.actualTime)}
                 </td>
                 <td className="px-1 sm:px-4 py-2">
                   {friendlyDate(result.date)}
