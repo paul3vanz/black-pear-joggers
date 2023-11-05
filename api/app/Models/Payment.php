@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 final class Payment extends Model
 {
+    protected $primaryKey = 'urn';
     protected $fillable = [
         'urn',
         'firstname',
@@ -22,6 +23,9 @@ final class Payment extends Model
         'datePaid',
         'membershipType',
     ];
+
+    const CREATED_AT = 'createdAt';
+    const UPDATED_AT = 'updatedAt';
 
     public function athlete()
     {

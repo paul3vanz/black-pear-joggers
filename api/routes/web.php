@@ -47,6 +47,7 @@ $router->post('/checkout', 'CheckoutController@createSession');
 $router->get('/events', 'EventController@getEvents');
 
 $router->get('/payments', 'PaymentsController@getPayments');
+$router->get('/payments/fetch', 'FetchPaymentsController@fetchPayments');
 
 $router->group(['prefix' => 'fetch'], function ($router) {
     $router->get('performances/{athleteId}', 'FetchPerformancesController@fetchPerformances');
