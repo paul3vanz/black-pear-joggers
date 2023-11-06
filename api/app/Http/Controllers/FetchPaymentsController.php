@@ -34,7 +34,7 @@ class FetchPaymentsController extends Controller
 
         $membershipPaymentsResponse = $this->client->post(env('MYATHLETICS_PORTAL_BASE_URL') . env('MYATHLETICS_PORTAL_EXPORT_MEMBERSHIP_PAYMENTS_URL'));
 
-        $csv = str_getcsv(($membershipPaymentsResponse->getBody()));
+        $csv = $membershipPaymentsResponse->getBody();
 
         // Local debug to avoid fetch each time
         // $filename = './membership-payments.csv';
