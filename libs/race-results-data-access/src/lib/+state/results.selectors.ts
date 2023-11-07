@@ -64,6 +64,7 @@ export namespace resultsSelectors {
         createSelector(getState, (state: resultsReducer.State) => {
             return state.records
                 ? state.records.data
+                    .filter((result) => (result.isPersonalBest))
                     .filter((result) => includedEvents.find((event) => event.aliases.includes(result.event)))
                     .filter((result) => (year ? new Date(result.date).getFullYear() === year : true))
                     .filter((result) => (category ? result.category === category : true))
