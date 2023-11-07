@@ -29,17 +29,19 @@ export function Forbidden() {
         </Container>
       </Stack>
 
-      <Stack backgroundColour={BackgroundColour.Light}>
-        <Container>
-          <h2>Debug information</h2>
+      <div className="hidden">
+        <Stack backgroundColour={BackgroundColour.Light}>
+          <Container>
+            <h2>Debug information</h2>
 
-          <pre>User: {JSON.stringify(user, null, '  ')}</pre>
-          <pre>Error: {JSON.stringify(error, null, ' ')}</pre>
-          <pre>
-            isAuthenticated: {JSON.stringify(isAuthenticated, null, ' ')}
-          </pre>
-        </Container>
-      </Stack>
+            <pre>User: {JSON.stringify(user, null, '  ')}</pre>
+            <pre>Error: {JSON.stringify(error, null, ' ')}</pre>
+            <pre>
+              isAuthenticated: {JSON.stringify(isAuthenticated, null, ' ')}
+            </pre>
+          </Container>
+        </Stack>
+      </div>
     </>
   );
 }

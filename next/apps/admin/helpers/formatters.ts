@@ -30,3 +30,7 @@ export function toAgeCategory(dateOfBirth: string): string {
 export function formatGender(gender: string): string {
     return gender === 'M' ? 'Male' : gender === 'W' ? 'Female' : gender;
 }
+
+export function currency(amount: number): string {
+    return `£${amount.toFixed(2)}`
+}

@@ -2,11 +2,13 @@ import Link from 'next/link';
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { LoadingSpinner } from '../../components/loading-spinner';
+import { MembershipDetail } from '../../components/shared/membership-detail';
 import { Stack } from '@black-pear-joggers/stack';
 import { UpdateAthleteForm } from '../../components/athletes/update-athlete-form';
 import { useAthletes } from '@black-pear-joggers/core-services';
 import { useRouter } from 'next/router';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
+import { PaymentDetail } from 'apps/admin/components/shared/payment-detail';
 
 function AthleteDetailsPage() {
   const router = useRouter();
@@ -39,6 +41,22 @@ function AthleteDetailsPage() {
         <h1>{athlete.first_name + ' ' + athlete.last_name}</h1>
 
         <UpdateAthleteForm athlete={athlete} />
+
+        <h2>Membership</h2>
+
+        {athlete.membership ? (
+          <MembershipDetail membership={athlete.membership} />
+        ) : (
+          <p>No membership record found.</p>
+        )}
+
+        <h2>Payment</h2>
+
+        {athlete.payments && athlete.payments.length ? (
+          <PaymentDetail payment={athlete.payments[0]} />
+        ) : (
+          <p>No payment record found.</p>
+        )}
 
         <h2>Profiles</h2>
 
