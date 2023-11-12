@@ -37,7 +37,7 @@ class FetchRankingsController extends Controller
 
     public function fetchRankings($athleteId)
     {
-        Log::channel('slackInfo')->info("fetchRankings($athleteId)");
+        Log::info("fetchRankings($athleteId)");
         $addedRankings = array();
 
         $athletes = Athlete::where('athlete_id', '=', $athleteId)->get();
@@ -46,16 +46,16 @@ class FetchRankingsController extends Controller
             $html = $this->fetchRunBritainRankingsAthleteProfile($athlete->urn);
 
             if (strpos($html->text(), 'Profile not found') !== false) {
-                Log::channel('slackInfo')->info('No ranking profile for athlete ' . $athleteId);
+                Log::info('No ranking profile for athlete ' . $athleteId);
                 break;
             }
 
             $addedRankings = $this->parseRankingHistory($athlete, $html);
 
             if (isset($addedRankings) && is_array($addedRankings)) {
-                Log::channel('slackInfo')->info('Added ' . sizeof($addedRankings) . ' for athlete ' . $athleteId);
+                Log::info('Added ' . sizeof($addedRankings) . ' for athlete ' . $athleteId);
             } else {
-                Log::channel('slackInfo')->info('Added no rankings for athlete ' . $athleteId);
+                Log::info('Added no rankings for athlete ' . $athleteId);
             }
         }
 
@@ -64,7 +64,7 @@ class FetchRankingsController extends Controller
 
     private function fetchRunBritainRankingsAthleteProfile($athleteUrn)
     {
-        Log::channel('slackInfo')->info("fetchRunBritainRankingsProfile($athleteUrn)");
+        Log::info("fetchRunBritainRankingsProfile($athleteUrn)");
 
         $fetchUrl = 'https://www.runbritainrankings.com/runners/profile.aspx?ukaurn=' . $athleteUrn;
         $httpClient = new Client();
@@ -92,7 +92,7 @@ class FetchRankingsController extends Controller
         preg_match('/data: (.*]])/', $rankingScriptData, $rankingDataPoints);
 
         if (!array_key_exists(1, $rankingDataPoints)) {
-            Log::channel('slackInfo')->info("no rankings for $athlete->id");
+            Log::info("no rankings for $athlete->id");
 
             return;
         }

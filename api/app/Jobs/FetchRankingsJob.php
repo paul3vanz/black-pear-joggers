@@ -29,6 +29,6 @@ class FetchRankingsJob extends Job
         $fetchRankingsController = new FetchRankingsController();
         $fetchRankingsController->fetchRankings($this->athlete->id);
 
-        Log::channel('slackInfo')->info("Fetch rankings athleteId #" . $this->athlete->id);
+        Log::info('Fetch rankings', ['athleteId' => $this->athlete->id]);
     }
 }

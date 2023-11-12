@@ -64,7 +64,7 @@ class MembershipController extends Controller
 
     public function storeClubMembers()
     {
-        Log::channel('slackInfo')->info('storeClubMembers executed');
+        Log::info('storeClubMembers executed');
 
         $athletes = MembershipController::getClubMembers(1606, true)->getData()->Athletes;
 

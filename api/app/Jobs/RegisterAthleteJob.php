@@ -32,6 +32,6 @@ class RegisterAthleteJob extends Job
         $registrationController = new RegistrationController($this->membershipController);
         $registrationController->processRegistration($this->registration);
 
-        Log::channel('slackInfo')->info("Process registration ID #" . $this->registration->id);
+        Log::info('Process registration ID', ['registrationId' => $this->registration->id]);
     }
 }

@@ -12,7 +12,7 @@ class QueueFetchPayments extends Command
 
     public function handle()
     {
-        Log::channel('slackInfo')->info('QueueFetchPayments');
+        Log::info('QueueFetchPayments');
         $fetchPaymentsController = new FetchPaymentsController();
         $fetchPaymentsController->fetchPayments();
     }

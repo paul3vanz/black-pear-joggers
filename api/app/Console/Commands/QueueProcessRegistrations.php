@@ -13,7 +13,7 @@ class QueueProcessRegistrations extends Command
 
     public function handle()
     {
-        Log::channel('slackInfo')->info('QueueProcessRegistrations');
+        Log::info('QueueProcessRegistrations');
         $registrationController = new RegistrationController(new MembershipController());
         $registrationController->createRegistrationsFromMemberships();
         $registrationController->queueAllRegistrations();

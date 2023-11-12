@@ -12,7 +12,7 @@ class QueueFetchMemberships extends Command
 
     public function handle()
     {
-        Log::channel('slackInfo')->info('QueueFetchMemberships');
+        Log::info('QueueFetchMemberships');
         $membershipController = new MembershipController();
         $membershipController->storeClubMembers();
     }

@@ -23,7 +23,7 @@ class FetchPaymentsController extends Controller
 
     public function fetchPayments()
     {
-        Log::channel('slackInfo')->info('fetchPayments executed');
+        Log::info('fetchPayments executed');
 
         $fetchUrl = env('MYATHLETICS_PORTAL_BASE_URL') . env('MYATHLETICS_PORTAL_LOGIN_URL');
 
@@ -45,9 +45,9 @@ class FetchPaymentsController extends Controller
         $membershipPayments = $this->parseCsv($csv);
 
         if (!count($membershipPayments)) {
-            Log::channel('slackInfo')->info('No payments found');
+            Log::info('No payments found');
         } else {
-            Log::channel('slackInfo')->info(count($membershipPayments) . ' payments found');
+            Log::info('Payments found', [ 'total' => count($membershipPayments)]);
         }
 
         foreach ($membershipPayments as $membershipPayment) {
@@ -55,12 +55,23 @@ class FetchPaymentsController extends Controller
 
             if ($existingPayment) {
                 if ($existingPayment->paymentStatus !== $membershipPayment['PaymentStatus']) {
-                    Log::channel('slackInfo')->info('Payment status changed ' . $membershipPayment['URN'] . ' ' . $membershipPayment['Firstname'] . ' ' . $membershipPayment['Lastname'] . ' = From ' . $existingPayment->paymentStatus . ' To ' . $membershipPayment['PaymentStatus']);
+                    Log::info('Payment status changed', [
+                        'urn' => $membershipPayment['URN'],
+                        'firstName' => $membershipPayment['Firstname'],
+                        'lastName' => $membershipPayment['Lastname'],
+                        'previousPaymentStatus' => $existingPayment->paymentStatus,
+                        'newPaymentStatus' =>$membershipPayment['PaymentStatus']
+                    ]);
                 } else {
 
                 }
             } else {
-                Log::channel('slackInfo')->info('New payment record found' . $membershipPayment['URN'] . ' ' . $membershipPayment['Firstname'] . ' ' . $membershipPayment['Lastname'] . ' = ' . $membershipPayment['PaymentStatus']);
+                Log::info('New payment record found', [
+                    'urn' => $membershipPayment['URN'],
+                    'firstName' => $membershipPayment['Firstname'],
+                    'lastName' => $membershipPayment['Lastname'],
+                    'newPaymentStatus' =>$membershipPayment['PaymentStatus']
+                ]);
 
                 // Fire event so that athlete record can be added
             }

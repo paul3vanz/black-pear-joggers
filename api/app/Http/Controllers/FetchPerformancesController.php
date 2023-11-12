@@ -40,7 +40,7 @@ class FetchPerformancesController extends Controller
 
     public function fetchPerformances($athleteId)
     {
-        Log::channel('slackInfo')->info("fetchPerformances($athleteId)");
+        Log::info('fetchPerformances', ['athleteId' => $athleteId]);
         $addedPerformances = array();
 
         $athletes = Athlete::where('athlete_id', '=', $athleteId)->get();
@@ -50,7 +50,10 @@ class FetchPerformancesController extends Controller
 
             $addedPerformances = $this->parsePerformanceHistory($athlete, $html);
 
-            Log::channel('slackInfo')->info('Added ' . sizeof($addedPerformances));
+            Log::info('Added performances'. [
+                'athleteId' => $athleteId,
+                'total' => sizeof($addedPerformances)
+            ]);
         }
 
         return response()->json($addedPerformances);
@@ -86,7 +89,7 @@ class FetchPerformancesController extends Controller
         SET p2.isPersonalBest = pbs.calculateIsPersonalBest
       ");
 
-        Log::channel('slackInfo')->info("Updated $update PBs");
+        Log::info('Updated PBs', ['affectedRows' => $update]);
 
         return response()->json(['affectedRows' => $update]);
     }
@@ -98,7 +101,7 @@ class FetchPerformancesController extends Controller
 
     private function fetchPowerOfTenAthleteProfile($athleteUrn)
     {
-        Log::channel('slackInfo')->info("fetchPowerOfTenProfile($athleteUrn)");
+        Log::info('fetchPowerOfTenProfile', ['urn' => $athleteUrn]);
 
         $fetchUrl = 'https://www.thepowerof10.info/athletes/profile.aspx?ukaurn=' . $athleteUrn;
         $httpClient = new Client();
@@ -164,11 +167,11 @@ class FetchPerformancesController extends Controller
                 $currentAgeGroup = $currentHeader[1];
 
                 if (!$currentAgeGroup) {
-                    Log::channel('slackInfo')->info('Error extracting year/age group: ' . $tableRow->eq(0)->text());
+                    Log::info('Error extracting year/age group', ['text' => $tableRow->eq(0)->text()]);
                     die();
                 }
 
-                // Log::channel('slackInfo')->info('Found group of performances: ' . $currentYear . ', ' . $currentAgeGroup);
+                // Log::info('Found group of performances: ' . $currentYear . ', ' . $currentAgeGroup);
 
                 return;
             }

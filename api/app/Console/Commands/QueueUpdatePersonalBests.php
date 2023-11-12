@@ -12,7 +12,7 @@ class QueueUpdatePersonalBests extends Command
 
     public function handle()
     {
-        Log::channel('slackInfo')->info('QueueUpdatePersonalBests');
+        Log::info('QueueUpdatePersonalBests');
         $FetchPerformancesController = new FetchPerformancesController();
         $FetchPerformancesController->queueUpdatePersonalBests();
     }

@@ -27,6 +27,6 @@ class UpdatePersonalBestsJob extends Job
         $fetchPerformancesController = new FetchPerformancesController();
         $fetchPerformancesController->updatePersonalBests();
 
-        Log::channel('slackInfo')->info("Run update personal bests job");
+        Log::info("Run update personal bests job");
     }
 }
