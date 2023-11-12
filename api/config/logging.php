@@ -10,7 +10,7 @@ return [
     | one of the channels defined in the "channels" configuration array.
     |
     */
-    'default' => env('LOG_CHANNEL', 'slackErrors'),
+    'default' => env('LOG_CHANNEL', 'stack'),
     /*
     |--------------------------------------------------------------------------
     | Log Channels
@@ -27,7 +27,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['db', 'slackInfo', 'slackErrors'],
         ],
         'single' => [
             'driver' => 'single',
@@ -67,6 +67,12 @@ return [
         ],
         'errorlog' => [
             'driver' => 'errorlog',
+            'level' => 'debug',
+        ],
+        'db' => [
+            'driver' => 'custom',
+            'handler' => App\Logging\MySQLLoggingHandler::class,
+            'via' => App\Logging\MySQLCustomLogger::class,
             'level' => 'debug',
         ],
     ],
