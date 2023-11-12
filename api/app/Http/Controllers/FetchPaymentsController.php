@@ -23,6 +23,8 @@ class FetchPaymentsController extends Controller
 
     public function fetchPayments()
     {
+        Log::channel('slackInfo')->info('fetchPayments executed');
+
         $fetchUrl = env('MYATHLETICS_PORTAL_BASE_URL') . env('MYATHLETICS_PORTAL_LOGIN_URL');
 
         $loginPost = $this->client->post($fetchUrl, array(
@@ -41,6 +43,12 @@ class FetchPaymentsController extends Controller
         // $csv = fread(fopen($filename, 'r'), filesize($filename));
 
         $membershipPayments = $this->parseCsv($csv);
+
+        if (!count($membershipPayments)) {
+            Log::channel('slackInfo')->info('No payments found');
+        } else {
+            Log::channel('slackInfo')->info(count($membershipPayments) . ' payments found');
+        }
 
         foreach ($membershipPayments as $membershipPayment) {
             $existingPayment = Payment::where('urn', $membershipPayment['URN'])->first();
