@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\QueueFetchPayments',
         'App\Console\Commands\QueueProcessRegistrations',
         'App\Console\Commands\QueueUpdatePersonalBests',
+        'App\Console\Commands\StartDatabaseCleanup',
     ];
 
     /**
@@ -36,5 +37,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('queue:fetch:rankings')->dailyAt('04:00');
         $schedule->command('queue:work --stop-when-empty')->dailyAt('05:00');
         $schedule->command('queue:fetch:updatepersonalbests')->dailyAt('07:00');
+        $schedule->command('db:cleanup')->dailyAt('23:00');
     }
 }
