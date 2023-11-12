@@ -17,7 +17,7 @@ class LogsController extends Controller
     }
 
     public function getLogs() {
-        $logs = Log::query()->get()->all();
+        $logs = Log::query()->orderBy('created_at', 'desc')->get()->all();
         return response()->json($logs);
     }
 
