@@ -46,14 +46,20 @@ class FetchPerformancesController extends Controller
         $athletes = Athlete::where('athlete_id', '=', $athleteId)->get();
 
         foreach ($athletes as $athlete) {
+            try {
             $html = $this->fetchPowerOfTenAthleteProfile($athlete->urn);
 
             $addedPerformances = $this->parsePerformanceHistory($athlete, $html);
 
             Log::info('Added performances'. [
                 'athleteId' => $athleteId,
-                'total' => sizeof($addedPerformances)
+                    'total' => $addedPerformances ? sizeof($addedPerformances) : 0,
             ]);
+            } catch (\Exception $e) {
+                return null;
+
+                Log::error('Error parsing performance history', ['athleteId' => $athleteId]);
+            }
         }
 
         return response()->json($addedPerformances);
