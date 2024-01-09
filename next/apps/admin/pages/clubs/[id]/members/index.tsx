@@ -49,6 +49,8 @@ function MembersPage() {
 
         <h1>{club?.ClubName}</h1>
 
+        <p>A direct feed of club members from UK Athletics.</p>
+
         <SearchBar search={search} setSearch={setSearch} />
 
         {isMembersLoading ? (
