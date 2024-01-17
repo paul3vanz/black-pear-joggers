@@ -47,34 +47,34 @@ function LoadingContent() {
 }
 
 function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
-  const [isAllowed, setIsAllowed] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(false);
-  const router = useRouter();
-  const { isLoading, user, loginWithRedirect, getAccessTokenSilently } =
+  const { isLoading, error, loginWithRedirect, isAuthenticated, getAccessTokenSilently } =
     useAuth0<UserWithRoles>();
 
   useEffect(() => {
     (async () => {
-      try {
-        const accessToken = await getAccessTokenSilently({
-          audience: config.auth.audience,
-        });
-        localStorage.setItem('bpj.token', accessToken);
-      } catch (e) {
-        console.log('redirect to login');
-        setIsRedirecting(true);
-        loginWithRedirect(config.auth);
-      }
+        try {
+            const accessToken = await getAccessTokenSilently({
+                authorizationParams: {
+                    audience: config.auth.authorizationParams.audience,
+                },
+            });
+
+            if (isAuthenticated) {
+                localStorage.setItem('bpj.token', accessToken);
+            }
+        } catch (e) {
+            console.log(e);
+            console.log('redirecting');
+            loginWithRedirect(config.auth);
+        }
     })();
-  }, [getAccessTokenSilently]);
+  }, [getAccessTokenSilently, isAuthenticated]);
 
   useEffect(() => {
-    if (isLoading || !user) {
-      return;
-    }
-
-    setIsAllowed(isAllowedUser(user));
-  }, [isLoading, user, router]);
+    console.log('isAuthenticated', isAuthenticated);
+    console.log('isLoading', isLoading);
+    console.log('error', error);
+  }, [isAuthenticated, isLoading, error])
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -83,9 +83,9 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
       <AdminBar />
 
       <main className="flex-1">
-        {isLoading || isRedirecting ? (
+        {isLoading ? (
           <LoadingContent />
-        ) : !isAllowed ? (
+        ) : !isAuthenticated ? (
           <Forbidden />
         ) : (
           props.children
@@ -105,9 +105,9 @@ function CustomApp({ Component, pageProps }: AppProps) {
   return (
     <Auth0Provider
       {...config.auth}
-      redirectUri={
+      authorizationParams={{...config.auth.authorizationParams, redirect_uri:
         typeof window !== 'undefined' && `${window.location.origin}/admin`
-      }
+      }}
     >
       <QueryClientProvider client={queryClient}>
         <div id="modalContainer"></div>

@@ -13,17 +13,15 @@ export function Forbidden() {
     <>
       <Stack>
         <Container>
-          <h1>Uh oh :-(</h1>
+          <h1>Not authenticated</h1>
 
           <p>
             Sorry, you don&apos;t have access. Please speak to a committee
             member to request access to the admin site.
           </p>
 
-          <h2>Temporary fix:</h2>
-
           <Button
-            text="Log in again"
+            text="Try logging in again"
             onClick={() => loginWithRedirect(config.auth)}
           />
         </Container>
