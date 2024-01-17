@@ -35,7 +35,7 @@ export function useAthlete(athleteId?: number) {
 };
 
 export function updateAthlete(id: number, athlete: any) {
-    fetch(`${config.baseApiUrl}/athletes/${id}`, {
+    fetch(`${config.baseApiUrl}/athlete/${id}`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
