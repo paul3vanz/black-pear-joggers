@@ -8,6 +8,7 @@ $router->get('/athletes', 'AthleteController@getAthletes');
 $router->get('/athlete/{id}', 'AthleteController@getAthlete');
 $router->post('/athlete', 'AthleteController@createAthlete');
 $router->patch('/athlete/{id}', 'AthleteController@updateAthlete');
+$router->patch('/athletes/{id}', 'AthleteController@updateAthlete'); // TEMP FIX AS FE POINTING TO WRONG ONE
 $router->delete('/athlete/{id}', 'AthleteController@deleteAthlete');
 $router->get('/athleteIdvCheck', 'AthleteController@athleteIdvCheck');
 
@@ -45,6 +46,8 @@ $router->get('/awards', 'AwardController@getAwards');
 $router->post('/checkout', 'CheckoutController@createSession');
 
 $router->get('/events', 'EventController@getEvents');
+
+$router->get('/logs', 'LogsController@getLogs');
 
 $router->get('/payments', 'PaymentsController@getPayments');
 $router->get('/payments/fetch', 'FetchPaymentsController@fetchPayments');
