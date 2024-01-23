@@ -19,7 +19,7 @@ export class StandardsFormComponent implements OnInit {
 
   genders = [ 'M', 'W' ];
 
-  categories = [ 'U20', 'U23', 'SEN', 'V35', 'V40', 'V45', 'V50', 'V55', 'V60', 'V65', 'V70' ];
+  categories = [ 'U20', 'U23', 'SEN', 'V35', 'V40', 'V45', 'V50', 'V55', 'V60', 'V65', 'V70', 'V75', 'V80' ];
 
   displayFormats = [ { label: 'Time', value: 'time' }, { label: 'Pace (min/mile)', value: 'pace' } ];
 
