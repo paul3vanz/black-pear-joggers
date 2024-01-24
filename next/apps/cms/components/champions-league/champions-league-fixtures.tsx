@@ -14,7 +14,7 @@ interface Fixture {
 }
 
 const fixturesUrl =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPaacvnGmYIFPZw6gHlH9JG8VDXQ4HimUjbsgJ_Lk9YDXfqtD82RoR_wj6r7Siwd-u2pLdkBo03dKX/pub?gid=0&single=true&output=csv';
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vT61f4R1jJMnbaXnRAaFqJtGTEBjyWRcIjufLA7nOgZjWkZmpzc-uPy61DdOjDdbFe2eAJYDLsXyeRz/pub?gid=0&single=true&output=csv';
 
 export function ChampionsLeagueFixtures() {
   const [activeFixture, setActiveFixture] = useState<Fixture>();

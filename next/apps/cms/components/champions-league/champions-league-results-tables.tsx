@@ -6,6 +6,41 @@ import { useState } from 'react';
 
 const results = [
   {
+    year: 2023,
+    results: {
+      men: {
+        url: 'https://docs.google.com/spreadsheets/d/1nl7A-V0NJCatddJWlnVhucFymBzQD60JDkGGxU3q9Gk/edit#gid=454885501',
+        topTen: [
+          { position: 1, name: 'Adam Knights', races: 15, points: 300 },
+          { position: 2, name: 'Jonathan Phillips', races: 10, points: 283 },
+          { position: 3, name: 'Rob Bowery', races: 13, points: 272 },
+          { position: 4, name: 'Howard Thompson', races: 10, points: 266 },
+          { position: 5, name: 'Steve Bradley', races: 11, points: 257 },
+          { position: 6, name: 'Keith Lawrence', races: 11, points: 237 },
+          { position: 7, name: 'Richard Drewett', races: 10, points: 223 },
+          { position: 8, name: 'Wayne Hartley', races: 11, points: 221 },
+          { position: 9, name: 'Bertie Ballinger', races: 10, points: 209 },
+          { position: 10, name: 'Matthew Capel', races: 13, points: 201 },
+        ],
+      },
+      women: {
+        url: 'https://docs.google.com/spreadsheets/d/1nl7A-V0NJCatddJWlnVhucFymBzQD60JDkGGxU3q9Gk/edit#gid=6426148',
+        topTen: [
+            { position: 1, name: 'Isabel Alford', races: 10, points: 298 },
+            { position: 2, name: 'Alison Walker', races: 18, points: 296 },
+            { position: 3, name: 'Rachael Lewis', races: 16, points: 280 },
+            { position: 4, name: 'Lucy Capel', races: 15, points: 267 },
+            { position: 5, name: 'Deborah Band', races: 16, points: 259 },
+            { position: 6, name: 'Lucy Davison', races: 9, points: 245 },
+            { position: 7, name: 'Anya Lees', races: 15, points: 237 },
+            { position: 8, name: 'Kirsten Beard', races: 11, points: 224 },
+            { position: 9, name: 'Sarah Richards', races: 12, points: 220 },
+            { position: 10, name: 'Claire Shacklock', races: 10, points: 185 },
+        ],
+      },
+    },
+  },
+  {
     year: 2022,
     results: {
       men: {
