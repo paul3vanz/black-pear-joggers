@@ -29,8 +29,8 @@ The following tasks run on a schedule to keep things automated:
   - Fetches all members direct from UKA API
   - Filters to keep just Registered members
   - Filters to remove members already in athletes table (matching against URN)
-  - Adds the remaining 'new' members to the registration table
-  - These will be picked up
+  - Adds the remaining 'new' members to the registration table ready to be processed
+  - Dispatches a job for each registration to the job queue to be processed at 5am - The job will fetch the Power of 10 profile and add the member to the athletes table
 
 - 00:05: queue:fetch:memberships
 - 01:00: queue:fetch:performances
