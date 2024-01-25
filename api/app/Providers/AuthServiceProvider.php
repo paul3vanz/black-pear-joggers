@@ -44,6 +44,7 @@ class AuthServiceProvider extends ServiceProvider
                     'clientId' => env('AUTH0_CLIENT_ID'),
                     'audience' => [env('AUTH0_AUDIENCE')],
                     'clientSecret' => env('AUTH0_CLIENT_SECRET'),
+                    'cookieSecret' => env('AUTH0_COOKIE_SECRET'),
                     'tokenAlgorithm' => 'HS256'
                 ]);
 
