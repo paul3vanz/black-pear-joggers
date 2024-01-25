@@ -9,22 +9,20 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=7.3",
-        "laravel/lumen-framework": "^8.0",
-        "vlucas/phpdotenv": "^5.4",
-        "guzzlehttp/guzzle": "^7.4",
-        "fabpot/goutte": "^4.0",
-        "firebase/php-jwt": "^5.5",
-        "phpseclib/phpseclib": "^3.0",
-        "awobaz/compoships": "^2.1",
+        "php": ">=8.0",
+        "laravel/lumen-framework": "^9.0",
+        "vlucas/phpdotenv": "^5.6.0",
+        "guzzlehttp/guzzle": "^7.8.1",
+        "fabpot/goutte": "^4.0.3",
+        "phpseclib/phpseclib": "^3.0.35",
+        "awobaz/compoships": "^2.2.3",
         "rebing/graphql-laravel": "^8.0",
-        "guzzlehttp/psr7": "^2.1",
-        "auth0/auth0-php": "^8.0",
+        "guzzlehttp/psr7": "^2.6.2",
+        "auth0/auth0-php": "^8.11.1",
         "stripe/stripe-php": "^7.114",
         "doctrine/dbal": "^3.7"
     },
     "require-dev": {
-        "fzaninotto/faker": "^1.9.2",
         "phpunit/phpunit": "^9.5.10"
     },
     "autoload": {
