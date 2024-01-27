@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PaymentUpdateReceived;
 use App\Jobs\FetchRankingsJob;
 use App\Models\Payment;
 use GuzzleHttp\Client as GuzzleClient;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 use DB;
 use Log;
 use DateTime;
+use Illuminate\Support\Facades\Event;
 
 class FetchPaymentsController extends Controller
 {
@@ -73,10 +75,10 @@ class FetchPaymentsController extends Controller
                     'newPaymentStatus' =>$membershipPayment['PaymentStatus']
                 ]);
 
-                // Fire event so that athlete record can be added
+                // Eventually move event to fire here to trigger only when new payments are found to limit events
             }
 
-            Payment::updateOrCreate([
+            $payment = Payment::updateOrCreate([
                 'urn' => $membershipPayment['URN'],
             ], [
                 'firstname' => $membershipPayment['Firstname'],
@@ -91,6 +93,9 @@ class FetchPaymentsController extends Controller
                 'datePaid' => $membershipPayment['DatePaid'] ? $this->convertDate($membershipPayment['DatePaid']) : null,
                 'membershipType' => $membershipPayment['MembershipType'],
             ]);
+
+            // Fire event here so we can store all currently unknown athletes in the athletes table
+            Event::dispatch(new PaymentUpdateReceived($payment));
         }
 
         return $membershipPayments;
