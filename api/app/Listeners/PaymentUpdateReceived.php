@@ -7,7 +7,7 @@ use App\Models\Athlete;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class PaymentUpdateReceived
+class PaymentUpdateReceivedHandler
 {
     /**
      * Create the event listener.
