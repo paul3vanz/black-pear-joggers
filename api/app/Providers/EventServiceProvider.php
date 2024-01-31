@@ -13,7 +13,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'App\Events\PaymentUpdateReceived' => [
-            'App\Listeners\PaymentUpdateReceived',
+            'App\Listeners\PaymentUpdateReceivedHandler',
         ],
     ];
 }
