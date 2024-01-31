@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use Log;
 use App\Events\PaymentUpdateReceived;
 use App\Models\Athlete;
 use Illuminate\Queue\InteractsWithQueue;
