@@ -28,7 +28,7 @@ class PaymentUpdateReceivedHandler
      */
     public function handle(PaymentUpdateReceived $event)
     {
-        Log::info('handler: payment update', $event->payment);
+        Log::info('handler: payment update', [$event->payment]);
 
         // Check for matching URN
         $athlete = Athlete::find($event->payment['urn']);
