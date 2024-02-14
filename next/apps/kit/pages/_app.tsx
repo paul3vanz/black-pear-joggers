@@ -48,7 +48,9 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
         localStorage.setItem(
           'bpj.token',
           await getAccessTokenSilently({
-            audience: config.auth.audience,
+            authorizationParams: {
+              audience: config.auth(null).authorizationParams.audience,
+            },
           })
         );
       } catch (e) {
@@ -77,10 +79,9 @@ function CustomApp({ Component, pageProps }: AppProps) {
 
   return (
     <Auth0Provider
-      {...config.auth}
-      redirectUri={
+      {...config.auth(
         typeof window !== 'undefined' && `${window.location.origin}/admin`
-      }
+      )}
     >
       <QueryClientProvider client={queryClient}>
         <div id="modalContainer"></div>

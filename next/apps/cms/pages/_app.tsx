@@ -58,10 +58,9 @@ function CustomApp({ Component, pageProps }: AppProps) {
 
   return (
     <Auth0Provider
-      {...config.auth}
-      redirectUri={
+      {...config.auth(
         typeof window !== 'undefined' && `${window.location.origin}/admin`
-      }
+      )}
     >
       <QueryClientProvider client={queryClient}>
         <div id="modalContainer"></div>

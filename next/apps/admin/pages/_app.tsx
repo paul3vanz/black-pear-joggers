@@ -47,26 +47,31 @@ function LoadingContent() {
 }
 
 function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
-  const { isLoading, error, loginWithRedirect, isAuthenticated, getAccessTokenSilently } =
-    useAuth0<UserWithRoles>();
+  const {
+    isLoading,
+    error,
+    loginWithRedirect,
+    isAuthenticated,
+    getAccessTokenSilently,
+  } = useAuth0<UserWithRoles>();
 
   useEffect(() => {
     (async () => {
-        try {
-            const accessToken = await getAccessTokenSilently({
-                authorizationParams: {
-                    audience: config.auth.authorizationParams.audience,
-                },
-            });
+      try {
+        const accessToken = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: config.auth.authorizationParams.audience,
+          },
+        });
 
-            if (isAuthenticated) {
-                localStorage.setItem('bpj.token', accessToken);
-            }
-        } catch (e) {
-            console.log(e);
-            console.log('redirecting');
-            loginWithRedirect(config.auth);
+        if (isAuthenticated) {
+          localStorage.setItem('bpj.token', accessToken);
         }
+      } catch (e) {
+        console.log(e);
+        console.log('redirecting');
+        loginWithRedirect(config.auth);
+      }
     })();
   }, [getAccessTokenSilently, isAuthenticated]);
 
@@ -74,7 +79,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
     console.log('isAuthenticated', isAuthenticated);
     console.log('isLoading', isLoading);
     console.log('error', error);
-  }, [isAuthenticated, isLoading, error])
+  }, [isAuthenticated, isLoading, error]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -104,10 +109,9 @@ function CustomApp({ Component, pageProps }: AppProps) {
 
   return (
     <Auth0Provider
-      {...config.auth}
-      authorizationParams={{...config.auth.authorizationParams, redirect_uri:
+      {...config.auth(
         typeof window !== 'undefined' && `${window.location.origin}/admin`
-      }}
+      )}
     >
       <QueryClientProvider client={queryClient}>
         <div id="modalContainer"></div>
