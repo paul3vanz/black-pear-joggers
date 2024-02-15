@@ -31,7 +31,7 @@ class PaymentUpdateReceivedHandler
         Log::info('handler: payment update', [$event->payment]);
 
         // Check for matching URN
-        $athlete = Athlete::find($event->payment['urn']);
+        $athlete = Athlete::where('urn', '=', $event->payment['urn']);
 
         if (!$athlete) {
             // If not found, insert athlete
