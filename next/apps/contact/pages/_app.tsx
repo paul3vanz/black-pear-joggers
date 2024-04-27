@@ -1,7 +1,6 @@
 import TagManager from 'react-gtm-module';
 import { AppProps } from 'next/app';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { config } from '@black-pear-joggers/core-services';
 import { Container } from '@black-pear-joggers/container';
 import { Footer } from '@black-pear-joggers/footer';
 import { Header } from '@black-pear-joggers/header';
@@ -9,6 +8,7 @@ import { PropsWithChildren, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from '@black-pear-joggers/stack';
 import './styles.css';
+import { config, tagManagerArgs } from '../helpers/config';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,10 +17,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
-const tagManagerArgs = {
-  gtmId: 'GTM-W8KBB3D',
-};
 
 let getAccessTokenSilently = null;
 
@@ -47,11 +43,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
       try {
         localStorage.setItem(
           'bpj.token',
-          await getAccessTokenSilently({
-            authorizationParams: {
-              audience: config.auth.authorizationParams.audience,
-            },
-          })
+          await getAccessTokenSilently(config.auth)
         );
       } catch (e) {
         // console.error(e);
@@ -78,11 +70,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <Auth0Provider
-      {...config.auth(
-        typeof window !== 'undefined' && `${window.location.origin}/admin`
-      )}
-    >
+    <Auth0Provider {...config.auth}>
       <QueryClientProvider client={queryClient}>
         <div id="modalContainer"></div>
         <PageContent>
