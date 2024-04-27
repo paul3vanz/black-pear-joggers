@@ -42,6 +42,10 @@ export function post(url: string, data?: {}, method = 'POST') {
     });
 }
 
+export function patch(url: string, data?: {}) {
+    return post(url, data, 'PATCH');
+}
+
 export function remove(url: string) {
     return post(url, undefined, 'DELETE');
 }
