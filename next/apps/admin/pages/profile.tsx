@@ -28,9 +28,11 @@ export default function Profile() {
           text="Log out"
           onClick={() =>
             logout({
-              returnTo:
-                typeof window !== 'undefined' &&
-                `${window.location.origin}/admin`,
+              logoutParams: {
+                returnTo:
+                  typeof window !== 'undefined' &&
+                  `${window.location.origin}/admin`,
+              },
             })
           }
         />

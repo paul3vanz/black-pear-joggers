@@ -1,12 +1,11 @@
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Button } from '@black-pear-joggers/button';
-import { config } from '@black-pear-joggers/core-services';
 import { Container } from '@black-pear-joggers/container';
 import { useAuth0 } from '@auth0/auth0-react';
-import { UserWithRoles } from '../helpers/auth';
+import { config } from '../helpers/config';
 
 export function Forbidden() {
-  const { user, isLoading, error, isAuthenticated, loginWithRedirect } =
+  const { user, error, isAuthenticated, loginWithRedirect } =
     useAuth0();
 
   return (
