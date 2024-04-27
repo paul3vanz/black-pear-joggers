@@ -2,7 +2,6 @@ export interface Athlete {
     id: number;
     urn?: number;
     athlete_id: number;
-    athlete_id_alt: number | null;
     first_name: string;
     last_name: string;
     gender: string;
