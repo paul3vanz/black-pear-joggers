@@ -5,9 +5,10 @@ import { GetStaticProps } from 'next';
 import { LoadingSpinner } from '../components/loading-spinner';
 import { ResultsTable } from '../components/results-table';
 import { Select, TextInput } from '@black-pear-joggers/form-controls';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   AgeCategory,
   eventDistances,
@@ -22,34 +23,47 @@ export function ResultsPage(props: ResultsPageProps) {
   const [isPersonalBest, setIsPersonalBest] = useState<boolean>(false);
   const [category, setCategory] = useState<AgeCategory>(AgeCategory.V40);
 
+  const router = useRouter();
+
   const {
-    getValues,
     formState: { errors },
-    setValue,
     register,
-    handleSubmit,
     watch,
   } = useForm<PerformanceFilters>({
     defaultValues: {
-      sort: 'time',
+      sort: 'date',
     },
   });
 
   const formValues = watch();
 
-  const { isLoading, error, data } = useQuery(['races', formValues], () =>
+  const mapformValuesToFilters = Object.entries(formValues).reduce(
+    (acc, [key, value]) => {
+      if (value) {
+        acc[key] = value;
+      }
+      return acc;
+    },
+    {}
+  );
+
+  const { isLoading, data } = useQuery(['races', formValues], () =>
     getPerformances({
-      search: formValues.search,
-      category: formValues.category,
-      gender: formValues.gender,
-      isPersonalBest: formValues.isPersonalBest,
-      distance: formValues.distance,
+      ...mapformValuesToFilters,
       limit: 30,
-      page: formValues.page,
-      year: formValues.year,
-      sort: formValues.sort,
     }).then((response) => response.json())
   );
+
+  useEffect(() => {
+    router.push(
+      {
+        pathname: '/',
+        query: formValues,
+      },
+      undefined,
+      { shallow: true }
+    );
+  }, [formValues]);
 
   return (
     <>
@@ -189,11 +203,11 @@ export function ResultsPage(props: ResultsPageProps) {
                 label="Sort"
                 options={[
                   {
-                    label: 'Finish time',
+                    label: 'Finish time (fastest first)',
                     value: 'time',
                   },
                   {
-                    label: 'Date',
+                    label: 'Date (recent first)',
                     value: 'date',
                   },
                 ]}
