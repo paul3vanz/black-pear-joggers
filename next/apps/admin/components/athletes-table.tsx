@@ -120,6 +120,8 @@ function AthletesTable(props: AthletesTableProps) {
             <th className="px-4 py-2">Name</th>
             <th className="px-4 py-2">Gender</th>
             <th className="px-4 py-2">Category</th>
+            <th className="px-4 py-2">Payment status</th>
+            <th className="px-4 py-2">Payment date</th>
             <th className="px-4 py-2 hidden md:table-cell">Created</th>
             <th className="px-4 py-2 hidden md:table-cell">Updated</th>
           </tr>
@@ -184,6 +186,10 @@ function AthletesTable(props: AthletesTableProps) {
               </td>
               <td className="px-4 py-2">{formatGender(athlete.gender)}</td>
               <td className="px-4 py-2">{athlete.category}</td>
+              <td className="px-4 py-2">{athlete.payments[0]?.paymentStatus}</td>
+              <td className="px-4 py-2 hidden md:table-cell">
+                {friendlyDate(athlete.payments[0]?.datePaid)}
+              </td>
               <td className="px-4 py-2 hidden md:table-cell">
                 {friendlyDate(athlete.created_at)}
               </td>
