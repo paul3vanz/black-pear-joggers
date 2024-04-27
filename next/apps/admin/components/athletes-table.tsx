@@ -18,6 +18,18 @@ interface AthletesTableProps {
   athletes: Athlete[];
 }
 
+function hasOutstandingPayment(athlete: Athlete): boolean {
+  return athlete.payments[0]?.paymentStatus === 'Requested';
+}
+
+function paymentDescription(athlete: Athlete) {
+  if (hasOutstandingPayment(athlete)) {
+    return 'Payment requested';
+  } else {
+    return `Paid (${friendlyDate(athlete.payments[0]?.datePaid)})`;
+  }
+}
+
 function AthletesTable(props: AthletesTableProps) {
   const [statusFilter, setStatusFilter] = useState<string>('active');
   const [affiliatedFilter, setAffiliatedFilter] = useState<string>(null);
@@ -37,9 +49,10 @@ function AthletesTable(props: AthletesTableProps) {
       statusFilter
         ? statusFilter === 'active'
           ? athlete.active
+          : statusFilter === 'paid'
+          ? athlete.active && !hasOutstandingPayment(athlete)
           : statusFilter === 'requested'
-          ? !athlete.active &&
-            athlete.payments[0]?.paymentStatus === 'Requested'
+          ? !athlete.active && hasOutstandingPayment(athlete)
           : true
         : true
     )
@@ -75,7 +88,13 @@ function AthletesTable(props: AthletesTableProps) {
         <Pill
           onClick={() => setStatusFilter('active')}
           active={statusFilter === 'active'}
-          text="Active (paid up)"
+          text="Active"
+        />
+
+        <Pill
+          onClick={() => setStatusFilter('paid')}
+          active={statusFilter === 'paid'}
+          text="Paid up"
         />
 
         <Pill
@@ -120,10 +139,8 @@ function AthletesTable(props: AthletesTableProps) {
             <th className="px-4 py-2">Name</th>
             <th className="px-4 py-2">Gender</th>
             <th className="px-4 py-2">Category</th>
-            <th className="px-4 py-2">Payment status</th>
-            <th className="px-4 py-2">Payment date</th>
             <th className="px-4 py-2 hidden md:table-cell">Created</th>
-            <th className="px-4 py-2 hidden md:table-cell">Updated</th>
+            <th className="px-4 py-2 hidden md:table-cell">Paid</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
@@ -133,19 +150,19 @@ function AthletesTable(props: AthletesTableProps) {
               className={index % 2 === 0 ? 'bg-gray-100' : ''}
             >
               <td className="px-4 py-2">
-                {athlete.active ? (
-                  <FontAwesomeIcon
-                    className="text-green-600"
-                    size="lg"
-                    title="Paid up"
-                    icon={faCheckCircle}
-                  />
-                ) : athlete.payments[0]?.paymentStatus === 'Requested' ? (
+                {hasOutstandingPayment(athlete) ? (
                   <FontAwesomeIcon
                     className="text-yellow-400"
                     size="lg"
-                    title="Payment requested"
+                    title={paymentDescription(athlete)}
                     icon={faExclamationCircle}
+                  />
+                ) : athlete.active ? (
+                  <FontAwesomeIcon
+                    className="text-green-600"
+                    size="lg"
+                    title={paymentDescription(athlete)}
+                    icon={faCheckCircle}
                   />
                 ) : (
                   <FontAwesomeIcon
@@ -186,16 +203,12 @@ function AthletesTable(props: AthletesTableProps) {
               </td>
               <td className="px-4 py-2">{formatGender(athlete.gender)}</td>
               <td className="px-4 py-2">{athlete.category}</td>
-              <td className="px-4 py-2">{athlete.payments[0]?.paymentStatus}</td>
-              <td className="px-4 py-2 hidden md:table-cell">
-                {friendlyDate(athlete.payments[0]?.datePaid)}
-              </td>
               <td className="px-4 py-2 hidden md:table-cell">
                 {friendlyDate(athlete.created_at)}
               </td>
               <td className="px-4 py-2 hidden md:table-cell">
-                {athlete.created_at !== athlete.updated_at
-                  ? friendlyDate(athlete.updated_at)
+                {!hasOutstandingPayment(athlete)
+                  ? friendlyDate((athlete.payments[0]?.datePaid))
                   : ''}
               </td>
             </tr>
