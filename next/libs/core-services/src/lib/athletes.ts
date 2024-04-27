@@ -1,7 +1,7 @@
 import useSWRImmutable from 'swr/immutable';
 import { Athlete } from './athletes.interface';
 import { config } from '../config';
-import { fetcher, fetcherConfig } from './fetcher';
+import { fetcher, fetcherConfig, patch } from './fetcher';
 
 
 export function useAthletes() {
@@ -35,11 +35,5 @@ export function useAthlete(athleteId?: number) {
 };
 
 export function updateAthlete(id: number, athlete: any) {
-    fetch(`${config.baseApiUrl}/athlete/${id}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(athlete),
-    })
+    patch(`${config.baseApiUrl}/athlete/${id}`, athlete);
 }
