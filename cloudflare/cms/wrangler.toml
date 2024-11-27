@@ -19,6 +19,7 @@ routes = [
   "bpj.org.uk/contact*",
   "bpj.org.uk/couch-to-5k*",
   "bpj.org.uk/health-and-safety-policy-and-risk-assessment*",
+  "bpj.org.uk/the-history-of-black-pear-joggers*",
   "bpj.org.uk/home*",
   "bpj.org.uk/kit*",
   "bpj.org.uk/kit/order-successful*",
@@ -43,6 +44,7 @@ routes = [
   "bpj.org.uk/social-events*",
   "bpj.org.uk/terms-of-use*",
   "bpj.org.uk/vacancies*",
+  "bpj.org.uk/veterans-track-and-field-league*",
 ]
 usage_model = "bundled"
 env = { }
