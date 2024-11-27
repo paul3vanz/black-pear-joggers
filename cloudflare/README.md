@@ -27,3 +27,24 @@ Then test it locally to ensure the right page displays:
 http://127.0.0.1:8787/page-to-affect
 
 If it's all good, to deploy changes to production, run `npx wrangler publish cms/src/index`
+
+### Contact
+
+This worker is for the contact form on the website to be able to send emails
+
+To run the worker locally for development purposes, run `npx wrangler dev contact/src/index`
+
+You can then access the worker on `localhost` port `8787`, e.g:
+
+POST http://127.0.0.1:8787
+
+Example body:
+
+{
+"reason": "Welfare",
+"name": "Tester",
+"email": "test@gmail.com",
+"message": "Testing"
+}
+
+If it's all good, to deploy changes to production, run `npx wrangler publish contact/src/index`
