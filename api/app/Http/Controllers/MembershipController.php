@@ -73,8 +73,9 @@ class MembershipController extends Controller
         }
 
         $members = collect($athletes)->each(function ($value, $key) {
-            Membership::firstOrCreate([
-                'urn' => $value->Urn,
+            Membership::updateOrCreate([
+                'urn' => $value->Urn
+            ], [
                 'firstName' => $value->Firstname,
                 'lastName' => $value->Lastname,
                 'dob' => $value->Dob,
