@@ -123,7 +123,7 @@ function MembersTable(props: MembersTableProps) {
         <tbody className="divide-y divide-gray-200">
           {filteredMembers.map((member, index) => (
             <tr
-              key={member.Urn}
+              key={`${member.Urn}-${member.FirstClaimClubId}-${member.SecondClaimClubId}`}
               className={index % 2 === 0 ? 'bg-gray-100' : ''}
             >
               <td className="px-4 py-2">{member.Urn}</td>
