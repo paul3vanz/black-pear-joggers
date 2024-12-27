@@ -5,19 +5,21 @@ use DB;
 use Illuminate\Support\Facades\Auth;
 use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\Level;
+use Monolog\LogRecord;
+
 class MySQLLoggingHandler extends AbstractProcessingHandler{
 /**
  *
  * Reference:
  * https://github.com/markhilton/monolog-mysql/blob/master/src/Logger/Monolog/Handler/MysqlHandler.php
  */
-    public function __construct($level = Logger::DEBUG, $bubble = true) {
+    public function __construct($level = Level::Debug, $bubble = true) {
         $this->table = 'logs';
         parent::__construct($level, $bubble);
     }
-    protected function write(array $record):void
+    protected function write(LogRecord $record): void
     {
-       // dd($record);
        $data = array(
            'message'       => $record['message'],
            'context'       => json_encode($record['context']),

@@ -1,6 +1,7 @@
 <?php
 namespace App\Logging;
 use Monolog\Logger;
+use OpenApi\Annotations as OA;
 class MySQLCustomLogger{
 /**
      * Create a custom Monolog instance.
