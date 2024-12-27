@@ -34,8 +34,8 @@ function SuccessPage(props: SuccessPageProps) {
             </div>
           ) : user?.athleteId ? (
             <Button
-              text="Go to your results"
-              link={`https://apps.bpj.org.uk/race-results/#/athlete/${user.athleteId}`}
+              text="Go to your profile"
+              link={`https://bpj.org.uk/profile`}
             />
           ) : (
             <p>Something went wrong - athlete ID unknown</p>
