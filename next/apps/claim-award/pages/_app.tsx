@@ -33,7 +33,7 @@ function LoadingContent() {
 }
 
 function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
-  const { isLoading, getAccessTokenSilently } = useAuth0();
+  const { isLoading, getAccessTokenSilently, loginWithRedirect } = useAuth0();
 
   useEffect(() => {
     (async () => {
@@ -42,12 +42,12 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
           'bpj.token',
           await getAccessTokenSilently({
             authorizationParams: {
-              audience: config.auth.authorizationParams.audience,
+              audience: config.auth(null).authorizationParams.audience,
             },
           })
         );
       } catch (e) {
-        console.error(e);
+        loginWithRedirect(config.auth(null));
       }
     })();
   }, [getAccessTokenSilently]);
