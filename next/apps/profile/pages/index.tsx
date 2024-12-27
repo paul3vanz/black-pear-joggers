@@ -10,14 +10,25 @@ export default function ProfilePage() {
 
   return (
     <>
-      <Stack backgroundColour={BackgroundColour.Bright}>
-        <Container>
-          <p className="text-xl font-bold mb-2">
-            This area is currently under construction.
-          </p>
-          <p>More features will appear here soon.</p>
-        </Container>
-      </Stack>
+      {!userProfile?.athleteId && (
+        <Stack backgroundColour={BackgroundColour.Bright}>
+          <Container>
+            <>
+              <h2 className="text-xl font-bold mb-2">
+                Link your membership details
+              </h2>
+
+              <p>
+                Now that you&rsquo;re logged in, please{' '}
+                <a href="https://bpj.org.uk/register">
+                  link your membership details
+                </a>{' '}
+                to unlock the full functionality of our site.
+              </p>
+            </>
+          </Container>
+        </Stack>
+      )}
 
       <Stack>
         <Container>
@@ -27,7 +38,7 @@ export default function ProfilePage() {
             You&rsquo;re currently logged in as <strong>{user?.email}</strong>.
           </p>
 
-          {userProfile?.athleteId ? (
+          {userProfile?.athleteId && (
             <>
               <h2>Your details</h2>
 
@@ -44,16 +55,20 @@ export default function ProfilePage() {
                 <li>
                   <strong>First name:</strong> {userProfile.athlete.first_name}
                 </li>
+
                 <li>
                   <strong>Last name:</strong> {userProfile.athlete.last_name}
                 </li>
+
                 <li>
                   <strong>Gender:</strong>{' '}
                   {userProfile.athlete.gender === 'M' ? 'Male' : 'Female'}
                 </li>
+
                 <li>
                   <strong>Category:</strong> {userProfile.athlete.category}
                 </li>
+
                 <li>
                   <strong>Athlete ID:</strong> {userProfile.athlete.athlete_id}
                 </li>
@@ -69,6 +84,7 @@ export default function ProfilePage() {
                     Your race results and rankings
                   </a>
                 </li>
+
                 <li>
                   <a
                     href={`https://www.thepowerof10.info/athletes/profile.aspx?athleteid=${userProfile?.athleteId}`}
@@ -76,6 +92,7 @@ export default function ProfilePage() {
                     Your Power of 10 profile
                   </a>
                 </li>
+
                 <li>
                   <a
                     href={`https://www.runbritainrankings.com/runners/profile.aspx?athleteid=${userProfile?.athleteId}`}
@@ -83,9 +100,15 @@ export default function ProfilePage() {
                     Your runbritain Rankings profile
                   </a>
                 </li>
+
+                <li>
+                  <a href={`https://bpj.org.uk/claim-award`}>
+                    Claim a club standards award
+                  </a>
+                </li>
               </ul>
             </>
-          ) : null}
+          )}
 
           <div className="mt-8">
             <Button text="Log out" onClick={() => logout()} />
