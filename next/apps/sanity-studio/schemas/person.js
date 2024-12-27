@@ -42,6 +42,19 @@ export default {
       type: 'boolean',
       name: 'disabled',
     },
+    {
+      title: 'Tags',
+      name: 'tags',
+      type: 'array',
+      of: [
+        {
+          type: 'string',
+        },
+      ],
+      options: {
+        layout: 'tags',
+      },
+    },
   ],
   preview: {
     select: {
