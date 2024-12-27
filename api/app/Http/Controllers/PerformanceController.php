@@ -25,10 +25,22 @@ class PerformanceController extends Controller
         'year',
     ];
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
+    /**
+     * @OA\Get(
+     *   tags={"Performances"},
+     *   path="/performances",
+     *   summary="Get all performances",
+     *   @OA\Parameter(
+     *     name="athleteId",
+     *     in="query",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getPerformances(Request $request)
     {
         $filters = array_filter($request->all(), function ($item) {
