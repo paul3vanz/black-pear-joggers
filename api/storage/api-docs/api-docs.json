@@ -1,0 +1,146 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Black Pear Joggers API",
+        "contact": {
+            "name": "Paul Evans",
+            "url": "https://bpj.org.uk",
+            "email": "paul3vanz@gmail.com"
+        },
+        "version": "0.1"
+    },
+    "paths": {
+        "/performances": {
+            "get": {
+                "tags": [
+                    "Performances"
+                ],
+                "summary": "Get all performances",
+                "operationId": "a86695eb918939d2371e2cd180904ce8",
+                "parameters": [
+                    {
+                        "name": "athleteId",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/standards": {
+            "get": {
+                "tags": [
+                    "Standards"
+                ],
+                "summary": "Get all standards",
+                "operationId": "293adfdc1a5cbbf56e99eed00f717976",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/standards/{gender}": {
+            "get": {
+                "tags": [
+                    "Standards"
+                ],
+                "summary": "Get standards by gender",
+                "operationId": "46869e3d14328c2fc3a5fb454853f88e",
+                "parameters": [
+                    {
+                        "name": "gender",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "M",
+                                "W"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/standards/{gender}/{category}": {
+            "get": {
+                "tags": [
+                    "Standards"
+                ],
+                "summary": "Get standards by category and gender",
+                "operationId": "0feee04d316e5028e6f69d7d55202914",
+                "parameters": [
+                    {
+                        "name": "gender",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "M",
+                                "W"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "SEN",
+                                "V35",
+                                "V40",
+                                "V45",
+                                "V50",
+                                "V55",
+                                "V60",
+                                "V65",
+                                "V70",
+                                "U20",
+                                "U23"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Standard": {
+                "title": "Standard",
+                "description": "A specific standard for a gender, category and event",
+                "properties": {
+                    "gender": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}
