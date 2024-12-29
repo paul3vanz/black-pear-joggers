@@ -1,4 +1,3 @@
-import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import {
   GenderFull,
@@ -7,20 +6,10 @@ import {
 } from '@black-pear-joggers/core-services';
 import { shortUkDate } from '@black-pear-joggers/helpers';
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
+import { Award } from '../types/award';
 import { useMemo } from 'react';
-import { CertificatePreview } from '../certificate-preview/certificate-preview';
 
-export interface ResultsStepProps {
-  onNext: () => void;
-}
-enum Award {
-  Bronze = 1,
-  Silver = 2,
-  Gold = 3,
-  Platinum = 4,
-}
-
-export function ResultsStep(props: ResultsStepProps) {
+export function YourAwards() {
   const { data: userProfile } = useUser();
   const results = usePerformances(userProfile?.athleteId);
 
@@ -45,7 +34,6 @@ export function ResultsStep(props: ResultsStepProps) {
                     <>
                       {performances[year][category].award ? (
                         <div className="bg-white mb-8 w-auto p-4 relative">
-                          {/* <CertificatePreview /> */}
                           <img
                             src={`https://bpj.org.uk/certificate/certificate-badge-${Award[
                               performances[year][category].award
@@ -65,10 +53,10 @@ export function ResultsStep(props: ResultsStepProps) {
                           <p className="border-l-orange-400 pl-4 border-l-4 ml-4">
                             This certificate is awarded to
                             <br />
-                            <strong className="text-orange-400 text-3xl">
+                            <span className="text-orange-400 text-3xl font-['Pacifico']">
                               {userProfile.athlete.first_name}{' '}
                               {userProfile.athlete.last_name}
-                            </strong>
+                            </span>
                             <br />
                             For achieving the Black Pear Joggers{' '}
                             <strong>
@@ -149,8 +137,6 @@ export function ResultsStep(props: ResultsStepProps) {
                 </>
               ))}
         </ul>
-
-        <Button text="Next" onClick={props.onNext} />
       </Container>
     </Stack>
   );

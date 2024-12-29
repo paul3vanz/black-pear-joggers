@@ -1,29 +1,21 @@
-import { Athlete, useAthletes } from '@black-pear-joggers/core-services';
-import { ConfirmStep } from '../components/steps/confirm-step';
-import { ContactStep } from '../components/steps/contact-step';
 import { Container } from '@black-pear-joggers/container';
-import { ResultsStep } from '../components/steps/results-step';
-import { Stack } from '@black-pear-joggers/stack';
-import { stepNamesToRefs } from '@black-pear-joggers/helpers';
-import { SuccessStep } from '../components/steps/success-step';
-import { useRef, useState } from 'react';
-import { useRouter } from 'next/router';
+import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
-
-type FormData = {
-  firstName: string;
-  lastName: string;
-};
+import { YourAwards } from '../components/your-awards';
 
 function AwardClaimHomePage() {
   return (
     <>
       <Stack>
         <Container>
-          <h1>Claim award</h1>
+          <h1>Club standards awards</h1>
 
           <p>
-            You can claim your award if in any calendar year you have been a
+            Check your progress on the{' '}
+            <a href="https://apps.bpj.org.uk/club-standards/">
+              club standards awards scheme
+            </a>
+            . You can claim your award if in any calendar year you have been a
             member of the club throughout the period over which all the runs
             have taken place and you have the required standard for at least
             three of the five distances in your age category (your age counting
@@ -32,7 +24,21 @@ function AwardClaimHomePage() {
         </Container>
       </Stack>
 
-      <ResultsStep onNext={() => {}} />
+      <Stack backgroundColour={BackgroundColour.Dark}>
+        <Container>
+          <h2>Current targets</h2>
+
+          <p>
+            Coming soon. In the meantime, find your targets on the{' '}
+            <a href="https://apps.bpj.org.uk/club-standards/">
+              club standards awards scheme
+            </a>{' '}
+            page.
+          </p>
+        </Container>
+      </Stack>
+
+      <YourAwards />
     </>
   );
 }

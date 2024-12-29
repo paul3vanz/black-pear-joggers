@@ -1,9 +1,4 @@
-import Document, {
-    Head,
-    Html,
-    Main,
-    NextScript
-    } from 'next/document';
+import Document, { Head, Html, Main, NextScript } from 'next/document';
 import { ReactElement } from 'react';
 import { ServerStyleSheet } from 'styled-components';
 
@@ -54,6 +49,11 @@ export default class CustomDocument extends Document<{
             rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Catamaran:wght@400;600;800&amp;display=swap"
           />
+
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+          ></link>
 
           <script
             async
