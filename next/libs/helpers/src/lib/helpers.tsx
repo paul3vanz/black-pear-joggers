@@ -58,6 +58,10 @@ export function shortDate(date?: string) {
   return format(date ? parseISO(date) : new Date(), 'yyyy-MM-dd');
 }
 
+export function shortUkDate(date?: string) {
+  return format(date ? parseISO(date) : new Date(), 'yyyy-MM-dd');
+}
+
 export function longDate(date?: string) {
   return format(
     date ? parseISO(date) : new Date(),

@@ -37,6 +37,11 @@ export enum Gender {
     W,
 }
 
+export enum GenderFull {
+    M = 'Male',
+    W = 'Female,'
+}
+
 export enum Event {
     'Mile',
     '5K',

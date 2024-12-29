@@ -1,8 +1,14 @@
 import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
-import { usePerformances, useUser } from '@black-pear-joggers/core-services';
+import {
+  GenderFull,
+  usePerformances,
+  useUser,
+} from '@black-pear-joggers/core-services';
+import { shortUkDate } from '@black-pear-joggers/helpers';
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { useMemo } from 'react';
+import { CertificatePreview } from '../certificate-preview/certificate-preview';
 
 export interface ResultsStepProps {
   onNext: () => void;
@@ -16,7 +22,7 @@ enum Award {
 
 export function ResultsStep(props: ResultsStepProps) {
   const { data: userProfile } = useUser();
-  const results = usePerformances(450606);
+  const results = usePerformances(userProfile?.athleteId);
 
   const performances = useMemo(() => {
     return results?.data ? groupPerformances(results?.data?.data) : null;
@@ -35,18 +41,31 @@ export function ResultsStep(props: ResultsStepProps) {
               .reverse()
               .map((year) => (
                 <>
-                  <h2>{year}</h2>
-
                   {Object.keys(performances[year]).map((category) => (
                     <>
-                      <h3>{category}</h3>
-
                       {performances[year][category].award ? (
-                        <>
-                          <p>
+                        <div className="bg-white mb-8 w-auto p-4 relative">
+                          {/* <CertificatePreview /> */}
+                          <img
+                            src={`https://bpj.org.uk/certificate/certificate-badge-${Award[
+                              performances[year][category].award
+                            ].toLowerCase()}.png`}
+                            className="mb-4 w-20 right-4 absolute top-4"
+                            alt=""
+                          />
+
+                          <p className="uppercase font-semibold mb-0 text-xl">
+                            Club Standard
+                          </p>
+
+                          <p className="uppercase text-orange-400 font-extrabold text-3xl">
+                            Certificate
+                          </p>
+
+                          <p className="border-l-orange-400 pl-4 border-l-4 ml-4">
                             This certificate is awarded to
                             <br />
-                            <strong>
+                            <strong className="text-orange-400 text-3xl">
                               {userProfile.athlete.first_name}{' '}
                               {userProfile.athlete.last_name}
                             </strong>
@@ -57,17 +76,21 @@ export function ResultsStep(props: ResultsStepProps) {
                             </strong>{' '}
                             Standard in
                             <br />
-                            the {userProfile.athlete.gender}{' '}
-                            <strong>{category}</strong> category for{' '}
-                            <strong>{year}</strong> with the following runs
+                            the{' '}
+                            <strong>
+                              {GenderFull[userProfile.athlete.gender]}{' '}
+                              {category.replace('SEN', 'Senior')}
+                            </strong>{' '}
+                            category for <strong>{year}</strong> with the
+                            following runs:
                           </p>
-                          <table className="mb-4">
+                          <table className="ml-8">
                             <thead>
                               <tr>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Event</th>
-                                <th>Standard</th>
+                                <th className="text-orange-400">Date</th>
+                                <th className="text-orange-400">Time</th>
+                                <th className="text-orange-400">Event</th>
+                                <th className="text-orange-400">Standard</th>
                               </tr>
                             </thead>
 
@@ -75,15 +98,21 @@ export function ResultsStep(props: ResultsStepProps) {
                               {Object.keys(
                                 performances[year][category].performances
                               ).map((event) => (
-                                <tr>
-                                  <td>
-                                    {
+                                <tr
+                                  key={
+                                    performances[year][category].performances[
+                                      event
+                                    ].id
+                                  }
+                                >
+                                  <td className="pr-4">
+                                    {shortUkDate(
                                       performances[year][category].performances[
                                         event
                                       ].date
-                                    }
+                                    )}
                                   </td>
-                                  <td>
+                                  <td className="pr-4">
                                     <strong>
                                       {
                                         performances[year][category]
@@ -91,7 +120,7 @@ export function ResultsStep(props: ResultsStepProps) {
                                       }
                                     </strong>
                                   </td>
-                                  <td>
+                                  <td className="pr-4">
                                     {
                                       performances[year][category].performances[
                                         event
@@ -110,9 +139,10 @@ export function ResultsStep(props: ResultsStepProps) {
                               ))}
                             </tbody>
                           </table>
-                        </>
+                        </div>
                       ) : (
-                        <p>No award earned</p>
+                        // <p>No award earned</p>
+                        <></>
                       )}
                     </>
                   ))}
