@@ -31,11 +31,13 @@ export function TextInput(
       <input
         className={classNames(
           'block w-full border rounded py-3 px-4 h-12 text-black',
-          props.error && 'bg-red-100 border-red-500'
+          props.error && 'bg-red-100 border-red-500',
+          props.readOnly && 'bg-gray-200 border-gray-300 cursor-default'
         )}
         id={`input-${props.id}`}
         name={props.id}
         type="text"
+        readOnly={props.readOnly}
         placeholder={props.placeholder}
         aria-invalid={props.error && true}
         aria-describedby={props.error && `error-${props.id}`}

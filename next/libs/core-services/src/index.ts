@@ -11,6 +11,7 @@ export * from './lib/magic-mile';
 export * from './lib/members.interface';
 export * from './lib/members';
 export * from './lib/payments';
+export * from './lib/performances';
 export * from './lib/performances/performance.service';
 export * from './lib/performances/performance.type';
 export * from './lib/standards.interface';
