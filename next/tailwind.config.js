@@ -10,6 +10,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Catamaran', 'sans-serif'],
+        handwriting: ['Pacifico', 'Catamaran', 'sans-serif'],
       },
       colors: {
         gray: colors.neutral,
