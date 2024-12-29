@@ -61,43 +61,54 @@ export function ResultsStep(props: ResultsStepProps) {
                             <strong>{category}</strong> category for{' '}
                             <strong>{year}</strong> with the following runs
                           </p>
-                          <table>
-                            {Object.keys(
-                              performances[year][category].performances
-                            ).map((event) => (
+                          <table className="mb-4">
+                            <thead>
                               <tr>
-                                <td>
-                                  {
-                                    performances[year][category].performances[
-                                      event
-                                    ].date
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    performances[year][category].performances[
-                                      event
-                                    ].time
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    performances[year][category].performances[
-                                      event
-                                    ].race
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    Award[
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Event</th>
+                                <th>Standard</th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              {Object.keys(
+                                performances[year][category].performances
+                              ).map((event) => (
+                                <tr>
+                                  <td>
+                                    {
                                       performances[year][category].performances[
                                         event
-                                      ].award
-                                    ]
-                                  }
-                                </td>
-                              </tr>
-                            ))}
+                                      ].date
+                                    }
+                                  </td>
+                                  <td>
+                                    <strong>
+                                      {
+                                        performances[year][category]
+                                          .performances[event].time
+                                      }
+                                    </strong>
+                                  </td>
+                                  <td>
+                                    {
+                                      performances[year][category].performances[
+                                        event
+                                      ].meetingName
+                                    }
+                                  </td>
+                                  <td>
+                                    {
+                                      Award[
+                                        performances[year][category]
+                                          .performances[event].award
+                                      ]
+                                    }
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
                           </table>
                         </>
                       ) : (
