@@ -52,7 +52,7 @@ export function CertificatePreview(props: Props) {
       <table className="ml-8">
         <thead>
           <tr>
-            <th className="text-orange-400">Date</th>
+            <th className="text-orange-400 xs:hidden">Date</th>
             <th className="text-orange-400">Time</th>
             <th className="text-orange-400">Event</th>
             <th className="text-orange-400">Standard</th>
@@ -66,7 +66,9 @@ export function CertificatePreview(props: Props) {
             )
             .map((performance) => (
               <tr key={performance.id}>
-                <td className="pr-4">{shortUkDate(performance.date)}</td>
+                <td className="pr-4 xs:hidden">
+                  {shortUkDate(performance.date)}
+                </td>
                 <td className="pr-4">
                   <strong>{performance.time}</strong>
                 </td>
