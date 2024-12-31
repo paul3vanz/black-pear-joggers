@@ -2,6 +2,7 @@ import { Container } from '@black-pear-joggers/container';
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { YourAwards } from '../components/your-awards';
+import { CurrentTargets } from '../components/current-targets';
 
 function AwardClaimHomePage() {
   return (
@@ -24,19 +25,7 @@ function AwardClaimHomePage() {
         </Container>
       </Stack>
 
-      <Stack backgroundColour={BackgroundColour.Dark}>
-        <Container>
-          <h2>Current targets</h2>
-
-          <p>
-            Coming soon. In the meantime, find your targets on the{' '}
-            <a href="https://apps.bpj.org.uk/club-standards/">
-              club standards awards scheme
-            </a>{' '}
-            page.
-          </p>
-        </Container>
-      </Stack>
+      <CurrentTargets />
 
       <YourAwards />
     </>

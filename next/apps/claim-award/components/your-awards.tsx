@@ -8,15 +8,28 @@ import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { useMemo } from 'react';
 import { CertificatePreview } from './certificate-preview/certificate-preview';
 import { AwardsSummary } from '../types/awards-summary';
-import { Award } from '../types/award';
 
 export function YourAwards() {
-  const { data: userProfile } = useUser();
-  const results = usePerformances(userProfile?.athleteId);
+  const { data: userProfile, isLoading: isLoadingUser } = useUser();
+  const { data: results, isLoading: isLoadingPerformances } = usePerformances(
+    userProfile?.athleteId
+  );
 
   const awardsSummaries = useMemo(() => {
-    return results?.data ? getAwardsSummaries(results?.data?.data) : null;
+    return results?.data ? getAwardsSummaries(results?.data) : null;
   }, [results]);
+
+  if (isLoadingUser || isLoadingPerformances) {
+    return (
+      <Stack backgroundColour={BackgroundColour.Light}>
+        <Container>
+          <h2>Your awards</h2>
+
+          <p>Loading...</p>
+        </Container>
+      </Stack>
+    );
+  }
 
   return (
     <Stack backgroundColour={BackgroundColour.Light}>
@@ -72,10 +85,6 @@ function getAwardsSummaries(performances: Performance[]): AwardsSummary[] {
   const awardsSummaries: AwardsSummary[] = [];
 
   performances.forEach((performance) => {
-    if (performance.meetingName === 'Edinburgh parkrun # 577') {
-      debugger;
-    }
-
     const year = new Date(performance.date).getFullYear();
     const category = performance.category;
 
