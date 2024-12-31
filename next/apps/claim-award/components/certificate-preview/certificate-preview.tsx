@@ -9,9 +9,9 @@ import { Award } from 'apps/claim-award/types/award';
 
 type Props = {
   athlete: Athlete;
-  year: string;
+  year: number;
   category: string;
-  performances: Performance;
+  performances: Performance[];
   award: Award;
 };
 
@@ -60,18 +60,20 @@ export function CertificatePreview(props: Props) {
         </thead>
 
         <tbody>
-          {Object.keys(props.performances).map((event) => (
-            <tr key={props.performances[event].id}>
-              <td className="pr-4">
-                {shortUkDate(props.performances[event].date)}
-              </td>
-              <td className="pr-4">
-                <strong>{props.performances[event].time}</strong>
-              </td>
-              <td className="pr-4">{props.performances[event].meetingName}</td>
-              <td>{Award[props.performances[event].award]}</td>
-            </tr>
-          ))}
+          {props.performances
+            .sort((a, b) =>
+              Number(a.timeParsed) < Number(b.timeParsed) ? -1 : 1
+            )
+            .map((performance) => (
+              <tr key={performance.id}>
+                <td className="pr-4">{shortUkDate(performance.date)}</td>
+                <td className="pr-4">
+                  <strong>{performance.time}</strong>
+                </td>
+                <td className="pr-4">{performance.meetingName}</td>
+                <td>{Award[performance.award]}</td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

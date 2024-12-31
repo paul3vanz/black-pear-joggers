@@ -1,199 +1,140 @@
 import { Container } from '@black-pear-joggers/container';
 import {
-  GenderFull,
+  Performance,
   usePerformances,
   useUser,
 } from '@black-pear-joggers/core-services';
-import { shortUkDate } from '@black-pear-joggers/helpers';
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
-import { Award } from '../types/award';
 import { useMemo } from 'react';
+import { CertificatePreview } from './certificate-preview/certificate-preview';
+import { AwardsSummary } from '../types/awards-summary';
+import { Award } from '../types/award';
 
 export function YourAwards() {
   const { data: userProfile } = useUser();
   const results = usePerformances(userProfile?.athleteId);
 
-  const performances = useMemo(() => {
-    return results?.data ? groupPerformances(results?.data?.data) : null;
+  const awardsSummaries = useMemo(() => {
+    return results?.data ? getAwardsSummaries(results?.data?.data) : null;
   }, [results]);
 
   return (
     <Stack backgroundColour={BackgroundColour.Light}>
       <Container>
-        <h2>Your awards</h2>
+        <>
+          <h2>Your awards</h2>
 
-        <p>See the awards you have earned</p>
+          <p className="mb-8">
+            See the awards you have earned. The performances are taken from your{' '}
+            <a
+              href={`http://www.thepowerof10.info/athletes/profile.aspx?athleteid=${userProfile.athleteId}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Power of 10
+            </a>{' '}
+            profile, so please check that if anything is missing.
+          </p>
 
-        <ul>
-          {performances &&
-            Object.keys(performances)
-              .reverse()
-              .map((year) => (
-                <>
-                  {Object.keys(performances[year]).map((category) => (
-                    <>
-                      {performances[year][category].award ? (
-                        <div className="bg-white mb-8 w-auto p-4 relative">
-                          <img
-                            src={`https://bpj.org.uk/certificate/certificate-badge-${Award[
-                              performances[year][category].award
-                            ].toLowerCase()}.png`}
-                            className="mb-4 w-20 right-4 absolute top-4"
-                            alt=""
-                          />
-
-                          <p className="uppercase font-semibold mb-0 text-xl">
-                            Club Standard
-                          </p>
-
-                          <p className="uppercase text-orange-400 font-extrabold text-3xl">
-                            Certificate
-                          </p>
-
-                          <p className="border-l-orange-400 pl-4 border-l-4 ml-4">
-                            This certificate is awarded to
-                            <br />
-                            <span className="text-orange-400 text-3xl font-['Pacifico']">
-                              {userProfile.athlete.first_name}{' '}
-                              {userProfile.athlete.last_name}
-                            </span>
-                            <br />
-                            For achieving the Black Pear Joggers{' '}
-                            <strong>
-                              {Award[performances[year][category].award]}
-                            </strong>{' '}
-                            Standard in
-                            <br />
-                            the{' '}
-                            <strong>
-                              {GenderFull[userProfile.athlete.gender]}{' '}
-                              {category.replace('SEN', 'Senior')}
-                            </strong>{' '}
-                            category for <strong>{year}</strong> with the
-                            following runs:
-                          </p>
-                          <table className="ml-8">
-                            <thead>
-                              <tr>
-                                <th className="text-orange-400">Date</th>
-                                <th className="text-orange-400">Time</th>
-                                <th className="text-orange-400">Event</th>
-                                <th className="text-orange-400">Standard</th>
-                              </tr>
-                            </thead>
-
-                            <tbody>
-                              {Object.keys(
-                                performances[year][category].performances
-                              ).map((event) => (
-                                <tr
-                                  key={
-                                    performances[year][category].performances[
-                                      event
-                                    ].id
-                                  }
-                                >
-                                  <td className="pr-4">
-                                    {shortUkDate(
-                                      performances[year][category].performances[
-                                        event
-                                      ].date
-                                    )}
-                                  </td>
-                                  <td className="pr-4">
-                                    <strong>
-                                      {
-                                        performances[year][category]
-                                          .performances[event].time
-                                      }
-                                    </strong>
-                                  </td>
-                                  <td className="pr-4">
-                                    {
-                                      performances[year][category].performances[
-                                        event
-                                      ].meetingName
-                                    }
-                                  </td>
-                                  <td>
-                                    {
-                                      Award[
-                                        performances[year][category]
-                                          .performances[event].award
-                                      ]
-                                    }
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      ) : (
-                        // <p>No award earned</p>
-                        <></>
-                      )}
-                    </>
-                  ))}
-                </>
+          {awardsSummaries &&
+            awardsSummaries
+              .filter((awardsSummary) => awardsSummary.award)
+              .map((awardsSummary) => (
+                <CertificatePreview
+                  key={`${awardsSummary.year}${awardsSummary.category}`}
+                  athlete={userProfile.athlete}
+                  year={awardsSummary.year}
+                  category={awardsSummary.category}
+                  performances={awardsSummary.performances}
+                  award={awardsSummary.award}
+                />
               ))}
-        </ul>
+        </>
       </Container>
     </Stack>
   );
 }
 
-function groupPerformances(data) {
-  const groupedData = {};
+const eventDistances = {
+  '1M': 'Mile',
+  Mile: 'Mile',
+  '5K': '5K',
+  parkrun: '5K',
+  '10K': '10K',
+  '10KMT': '10K',
+  HM: 'HM',
+  HMMT: 'HM',
+  Mar: 'Mar',
+  MarMT: 'Mar',
+};
 
-  const eventDistances = {
-    '1M': 'Mile',
-    Mile: 'Mile',
-    '5K': '5K',
-    parkrun: '5K',
-    '10K': '10K',
-    '10KMT': '10K',
-    HM: 'HM',
-    HMMT: 'HM',
-    Mar: 'Mar',
-    MarMT: 'Mar',
-  };
+function getAwardsSummaries(performances: Performance[]): AwardsSummary[] {
+  const awardsSummaries: AwardsSummary[] = [];
 
-  data.forEach((entry) => {
-    if (!entry.award) {
+  performances.forEach((performance) => {
+    const year = new Date(performance.date).getFullYear();
+    const category = performance.category;
+
+    // Skip if no award for performance
+    if (!performance.award) {
       return;
     }
-    const year = new Date(entry.date).getFullYear();
-    const category = entry.category;
-    const event = entry.event;
 
-    if (!groupedData[year]) {
-      groupedData[year] = {};
-    }
-    if (!groupedData[year][category]) {
-      groupedData[year][category] = { performances: {}, award: null };
-    }
-    if (!groupedData[year][category].performances[eventDistances[event]]) {
-      groupedData[year][category].performances[eventDistances[event]] = entry;
+    const yearAndCategoryIndex = awardsSummaries.findIndex(
+      (_) => _.year === year && _.category === category
+    );
+
+    // Check if the current year/category has been stored
+    if (yearAndCategoryIndex === -1) {
+      awardsSummaries.push({
+        year,
+        category,
+        award: null,
+        performances: [performance],
+      });
+
+      // Skip further checks as this is the first performance for the
+      // current year/category, so nothing to compare to
+      return;
     }
 
+    const eventIndex = awardsSummaries[
+      yearAndCategoryIndex
+    ].performances.findIndex(
+      (_) => eventDistances[_.event] === eventDistances[performance.event]
+    );
+
+    // Add in result if it meets an award standard and is faster
+    // than the previously known best for that year and category
     if (
-      Number(entry.timeParsed) <
-      Number(
-        groupedData[year][category].performances[eventDistances[event]]
-          .timeParsed
-      )
+      eventIndex === -1 ||
+      Number(performance.timeParsed) <
+        Number(awardsSummaries[yearAndCategoryIndex][eventIndex]?.timeParsed)
     ) {
-      groupedData[year][category].performances[eventDistances[event]] = entry;
+      awardsSummaries[yearAndCategoryIndex].performances.push(performance);
     }
 
-    if (Object.keys(groupedData[year][category].performances).length >= 3) {
-      groupedData[year][category].award = Math.min(
-        ...Object.values(groupedData[year][category].performances).map(
-          (a: any) => a.award
-        )
-      );
+    // Set the certificate award level if at least 3 performances
+    if (awardsSummaries[yearAndCategoryIndex].performances.length >= 3) {
+      awardsSummaries[yearAndCategoryIndex].award = 1;
+
+      // Sort highest awards first
+      awardsSummaries[yearAndCategoryIndex].performances.sort((a, b) => {
+        return a.award < b.award ? 0 : -1;
+      });
+
+      // Set certificate to level of 3rd highest performance
+      const minimumAward =
+        awardsSummaries[yearAndCategoryIndex].performances[2].award;
+
+      awardsSummaries[yearAndCategoryIndex].award = minimumAward;
+
+      // Remove any performance under the certificate award level
+      awardsSummaries[yearAndCategoryIndex].performances = awardsSummaries[
+        yearAndCategoryIndex
+      ].performances.filter((_) => _.award >= minimumAward);
     }
   });
 
-  return groupedData;
+  return awardsSummaries;
 }
