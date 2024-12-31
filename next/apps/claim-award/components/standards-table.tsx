@@ -41,7 +41,7 @@ export function StandardsTable(props: {
           <tr key={i}>
             <th className="p-2 border">{event.name}</th>
 
-            {event.standards.map((standard, i) => (
+            {event.standards?.map((standard, i) => (
               <td
                 className={
                   'p-2 border ' +
