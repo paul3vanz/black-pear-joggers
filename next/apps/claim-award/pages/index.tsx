@@ -3,8 +3,15 @@ import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { YourAwards } from '../components/your-awards';
 import { CurrentTargets } from '../components/current-targets';
+import { useUser } from '@black-pear-joggers/core-services';
 
 function AwardClaimHomePage() {
+  const { data: userProfile, isLoading: isLoadingUser } = useUser();
+
+  if (!isLoadingUser && !userProfile.athleteId) {
+    window.location.href = 'https://bpj.org.uk/register';
+  }
+
   return (
     <>
       <Stack>
