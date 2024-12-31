@@ -10,7 +10,7 @@ export type Performance = {
     event: string;
     time: string;
     timeParsed: string;
-    meetingId: number;
+    meetingId: number | string;
     meetingName: string;
     date: string;
     isPersonalBest: number;
