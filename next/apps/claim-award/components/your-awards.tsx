@@ -27,7 +27,7 @@ export function YourAwards() {
           <p className="mb-8">
             See the awards you have earned. The performances are taken from your{' '}
             <a
-              href={`http://www.thepowerof10.info/athletes/profile.aspx?athleteid=${userProfile.athleteId}`}
+              href={`http://www.thepowerof10.info/athletes/profile.aspx?athleteid=${userProfile?.athleteId}`}
               target="_blank"
               rel="noreferrer"
             >
@@ -72,6 +72,10 @@ function getAwardsSummaries(performances: Performance[]): AwardsSummary[] {
   const awardsSummaries: AwardsSummary[] = [];
 
   performances.forEach((performance) => {
+    if (performance.meetingName === 'Edinburgh parkrun # 577') {
+      debugger;
+    }
+
     const year = new Date(performance.date).getFullYear();
     const category = performance.category;
 
@@ -109,9 +113,17 @@ function getAwardsSummaries(performances: Performance[]): AwardsSummary[] {
     if (
       eventIndex === -1 ||
       Number(performance.timeParsed) <
-        Number(awardsSummaries[yearAndCategoryIndex][eventIndex]?.timeParsed)
+        Number(
+          awardsSummaries[yearAndCategoryIndex].performances[eventIndex]
+            .timeParsed
+        )
     ) {
-      awardsSummaries[yearAndCategoryIndex].performances.push(performance);
+      if (eventIndex === -1) {
+        awardsSummaries[yearAndCategoryIndex].performances.push(performance);
+      } else {
+        awardsSummaries[yearAndCategoryIndex].performances[eventIndex] =
+          performance;
+      }
     }
 
     // Set the certificate award level if at least 3 performances
