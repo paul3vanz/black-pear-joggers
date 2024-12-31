@@ -44,19 +44,22 @@ export function CurrentTargets() {
                 {GenderFull[userProfile.athlete.gender]}{' '}
                 {userProfile.athlete.category.replace('SEN', 'Senior')}
               </strong>{' '}
-              category. Below are your targets for the different awards. Check
-              out all age categories on the{' '}
-              <a href="https://apps.bpj.org.uk/club-standards/">
-                club standards awards scheme
-              </a>{' '}
-              page.
+              category.
             </p>
 
-            <StandardsTable
-              category={userProfile.athlete.category}
-              gender={userProfile.athlete.gender}
-              standards={currentTargets}
-            />
+            <div className="mb-6 overflow-auto">
+              <StandardsTable
+                category={userProfile.athlete.category}
+                gender={userProfile.athlete.gender}
+                standards={currentTargets}
+              />
+            </div>
+
+            <p>
+              <a href="https://apps.bpj.org.uk/club-standards/#targets">
+                View all categories
+              </a>
+            </p>
           </>
         )}
       </Container>

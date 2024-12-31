@@ -32,7 +32,7 @@ export function CertificatePreview(props: Props) {
         Certificate
       </p>
 
-      <p className="border-l-orange-400 pl-4 border-l-4 ml-4">
+      <p className="border-l-orange-400 pl-4 border-l-4 sm:ml-4">
         This certificate is awarded to
         <br />
         <span className="text-orange-400 text-3xl font-['Pacifico']">
@@ -40,8 +40,8 @@ export function CertificatePreview(props: Props) {
         </span>
         <br />
         For achieving the Black Pear Joggers{' '}
-        <strong>{Award[props.award]}</strong> Standard in
-        <br />
+        <strong>{Award[props.award]}</strong> Standard in{' '}
+        <br className="hidden sm:inline" />
         the{' '}
         <strong>
           {GenderFull[props.athlete.gender]}{' '}
@@ -49,35 +49,44 @@ export function CertificatePreview(props: Props) {
         </strong>{' '}
         category for <strong>{props.year}</strong> with the following runs:
       </p>
-      <table className="ml-8">
-        <thead>
-          <tr>
-            <th className="text-orange-400 xs:hidden">Date</th>
-            <th className="text-orange-400">Time</th>
-            <th className="text-orange-400">Event</th>
-            <th className="text-orange-400">Standard</th>
-          </tr>
-        </thead>
 
-        <tbody>
-          {props.performances
-            .sort((a, b) =>
-              Number(a.timeParsed) < Number(b.timeParsed) ? -1 : 1
-            )
-            .map((performance) => (
-              <tr key={performance.id}>
-                <td className="pr-4 xs:hidden">
-                  {shortUkDate(performance.date)}
-                </td>
-                <td className="pr-4">
-                  <strong>{performance.time}</strong>
-                </td>
-                <td className="pr-4">{performance.meetingName}</td>
-                <td>{Award[performance.award]}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+      <div className="overflow-auto">
+        <table className="sm:ml-8">
+          <thead>
+            <tr>
+              <th className="text-orange-400 hidden sm:table-cell">Date</th>
+              <th className="text-orange-400">Time</th>
+              <th className="text-orange-400">Event</th>
+              <th className="text-orange-400 hidden xs:table-cell">Standard</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {props.performances
+              .sort((a, b) =>
+                Number(a.timeParsed) < Number(b.timeParsed) ? -1 : 1
+              )
+              .map((performance) => (
+                <tr key={performance.id}>
+                  <td className="pr-4 hidden sm:table-cell">
+                    {shortUkDate(performance.date)}
+                  </td>
+                  <td className="pr-4">
+                    <strong>{performance.time}</strong>
+                  </td>
+                  <td className="pr-4">
+                    <span className="overflow-hidden text-ellipsis whitespace-nowrap max">
+                      {performance.meetingName}
+                    </span>
+                  </td>
+                  <td className="hidden xs:table-cell">
+                    {Award[performance.award]}
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
