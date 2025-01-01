@@ -1,5 +1,5 @@
 import { Container } from '@black-pear-joggers/container';
-import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
+import { Stack } from '@black-pear-joggers/stack';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { YourAwards } from '../components/your-awards';
 import { CurrentTargets } from '../components/current-targets';
