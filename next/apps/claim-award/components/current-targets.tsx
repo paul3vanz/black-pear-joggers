@@ -44,7 +44,8 @@ export function CurrentTargets() {
                 {GenderFull[userProfile.athlete.gender]}{' '}
                 {userProfile.athlete.category.replace('SEN', 'Senior')}
               </strong>{' '}
-              category.
+              category. The table below shows all the times for the different
+              events and awards.
             </p>
 
             <div className="mb-6 overflow-auto">

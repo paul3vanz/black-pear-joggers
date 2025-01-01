@@ -29,3 +29,50 @@ a {
 th {
     @apply text-left;
 }
+
+#certificatePrintContainer {
+    display: none;
+}
+
+@page {
+  size: a5 landscape;
+  margin: 0;
+}
+
+@media print {
+  body {
+    color-adjust: exact;
+  }
+
+  #certificatePrintContainer {
+    font-size: 85%;
+
+    display: block !important;
+    background-image: url("https://bpj.org.uk/certificate/certificate.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+
+    position: absolute;
+    z-index: 999;
+    width: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    padding-left: 80px;
+    padding-top: 40px
+  }
+
+  .certificate .badge {
+    z-index: 999999;
+  }
+
+  div.flex.flex-col.min-h-screen {
+    display: none;
+  }
+
+  .keep-print {
+    display: inline !important;
+  }
+}

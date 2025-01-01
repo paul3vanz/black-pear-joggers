@@ -78,6 +78,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
     >
       <QueryClientProvider client={queryClient}>
         <div id="modalContainer"></div>
+        <div id="certificatePrintContainer"></div>
         <PageContent>
           <Component {...pageProps} />
         </PageContent>
