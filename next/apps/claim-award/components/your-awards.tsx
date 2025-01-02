@@ -8,6 +8,8 @@ import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { useMemo } from 'react';
 import { CertificatePreview } from './certificate-preview/certificate-preview';
 import { AwardsSummary } from '../types/awards-summary';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 export function YourAwards() {
   const { data: userProfile, isLoading: isLoadingUser } = useUser();
@@ -18,6 +20,12 @@ export function YourAwards() {
   const awardsSummaries = useMemo(() => {
     return results?.data ? getAwardsSummaries(results?.data) : null;
   }, [results]);
+
+  const yearsWithAgeCategoryChanges = useMemo(() => {
+    return results?.data ? getYearsWithAgeCategoryChanges(results?.data) : null;
+  }, [results]);
+
+  console.log(yearsWithAgeCategoryChanges);
 
   if (isLoadingUser || isLoadingPerformances) {
     return (
@@ -46,21 +54,59 @@ export function YourAwards() {
             >
               Power of 10
             </a>{' '}
-            profile, so please check that if anything is missing.
+            profile, so please check that if anything is missing. You can also
+            see your full set of results on your{' '}
+            <a
+              href={`https://apps.bpj.org.uk/race-results/#/athlete/${userProfile?.athleteId}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              BPJ race results page
+            </a>
+            .
           </p>
 
           {awardsSummaries &&
             awardsSummaries
               .filter((awardsSummary) => awardsSummary.award)
               .map((awardsSummary) => (
-                <CertificatePreview
-                  key={`${awardsSummary.year}${awardsSummary.category}`}
-                  athlete={userProfile.athlete}
-                  year={awardsSummary.year}
-                  category={awardsSummary.category}
-                  performances={awardsSummary.performances}
-                  award={awardsSummary.award}
-                />
+                <>
+                  {yearsWithAgeCategoryChanges[awardsSummary.year]?.size >
+                    1 && (
+                    <div className="p-4 bg-orange-100 flex items-center mb-4">
+                      <FontAwesomeIcon
+                        className="pr-4 h-8 text-orange-400"
+                        icon={faTriangleExclamation}
+                      />
+                      <span>
+                        In {awardsSummary.year}, you moved from the{' '}
+                        {[...yearsWithAgeCategoryChanges[awardsSummary.year]]
+                          .reverse()
+                          .join(' to the ')}{' '}
+                        age category. For awards, all results must be in the
+                        same category, which might explain any missing awards or
+                        results. You can see your full set of results on your{' '}
+                        <a
+                          href={`https://apps.bpj.org.uk/race-results/#/athlete/${userProfile?.athleteId}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          BPJ race results page
+                        </a>
+                        .
+                      </span>
+                    </div>
+                  )}
+
+                  <CertificatePreview
+                    key={`${awardsSummary.year}${awardsSummary.category}`}
+                    athlete={userProfile.athlete}
+                    year={awardsSummary.year}
+                    category={awardsSummary.category}
+                    performances={awardsSummary.performances}
+                    award={awardsSummary.award}
+                  />
+                </>
               ))}
         </>
       </Container>
@@ -103,6 +149,7 @@ function getAwardsSummaries(performances: Performance[]): AwardsSummary[] {
         year,
         category,
         award: null,
+        categoryChangedInYear: false,
         performances: [performance],
       });
 
@@ -158,4 +205,25 @@ function getAwardsSummaries(performances: Performance[]): AwardsSummary[] {
   });
 
   return awardsSummaries;
+}
+
+function getYearsWithAgeCategoryChanges(performances: Performance[]): {
+  [year: number]: Set<number>;
+} {
+  const years = {};
+
+  performances.forEach((performance) => {
+    const year = new Date(performance.date).getFullYear();
+    const category = performance.category;
+
+    if (!years[year]) {
+      years[year] = new Set();
+    }
+
+    years[year].add(category);
+  });
+
+  console.log(years);
+
+  return years;
 }

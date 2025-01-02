@@ -5,5 +5,6 @@ export type AwardsSummary = {
     year: number;
     category: string;
     award: Award;
+    categoryChangedInYear: boolean;
     performances: Performance[];
 };
