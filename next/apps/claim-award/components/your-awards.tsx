@@ -66,6 +66,18 @@ export function YourAwards() {
             .
           </p>
 
+          {!awardsSummaries ||
+            (!awardsSummaries.filter((awardsSummary) => awardsSummary.award)
+              .length && (
+              <div className="p-4 bg-orange-100 flex items-center mb-4">
+                <FontAwesomeIcon
+                  className="pr-4 h-8 text-orange-400"
+                  icon={faTriangleExclamation}
+                />
+                <span>You haven&apos;t qualified for any awards.</span>
+              </div>
+            ))}
+
           {awardsSummaries &&
             awardsSummaries
               .filter((awardsSummary) => awardsSummary.award)
