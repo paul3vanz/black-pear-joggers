@@ -4,6 +4,7 @@ import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { YourAwards } from '../components/your-awards';
 import { CurrentTargets } from '../components/current-targets';
 import { useUser } from '@black-pear-joggers/core-services';
+import { PersonalBests } from '../components/personal-bests';
 
 function AwardClaimHomePage() {
   const { data: userProfile, isLoading: isLoadingUser } = useUser();
@@ -31,6 +32,8 @@ function AwardClaimHomePage() {
           </p>
         </Container>
       </Stack>
+
+      <PersonalBests />
 
       <CurrentTargets />
 
