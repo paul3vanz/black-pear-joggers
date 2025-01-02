@@ -35,12 +35,11 @@ export function PersonalBests() {
               These are your personal bests across all years for the event
               distances that count towards the awards. Well done!
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-4 overflow-auto w-full">
               {personalBests.map((personalBest) => (
-                <PersonalBestCard
-                  key={personalBest.event}
-                  summary={personalBest}
-                />
+                <div key={personalBest.event} className="w-full">
+                  <PersonalBestCard summary={personalBest} />
+                </div>
               ))}
             </div>
           </>
@@ -53,7 +52,7 @@ export function PersonalBests() {
 function PersonalBestCard(props: { summary: PersonalBestSummary }) {
   return (
     <div className="bg-white w-full rounded-md p-4 text-center">
-      <p className="mb-0">{props.summary.event}</p>
+      <p className="mb-0 whitespace-nowrap">{props.summary.event}</p>
       <p className="text-xl font-semibold mb-1">{props.summary.time}</p>
       <p className="text-xs mb-3">{shortUkDate(props.summary.date)}</p>
       <AwardBadge award={props.summary.award} />
