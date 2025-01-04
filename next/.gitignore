@@ -43,3 +43,8 @@ Thumbs.db
 
 # Sentry
 .sentryclirc
+# Sentry Config File
+.env.sentry-build-plugin
+
+.nx/cache
+.nx/workspace-data

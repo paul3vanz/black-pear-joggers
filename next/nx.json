@@ -1,52 +1,24 @@
 {
-  "npmScope": "black-pear-joggers",
-  "affected": {
-    "defaultBase": "master"
-  },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/nx-cloud",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "export",
-          "lint",
-          "test",
-          "e2e"
-        ],
-        "accessToken": "Y2UwY2VkZDEtYTg0Ny00YTQxLTkxNDItZjg2MmFhZTY1M2Q5fHJlYWQtd3JpdGU=",
-        "parallel": 1
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
+      "cache": true
     },
     "e2e": {
-      "inputs": [
-        "default",
-        "^production"
-      ]
+      "inputs": ["default", "^production"],
+      "cache": true
     },
     "test": {
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/jest.preset.js"
-      ]
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
+      "cache": true
     },
     "lint": {
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json"
-      ]
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
+      "cache": true
+    },
+    "export": {
+      "cache": true
     }
   },
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
@@ -64,17 +36,9 @@
     }
   },
   "defaultProject": "admin",
-  "cli": {
-    "defaultCollection": "@nrwl/next"
-  },
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
-    "sharedGlobals": [
-      "{workspaceRoot}/babel.config.json"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "sharedGlobals": ["{workspaceRoot}/babel.config.json"],
     "production": [
       "default",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
@@ -82,5 +46,10 @@
       "!{projectRoot}/jest.config.[jt]s",
       "!{projectRoot}/.eslintrc.json"
     ]
-  }
+  },
+  "nxCloudAccessToken": "Y2UwY2VkZDEtYTg0Ny00YTQxLTkxNDItZjg2MmFhZTY1M2Q5fHJlYWQtd3JpdGU=",
+  "parallel": 1,
+  "useInferencePlugins": false,
+  "defaultBase": "master",
+  "useLegacyCache": true
 }
