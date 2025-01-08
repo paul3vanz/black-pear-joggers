@@ -15,14 +15,12 @@ class RecordsController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /* Club records */
     public function getRecords(Request $request)
     {
-        $records = Cache::remember('records-v3', 28800, function () use ($request) {
+        $records = Cache::remember('records-v4', 28800, function () use ($request) {
             $filters = [];
             $filterString = '';
             $groupString = '';
@@ -65,6 +63,8 @@ class RecordsController extends Controller
                       LEFT JOIN performanceFlags pf ON pf.athlete_id = p.athlete_id AND pf.meeting_id = m.ukaMeetingId AND pf.`date` = m.`date` AND pf.approved IS NOT NULL
                       WHERE pf.flag IS NULL
                       AND p.category != ''
+                      AND a.gender IS NOT NULL
+                      AND IF(p.athlete_id IS NOT NULL AND a.created_at > '2021-01-01' AND a.created_at > m.date, 1, 0) != 1
                       AND p.time_parsed IS NOT NULL
                       ORDER BY p.time_parsed ASC LIMIT 100000000) AS t
                       GROUP BY $groupString
