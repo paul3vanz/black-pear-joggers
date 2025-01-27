@@ -52,8 +52,8 @@ class RegistrationController extends Controller
                 $error = "Not listed in club: {$membershipDetails->FirstClaimClubName}";
             }
 
-            if ($membershipDetails->Lastname !== $registration->lastName) {
-                $error = "No matching last name: {$membershipDetails->Lastname}";
+            if (trim($membershipDetails->Lastname) !== trim($registration->lastName)) {
+                $error = "No matching last name: '{$membershipDetails->Lastname}' ";
             }
 
             if ($error) {
