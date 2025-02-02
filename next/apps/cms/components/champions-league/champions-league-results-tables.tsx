@@ -6,6 +6,43 @@ import { useState } from 'react';
 
 const results = [
   {
+    year: 2024,
+    results: {
+      men: {
+        url: 'https://docs.google.com/spreadsheets/d/1nl7A-V0NJCatddJWlnVhucFymBzQD60JDkGGxU3q9Gk/edit#gid=454885501',
+        topTen: [
+          { position: 1, name: 'A', races: 15, points: 300 },
+          { position: 2, name: 'Js', races: 10, points: 283 },
+          { position: 3, name: 'R', races: 13, points: 272 },
+          { position: 4, name: 'H', races: 10, points: 266 },
+          { position: 5, name: 'S', races: 11, points: 257 },
+          { position: 6, name: 'K', races: 11, points: 237 },
+          { position: 7, name: 'R', races: 10, points: 223 },
+          { position: 8, name: 'W', races: 11, points: 221 },
+          { position: 9, name: 'B', races: 10, points: 209 },
+          { position: 10, name: 'M', races: 13, points: 201 },
+        ],
+      },
+      women: {
+        url: 'https://docs.google.com/spreadsheets/d/1nl7A-V0NJCatddJWlnVhucFymBzQD60JDkGGxU3q9Gk/edit#gid=6426148',
+        topTen: [
+            { position: 1, name: 'I', races: 10, points: 298 },
+            { position: 2, name: 'A', races: 18, points: 296 },
+            { position: 3, name: 'R', races: 16, points: 280 },
+            { position: 4, name: 'L', races: 15, points: 267 },
+            { position: 5, name: 'D', races: 16, points: 259 },
+            { position: 6, name: 'L', races: 9, points: 245 },
+            { position: 7, name: 'A', races: 15, points: 237 },
+            { position: 8, name: 'K', races: 11, points: 224 },
+            { position: 9, name: 'S', races: 12, points: 220 },
+            { position: 10, name: 'C', races: 10, points: 185 },
+        ],
+      },
+    },
+  },
+
+
+{
     year: 2023,
     results: {
       men: {
@@ -40,6 +77,8 @@ const results = [
       },
     },
   },
+
+  
   {
     year: 2022,
     results: {
