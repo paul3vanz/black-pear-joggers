@@ -5,17 +5,17 @@ export default {
   fields: [
     {
       name: 'label',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'title',
       type: 'string',
-      title: 'Title'
+      title: 'Title',
     },
     {
       name: 'body',
       type: 'simpleBlockContent',
-      title: 'Body'
+      title: 'Body',
     },
     {
       name: 'ctas',
@@ -23,21 +23,33 @@ export default {
       of: [
         {
           name: 'cta',
-          type: 'cta'
-        }
-      ]
-    }
+          type: 'cta',
+        },
+      ],
+    },
+    {
+      name: 'backgroundColour',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'White', value: 'white' },
+          { title: 'Dark', value: 'dark' },
+          { title: 'Light', value: 'light' },
+          { title: 'Bright', value: 'bright' },
+        ],
+      },
+    },
   ],
   preview: {
     select: {
       title: 'title',
-      subtitle: 'label'
+      subtitle: 'label',
     },
     prepare({ title, subtitle }) {
       return {
         title: `Call to action: ${title || 'Title not set'}`,
-        subtitle
-      }
-    }
-  }
-}
+        subtitle,
+      };
+    },
+  },
+};
