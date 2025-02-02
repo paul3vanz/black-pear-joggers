@@ -41,8 +41,7 @@ const results = [
     },
   },
 
-
-{
+  {
     year: 2023,
     results: {
       men: {
@@ -63,22 +62,21 @@ const results = [
       women: {
         url: 'https://docs.google.com/spreadsheets/d/1nl7A-V0NJCatddJWlnVhucFymBzQD60JDkGGxU3q9Gk/edit#gid=6426148',
         topTen: [
-            { position: 1, name: 'Isabel Alford', races: 10, points: 298 },
-            { position: 2, name: 'Alison Walker', races: 18, points: 296 },
-            { position: 3, name: 'Rachael Lewis', races: 16, points: 280 },
-            { position: 4, name: 'Lucy Capel', races: 15, points: 267 },
-            { position: 5, name: 'Deborah Band', races: 16, points: 259 },
-            { position: 6, name: 'Lucy Davison', races: 9, points: 245 },
-            { position: 7, name: 'Anya Lees', races: 15, points: 237 },
-            { position: 8, name: 'Kirsten Beard', races: 11, points: 224 },
-            { position: 9, name: 'Sarah Richards', races: 12, points: 220 },
-            { position: 10, name: 'Claire Shacklock', races: 10, points: 185 },
+          { position: 1, name: 'Isabel Alford', races: 10, points: 298 },
+          { position: 2, name: 'Alison Walker', races: 18, points: 296 },
+          { position: 3, name: 'Rachael Lewis', races: 16, points: 280 },
+          { position: 4, name: 'Lucy Capel', races: 15, points: 267 },
+          { position: 5, name: 'Deborah Band', races: 16, points: 259 },
+          { position: 6, name: 'Lucy Davison', races: 9, points: 245 },
+          { position: 7, name: 'Anya Lees', races: 15, points: 237 },
+          { position: 8, name: 'Kirsten Beard', races: 11, points: 224 },
+          { position: 9, name: 'Sarah Richards', races: 12, points: 220 },
+          { position: 10, name: 'Claire Shacklock', races: 10, points: 185 },
         ],
       },
     },
   },
 
-  
   {
     year: 2022,
     results: {
@@ -315,10 +313,10 @@ export function ChampionsLeagueResultsTables() {
         <h2>Previous years</h2>
 
         <p>
-          Thank you to <strong>Peter Darwen</strong>,{' '}
-          <strong>Sarah Morris</strong>, <strong>Mark Dillon</strong> and{' '}
-          <strong>Ben Dillon</strong> who have taken on the administration of
-          the league in recent years.
+          Thank you to <strong>Mat Capel</strong>, <strong>Lucy Capel</strong>,{' '}
+          <strong>Peter Darwen</strong>, <strong>Sarah Morris</strong>,{' '}
+          <strong>Mark Dillon</strong> and <strong>Ben Dillon</strong> who have
+          taken on the administration of the league in recent years.
         </p>
 
         {results.map((result) => (
