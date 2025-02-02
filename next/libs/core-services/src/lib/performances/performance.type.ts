@@ -1,5 +1,5 @@
 export type Performance = {
-    award?: number;
+    award: Award;
     athleteId: number;
     firstName: string;
     lastName: string;
@@ -14,6 +14,14 @@ export type Performance = {
     meetingName: string;
     date: string;
     isPersonalBest: number;
+}
+
+export enum Award {
+    None = 0,
+    Bronze = 1,
+    Silver = 2,
+    Gold = 3,
+    Platinum = 4,
 }
 
 export enum AgeCategory {
