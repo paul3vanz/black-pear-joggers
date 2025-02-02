@@ -41,7 +41,7 @@ th {
 
 @media print {
   body {
-    color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   #certificate-print-container {
