@@ -1,0 +1,59 @@
+{
+    "name": "contact",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/contact",
+    "projectType": "application",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@nx/next:build",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "defaultConfiguration": "production",
+            "options": {
+                "outputPath": "dist/apps/contact",
+                "postcssConfig": "apps/contact/postcss.config.js"
+            },
+            "configurations": {
+                "development": {
+                    "outputPath": "apps/contact"
+                },
+                "production": {}
+            }
+        },
+        "serve": {
+            "executor": "@nx/next:server",
+            "defaultConfiguration": "development",
+            "options": {
+                "buildTarget": "contact:build",
+                "dev": true,
+                "postcssConfig": "apps/contact/postcss.config.js"
+            },
+            "configurations": {
+                "development": {
+                    "buildTarget": "contact:build:development",
+                    "postcssConfig": "apps/contact/postcss.config.js",
+                    "dev": true
+                },
+                "production": {
+                    "buildTarget": "contact:build:production",
+                    "postcssConfig": "apps/contact/postcss.config.js",
+                    "dev": false
+                }
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+                "jestConfig": "apps/contact/jest.config.ts"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

@@ -1,0 +1,59 @@
+{
+    "name": "kit",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/kit",
+    "projectType": "application",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@nx/next:build",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "defaultConfiguration": "production",
+            "options": {
+                "outputPath": "dist/apps/kit",
+                "postcssConfig": "apps/kit/postcss.config.js"
+            },
+            "configurations": {
+                "development": {
+                    "outputPath": "apps/kit"
+                },
+                "production": {}
+            }
+        },
+        "serve": {
+            "executor": "@nx/next:server",
+            "defaultConfiguration": "development",
+            "options": {
+                "buildTarget": "kit:build",
+                "dev": true,
+                "postcssConfig": "apps/kit/postcss.config.js"
+            },
+            "configurations": {
+                "development": {
+                    "buildTarget": "kit:build:development",
+                    "postcssConfig": "apps/kit/postcss.config.js",
+                    "dev": true
+                },
+                "production": {
+                    "buildTarget": "kit:build:production",
+                    "postcssConfig": "apps/kit/postcss.config.js",
+                    "dev": false
+                }
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+                "jestConfig": "apps/kit/jest.config.ts"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

@@ -1,8 +1,18 @@
+const { createGlobPatternsForDependencies } = require('@nx/react/tailwind');
+const { join } = require('path');
 const colors = require('tailwindcss/colors');
 const defaultTheme = require('tailwindcss/defaultTheme');
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./**/*.html', './**/*.jsx', './**/*.tsx'],
+  content: [
+    join(
+      __dirname,
+      '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'
+    ),
+    join(__dirname, '../../libs/**/*.{js,ts,jsx,tsx}'),
+    ...createGlobPatternsForDependencies(__dirname),
+  ],
   theme: {
     extend: {
       margin: {
@@ -34,9 +44,6 @@ module.exports = {
       ...defaultTheme.screens,
       print: { raw: 'print' },
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [],
 };

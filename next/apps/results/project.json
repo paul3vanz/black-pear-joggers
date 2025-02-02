@@ -1,0 +1,59 @@
+{
+    "name": "results",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/results",
+    "projectType": "application",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@nx/next:build",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "defaultConfiguration": "production",
+            "options": {
+                "outputPath": "dist/apps/results",
+                "postcssConfig": "apps/results/postcss.config.js"
+            },
+            "configurations": {
+                "development": {
+                    "outputPath": "apps/results"
+                },
+                "production": {}
+            }
+        },
+        "serve": {
+            "executor": "@nx/next:server",
+            "defaultConfiguration": "development",
+            "options": {
+                "buildTarget": "results:build",
+                "dev": true,
+                "postcssConfig": "apps/results/postcss.config.js"
+            },
+            "configurations": {
+                "development": {
+                    "buildTarget": "results:build:development",
+                    "postcssConfig": "apps/results/postcss.config.js",
+                    "dev": true
+                },
+                "production": {
+                    "buildTarget": "results:build:production",
+                    "postcssConfig": "apps/results/postcss.config.js",
+                    "dev": false
+                }
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+                "jestConfig": "apps/results/jest.config.ts"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

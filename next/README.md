@@ -14,7 +14,13 @@ This is not finished. It will be a refresh of the form for members to submit a c
 
 The majority of content pages on the website. This aims to replace the old Wordpress website. This will load faster, allow others to easily update content on the site and allow better integration of dynamic data across the site such as results.
 
-`nx serve cms`
+To run locally, run:
+
+`npm run nx serve cms`
+
+It will run on the following URL (change the path accordingly):
+
+http://localhost:4200/home
 
 ### Contact
 
@@ -26,7 +32,7 @@ The majority of content pages on the website. This aims to replace the old Wordp
 
 ## Starting Sanity Studio
 
-Go to `/apps/sanity-studio` and run `sanity start`, then go to [localhost:3333](http://localhost:3333)
+Go to `/next/apps/sanity-studio` and run `npm run sanity start`, then go to [localhost:3333](http://localhost:3333)
 
 ## Adding capabilities to your workspace
 
@@ -53,7 +59,7 @@ There are also many [community plugins](https://nx.dev/community) you could add.
 
 ## Generate a new Next.js application
 
-Run `npx nx generate @nrwl/next:application app --e2eTestRunner=none` to generate an application (substitute app for your app name).
+Run `npx nx generate @nx/next:application app --e2eTestRunner=none` to generate an application (substitute app for your app name).
 
 Manual steps to set up standard header, etc...
 
