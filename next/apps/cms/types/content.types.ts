@@ -31,6 +31,7 @@ export interface CtaPlug extends BaseType {
     title: string;
     body: PortableTextBlock[];
     ctas: Cta[];
+    backgroundColour: BackgroundColour;
 }
 
 export interface Cta {

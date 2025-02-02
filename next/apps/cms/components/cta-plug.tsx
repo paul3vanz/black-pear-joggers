@@ -3,10 +3,7 @@ import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { PortableText } from '@portabletext/react';
 import { portableTextComponents } from '../core/portable-text/portable-text-components';
-import {
-  CtaPlug as CtaPlugType,
-  TextWithIllustration,
-} from '../types/content.types';
+import { CtaPlug as CtaPlugType } from '../types/content.types';
 
 interface CtaPlugProps {
   ctaPlug: CtaPlugType;
@@ -14,7 +11,9 @@ interface CtaPlugProps {
 
 export function CtaPlug({ ctaPlug }: CtaPlugProps) {
   return (
-    <Stack backgroundColour={BackgroundColour.Bright}>
+    <Stack
+      backgroundColour={ctaPlug.backgroundColour || BackgroundColour.Bright}
+    >
       <Container>
         <h2>{ctaPlug.title}</h2>
         <PortableText
