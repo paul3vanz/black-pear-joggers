@@ -23,7 +23,16 @@ export function CtaPlug({ ctaPlug }: CtaPlugProps) {
 
         {ctaPlug.ctas.map((cta) => (
           <div className="inline-block xs:mr-4 mb-4 sm:mb-0" key={cta.title}>
-            <Button key={cta.title} text={cta.title} link={cta.link} />
+            <Button
+              key={cta.title}
+              text={cta.title}
+              link={cta.link}
+              colour={
+                ctaPlug.backgroundColour === BackgroundColour.Dark
+                  ? BackgroundColour.Light
+                  : undefined
+              }
+            />
           </div>
         ))}
       </Container>
