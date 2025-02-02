@@ -17,7 +17,7 @@ function AwardClaimHomePage() {
     <>
       <Stack>
         <Container>
-          <h1 className="bg-red-400 sm:bg-blue-400">Club standards awards</h1>
+          <h1>Club standards awards</h1>
 
           <p>
             Check your progress on the{' '}
