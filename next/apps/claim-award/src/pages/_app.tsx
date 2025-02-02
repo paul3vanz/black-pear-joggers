@@ -73,7 +73,9 @@ function CustomApp({ Component, pageProps }: AppProps) {
   return (
     <Auth0Provider
       {...config.auth(
-        typeof window !== 'undefined' && `${window.location.origin}/register`
+        (typeof window !== 'undefined' &&
+          `${window.location.origin}/register`) ||
+          undefined
       )}
     >
       <QueryClientProvider client={queryClient}>
