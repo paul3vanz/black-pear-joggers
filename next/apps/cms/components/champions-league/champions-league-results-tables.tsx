@@ -9,7 +9,7 @@ const results = [
     year: 2024,
     results: {
       men: {
-        url: 'https://docs.google.com/spreadsheets/d/1nl7A-V0NJCatddJWlnVhucFymBzQD60JDkGGxU3q9Gk/edit#gid=454885501',
+        url: 'https://docs.google.com/spreadsheets/d/1ue3nCnaiAqEVxZWz1bgHHA8u20J109H7Fw-SS6xA1Y4/edit?gid=454885501#gid=454885501',
         topTen: [
           { position: 1, name: 'Richard Drewett', races: 10, points: 300 },
           { position: 2, name: 'Adam Knights', races: 12, points: 280 },
@@ -24,7 +24,7 @@ const results = [
         ],
       },
       women: {
-        url: 'https://docs.google.com/spreadsheets/d/1nl7A-V0NJCatddJWlnVhucFymBzQD60JDkGGxU3q9Gk/edit#gid=6426148',
+        url: 'https://docs.google.com/spreadsheets/d/1ue3nCnaiAqEVxZWz1bgHHA8u20J109H7Fw-SS6xA1Y4/edit?gid=6426148#gid=6426148',
         topTen: [
           { position: 1, name: 'Karen Moseley', races: 10, points: 296 },
           { position: 2, name: 'Deborah Band', races: 9, points: 261 },
