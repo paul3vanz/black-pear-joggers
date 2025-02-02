@@ -41,8 +41,12 @@ export function CurrentTargets() {
             <p className="mb-8">
               You are currently in the{' '}
               <strong>
-                {GenderFull[userProfile.athlete.gender]}{' '}
-                {userProfile.athlete.category.replace('SEN', 'Senior')}
+                {
+                  GenderFull[
+                    userProfile!.athlete.gender as keyof typeof GenderFull
+                  ]
+                }{' '}
+                {userProfile!.athlete.category.replace('SEN', 'Senior')}
               </strong>{' '}
               category. The table below shows all the times for the different
               events and awards.
@@ -50,8 +54,8 @@ export function CurrentTargets() {
 
             <div className="mb-6 overflow-auto">
               <StandardsTable
-                category={userProfile.athlete.category}
-                gender={userProfile.athlete.gender}
+                category={userProfile!.athlete.category}
+                gender={userProfile!.athlete.gender}
                 standards={currentTargets}
               />
             </div>

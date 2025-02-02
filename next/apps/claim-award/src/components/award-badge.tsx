@@ -1,20 +1,18 @@
+import { Award } from '@black-pear-joggers/core-services';
 import { classNames } from '@black-pear-joggers/helpers';
 
 type Props = {
   award: Award;
 };
 
-export enum Award {
-  Bronze = 1,
-  Silver = 2,
-  Gold = 3,
-  Platinum = 4,
-}
+export function AwardBadge({ award }: Props) {
+  if (award === Award.None) {
+    return null;
+  }
 
-export function AwardBadge(props: Props) {
   let classes;
 
-  switch (props.award) {
+  switch (award) {
     case Award.Bronze:
       classes = 'bg-yellow-700';
       break;
@@ -31,7 +29,7 @@ export function AwardBadge(props: Props) {
 
   return (
     <div className={classNames('rounded-md text-white px-2', classes)}>
-      {Award[props.award]}
+      {Award[award]}
     </div>
   );
 }

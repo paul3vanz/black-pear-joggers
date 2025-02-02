@@ -5,16 +5,16 @@ import { ServerStyleSheet } from 'styled-components';
 /* eslint-disable react/display-name */
 
 export default class CustomDocument extends Document<{
-  styleTags: ReactElement[];
+  styleTags: ReactElement<any>[];
 }> {
-  static async getInitialProps(context) {
+  static async getInitialProps(context: any) {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = context.renderPage;
 
     try {
       context.renderPage = () =>
         originalRenderPage({
-          enhanceApp: (App) => (props) =>
+          enhanceApp: (App: any) => (props: any) =>
             sheet.collectStyles(<App {...props} />),
         });
 

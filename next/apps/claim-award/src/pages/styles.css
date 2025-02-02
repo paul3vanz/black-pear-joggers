@@ -3,35 +3,35 @@
 @tailwind utilities;
 
 html {
-    font-size: 18px;
+  font-size: 18px;
 }
 
 h1 {
-    @apply text-4xl font-bold mb-4;
+  @apply text-4xl font-bold mb-4;
 }
 
 h2 {
-    @apply text-3xl font-bold mb-4;
+  @apply text-3xl font-bold mb-4;
 }
 
 h3 {
-    @apply text-2xl font-bold mb-4;
+  @apply text-2xl font-bold mb-4;
 }
 
 p {
-    @apply mb-4;
+  @apply mb-4;
 }
 
 a {
-    @apply font-bold underline cursor-pointer;
+  @apply font-bold underline cursor-pointer;
 }
 
 th {
-    @apply text-left;
+  @apply text-left;
 }
 
-#certificatePrintContainer {
-    display: none;
+#certificate-print-container {
+  display: none;
 }
 
 @page {
@@ -44,24 +44,21 @@ th {
     color-adjust: exact;
   }
 
-  #certificatePrintContainer {
-    font-size: 85%;
-
+  #certificate-print-container {
     display: block !important;
-    background-image: url("https://bpj.org.uk/certificate/certificate.png");
-    background-repeat: no-repeat;
-    background-size: contain;
-
     position: absolute;
     z-index: 999;
-    width: 100%;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-
+    width: 100%;
+    padding-top: 40px;
     padding-left: 80px;
-    padding-top: 40px
+    background-image: url('https://bpj.org.uk/certificate/certificate.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    font-size: 85%;
   }
 
   .certificate .badge {

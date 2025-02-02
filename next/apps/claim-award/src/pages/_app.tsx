@@ -42,12 +42,12 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
           'bpj.token',
           await getAccessTokenSilently({
             authorizationParams: {
-              audience: config.auth(null).authorizationParams.audience,
+              audience: config.auth().authorizationParams?.audience,
             },
           })
         );
       } catch (e) {
-        loginWithRedirect(config.auth(null));
+        loginWithRedirect(config.auth());
       }
     })();
   }, [getAccessTokenSilently]);
@@ -78,7 +78,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
     >
       <QueryClientProvider client={queryClient}>
         <div id="modalContainer"></div>
-        <div id="certificatePrintContainer"></div>
+        <div id="certificate-print-container"></div>
         <PageContent>
           <Component {...pageProps} />
         </PageContent>

@@ -5,7 +5,7 @@ import {
   Performance,
 } from '@black-pear-joggers/core-services';
 import { shortUkDate } from '@black-pear-joggers/helpers';
-import { Award } from 'apps/claim-award/types/award';
+import { Award } from 'apps/claim-award/src/types/award';
 import { useRef } from 'react';
 
 type Props = {
@@ -17,14 +17,16 @@ type Props = {
 };
 
 export function CertificatePreview(props: Props) {
-  const certificateRef = useRef(null);
+  const certificateRef = useRef<HTMLDivElement>(null);
   const certificatePrintContainer = document.getElementById(
-    'certificatePrintContainer'
+    'certificate-print-container'
   );
 
   function onPrintClick() {
-    certificatePrintContainer.innerHTML = certificateRef.current.innerHTML;
-    setTimeout(() => window.print(), 500);
+    if (certificatePrintContainer && certificateRef.current) {
+      certificatePrintContainer.innerHTML = certificateRef.current.innerHTML;
+      setTimeout(() => window.print(), 500);
+    }
   }
 
   return (
@@ -71,7 +73,7 @@ export function CertificatePreview(props: Props) {
           <br className="hidden sm:inline print:inline" />
           the{' '}
           <strong>
-            {GenderFull[props.athlete.gender]}{' '}
+            {GenderFull[props.athlete.gender as keyof typeof GenderFull]}{' '}
             {props.category.replace('SEN', 'Senior')}
           </strong>{' '}
           category for <strong>{props.year}</strong> with the following runs:
@@ -111,7 +113,7 @@ export function CertificatePreview(props: Props) {
                       </span>
                     </td>
                     <td className="hidden xs:table-cell print:table-cell">
-                      {Award[performance.award]}
+                      {Award[performance.award!]}
                     </td>
                   </tr>
                 ))}

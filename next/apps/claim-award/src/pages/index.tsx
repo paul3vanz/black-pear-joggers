@@ -1,15 +1,15 @@
 import { Container } from '@black-pear-joggers/container';
-import { Stack } from '@black-pear-joggers/stack';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 import { YourAwards } from '../components/your-awards';
 import { CurrentTargets } from '../components/current-targets';
 import { useUser } from '@black-pear-joggers/core-services';
 import { PersonalBests } from '../components/personal-bests';
+import { Stack } from '@black-pear-joggers/stack';
 
 function AwardClaimHomePage() {
   const { data: userProfile, isLoading: isLoadingUser } = useUser();
 
-  if (!isLoadingUser && !userProfile.athleteId) {
+  if (!isLoadingUser && !userProfile?.athleteId) {
     window.location.href = 'https://bpj.org.uk/register';
   }
 
@@ -17,7 +17,7 @@ function AwardClaimHomePage() {
     <>
       <Stack>
         <Container>
-          <h1>Club standards awards</h1>
+          <h1 className="bg-red-400 sm:bg-blue-400">Club standards awards</h1>
 
           <p>
             Check your progress on the{' '}

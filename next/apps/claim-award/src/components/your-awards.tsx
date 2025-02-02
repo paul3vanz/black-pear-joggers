@@ -10,6 +10,7 @@ import { CertificatePreview } from './certificate-preview/certificate-preview';
 import { AwardsSummary } from '../types/awards-summary';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { Award } from '../types/award';
 
 export function YourAwards() {
   const { data: userProfile, isLoading: isLoadingUser } = useUser();
@@ -37,6 +38,10 @@ export function YourAwards() {
         </Container>
       </Stack>
     );
+  }
+
+  if (!userProfile) {
+    return <p>Error loading user profile</p>;
   }
 
   return (
@@ -83,32 +88,34 @@ export function YourAwards() {
               .filter((awardsSummary) => awardsSummary.award)
               .map((awardsSummary) => (
                 <>
-                  {yearsWithAgeCategoryChanges[awardsSummary.year]?.size >
-                    1 && (
-                    <div className="p-4 bg-orange-100 flex items-center mb-4">
-                      <FontAwesomeIcon
-                        className="pr-4 h-8 text-orange-400"
-                        icon={faTriangleExclamation}
-                      />
-                      <span>
-                        In {awardsSummary.year}, you moved from the{' '}
-                        {[...yearsWithAgeCategoryChanges[awardsSummary.year]]
-                          .reverse()
-                          .join(' to the ')}{' '}
-                        age category. For awards, all results must be in the
-                        same category, which might explain any missing awards or
-                        results. You can see your full set of results on your{' '}
-                        <a
-                          href={`https://apps.bpj.org.uk/race-results/#/athlete/${userProfile?.athleteId}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          BPJ race results page
-                        </a>
-                        .
-                      </span>
-                    </div>
-                  )}
+                  {yearsWithAgeCategoryChanges &&
+                    yearsWithAgeCategoryChanges[awardsSummary.year]?.size >
+                      1 && (
+                      <div className="p-4 bg-orange-100 flex items-center mb-4">
+                        <FontAwesomeIcon
+                          className="pr-4 h-8 text-orange-400"
+                          icon={faTriangleExclamation}
+                        />
+                        <span>
+                          In {awardsSummary.year}, you moved from the{' '}
+                          {[...yearsWithAgeCategoryChanges[awardsSummary.year]]
+                            .reverse()
+                            .join(' to the ')}{' '}
+                          age category. For awards, all results must be in the
+                          same category, which might explain any missing awards
+                          or results. You can see your full set of results on
+                          your{' '}
+                          <a
+                            href={`https://apps.bpj.org.uk/race-results/#/athlete/${userProfile?.athleteId}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            BPJ race results page
+                          </a>
+                          .
+                        </span>
+                      </div>
+                    )}
 
                   <CertificatePreview
                     key={`${awardsSummary.year}${awardsSummary.category}`}
@@ -160,7 +167,7 @@ function getAwardsSummaries(performances: Performance[]): AwardsSummary[] {
       awardsSummaries.push({
         year,
         category,
-        award: null,
+        award: Award.None,
         categoryChangedInYear: false,
         performances: [performance],
       });
@@ -220,9 +227,9 @@ function getAwardsSummaries(performances: Performance[]): AwardsSummary[] {
 }
 
 function getYearsWithAgeCategoryChanges(performances: Performance[]): {
-  [year: number]: Set<number>;
+  [year: number]: Set<string>;
 } {
-  const years = {};
+  const years: { [year: number]: Set<string> } = {};
 
   performances.forEach((performance) => {
     const year = new Date(performance.date).getFullYear();
