@@ -1,6 +1,6 @@
 import { classNames } from '@black-pear-joggers/helpers';
 import { getYear } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type JSX } from 'react';
 
 export interface DateInputProps {
   id: string;

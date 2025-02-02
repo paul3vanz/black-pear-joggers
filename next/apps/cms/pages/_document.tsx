@@ -9,7 +9,7 @@ import { ServerStyleSheet } from 'styled-components';
 /* eslint-disable react/display-name */
 
 export default class CustomDocument extends Document<{
-  styleTags: ReactElement[];
+  styleTags: ReactElement<any>[];
 }> {
   static async getInitialProps(context) {
     const sheet = new ServerStyleSheet();

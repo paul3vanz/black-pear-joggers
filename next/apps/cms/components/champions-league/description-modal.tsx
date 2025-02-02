@@ -3,6 +3,8 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { hasWindow } from '@black-pear-joggers/helpers';
 
+import type { JSX } from "react";
+
 export function DescriptionModal(props: {
   isOpen: boolean;
   onClose: () => void;

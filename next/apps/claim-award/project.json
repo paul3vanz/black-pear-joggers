@@ -1,0 +1,59 @@
+{
+    "name": "claim-award",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/claim-award",
+    "projectType": "application",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@nx/next:build",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "defaultConfiguration": "production",
+            "options": {
+                "outputPath": "dist/apps/claim-award",
+                "postcssConfig": "apps/claim-award/postcss.config.js"
+            },
+            "configurations": {
+                "development": {
+                    "outputPath": "apps/claim-award"
+                },
+                "production": {}
+            }
+        },
+        "serve": {
+            "executor": "@nx/next:server",
+            "defaultConfiguration": "development",
+            "options": {
+                "buildTarget": "claim-award:build",
+                "dev": true,
+                "postcssConfig": "apps/claim-award/postcss.config.js"
+            },
+            "configurations": {
+                "development": {
+                    "buildTarget": "claim-award:build:development",
+                    "postcssConfig": "apps/claim-award/postcss.config.js",
+                    "dev": true
+                },
+                "production": {
+                    "buildTarget": "claim-award:build:production",
+                    "postcssConfig": "apps/claim-award/postcss.config.js",
+                    "dev": false
+                }
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+            ],
+            "options": {
+                "jestConfig": "apps/claim-award/jest.config.ts"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        }
+    }
+}

@@ -26,8 +26,8 @@ function AdminHomePage() {
   const { data: user, isLoading: isUserLoading } = useUser();
 
   const steps = {
-    form: useRef<HTMLDivElement>(),
-    result: useRef<HTMLDivElement>(),
+    form: useRef<HTMLDivElement>(undefined),
+    result: useRef<HTMLDivElement>(undefined),
   };
 
   const router = useRouter();

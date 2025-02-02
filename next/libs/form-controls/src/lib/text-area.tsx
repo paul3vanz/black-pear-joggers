@@ -1,6 +1,8 @@
 import { classNames } from '@black-pear-joggers/helpers';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
+import type { JSX } from "react";
+
 export interface TextAreaProps {
   id: string;
   label: string;

@@ -30,7 +30,7 @@ export interface PageBuilderProps {
   runs?: ClubRun[];
 }
 
-export function PageBuilder(props: PageBuilderProps): ReactElement {
+export function PageBuilder(props: PageBuilderProps): ReactElement<any> {
   return (
     <>
       {props.content
