@@ -180,7 +180,9 @@ function getAwardsSummaries(performances: Performance[]): AwardsSummary[] {
     const eventIndex = awardsSummaries[
       yearAndCategoryIndex
     ].performances.findIndex(
-      (_) => eventDistances[_.event] === eventDistances[performance.event]
+      (_) =>
+        eventDistances[_.event as keyof typeof eventDistances] ===
+        eventDistances[performance.event as keyof typeof eventDistances]
     );
 
     // Add in result if it meets an award standard and is faster
