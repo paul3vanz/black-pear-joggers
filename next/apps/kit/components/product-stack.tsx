@@ -17,7 +17,7 @@ export const ProductStack = ({
   product,
   backgroundColour,
 }: ProductStackProps) => {
-  const formReference = useRef<HTMLFormElement>();
+  const formReference = useRef<HTMLFormElement>(undefined);
   const [selectedVariant, setSelectedVariant] = useState<Variant>(
     (product.variants && product.variants[0]) ||
       product.defaultProductVariant ||

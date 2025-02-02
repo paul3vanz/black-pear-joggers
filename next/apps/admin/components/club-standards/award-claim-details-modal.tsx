@@ -2,6 +2,8 @@ import { createPortal } from 'react-dom';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import type { JSX } from "react";
+
 export function AwardClaimDetailsModal(props: {
   isOpen: boolean;
   onClose: () => void;
