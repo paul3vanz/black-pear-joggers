@@ -114,7 +114,7 @@ export function stepNamesToRefs(stepNames: string[]): {
   [key: string]: MutableRefObject<HTMLDivElement>;
 } {
   return stepNames.reduce(
-    (a, v) => ({ ...a, [v]: useRef<HTMLDivElement>(undefined) }),
+    (a, v) => ({ ...a, [v]: useRef<HTMLDivElement>() }),
     {}
   );
 }
