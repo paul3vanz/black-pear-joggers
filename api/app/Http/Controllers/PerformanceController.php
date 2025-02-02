@@ -73,7 +73,7 @@ class PerformanceController extends Controller
                 ->groupBy('performances.id')
                 ->select(
                     DB::raw(
-                        'MAX(awards.id) AS award'
+                        'IFNULL(MAX(awards.id),0) AS award'
                     ),
                     'athletes.id AS athleteId',
                     'athletes.first_name AS firstName',
