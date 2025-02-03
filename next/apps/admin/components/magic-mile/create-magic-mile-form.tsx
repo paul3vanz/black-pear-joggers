@@ -6,10 +6,10 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { isBefore, parseISO } from 'date-fns';
 import { MagicMileResult } from '@black-pear-joggers/core-services';
 import { Select } from '@black-pear-joggers/form-controls';
-import { shortDate, timeFormatted } from '@black-pear-joggers/helpers';
+import { shortDate } from '@black-pear-joggers/helpers';
 import { TextInput } from '@black-pear-joggers/form-controls';
 import { TimeInput } from '@black-pear-joggers/form-controls';
-import { useAthlete, useAthletes } from '@black-pear-joggers/core-services';
+import { useAthletes } from '@black-pear-joggers/core-services';
 import { useState } from 'react';
 
 interface CreateMagicMileResultFormProps {
@@ -35,25 +35,27 @@ export function CreateMagicMileResultForm(
   const form = useForm<FormData>();
   let athleteId;
   const { athletes } = useAthletes();
-  const { athlete } = useAthlete(athleteId);
   const [showMembers, setShowMembers] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   function resetForm() {
     form.setValue('firstName', '');
     form.setValue('lastName', '');
-    form.setValue('athleteId', null);
+    form.setValue('athleteId', undefined);
     form.setFocus('athleteId');
   }
 
   function handleAthleteChange(
-    setValue,
     athletes: Athlete[],
     e: React.ChangeEvent<HTMLSelectElement>
   ) {
     const athlete = athletes.find(
       (athlete) => athlete.id === Number(e.target.value)
     );
+
+    if (!athlete) {
+      return;
+    }
 
     athleteId = athlete.id;
 
@@ -77,7 +79,7 @@ export function CreateMagicMileResultForm(
     });
   }
 
-  async function onSubmit(data) {
+  async function onSubmit(data: any) {
     setIsLoading(true);
 
     const response = await createMagicMileResult({
@@ -119,6 +121,7 @@ export function CreateMagicMileResultForm(
   }
 
   return (
+    // @ts-ignore
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-lg">
         <div className="flex flex-wrap -mx-3 mb-3">
@@ -151,7 +154,7 @@ export function CreateMagicMileResultForm(
           </div>
         </div>
 
-        {showMembers && (
+        {showMembers && athletes && (
           <div className="flex flex-wrap -mx-3 mb-3">
             <div className="w-full px-3 mb-6 md:mb-0">
               <Select
@@ -159,7 +162,7 @@ export function CreateMagicMileResultForm(
                 label="Name"
                 registerField={form.register('athleteId', {
                   onChange: async (e: React.ChangeEvent<HTMLSelectElement>) => {
-                    handleAthleteChange(form.setValue, athletes, e);
+                    handleAthleteChange(athletes, e);
                   },
                 })}
                 options={getAthleteOptionElements(athletes)}
@@ -169,7 +172,7 @@ export function CreateMagicMileResultForm(
                   className="font-bold underline cursor-pointer"
                   onClick={() => {
                     setShowMembers(false);
-                    form.setValue('athleteId', null);
+                    form.setValue('athleteId', undefined);
                   }}
                 >
                   Not a member?
@@ -271,7 +274,7 @@ export function CreateMagicMileResultForm(
 function getLatestResultByAthleteId(
   results: MagicMileResult[],
   athleteId: number
-): number {
+): number | null {
   return results
     ? results
         .filter((result) => result.athleteId === athleteId)
