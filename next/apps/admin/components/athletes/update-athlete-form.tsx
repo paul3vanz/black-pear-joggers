@@ -8,7 +8,7 @@ interface UpdateAthleteFormProps {
   athlete: Athlete;
 }
 
-function onSubmit(data) {
+function onSubmit(data: any) {
   updateAthlete(data.id, {
     id: data.athleteId,
     athleteId: data.athleteId,

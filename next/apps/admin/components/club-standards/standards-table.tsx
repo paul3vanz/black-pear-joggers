@@ -41,7 +41,7 @@ export function StandardsTable(props: {
           <tr key={i}>
             <th className="p-2 border">{event.name}</th>
 
-            {event.standards.map((standard, i) => (
+            {event.standards.map((standard: any, i: number) => (
               <td
                 className={
                   'p-2 border ' +
@@ -61,8 +61,8 @@ export function StandardsTable(props: {
 
 export function getStandardsByEvent(standards: Standard[]) {
   const output: Array<Record<string, any>> = [{ events: [] }];
-  let currentEvent: string = null;
-  let currentAward: string = null;
+  let currentEvent: string | null = null;
+  let currentAward: string | null = null;
   let currentEventIndex = -1;
   let currentAwardIndex = -1;
 

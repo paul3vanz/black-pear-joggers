@@ -19,7 +19,7 @@ interface MatchingRaceResultsProps {
 
 function findMatchingRaces(race?: string, date?: string) {
   return fetch(
-    `https://bpj.org.uk/api/public/index.php/meetings?search=${race.substring(
+    `https://bpj.org.uk/api/public/index.php/meetings?search=${race!.substring(
       0,
       3
     )}&fromDate=${date}&toDate=${date}`
@@ -44,7 +44,7 @@ export function MatchingRaceResults(props: MatchingRaceResultsProps) {
 
       {data?.data.length ? (
         <ul className="list list-disc ml-4">
-          {data?.data?.map((result) => (
+          {data?.data?.map((result: any) => (
             <>
               <li>
                 {result.name}

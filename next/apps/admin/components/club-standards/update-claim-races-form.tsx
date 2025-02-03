@@ -23,7 +23,7 @@ export function UpdateClaimRacesForm({
     }
   );
 
-  function onSubmit(updatedFields) {
+  function onSubmit(updatedFields: any) {
     mutate(updatedFields);
   }
 

@@ -45,8 +45,7 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
   const [tableFilterState, setTableFilterState] = useState<TableFilterStates>(
     TableFilterStates.Active
   );
-  const [selectedAwardClaim, setSelectedAwardClaim] =
-    useState<AwardClaim>(null);
+  const [selectedAwardClaim, setSelectedAwardClaim] = useState<AwardClaim>();
 
   const filteredAwardClaims = props.awardClaims
     ? props.awardClaims
@@ -76,15 +75,17 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
 
   return (
     <>
-      <AwardClaimDetailsModal
-        isOpen={isRacesModalOpen}
-        onClose={() => setIsRacesModalOpen(false)}
-      >
-        <AwardClaimRaces
-          awardClaim={selectedAwardClaim}
-          standards={props.standards}
-        />
-      </AwardClaimDetailsModal>
+      {selectedAwardClaim && (
+        <AwardClaimDetailsModal
+          isOpen={isRacesModalOpen}
+          onClose={() => setIsRacesModalOpen(false)}
+        >
+          <AwardClaimRaces
+            awardClaim={selectedAwardClaim}
+            standards={props.standards}
+          />
+        </AwardClaimDetailsModal>
+      )}
 
       <p>
         <strong>{filteredAwardClaims.length}</strong> award claims
@@ -98,9 +99,12 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
             <Pill
               key={index}
               onClick={() =>
-                setTableFilterState(TableFilterStates[filterState])
+                setTableFilterState(filterState as unknown as TableFilterStates)
               }
-              active={tableFilterState === TableFilterStates[filterState]}
+              active={
+                tableFilterState ===
+                (filterState as unknown as TableFilterStates)
+              }
               text={filterState}
             />
           ))}

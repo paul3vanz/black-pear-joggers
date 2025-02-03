@@ -18,7 +18,7 @@ export function UpdateClaimForm({ awardClaim }: UpdateClaimFormProps) {
     }
   );
 
-  function onSubmit(updatedFields) {
+  function onSubmit(updatedFields: any) {
     mutate(updatedFields);
   }
 

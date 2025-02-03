@@ -19,20 +19,28 @@ interface AthletesTableProps {
 }
 
 function hasOutstandingPayment(athlete: Athlete): boolean {
+  if (!athlete.payments) {
+    return false;
+  }
+
   return athlete.payments[0]?.paymentStatus === 'Requested';
 }
 
-function paymentDescription(athlete: Athlete) {
+function paymentDescription(athlete: Athlete): string {
+  if (!athlete.payments) {
+    return '';
+  }
+
   if (hasOutstandingPayment(athlete)) {
     return 'Payment requested';
-  } else {
-    return `Paid (${friendlyDate(athlete.payments[0]?.datePaid)})`;
   }
+
+  return `Paid (${friendlyDate(athlete.payments[0]?.datePaid)})`;
 }
 
 function AthletesTable(props: AthletesTableProps) {
-  const [statusFilter, setStatusFilter] = useState<string>('active');
-  const [affiliatedFilter, setAffiliatedFilter] = useState<string>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>('active');
+  const [affiliatedFilter, setAffiliatedFilter] = useState<string | null>(null);
 
   const filteredAthletes = (
     props.search
@@ -174,8 +182,7 @@ function AthletesTable(props: AthletesTableProps) {
                 )}
               </td>
               <td className="px-4 py-2">
-                {athlete.active ||
-                athlete.payments[0]?.paymentStatus === 'Requested' ? (
+                {athlete.active || hasOutstandingPayment(athlete) ? (
                   athlete.affiliated ? (
                     <>
                       {' '}
@@ -207,8 +214,8 @@ function AthletesTable(props: AthletesTableProps) {
                 {friendlyDate(athlete.created_at)}
               </td>
               <td className="px-4 py-2 hidden md:table-cell">
-                {!hasOutstandingPayment(athlete)
-                  ? friendlyDate((athlete.payments[0]?.datePaid))
+                {athlete.payments && !hasOutstandingPayment(athlete)
+                  ? friendlyDate(athlete.payments[0]?.datePaid)
                   : ''}
               </td>
             </tr>

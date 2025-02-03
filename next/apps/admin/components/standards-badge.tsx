@@ -3,7 +3,7 @@ export interface StandardsBadgeProps {
 }
 
 export function StandardsBadge(props: StandardsBadgeProps) {
-  let backgroundColourClass: string;
+  let backgroundColourClass = '';
 
   switch (props.standard) {
     case 'Bronze':
