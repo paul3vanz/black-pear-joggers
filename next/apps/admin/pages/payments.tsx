@@ -21,7 +21,7 @@ function PaymentsPage() {
         {isLoading ? (
           <LoadingSpinner />
         ) : (
-          <PaymentsTable search={search} payments={payments} />
+          payments && <PaymentsTable search={search} payments={payments} />
         )}
       </Container>
     </Stack>

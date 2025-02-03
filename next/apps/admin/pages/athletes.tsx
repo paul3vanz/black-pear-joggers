@@ -23,7 +23,7 @@ function AthletesPage() {
         {isLoading ? (
           <LoadingSpinner />
         ) : (
-          <AthletesTable search={search} athletes={athletes} />
+          athletes && <AthletesTable search={search} athletes={athletes} />
         )}
       </Container>
     </Stack>

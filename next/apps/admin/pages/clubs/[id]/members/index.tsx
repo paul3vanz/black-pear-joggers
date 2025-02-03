@@ -31,7 +31,11 @@ function MembersPage() {
 
   const [search, setSearch] = useState('');
 
-  const club = clubs?.Clubs.find((club) => club.ClubId === clubId.toString());
+  const club = clubs?.Clubs.find((club) => club.ClubId === clubId!.toString());
+
+  if (!members) {
+    return null;
+  }
 
   return (
     <Stack>

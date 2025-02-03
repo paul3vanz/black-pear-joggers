@@ -27,15 +27,19 @@ export function MagicMilePage() {
       return;
     }
 
-    const position = magicMileResults.findIndex(
+    const position = magicMileResults!.findIndex(
       (a) => a.id === magicMileResult.id
     );
 
     mutate(
       magicMileResultsUrl,
-      magicMileResults.filter((a) => a.id !== magicMileResult.id),
+      magicMileResults!.filter((a) => a.id !== magicMileResult.id),
       false
     );
+  }
+
+  if (!magicMileResults) {
+    return null;
   }
 
   return (

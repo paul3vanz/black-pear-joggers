@@ -25,6 +25,10 @@ function MemberDetailsPage() {
     );
   }
 
+  if (!member) {
+    return null;
+  }
+
   return (
     <Stack>
       <Container>

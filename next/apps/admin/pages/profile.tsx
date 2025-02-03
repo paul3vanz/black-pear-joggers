@@ -6,6 +6,11 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 export default function Profile() {
   const { user, logout } = useAuth0();
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <Stack>
       <Container>
@@ -30,8 +35,9 @@ export default function Profile() {
             logout({
               logoutParams: {
                 returnTo:
-                  typeof window !== 'undefined' &&
-                  `${window.location.origin}/admin`,
+                  (typeof window !== 'undefined' &&
+                    `${window.location.origin}/admin`) ||
+                  undefined,
               },
             })
           }

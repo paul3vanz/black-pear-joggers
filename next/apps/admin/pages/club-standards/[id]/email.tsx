@@ -26,10 +26,10 @@ function AwardClaimDetailsPage() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: awardClaim.email,
-        firstName: awardClaim.firstName,
-        award: awardClaim.award,
-        certificateId: awardClaim.id,
+        email: awardClaim!.email,
+        firstName: awardClaim!.firstName,
+        award: awardClaim!.award,
+        certificateId: awardClaim!.id,
       }),
     });
   });

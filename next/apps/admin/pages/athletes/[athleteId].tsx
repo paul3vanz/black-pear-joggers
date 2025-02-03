@@ -31,6 +31,10 @@ function AthleteDetailsPage() {
     );
   }
 
+  if (!athlete) {
+    return null;
+  }
+
   return (
     <Stack>
       <Container>

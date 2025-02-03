@@ -41,6 +41,10 @@ function AwardClaimDetailsPage() {
     );
   }
 
+  if (!awardClaim) {
+    return null;
+  }
+
   return (
     <>
       <Stack>

@@ -25,16 +25,16 @@ export function ClubStandards() {
   async function onToggleVerified(awardClaim: AwardClaim) {
     const response = await toggleVerified(awardClaim);
 
-    const position = awardClaims.findIndex(
+    const position = awardClaims!.findIndex(
       (awardClaim) => awardClaim.id === response.id
     );
 
     mutate(
       awardClaimsUrl,
       [
-        ...awardClaims.slice(0, position),
+        ...awardClaims!.slice(0, position),
         response,
-        ...awardClaims.slice(position + 1),
+        ...awardClaims!.slice(position + 1),
       ],
       false
     );
@@ -49,11 +49,11 @@ export function ClubStandards() {
       return;
     }
 
-    const position = awardClaims.findIndex((a) => a.id === awardClaim.id);
+    const position = awardClaims!.findIndex((a) => a.id === awardClaim.id);
 
     mutate(
       awardClaimsUrl,
-      awardClaims.map((a) =>
+      awardClaims!.map((a) =>
         a.id === awardClaim.id ? { ...awardClaim, archived: true } : a
       ),
       false
@@ -69,11 +69,11 @@ export function ClubStandards() {
       return;
     }
 
-    const position = awardClaims.findIndex((a) => a.id === awardClaim.id);
+    const position = awardClaims!.findIndex((a) => a.id === awardClaim.id);
 
     mutate(
       awardClaimsUrl,
-      awardClaims.filter((a) => a.id !== awardClaim.id),
+      awardClaims!.filter((a) => a.id !== awardClaim.id),
       false
     );
   }
@@ -88,14 +88,17 @@ export function ClubStandards() {
         {isAwardClaimsLoading ? (
           <LoadingSpinner />
         ) : (
-          <AwardClaimsTable
-            search={search}
-            awardClaims={awardClaims}
-            standards={standards}
-            onToggleVerified={onToggleVerified}
-            onArchive={onArchive}
-            onDelete={onDelete}
-          />
+          standards &&
+          awardClaims && (
+            <AwardClaimsTable
+              search={search}
+              awardClaims={awardClaims}
+              standards={standards}
+              onToggleVerified={onToggleVerified}
+              onArchive={onArchive}
+              onDelete={onDelete}
+            />
+          )
         )}
       </Container>
     </Stack>
