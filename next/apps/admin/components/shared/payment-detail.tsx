@@ -62,7 +62,8 @@ export function PaymentDetail(props: PaymentDetailProps) {
       </li>
 
       <li>
-        <strong>Updated date:</strong> {timestamp(props.payment.updatedAt)}
+        <strong>Updated date:</strong>{' '}
+        {props.payment.updatedAt && timestamp(props.payment.updatedAt)}
       </li>
     </ul>
   );

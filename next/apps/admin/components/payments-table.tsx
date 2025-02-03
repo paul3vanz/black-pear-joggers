@@ -19,14 +19,13 @@ interface PaymentsTableProps {
 }
 
 function PaymentsTable(props: PaymentsTableProps) {
-  const [statusFilter, setStatusFilter] = useState<string>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
   const filteredPayments = (
     props.search
       ? props.payments.filter((payment) => {
           const search = props.search.toLowerCase();
-          const name =
-            `${payment.firstname} ${payment.lastname}`.toLowerCase();
+          const name = `${payment.firstname} ${payment.lastname}`.toLowerCase();
 
           return name.includes(search);
         })
@@ -98,7 +97,7 @@ function PaymentsTable(props: PaymentsTableProps) {
             >
               <td className="px-4 py-2">{payment.urn}</td>
               <td className="px-4 py-2">
-                  {payment.firstname + ' ' + payment.lastname}
+                {payment.firstname + ' ' + payment.lastname}
               </td>
               <td className="px-4 py-2">{payment.amount}</td>
               <td className="px-4 py-2">{payment.paymentStatus}</td>
@@ -110,7 +109,7 @@ function PaymentsTable(props: PaymentsTableProps) {
               </td>
               <td className="px-4 py-2 hidden md:table-cell">
                 {payment.createdAt !== payment.updatedAt
-                  ? friendlyDate(payment.updatedAt)
+                  ? friendlyDate(payment.updatedAt!)
                   : ''}
               </td>
             </tr>

@@ -16,9 +16,9 @@ function isActiveMember(member: RegisteredAthlete): boolean {
 }
 
 function MembersTable(props: MembersTableProps) {
-  const [showActiveOnly, setShowActiveOnly] = useState(true);
-  const [filterGender, setFilterGender] = useState<string>(null);
-  const [filterCategory, setFilterCategory] = useState(null);
+  const [showActiveOnly, setShowActiveOnly] = useState<boolean>(true);
+  const [filterGender, setFilterGender] = useState<string | null>(null);
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
 
   const filteredMembers = useMemo(() => {
     return (
