@@ -22,11 +22,11 @@ const queryClient = new QueryClient({
   },
 });
 
-let getAccessTokenSilently = null;
+let getAccessTokenSilently: any = null;
 
 export const sec = {
   getAccessTokenSilently: () => getAccessTokenSilently,
-  setAccessTokenSilently: (func) => (getAccessTokenSilently = func),
+  setAccessTokenSilently: (func: any) => (getAccessTokenSilently = func),
 };
 
 function LoadingContent() {
@@ -55,7 +55,7 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
       try {
         const accessToken = await getAccessTokenSilently({
           authorizationParams: {
-            audience: config.auth.authorizationParams.audience,
+            audience: config.auth.authorizationParams!.audience,
           },
         });
 
@@ -103,9 +103,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <Auth0Provider
-      {...config.auth}
-    >
+    <Auth0Provider {...config.auth}>
       <QueryClientProvider client={queryClient}>
         <div id="modalContainer"></div>
         <PageContent>

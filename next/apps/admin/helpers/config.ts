@@ -8,5 +8,5 @@ export const redirectUri = typeof window !== 'undefined' && `${window.location.o
 
 export const config = {
     ...sharedConfig,
-    auth: sharedConfig.auth(redirectUri),
+    auth: sharedConfig.auth(redirectUri || undefined),
 }
