@@ -14,6 +14,7 @@ const nextConfig = {
     svgr: false,
   },
   output: 'export',
+  distDir: 'exported',
   images: {
     domains: ['bpj.org.uk'],
   },
