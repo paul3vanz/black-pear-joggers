@@ -81,6 +81,13 @@ class RegistrationController extends Controller
             return;
         }
 
+        if ($membershipDetails->CompetitiveRegStatus !== "Registered") {
+            $registration->notes = "Not registered, status: {$membershipDetails->CompetitiveRegStatus}";
+            $registration->delete();
+
+            return;
+        }
+
         if (trim($membershipDetails->Lastname) !== trim($registration->lastName)) {
             $registration->notes = "No matching last name: '{$membershipDetails->Lastname}' ";
             $registration->save();
