@@ -61,7 +61,8 @@ $router->group(['prefix' => 'fetch'], function ($router) {
 });
 
 $router->group(['middleware' => 'auth', 'prefix' => 'registrations'], function ($router) {
-    $router->get('', 'RegistrationController@getRegistrations');
+    $router->get('', 'RegistrationController@getAll');
+    $router->delete('', 'RegistrationController@delete');
     $router->get('queue', 'RegistrationController@queueAllRegistrations');
     $router->get('createregistrationsfrommemberships', 'RegistrationController@createRegistrationsFromMemberships');
 });

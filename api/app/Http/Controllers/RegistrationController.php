@@ -29,11 +29,17 @@ class RegistrationController extends Controller
      *   @OA\Response(response=200, description="OK"),
      * )
      */
-    public function getRegistrations()
+    public function getAll()
     {
         $standards = Registration::get()->all();
 
         return response()->json($standards);
+    }
+
+    public function delete(string $id)
+    {
+        $result = Registration::destroy($id);
+        return response()->json($id);
     }
 
     public function queueAllRegistrations()
