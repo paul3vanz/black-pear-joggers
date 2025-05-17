@@ -36,6 +36,14 @@ class RegistrationController extends Controller
         return response()->json($standards);
     }
 
+    /**
+     * @OA\Delete(
+     *   tags={"Registrations"},
+     *   path="/registrations",
+     *   summary="Delete registration by ID",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function delete(string $id)
     {
         $result = Registration::destroy($id);
@@ -58,32 +66,33 @@ class RegistrationController extends Controller
         Log::info("processRegistration($registration->id)");
 
         $error = null;
+
+        $membershipDetails = $this->membershipController->checkUrn($registration->urn);
+
+        // Fetch athlete from uka
+
+        Log::info("checkUrn: {$membershipDetails->Urn}");
+
+        // Check last name and age match against registration
+        if (strpos($membershipDetails->FirstClaimClubName, 'Black Pear Joggers') !== 0) {
+            $registration->notes = "Not listed in club: {$membershipDetails->FirstClaimClubName}";
+            $registration->delete();
+
+            return;
+        }
+
+        if (trim($membershipDetails->Lastname) !== trim($registration->lastName)) {
+            $registration->notes = "No matching last name: '{$membershipDetails->Lastname}' ";
+            $registration->save();
+
+            return;
+        }
+
         $athleteId = $this->fetchPowerOfTenAthleteId($registration->urn);
 
         Log::info("Got athlete ID: $athleteId");
 
         if ($athleteId) {
-            // Fetch athlete from uka
-            $membershipDetails = $this->membershipController->checkUrn($registration->urn);
-
-            Log::info("checkUrn: {$membershipDetails->Urn}");
-
-            // Check last name and age match against registration
-            if (strpos($membershipDetails->FirstClaimClubName, 'Black Pear Joggers') !== 0) {
-                $error = "Not listed in club: {$membershipDetails->FirstClaimClubName}";
-            }
-
-            if (trim($membershipDetails->Lastname) !== trim($registration->lastName)) {
-                $error = "No matching last name: '{$membershipDetails->Lastname}' ";
-            }
-
-            if ($error) {
-                $registration->notes = $error;
-                $registration->save();
-
-                return;
-            }
-
             // Add athlete to athlete table
             $athlete = $this->createAthlete(
                 [
