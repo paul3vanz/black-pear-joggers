@@ -21,6 +21,21 @@ class RegistrationController extends Controller
         $this->membershipController = $membershipController;
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Registrations"},
+     *   path="/registrations",
+     *   summary="Get all registrations",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
+    public function getRegistrations()
+    {
+        $standards = Registration::get()->all();
+
+        return response()->json($standards);
+    }
+
     public function queueAllRegistrations()
     {
         $registrations = Registration::get()->all();
