@@ -1,9 +1,10 @@
-import Link from 'next/link';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { friendlyDate, timeFormatted } from '@black-pear-joggers/helpers';
 import { MagicMileResult } from '@black-pear-joggers/core-services';
 import { toTitleCase } from '../../helpers/formatters';
+import { useState } from 'react';
+import { MagicMileDetailsModal } from './magic-mile-details-modal';
 
 interface MagicMileResultsProps {
   search: string;
@@ -12,6 +13,11 @@ interface MagicMileResultsProps {
 }
 
 function MagicMileResults(props: MagicMileResultsProps) {
+  const [selectedResult, setSelectedResult] = useState<MagicMileResult | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const filteredResults = props.search
     ? props.magicMileResults.filter((result) => {
         const search = props.search.toLowerCase();
@@ -25,6 +31,16 @@ function MagicMileResults(props: MagicMileResultsProps) {
     const search = location.match(/\(.*?(?=\))/);
 
     return search ? search[0].replace('(', '') : location;
+  }
+
+  function handleNameClick(result: MagicMileResult) {
+    setSelectedResult(result);
+    setIsModalOpen(true);
+  }
+
+  function handleModalClose() {
+    setIsModalOpen(false);
+    setSelectedResult(null);
   }
 
   return (
@@ -57,9 +73,12 @@ function MagicMileResults(props: MagicMileResultsProps) {
                 className={index % 2 === 0 ? 'bg-gray-800' : ''}
               >
                 <td className="px-1 sm:px-4 py-2">
-                  <Link href={`/magic-mile/${result.id}`}>
+                  <button
+                    onClick={() => handleNameClick(result)}
+                    className="font-bold underline cursor-pointer"
+                  >
                     {result.firstName + ' ' + result.lastName}
-                  </Link>
+                  </button>
                 </td>
                 <td className="px-1 sm:px-4 py-2 hidden lg:table-cell">
                   {timeFormatted(result.predictedTime)}
@@ -93,6 +112,12 @@ function MagicMileResults(props: MagicMileResultsProps) {
           </tbody>
         </table>
       </div>
+
+      <MagicMileDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        result={selectedResult}
+      />
     </>
   );
 }
