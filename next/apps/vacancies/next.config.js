@@ -13,6 +13,8 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
+  output: 'export',
+  distDir: 'exported',
 };
 
 const plugins = [

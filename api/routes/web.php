@@ -21,7 +21,7 @@ $router->post('/awardclaim/{id}/race', 'AwardClaimController@submitClaimRace');
 $router->group([
     'middleware' => 'auth',
     'prefix' => 'awardclaim',
-],  function ($router) {
+], function ($router) {
     $router->post('toggleverified/{id}', 'AwardClaimController@toggleVerified');
     $router->post('archive/{id}', 'AwardClaimController@archive');
     $router->post('delete/{id}', 'AwardClaimController@delete');
@@ -60,8 +60,12 @@ $router->group(['prefix' => 'fetch'], function ($router) {
     $router->get('updatepersonalbests', 'FetchPerformancesController@updatePersonalBests');
 });
 
-$router->get('/registrations/queue', 'RegistrationController@queueAllRegistrations');
-$router->get('/registrations/createregistrationsfrommemberships', 'RegistrationController@createRegistrationsFromMemberships');
+$router->group(['middleware' => 'auth', 'prefix' => 'registrations'], function ($router) {
+    $router->get('', 'RegistrationController@getAll');
+    $router->delete('', 'RegistrationController@delete');
+    $router->get('queue', 'RegistrationController@queueAllRegistrations');
+    $router->get('createregistrationsfrommemberships', 'RegistrationController@createRegistrationsFromMemberships');
+});
 
 $router->get('/magicmile', 'MagicMileController@getAll');
 $router->get('/magicmile/syncmagicmile', 'MagicMileController@syncMagicMileResults');
@@ -69,7 +73,7 @@ $router->get('/magicmile/syncmagicmile', 'MagicMileController@syncMagicMileResul
 $router->group([
     'middleware' => 'auth',
     'prefix' => 'magicmile',
-],  function ($router) {
+], function ($router) {
     $router->post('', 'MagicMileController@store');
     $router->delete('{id}', 'MagicMileController@delete');
 });
