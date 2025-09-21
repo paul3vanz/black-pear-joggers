@@ -1,23 +1,13 @@
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
-import { ButtonLightTextDarkBackground } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { GetStaticProps } from 'next';
-import { Select, TextArea, TextInput } from '@black-pear-joggers/form-controls';
+import { Select } from '@black-pear-joggers/form-controls';
+import { Button } from '@black-pear-joggers/button';
 import { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 
-interface FormData {
-  name: string;
-  email: string;
-  reason: string;
-  message: string;
-}
-
 export function ContactPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [selectedReason, setSelectedReason] = useState('');
   const router = useRouter();
   const { reason } = router.query;
   const sendMessageStack = useRef(null);
@@ -39,17 +29,212 @@ export function ContactPage() {
     other: 'Other',
   };
 
-  const {
-    getValues,
-    formState: { errors },
-    setValue,
-    register,
-    handleSubmit,
-  } = useForm<FormData>();
+  const contactInfo = {
+    'Joining / Membership enquiry': {
+      description: (
+        <>
+          Interested in joining Black Pear Joggers? Please first read our{' '}
+          <a href="https://bpj.org.uk/membership" className="underline">
+            membership information
+          </a>{' '}
+          to learn about training sessions, club events, and what we offer. If
+          you still have questions after reading this, our membership team is
+          here to help.
+        </>
+      ),
+      email: 'membership@bpj.org.uk',
+    },
+    'Send news / race report': {
+      description: (
+        <>
+          Have exciting running news or a race report to share? Send us your
+          stories and photos to share with the club and local running community.
+        </>
+      ),
+      email: 'webmaster@bpj.org.uk',
+    },
+    'Problem with the website': {
+      description: (
+        <>
+          Experiencing technical issues with our website? If you want to report
+          a problem or have suggestions for improvements, we value your
+          feedback.
+        </>
+      ),
+      email: 'webmaster@bpj.org.uk',
+    },
+    'Social event enquiry': {
+      description: (
+        <>
+          Want to know about our social events? Browse our{' '}
+          <a
+            href="https://www.facebook.com/groups/blackpearjoggers/events"
+            className="underline"
+          >
+            events calendar
+          </a>{' '}
+          first to see upcoming social gatherings and celebrations. If you have
+          ideas for new activities or need more information, get in touch below.
+        </>
+      ),
+      email: 'eventsbpj@gmail.com',
+    },
+    'Race: Croome Capability Canter': {
+      description: (
+        <>
+          Questions about our Croome Capability Canter race? Please visit the{' '}
+          <a
+            href="https://bpj.org.uk/our-races/croome-capability-canter"
+            className="underline"
+          >
+            race information page
+          </a>{' '}
+          first for entry details, course information, and event schedule. For
+          additional questions about entering or volunteering, contact our race
+          team.
+        </>
+      ),
+      email: 'eventsbpj@gmail.com',
+    },
+    'Race: The Wild One': {
+      description: (
+        <>
+          Interested in The Wild One trail race? Check the{' '}
+          <a
+            href="https://bpj.org.uk/our-races/the-wild-one"
+            className="underline"
+          >
+            race details page
+          </a>{' '}
+          first for course information, entry requirements, and race day
+          details. For further questions about this challenging trail race or
+          volunteering opportunities, contact us below.
+        </>
+      ),
+      email: 'eventsbpj@gmail.com',
+    },
+    'Race: Worcester Festival Run': {
+      description: (
+        <>
+          Want to know about the Worcester Festival Run? Please read the{' '}
+          <a
+            href="https://www.entrycentral.com/worcesterfestivalrun"
+            className="underline"
+          >
+            race information
+          </a>{' '}
+          first for entry details, course map, and event information. If you
+          need additional help or want to volunteer, our race team is here to
+          assist.
+        </>
+      ),
+      email: 'webmaster@bpj.org.uk',
+    },
+    'Kit enquiry': {
+      description: (
+        <>
+          Looking for official Black Pear Joggers kit? Browse our{' '}
+          <a href="https://bpj.org.uk/kit" className="underline">
+            kit shop
+          </a>{' '}
+          first to see available items, sizes, and prices. If you need help with
+          sizing, custom orders, or have questions not covered on the kit page,
+          contact our kit coordinator.
+        </>
+      ),
+      email: 'secretarybpj+kit@gmail.com',
+    },
+    Welfare: {
+      description: (
+        <>
+          For confidential guidance or to discuss personal matters related to
+          the club, our welfare officers are here to help.
+        </>
+      ),
+      email: 'welfare@bpj.org.uk',
+    },
+    'Mental Health': {
+      description: (
+        <>
+          Looking for mental health support? Start by reading our{' '}
+          <a
+            href="https://bpj.org.uk/mental-health-and-wellbeing/"
+            className="underline"
+          >
+            wellbeing resources
+          </a>{' '}
+          For additional support or to discuss our wellbeing initiatives,
+          contact our team below.
+        </>
+      ),
+      email: 'welfarebpj@gmail.com',
+    },
+    'Champions League': {
+      description: (
+        <>
+          Questions about our Champions League? Check the{' '}
+          <a
+            href="https://bpj.org.uk/leagues/champions-league"
+            className="underline"
+          >
+            league information
+          </a>{' '}
+          first for fixtures, results, and rules. If you have specific
+          questions, get in touch below.
+        </>
+      ),
+      email: 'bpjleague@gmail.com',
+    },
+    'Club Standards Awards': {
+      description: (
+        <>
+          Want to know about Club Standards Awards? Please review the{' '}
+          <a
+            href="https://apps.bpj.org.uk/club-standards/"
+            className="underline"
+          >
+            awards criteria and times
+          </a>{' '}
+          first to see qualifying standards for different age categories and
+          distances. If you have questions, get in touch.
+        </>
+      ),
+      email: 'webmaster@bpj.org.uk',
+    },
+    'Cross Country': {
+      description: (
+        <>
+          Interested in cross country running? Start by reading our{' '}
+          <a
+            href="https://bpj.org.uk/leagues/cross-country"
+            className="underline"
+          >
+            cross country information
+          </a>{' '}
+          to learn about training sessions, fixtures, and what to expect. For
+          questions or getting started with cross country, contact us below.
+        </>
+      ),
+      email: 'secretarybpj+xc@gmail.com',
+    },
+    Other: {
+      description: (
+        <>
+          Have a question that doesn't fit other categories? Please check our{' '}
+          <a href="https://bpj.org.uk/site-map" className="underline">
+            site map
+          </a>{' '}
+          first to see if there's a page that can help. If you can't find what
+          you're looking for there, get in touch below.
+        </>
+      ),
+      email: 'webmaster@bpj.org.uk',
+    },
+  };
 
   useEffect(() => {
-    if (reason) {
-      setValue('reason', contactReasons[reason.toString()]);
+    if (reason && contactReasons[reason.toString()]) {
+      setSelectedReason(contactReasons[reason.toString()]);
       setTimeout(
         () =>
           sendMessageStack.current.scrollIntoView({
@@ -60,32 +245,9 @@ export function ContactPage() {
     }
   }, [reason]);
 
-  function submitEnquiry(formData: FormData) {
-    setIsLoading(true);
-    setIsError(false);
-    setIsSuccess(false);
-
-    fetch('https://contact.bpj.workers.dev/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        if (response.send.ok) {
-          setIsSuccess(true);
-          setValue('name', '');
-          setValue('email', '');
-          setValue('message', '');
-        } else {
-          setIsError(true);
-        }
-      })
-      .catch((error) => {
-        setIsError(true);
-      })
-      .finally(() => setIsLoading(false));
-  }
+  const handleReasonChange = (event) => {
+    setSelectedReason(event.target.value);
+  };
 
   return (
     <>
@@ -113,94 +275,38 @@ export function ContactPage() {
 
       <Stack backgroundColour={BackgroundColour.Dark}>
         <Container>
-          <h2 ref={sendMessageStack}>Send a message</h2>
+          <h2 ref={sendMessageStack}>Get in touch</h2>
 
-          <form className="w-full max-w-xl" id="contact">
-            {isSuccess ? (
-              <p className="bg-green-300 px-6 py-4 text-black">
-                Your message was sent successfully.
-              </p>
-            ) : null}
-            {isError ? (
-              <p className="bg-red-300 px-6 py-4 text-black">
-                There was a problem sending your message. Please try again
-                later.
-              </p>
-            ) : null}
-
-            <input type="hidden" name="form-name" value="contact" />
-
+          <div className="w-full max-w-xl">
             <div className="flex flex-wrap -mx-3 mb-6">
               <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
                 <Select
                   id="reason"
                   label="Reason for contacting"
                   labelHidden={true}
-                  options={Object.values(contactReasons)}
-                  registerField={register('reason', {
-                    required: true,
-                  })}
+                  options={['Select a reason...', ...Object.keys(contactInfo)]}
+                  onChange={handleReasonChange}
                 />
               </div>
             </div>
 
-            <div className="flex flex-wrap -mx-3 mb-6">
-              <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
-                <TextInput
-                  id="name"
-                  label="Name"
-                  placeholder="Name"
-                  labelHidden={true}
-                  required={true}
-                  error={errors.name && 'Please enter your name'}
-                  registerField={register('name', {
-                    required: true,
-                  })}
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-wrap -mx-3 mb-6">
-              <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
-                <TextInput
-                  id="email"
-                  label="Email address"
-                  placeholder="Email address"
-                  labelHidden={true}
-                  required={true}
-                  error={errors.email && 'Please enter a valid email address'}
-                  registerField={register('email', {
-                    required: true,
-                    pattern:
-                      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                  })}
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-wrap -mx-3 mb-6">
-              <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
-                <TextArea
-                  id="message"
-                  label="Message"
-                  labelHidden={true}
-                  placeholder="Message"
-                  required={true}
-                  error={errors.message && 'Please enter your message'}
-                  registerField={register('message', {
-                    required: true,
-                  })}
-                />
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <ButtonLightTextDarkBackground
-                text={isLoading ? 'Sending...' : 'Send'}
-                onClick={handleSubmit(submitEnquiry)}
-              />
-            </div>
-          </form>
+            {selectedReason &&
+              selectedReason !== 'Select a reason...' &&
+              contactInfo[selectedReason] && (
+                <div className="mt-6">
+                  <p className="mb-4">
+                    {contactInfo[selectedReason].description}
+                  </p>
+                  <div>
+                    <Button
+                      link={`mailto:${contactInfo[selectedReason].email}`}
+                      text={contactInfo[selectedReason].email}
+                      colour="light"
+                    />
+                  </div>
+                </div>
+              )}
+          </div>
         </Container>
       </Stack>
 
