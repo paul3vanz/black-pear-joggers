@@ -5,6 +5,44 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 const results = [
+
+    {
+    year: 2025,
+    results: {
+      men: {
+        url: 'https://docs.google.com/spreadsheets/d/1ue3nCnaiAqEVxZWz1bgHHA8u20J109H7Fw-SS6xA1Y4/edit?gid=454885501#gid=454885501',
+        topTen: [
+          { position: 1, name: 'xRichard Drewett', races: 10, points: 300 },
+          { position: 2, name: 'xAdam Knights', races: 12, points: 280 },
+          { position: 3, name: 'xPaul Naughton', races: 9, points: 270 },
+          { position: 4, name: 'xKeith Lawrence', races: 10, points: 259 },
+          { position: 5, name: 'xSteve Bradley', races: 10, points: 253 },
+          { position: 6, name: 'xStuart Wakelam', races: 9, points: 241 },
+          { position: 7, name: 'xBertie Ballinger', races: 9, points: 236 },
+          { position: 8, name: 'xMatthew Capel', races: 10, points: 195 },
+          { position: 9, name: 'xTim Jenkins', races: 9, points: 170 },
+          { position: 10, name: 'xWayne Hartley', races: 6, points: 129 },
+        ],
+      },
+      women: {
+        url: 'https://docs.google.com/spreadsheets/d/1ue3nCnaiAqEVxZWz1bgHHA8u20J109H7Fw-SS6xA1Y4/edit?gid=6426148#gid=6426148',
+        topTen: [
+          { position: 1, name: 'xKaren Moseley', races: 10, points: 296 },
+          { position: 2, name: 'xDeborah Band', races: 9, points: 261 },
+          { position: 3, name: 'xLucy Capel', races: 10, points: 251 },
+          { position: 4, name: 'xAnya Lees', races: 9, points: 219 },
+          { position: 5, name: 'xAlison Walker', races: 8, points: 218 },
+          { position: 6, name: 'xDiana Fox', races: 6, points: 205 },
+          { position: 7, name: 'xSusan Harrison', races: 7, points: 176 },
+          { position: 8, name: 'xLucy Davison', races: 5, points: 158 },
+          { position: 9, name: 'xJennie Smith', races: 7, points: 147 },
+          { position: 10, name: 'xSamantha McClory', races: 5, points: 123 },
+        ],
+      },
+    },
+  },
+  
+  
   {
     year: 2024,
     results: {
