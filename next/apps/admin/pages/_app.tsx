@@ -4,7 +4,6 @@ import { AppProps } from 'next/app';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { Container } from '@black-pear-joggers/container';
 import { Footer } from '@black-pear-joggers/footer';
-import { Forbidden } from '../components/forbidden';
 import { Header } from '@black-pear-joggers/header';
 import { UserWithRoles } from '../helpers/auth';
 import { LoadingSpinner } from '../components/loading-spinner';
@@ -83,10 +82,8 @@ function PageContent(props: PropsWithChildren<Record<string, unknown>>) {
       <AdminBar />
 
       <main className="flex-1">
-        {isLoading ? (
+        {isLoading || !isAuthenticated ? (
           <LoadingContent />
-        ) : !isAuthenticated ? (
-          <Forbidden />
         ) : (
           props.children
         )}
