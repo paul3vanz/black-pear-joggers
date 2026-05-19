@@ -80,13 +80,15 @@ function parseCSV(text: string): { rows: ParsedRow[]; errors: string[] } {
   const errors: string[] = [];
   const rows: ParsedRow[] = [];
 
+  const delimiter = lines[0].includes('\t') ? '\t' : ',';
+
   // Skip header row if it looks like one (first field is not a number/name)
-  const firstField = lines[0].split(',')[0].trim().toLowerCase();
+  const firstField = lines[0].split(delimiter)[0].trim().toLowerCase();
   const startIndex =
     firstField === 'first name' || firstField === 'firstname' ? 1 : 0;
 
   for (let i = startIndex; i < lines.length; i++) {
-    const cols = lines[i].split(',').map((c) => c.trim());
+    const cols = lines[i].split(delimiter).map((c) => c.trim());
     if (cols.length < 4) {
       errors.push(`Row ${i + 1}: not enough columns, skipping`);
       continue;
