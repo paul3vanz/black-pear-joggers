@@ -24,6 +24,11 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# env files (may contain secrets)
+.env
+.env.*
+!.env.sentry-build-plugin
+
 # misc
 /.sass-cache
 /connect.lock

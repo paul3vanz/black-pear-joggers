@@ -21,6 +21,7 @@ import { ReactElement } from 'react';
 import { RecentNews } from './recent-news';
 import { RecentPersonalBests } from './personal-bests/recent-personal-bests';
 import { Steps } from './steps';
+import { Table } from './table';
 import { urlFor } from '@black-pear-joggers/sanity';
 import { CountdownTimer } from './countdown-timer';
 
@@ -53,6 +54,8 @@ export function PageBuilder(props: PageBuilderProps): ReactElement<any> {
               return <Hero key={contentItem._key} hero={contentItem} />;
             case 'steps':
               return <Steps key={contentItem._key} steps={contentItem} />;
+            case 'table':
+              return <Table key={contentItem._key} table={contentItem} />;
             case 'alert':
               return <Alert key={contentItem._key} alert={contentItem} />;
             case 'illustration':

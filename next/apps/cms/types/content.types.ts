@@ -130,4 +130,18 @@ export interface Alert extends BaseType {
     type: AlertTypes;
 }
 
-export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards | Hero | UiComponent | Steps | Alert;
+export interface TableRow {
+    _key: string;
+    _type: 'tableRow';
+    cells: string[];
+}
+
+export interface Table extends BaseType {
+    _type: 'table';
+    caption?: string;
+    columns?: string[];
+    rows: TableRow[];
+    backgroundColour: BackgroundColour;
+}
+
+export type ContentItem = InfoRows | CtaPlug | Illustration | Quote | FeatureList | Cards | Hero | UiComponent | Steps | Alert | Table;

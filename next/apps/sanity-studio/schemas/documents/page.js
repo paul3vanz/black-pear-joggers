@@ -32,6 +32,7 @@ export default {
         // { type: 'pricing' },
         { type: 'quote' },
         { type: 'steps' },
+        { type: 'table' },
         { type: 'uiComponentRef' },
         { type: 'venue' },
       ],
