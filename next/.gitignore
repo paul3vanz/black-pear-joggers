@@ -41,6 +41,9 @@ Thumbs.db
 # Next.js
 .next
 
+# Local env overrides (e.g. apps/cms/.env.local for live-results Supabase testing)
+.env*.local
+
 # Sentry
 .sentryclirc
 # Sentry Config File
