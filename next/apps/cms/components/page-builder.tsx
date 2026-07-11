@@ -34,7 +34,7 @@ export interface PageBuilderProps {
 export function PageBuilder(props: PageBuilderProps): ReactElement<any> {
   return (
     <>
-      {props.content
+      {(props.content ?? [])
         .filter((contentItem) => !contentItem.disabled)
         .map((contentItem) => {
           switch (contentItem._type) {
