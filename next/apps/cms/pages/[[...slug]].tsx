@@ -48,7 +48,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
-  const slug = context.params['slug'] as string[];
+  const slug = (context.params['slug'] as string[]) ?? [];
   const route = await getRouteBySlug(slug.join('/'));
   const runs = await getAllClubRuns();
 
