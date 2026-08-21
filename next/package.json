@@ -61,7 +61,7 @@
     },
     "devDependencies": {
         "@babel/preset-react": "^7.26.3",
-        "@netlify/plugin-nextjs": "^5.9.2",
+        "@netlify/plugin-nextjs": "^5.15.13",
         "@nx/eslint": "^20.3.0",
         "@nx/eslint-plugin": "^20.3.0",
         "@nx/jest": "^20.3.0",
