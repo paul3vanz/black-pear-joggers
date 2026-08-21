@@ -50,37 +50,77 @@ Prints a summary and writes `athlete_<prefix>.json`.
 
 ### po10_discover.py
 
-Builds the `athlete_id -> po10_guid` mapping for the `athletes.po10_guid`
-column.
-
-Athlete search is reCAPTCHA gated, so this snowballs through results pages,
-which are server rendered and list every competitor as GUID, name and club:
-
-1. start from a known athlete GUID
-2. read their meeting GUIDs out of the embedded `gridData`
-3. fetch those results pages and harvest club members
-4. repeat, since club members race together
+Snowballs through server-rendered results pages, harvesting club members from
+meetings a known athlete appeared in.
 
 ```bash
 python po10_discover.py "Black Pear Joggers" cefdba18-0a6e-4a8c-b204-f9dcc855b5e0 3
 ```
 
-Writes `id_map.json`. The roster is pulled from the public API and cached in
-`bpj_athletes.json`.
+This is what produced the first 135 GUIDs, but it plateaus there and cannot get
+much further. An athlete page only carries meeting ids for the most recent year
+that holds data, about nine meetings, so 135 athletes between them expose only
+214 meetings and almost all of them are current season. Members who stopped
+racing years ago are unreachable: finding their races needs a meeting from that
+era, and the only way to get one is to already know somebody who ran it. Use
+the capture route below instead.
 
-Matching works two ways:
+### po10_build_capture.py + po10_match.py
 
-- **legacy id** (exact): athletes with a profile photo expose their old integer
-  id, which is our `athlete_id`. Only about a quarter of athletes have a photo.
-- **name** (needs review): everyone else matches on normalised name within the
-  club.
+The reliable way to map the whole roster, in two steps.
 
-A sample run from a single seed found 87 club athletes in 20 seconds and matched
-64 of them. Expect some misses: relay team entries appear as athletes, and not
-every member has a Power of 10 profile.
+**Step 1 - collect candidates.** Athlete search is the natural way to do this
+and it is reCAPTCHA gated, so the search runs in a browser rather than here:
 
-**Check the name matches before loading them.** A wrong GUID silently attaches
-another runner's results to a member.
+```bash
+python po10_build_capture.py bpj_athletes_all.json po10_capture.js 600
+```
+
+Open <https://www.powerof10.uk/Home/AthleteSearch>, paste the generated file
+into the console and leave it. It queries first name plus surname for every
+athlete we lack a GUID for, driving the page's own `runSearch()` so the site's
+normal reCAPTCHA flow runs exactly as it does for someone clicking Search, and
+only reads the responses. Progress is kept in `localStorage`, so a reload
+resumes rather than restarting. It downloads `po10_candidates.json` at the end.
+
+Searching per athlete rather than per club matters: two thirds of the roster
+have lapsed, and their Power of 10 club is no longer ours, so a club search
+never returns them.
+
+Get the full roster (the default endpoint is filtered to affiliated members)
+with:
+
+```bash
+curl "https://bpj.org.uk/api/public/index.php/athletes?includeAllMembers=1"   -o bpj_athletes_all.json
+```
+
+**Step 2 - verify.** Never load a name match unattended; a wrong GUID silently
+grafts another runner's results onto a member. This checks every candidate
+against the site itself, which needs no reCAPTCHA:
+
+```bash
+python po10_match.py po10_candidates.json bpj_athletes_all.json
+```
+
+| Signal | Strength | Availability |
+| --- | --- | --- |
+| legacy id from the profile photo path | conclusive | ~3% of athletes |
+| our stored performance, same date and time | strong | ~50% |
+| our stored runBritain handicap agrees | strong | ~65% |
+| first, second or other claim club is ours | supporting | current members only |
+
+The handicap is the workhorse. We record it on the night the cron ran and the
+rebuilt site samples it at change points, so the dates never line up; the check
+compares our value against their last reading at or before our date and allows a
+tenth or two of drift. It is a continuous one-decimal number, so agreement is
+hard to get by chance.
+
+Writes `matches.json` (safe to load) and `review.csv` (everything else, with a
+link straight to the athlete page). On a 40 athlete ground-truth run against
+GUIDs already known to be correct, 33 were confirmed automatically with **no
+false positives**, and the other 7 fell to review. Expect a lower rate for
+lapsed members, who have neither a club match nor a recent handicap: roughly
+75% of current members and 58% of lapsed ones carry at least one signal.
 
 ## Known limitation
 
