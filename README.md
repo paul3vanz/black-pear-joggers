@@ -30,6 +30,23 @@ Run `ng generate component component-name --project=myapp` to generate a new com
 
 `ng build --project=race-results --configuration production`
 
+### Building on a modern Node
+
+This workspace is on Angular 12, which predates Node 17. On anything newer
+two things are needed:
+
+```
+npm install --legacy-peer-deps
+NODE_OPTIONS=--openssl-legacy-provider npx nx build race-results --configuration production
+```
+
+Without the flag the build stops with `ERR_OSSL_EVP_UNSUPPORTED`, because the
+webpack version behind Angular 12 hashes with MD4, which OpenSSL 3 no longer
+allows. It is deliberately not baked into the `build` script, since the flag is
+rejected outright by Node 16 and older.
+
+Verified building all four apps this way on Node 22.
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
