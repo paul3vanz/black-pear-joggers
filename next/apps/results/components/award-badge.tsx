@@ -1,4 +1,4 @@
-import { Award } from './awards.type';
+import { Award } from '@black-pear-joggers/core-services';
 import { classNames } from '@black-pear-joggers/helpers';
 
 type Props = {
@@ -21,6 +21,10 @@ export function AwardBadge(props: Props) {
     case Award.Platinum:
       classes = 'bg-gray-600';
       break;
+    default:
+      // The shared enum has None = 0, which the local copy this replaced did
+      // not. Render nothing for it, as before, rather than a "None" badge.
+      return null;
   }
 
   return (
