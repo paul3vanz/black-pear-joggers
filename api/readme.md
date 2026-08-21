@@ -11,21 +11,28 @@ Tasks:
 
 ## Running locally
 
-Install PHP - a simple way is installing [XAMPP](https://www.apachefriends.org/download.html).
+Install PHP and Composer. The easiest way is by install [Chocolatey](https://chocolatey.org/install):
 
-Install [Composer](https://getcomposer.org/download/)
-and run `composer install` from api folder.
+- PHP 8.2
+- MariaDB
+
+```
+choco install php --version=8.2.10
+choco install composer
+composer install
+```
 
 Launch API server locally:
 
-    php -S localhost:8000 -t public
+```
+php -S localhost:8000 -t public
+```
 
 ## Scheduled tasks
 
 The following tasks run on a schedule to keep things automated:
 
 - 00:00: queue:registrations
-
   - Fetches all members direct from UKA API
   - Filters to keep just Registered members
   - Filters to remove members already in athletes table (matching against URN)

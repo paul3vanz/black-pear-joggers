@@ -16,7 +16,6 @@
         "fabpot/goutte": "^4.0.3",
         "phpseclib/phpseclib": "^3.0.35",
         "awobaz/compoships": "^2.2.3",
-        "rebing/graphql-laravel": "^9.7",
         "guzzlehttp/psr7": "^2.6.2",
         "auth0/auth0-php": "^8.11.1",
         "stripe/stripe-php": "^7.114",
