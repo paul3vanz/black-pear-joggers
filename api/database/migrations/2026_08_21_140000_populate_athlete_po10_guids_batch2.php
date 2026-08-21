@@ -1,0 +1,599 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+/**
+ * Second batch of Power of 10 GUIDs, from the club-rankings capture and the
+ * meeting crawl (see api/tools/po10/README.md).
+ *
+ * These are name matches, so each one was checked against the site before it
+ * got here: the legacy id in the profile photo path, our stored performances,
+ * our stored runBritain handicap, and the club on the profile. Only athletes
+ * clearing two independent signals, or one conclusive one, are listed. The
+ * evidence is kept in the comment on each line so a wrong entry can be traced
+ * later; anything that did not clear the bar is in tools/po10/review.csv and is
+ * deliberately not loaded here.
+ */
+return new class extends Migration
+{
+    // athlete_id => po10_guid  // name | evidence
+    private array $map = [
+        896460  => 'aa633d5d-31a8-47a4-81eb-b2b7c534c5e0', // Stephanie Abdoh | 2 performances match, handicap agrees (within 0.2), club
+        278943  => '41c0c1fa-c989-4c20-ab9c-7504fb6f5080', // Nick Adams | handicap agrees (within 0.2), club
+        1290314 => 'dbeb0ea8-6ccc-4a6e-b05e-6daf1f7f1382', // Isabel Adams | handicap agrees (within 0.1), club
+        1290315 => 'b6a72f2e-7b2d-48b6-a29d-bee253d331ca', // Jessica Adams | handicap agrees (within 0.1), club
+        913339  => 'a308843c-1094-4a4a-9b00-cab10c9c8a41', // Susanne Albutt | handicap agrees (within 0.0), club
+        969239  => '046ef7c4-a52d-4352-b31d-1cbb94869233', // Peter Aldis | 1 performance match, handicap agrees (within 0.3), club
+        882188  => 'eddd04b9-7120-4596-919d-834091e2e9bb', // Luke Alexander | 2 performances match, handicap agrees (within 0.2), club
+        930140  => '9ebdc089-b130-4546-b8d2-875c235cfb69', // Jan Alfrink | 1 performance match, handicap agrees (within 0.0), club
+        969251  => '3c99f7e7-7cf1-4eab-834b-2cbf606e12e4', // Adnan Ali | 2 same-day performances, club
+        969256  => '0a0bf3f5-7948-4959-8470-1aa068d641b2', // Nicholas Allan | 1 performance match, club
+        505541  => '5d09a815-61ed-4fb9-878d-ca1c9873de21', // Nicki Allen | 2 performances match, club
+        796954  => '1a498a1d-9eb1-4b3b-8733-e296a50dfef6', // Timothy Allen | handicap agrees (within 0.1), club
+        1125698 => '6f5e3338-f698-473f-bacc-1429ab46dd12', // Leigh Allen | handicap agrees (within 0.2), club
+        774109  => 'eb7def43-54b5-4c99-b8b5-e421cc8d6623', // Mark Amyes | 2 performances match, handicap agrees (within 0.2), club
+        797152  => 'ceebecd9-2bbd-46e6-9801-b24a54a5804e', // Faye Anderson | 1 performance match, club
+        277998  => 'a5ca42a4-8586-452f-a403-a5fc7a4a4f83', // Clive Andrews | handicap agrees (within 0.2), club
+        696422  => '73279638-6a88-4b85-ba42-251c517ebed7', // Matthew Armstrong | 2 performances match, club
+        143314  => 'c10e680c-0fe4-4094-80c7-08f48e34949e', // Andy Arnold | handicap agrees (within 0.1), club
+        696457  => 'd0c64b81-cf45-4f50-9cae-9d5eef3ad619', // Sarah Ash | handicap agrees (within 0.1), club
+        598817  => '9cd7baa4-b482-483e-8131-f0bb194c7412', // Greg Ashby | 2 performances match, handicap agrees (within 0.2), club
+        283461  => '9714af36-f6a1-4dac-98bc-0ffd336318df', // Maggie Atherton | 1 performance match, handicap agrees (within 0.1), club
+        447481  => 'f7588b36-8cee-4715-88cc-870e03d6d863', // Chris Attwood | handicap agrees (within 0.2), club
+        283934  => 'a5dd3b38-2e45-4955-a7f6-ab0aac322226', // Lisa Bailey | 1 performance match, club
+        284564  => '8ea51cf9-ab3e-4435-9982-562372964092', // Robert Barclay | 1 performance match, handicap agrees (within 0.1), club
+        851828  => 'e4ea4edc-27b0-4c58-946d-dec17b708ffe', // Glenn Barker | 2 performances match, club
+        687956  => 'a1ea2672-1396-4053-b086-b834828ce275', // Andrew Bate | 2 performances match, club
+        447093  => '9dfbff71-e36c-4108-9eb3-acde492dc7ca', // James Battle | 1 performance match, handicap agrees (within 0.3), club
+        436089  => 'f4615267-b347-41a2-af37-18a673387e7b', // Jacqui Bazley | handicap agrees (within 0.2), club
+        1324462 => '0d1729fa-7047-458f-b8c7-eb940841cc2d', // Oliver Beamont | handicap agrees (within 0.2), club
+        847719  => '7485bf71-ca7b-46b3-9050-48123b83f1ff', // Kirsten Beard | handicap agrees (within 0.1), club
+        1025379 => '774bf275-b7dd-478f-81da-8ef98b395518', // Joel Beard | 2 performances match, handicap agrees (within 0.1), club
+        862551  => 'c2c005aa-6669-4994-a147-06481067eab5', // Simon Beech | 2 same-day performances, club
+        913785  => '1933a7b1-bfad-4210-bd7c-13812dd2c283', // Phil Bell | legacy id, 1 performance match, club
+        725551  => 'aea1023f-342e-453d-8cfe-022c4d6f0d07', // Emily Bennett | 1 performance match, handicap agrees (within 0.0), club
+        382076  => '092d28e1-292a-4a02-8d62-24c7ca193f08', // Shelley Bennett | 2 same-day performances, handicap agrees (within 0.3), club
+        1132464 => 'acb873c1-7f7f-4b75-b2b5-9e23a3318912', // Lucy Bennett | handicap agrees (within 0.2), club
+        949004  => 'e7edfabe-ea2e-44b1-a686-2f45270f06e4', // Michael Benson | handicap agrees (within 0.1), club
+        1298990 => '264c4bbb-a105-4947-9159-fa3e5060974a', // Charlotte Benson | handicap agrees (within 0.3), club
+        1298991 => 'eff2b2ac-e8ca-4f18-a9b1-f5cb018fcb38', // Emilie Benson | handicap agrees (within 0.3), club
+        569901  => 'b8b7f1b7-39bc-4f9f-ae46-6bd8091b9b34', // Christopher Berry | handicap agrees (within 0.2), club
+        752713  => 'dddf45e5-eda2-4247-bfd0-6cf72da81746', // Gail Berry | handicap agrees (within 0.1), club
+        1110534 => '9a31694f-9abb-4e68-8699-f9200467b067', // Tristan Berry | 1 performance match, club
+        1194962 => 'c83c219f-be3f-4fb6-885f-5f0da8ac5c73', // Helen Billingham | handicap agrees (within 0.2), club
+        798946  => 'dac23669-5703-472e-8d23-1693c8468150', // Mark Bingley | 2 performances match, club
+        606023  => '81adc2c4-2525-4b57-9627-f6348df0ab53', // Charlotte Birch | 2 same-day performances, club
+        798978  => '79d3e977-38da-441f-b38f-5e6b936b3f5e', // Mark Birchall | 2 performances match, club
+        506315  => '1e9f1bd2-492e-4650-a335-c7c30216c5fa', // Michelle Bird | handicap agrees (within 0.0), club
+        850840  => 'ba33ea99-64f4-4a2b-b45f-0494ed8b79f1', // Kazzandra Bishop | 1 performance match, club
+        1138154 => 'fa511b28-96c1-4bc9-bc3a-da5214e56598', // Matthew Blackmore | 2 same-day performances, handicap agrees (within 0.0), club
+        930692  => '94898c1d-0a14-441e-8456-37865d663ab0', // Fiona Blake | 1 performance match, handicap agrees (within 0.0), club
+        752832  => '9ca04c36-d3d6-4872-9417-e1a026126240', // Jill Blakeney | 1 same-day performance, handicap agrees (within 0.0), club
+        984679  => '3387fb0a-b516-4a90-8239-117b52fe2d17', // Jim Blanden | 2 same-day performances, handicap agrees (within 0.1), club
+        1315780 => 'eb51fed2-6deb-461b-b07f-9d4169e1d058', // Lydia Blane | handicap agrees (within 0.2), club
+        969834  => '2dffaf95-7626-414a-a501-227f2a5ae0d3', // Rosie Bligh | handicap agrees (within 0.2), club
+        1125823 => '02faa9ac-0fba-4b9c-987a-90d0fdbe934e', // Jeremy Bliss | 2 same-day performances, handicap agrees (within 0.1), club
+        666586  => '04e335e7-ec96-4801-9e6b-8c95879baf4c', // Sophie Booth | 1 performance match, handicap agrees (within 0.1), club
+        883097  => 'b064d603-1524-409e-ad23-99f7d17b47eb', // Rachel Booth | 2 performances match, handicap agrees (within 0.1), club
+        277943  => 'c4edd84a-e567-44f0-a7c9-076728b05bf6', // Julie Bott | 1 same-day performance, handicap agrees (within 0.3), club
+        287687  => 'cdb96c87-9656-42f1-a5e6-0b77c2266a3e', // Steve Bott | 1 same-day performance, handicap agrees (within 0.1), club
+        606347  => '66f0a33f-b098-4e40-b631-b66c528a24d3', // Robert Bowery | 1 performance match, handicap agrees (within 0.0), club
+        1125282 => 'c24be83d-a9db-42bb-a5fb-3cb1ea5af7a0', // Dale Bozward | handicap agrees (within 0.1), club
+        726254  => '6bdef9fb-58ef-4ab1-9d40-8a844e2a24de', // Mark Bradley | handicap agrees (within 0.0), club
+        799895  => 'cb1de11d-249b-4968-9438-954abcefd8e3', // Steve Bradley | handicap agrees (within 0.2), club
+        883213  => 'cb7bad18-b757-47d1-a9bb-44a8a0dd4ec9', // Gail Braznell | legacy id, 2 performances match, club
+        792961  => 'a624fb5f-bbbb-4561-b197-0970abccc8ab', // John Brennan | 2 performances match, handicap agrees (within 0.0), club
+        288676  => '7d77350a-6d2f-489e-bb16-645c55600f5b', // Ailsa Briggs | 1 performance match, club
+        436402  => '5688e8ba-3d4b-4830-afd2-a1971662ed22', // Lee Brighton | 2 performances match, handicap agrees (within 0.0), club
+        753108  => '647621cc-d4a2-4d77-8292-6a8e7cbb93ca', // Chris Bromage | 2 performances match, club
+        851126  => '2efe1987-4b38-459f-a10a-002317e2df92', // Matthew Brookes | handicap agrees (within 0.2), club
+        800493  => '54761734-3a88-4a0e-943c-5610f390fc8c', // Ashley Brown | 2 performances match, handicap agrees (within 0.0), club
+        1012588 => '0d09a940-0abc-4f94-96ee-a92426bb86f1', // Harriet Brown | handicap agrees (within 0.2), club
+        1239508 => 'dc47f52b-c22f-44b4-a511-fabb8602215b', // Mary Burke | 1 performance match, handicap agrees (within 0.0), club
+        667288  => '35df521a-6959-43e6-ad94-f9be870125b8', // Gary Burkes | 1 performance match, handicap agrees (within 0.0), club
+        970171  => '3666b001-07a6-4852-a2e5-8b8700e9e681', // Hayley Burrows | 1 performance match, handicap agrees (within 0.1), club
+        290306  => '41262bbf-3f63-40a9-964c-19fa941de36d', // Helen Burton | handicap agrees (within 0.1), club
+        801132  => 'd1519ef2-a4e6-461e-b5ce-8fc15c859350', // Huw Burton | 1 performance match, handicap agrees (within 0.2), club
+        801240  => '46727231-08fc-4357-9f97-3e6db9bdfc87', // Timothy Butler | 2 performances match, club
+        1125912 => '37058e72-8576-4086-9d05-c13a0025ae0c', // Stephanie Caffull-Larner | 2 same-day performances, handicap agrees (within 0.0), club
+        290777  => '5246f249-5f4e-4f68-90e8-9314b5ca7212', // Dan Cale | 2 performances match, club
+        906135  => '524672ec-0575-40dd-98cc-854632c3c50b', // Neil Cartwright | 2 performances match, club
+        1181061 => '855f8f3a-d73d-45f1-b40a-79dba339b9c4', // Rachel Cartwright | handicap agrees (within 0.0), club
+        1291226 => '8c348b45-373d-4abb-97c7-0f7a5b8853ac', // Robbie Caskey | handicap agrees (within 0.3), club
+        1038092 => 'e1cd526e-f615-4e10-a2eb-f99cae4a5222', // Richard Cavender | 1 performance match, handicap agrees (within 0.2), club
+        607516  => '9c92f041-e712-463a-9bfa-e7fb3222dd7a', // Suzie Chamberlain-French | 1 performance match, club
+        939528  => 'b90cd4aa-d4c1-45c0-8ca2-a636582fbaf5', // Sussanne Chambers | 2 same-day performances, club
+        1098767 => '0dba18d5-b48d-450b-9274-4aab365533e1', // Jo Chambers | handicap agrees (within 0.2), club
+        1190557 => 'ead6d928-bb1e-4024-bec5-a42359ce9821', // Peter Chambers | handicap agrees (within 0.2), club
+        954184  => 'b86b41bc-71bd-4498-a62d-64feaac5b000', // Gemma Cheetham | 2 performances match, club
+        803172  => 'f4f624b3-2744-45aa-85ad-0de1a3320c94', // IAN CHRISTIE | handicap agrees (within 0.2), club
+        122108  => '5afab9f8-0f12-4ae1-8046-0c219006965b', // Helen Ciancio | handicap agrees (within 0.2), club
+        1190576 => 'faad021a-7db6-46ff-96f9-0867fd0e4d8d', // Peter Clark | 2 same-day performances, handicap agrees (within 0.1), club
+        1190577 => '81b082b7-ff2d-493e-936e-eaf58e7aa783', // Rachel Clark | 2 same-day performances, handicap agrees (within 0.0), club
+        1190574 => '7e951228-256d-454c-98ab-b54fa85abed7', // Daniel Clark | handicap agrees (within 0.2), club
+        840396  => '43bedc56-40a0-4204-b2a1-4261fdf17836', // Laura Clarke | 2 performances match, handicap agrees (within 0.2), club
+        985886  => 'c571f581-c9de-4016-9d16-8250789ecaed', // Lisa Clayton | 2 same-day performances, club
+        890665  => '599bc4c7-8dff-4ece-8e41-5f9336b62b6d', // Elizabeth Cliff | 1 performance match, club
+        727780  => '3cadecfa-97b1-4f1a-8228-ae5cc5b8e0bc', // Derick Cochrane | 2 same-day performances, handicap agrees (within 0.2), club
+        532332  => 'af908fd3-46f7-4537-bc9b-c80e39a20e8e', // Wendy Cole | 2 performances match, handicap agrees (within 0.2), club
+        384651  => '67424de4-aad6-4b1c-903b-fc2fe08626ba', // Wendy Coleman | 1 performance match, club
+        864449  => 'be1a0a3f-cfac-4bd8-917e-0c79baba49e2', // Miranda Coles | 2 performances match, club
+        355500  => '1cd0b9f5-2613-4e4c-ad2b-aef52e001365', // Scott Collison | handicap agrees (within 0.3), club
+        727959  => '6353b0b7-dc03-4fe3-afdc-1d3f7eac0e00', // Ellen Conry | 1 performance match, handicap agrees (within 0.1), club
+        970607  => '4dceffbf-6fdb-440a-802b-6470c3f9e4fd', // Gareth Cooper | 2 same-day performances, handicap agrees (within 0.2), club
+        294824  => '6e04bb9c-5988-45c1-a0a5-75933e3f0b72', // Stephanie Courts | handicap agrees (within 0.2), club
+        864870  => 'bd015a9d-6ffa-441c-930c-7faccc6b3248', // Margi Crean | 2 performances match, handicap agrees (within 0.2), club
+        699705  => 'e45b3cf4-99ea-48a3-9ba7-0be88458f1d4', // Alexandra Cree | 1 performance match, club
+        906388  => '14191e0e-763e-4556-b386-1fd8d5b2367a', // Clare Cresswell | 2 same-day performances, handicap agrees (within 0.0), club
+        840692  => '8b91681c-ef3c-4f2c-824f-e771d4db6b2c', // Russell Cross | 2 performances match, handicap agrees (within 0.0), club
+        864994  => '1ff9271b-47bf-4713-bc71-1117824af12b', // Tamara Cullen | 1 performance match, club
+        754177  => '34472ec6-3df6-4580-9b1a-5c5e78f02fca', // Sam Cutler | 1 performance match, club
+        931717  => 'e84a40d6-5218-4aef-b693-c59e5c709f9b', // Denise Cutler | 2 same-day performances, club
+        897828  => 'e26a0516-ea02-4afb-b365-74209d6eeeaf', // Paul Dale | 1 performance match, club
+        970808  => 'baac14ca-eaf5-4dfb-be94-82044432e072', // Julia Dale | 2 same-day performances, club
+        1047433 => '8c59eaeb-423d-4dd1-87cd-8a76a3722f52', // Jenny Daley | 1 performance match, club
+        840771  => '18a8879a-5d26-4ef1-bc7e-bee63866e916', // Nic Dauncey | 2 performances match, handicap agrees (within 0.0), club
+        920319  => '5edf9752-2ef3-4c18-b51c-a5e5c042c536', // Gavin Davidge | 2 same-day performances, club
+        296604  => 'ec9f807b-7489-4dfd-80b9-528f671bca06', // Charlotte Davies | 1 performance match, club
+        609026  => 'f0441abb-2b23-42d7-ae2a-bfc7975e8d9c', // Michelle Davies | 1 performance match, handicap agrees (within 0.0), club
+        296854  => 'aae75833-8c91-4f97-97d4-734e39b6291b', // Adrian Davis | 1 performance match, club
+        931839  => '1a54cae8-e9ef-43cb-89dc-e874b0cad593', // Mervyn Davis | handicap agrees (within 0.1), club
+        1044560 => 'd435b76d-6939-499f-87e6-e703591acc95', // Lucy Davison | handicap agrees (within 0.1), club
+        806100  => 'a77d53e8-697e-4239-b31a-4d3760c434fe', // Joanne Day | 2 performances match, club
+        806087  => '08f0be1b-9166-4db0-8c25-4397ad2bd2c5', // Cyril Day | 1 performance match, club
+        1126080 => 'e4880e06-13c3-480c-8384-836ead5854bc', // Stuart Deakin | 1 performance match, handicap agrees (within 0.2), club
+        1195538 => '236b8adc-0af4-4aa9-a354-6bc4bccf133f', // Chris Dent | handicap agrees (within 0.1), club
+        778223  => '3a268037-b71f-4111-85df-f06cc3b78169', // Neil Devereux | 1 performance match, handicap agrees (within 0.2), club
+        765862  => '7d193b58-f207-4558-872e-292196681cfc', // Rebekah Dib | 1 performance match, club
+        915129  => '9d2b3638-cc30-47ff-8bfd-6dcfe402de8f', // Lucy Dickenson | 2 same-day performances, club
+        806537  => '2d43d2be-a38b-4897-b785-3a8310405447', // James Dickson | 2 performances match, handicap agrees (within 0.1), club
+        669486  => 'bf4b817d-825c-4331-8be4-ddc880354b84', // Benjamin Dillon | 2 performances match, handicap agrees (within 0.0), club
+        700382  => '5856cd2f-67b0-40e8-be37-3d35856c7202', // Mark Dillon | handicap agrees (within 0.1), club
+        729092  => '5d4c3c91-8eae-4273-b75b-f445c1d0bd1a', // Sue Dillon | 2 performances match, club
+        806683  => '49f92188-2542-49c0-9132-f58d141de037', // Kerrie Dobson | 1 performance match, handicap agrees (within 0.0), club
+        450243  => 'f3983a09-ab8c-4928-9795-15c6531e9c24', // Katie Downing | handicap agrees (within 0.2), club
+        680300  => '1415d9c0-b750-43ec-b85d-614f5c693388', // Dawn Drabble | 1 same-day performance, handicap agrees (within 0.0), club
+        497804  => '99b51712-c2c6-4cc9-afd1-1974a7d43eea', // Richard Drewett | 1 performance match, club
+        508524  => '467f5b84-3081-408a-98a8-fd20e6bdf5d7', // Joanne Drewett | 1 performance match, club
+        1126115 => '15b5a9e3-4163-4592-a95f-168f9eb6eb92', // Daniela Drica | 1 same-day performance, handicap agrees (within 0.0), club
+        754566  => '237034e2-ca84-4248-bbc1-3dcfe1e30be9', // Nick Driver | 1 performance match, club
+        298858  => '6b6d9384-fb44-4914-8857-0f89da99bbd2', // Martina Dudley | handicap agrees (within 0.1), club
+        669903  => 'e1df7256-89f5-4cac-844c-fac98cbad213', // Kate Eacock | 2 performances match, handicap agrees (within 0.3), club
+        647721  => '5e3ad70e-3032-40e5-ba08-b47de9fc6567', // Simon-Peter Edwards | 1 performance match, club
+        300548  => '0a3e85a6-4d24-4dbe-9bf2-c399f1848372', // Alison Evans | 1 performance match, club
+        437537  => 'ba336e85-70f2-4169-ab58-252284d8f830', // Joanne Evans | handicap agrees (within 0.0), club
+        151500  => '75040893-4714-4575-83f9-a856b6305b12', // Maxwell Evans | 1 performance match, handicap agrees (within 0.2), club
+        775505  => 'efea522a-51ef-484d-88ba-a6c4505ed28d', // Nigel Fain | 1 performance match, handicap agrees (within 0.2), club
+        866357  => 'fed63879-e6f8-4c03-9a91-fa2630aa0e30', // Jane Fairlamb | handicap agrees (within 0.2), club
+        701219  => '565b4a1c-96d6-4c9e-a502-c4b549fddfe4', // Tony Farnsworth | 1 performance match, club
+        670417  => 'a06a3be3-d5bf-43be-ae13-17209fabb50a', // Verity Farr | 2 performances match, handicap agrees (within 0.0), club
+        301458  => '68f89ef6-e064-4a8f-b967-0f9e35d41e3b', // Maureen Fearnside | handicap agrees (within 0.0), club
+        181560  => '1c983cdd-cd8d-4ae2-8948-3ff0f4938b2c', // Dave Fenton | 1 performance match, handicap agrees (within 0.0), club
+        140239  => '2af1068a-3f4b-4c0a-839f-bf5db34b27e7', // John Field | 2 same-day performances, handicap agrees (within 0.0), club
+        729846  => '2391d83b-15fb-4970-b5ad-03eb925be5ac', // Charlotte Findlay | 2 same-day performances, handicap agrees (within 0.0), club
+        524352  => 'd12458ea-8395-4425-96fd-285ad11eefdf', // Matthew Fitzgerald | handicap agrees (within 0.2), club
+        670657  => 'dca0ad0f-1802-4885-940c-7b4d93a0486b', // Darren Fletcher | 2 performances match, club
+        920640  => '6461e91d-6c6f-4342-b3d1-a722a9417609', // Grania Flynn | 2 performances match, handicap agrees (within 0.0), club
+        734745  => 'c4f5da96-1215-4e2c-9645-efc88c3ff2de', // Cherilyn Ford | 1 performance match, handicap agrees (within 0.1), club
+        841350  => '2ab7083c-9356-4f3e-9242-d531120390a5', // Steve Ford | 2 same-day performances, club
+        906808  => 'e8ba0f6a-31f0-430e-a0d8-d75ce9ad7d57', // Beverley Foster | handicap agrees (within 0.2), club
+        841378  => '76c15f4e-8d84-4e62-a389-062f197f7c33', // Darrell Fowler | 2 same-day performances, club
+        648035  => 'f8690898-bca1-4df1-a4b1-f8bf3ca6b2dd', // Paul French | 1 performance match, handicap agrees (within 0.1), club
+        809719  => 'c161ac72-fde7-44b4-9fa1-2d5c7b5db25e', // Nick French | handicap agrees (within 0.1), club
+        1231919 => '87bb9c42-a2c2-4a2e-9154-8a8b51e60562', // Clare Gabriel | handicap agrees (within 0.1), club
+        999166  => '634c8f7a-a88f-4852-9a73-0184a04152d8', // Kate Gaffney | handicap agrees (within 0.0), club
+        1039303 => '3b35ab5d-bfc3-4072-989c-cee96741da76', // Andy Gandon | handicap agrees (within 0.1), club
+        755198  => '350b3ad2-d5e1-48ad-9c05-f0e00240af44', // Kevin Garness | handicap agrees (within 0.1), club
+        977179  => '7cc57fed-09f7-4ac6-8983-5e106068fbe4', // Claire Gent | 2 performances match, club
+        810340  => '9f0bb4b5-4c09-4f78-af1a-d114ea379bc0', // David George | 2 same-day performances, club
+        278954  => '878e587e-5e6a-4c5b-9d6f-ac79512cc30e', // Julie Gerrard | 2 performances match, handicap agrees (within 0.2), club
+        730499  => '2688af5a-63a7-44ba-821d-3f09fbd11424', // Rob Gilbert | handicap agrees (within 0.1), club
+        810516  => '34b72e78-e8e2-4f13-90da-d20498eb0b44', // Louise Gilbert | 1 performance match, club
+        495478  => 'f0663c7f-a09e-42e8-a636-dcadbe693a8a', // Paul Gilder | 2 performances match, handicap agrees (within 0.3), club
+        1325755 => '117e5fad-a1eb-4c4e-8133-cb79943e3f3a', // Gina Gill | handicap agrees (within 0.0), club
+        901531  => 'c962c78d-2b8b-4943-9c31-b5d8b206173c', // Caroline Gillies | 1 performance match, handicap agrees (within 0.1), club
+        755309  => '4162a6a4-98e6-476d-9f74-bba4edf05c86', // Alison Gleave | 1 performance match, club
+        971874  => 'f00f698f-c4b4-4c84-82f2-a3cde0c128f9', // Joe Gobbin | handicap agrees (within 0.0), club
+        905483  => 'e1cbfddf-6afa-4bdb-9a9c-0fc70b28d027', // Lindsey Goodrum | 2 performances match, handicap agrees (within 0.0), club
+        671530  => '215366bd-6ee0-4c89-a618-19fdfd751dfc', // Andrew Graham | 1 same-day performance, handicap agrees (within 0.0), club
+        811178  => 'f8cbe6b5-2fef-40a7-8196-06ca3637dd96', // Andrew Graham | handicap agrees (within 0.1), club
+        940224  => '750572fc-20de-4661-b68f-09cbfced1283', // Penny Graham | 1 performance match, club
+        535577  => '9c20ff15-a3d8-4aa6-b308-5a1e1d3a70e2', // Jason Green | handicap agrees (within 0.1), club
+        988530  => 'c70f4c55-499a-475b-a7a6-fc0772c02af8', // Finton Green | 1 performance match, club
+        811392  => 'f09b1240-5722-4202-9b11-c69f9ac9c3fd', // Eleri Green | handicap agrees (within 0.0), club
+        884671  => 'eca45b29-76e3-4777-862f-35d412ee6244', // Wayne Griffin | 2 same-day performances, club
+        972030  => 'ad869a0b-7577-45db-bda8-bec05b14c71a', // Rob Griffin | 1 performance match, handicap agrees (within 0.2), club
+        352959  => '0b56a49f-5b53-4b0a-9f90-65f8139f342a', // Clive Griffiths | handicap agrees (within 0.2), club
+        860661  => '2def2472-1506-4854-be34-a3b1095a8a7e', // Katie Gromski | handicap agrees (within 0.2), club
+        1217989 => '06f5c349-b396-4d7a-876f-5e502630281f', // Alex Gromski | handicap agrees (within 0.0), club
+        964721  => '93865317-97d8-4e71-a0d6-068a79c8f4f4', // Debbie Guiver | handicap agrees (within 0.0), club
+        663808  => 'c99711a5-ac09-4ad3-b7cd-983ce24b5525', // Margaret Gwilliam | 1 same-day performance, handicap agrees (within 0.1), club
+        811997  => '03f911b1-56a6-49d3-bb8f-c618a9ed8188', // Ann Hadley | handicap agrees (within 0.1), club
+        867835  => '041f7a79-f261-4b35-be84-380657e9e2a0', // Daniel Halifax | 2 same-day performances, club
+        1075247 => 'ad3b14d4-47d6-48d2-b6c2-13ebb374a0c9', // Sophie Hamar | 2 same-day performances, handicap agrees (within 0.2), club
+        1218018 => '18ae65fd-e00c-479e-a2d1-0c2e1d27f755', // Sophie Harber | handicap agrees (within 0.1), club
+        702841  => '1f71f578-8cb1-498b-8a37-a2eb7955af55', // Carol Hardie | 2 performances match, handicap agrees (within 0.0), club
+        672141  => '0464f7d7-9a2c-4e73-bb1c-835570516809', // Andrea Harding | handicap agrees (within 0.1), club
+        672148  => '24725169-99a0-4d1e-8acb-2a5fbb76b00a', // Imogen Harding | 2 performances match, handicap agrees (within 0.0), club
+        307704  => '6de5e2ec-56ae-4f5d-80f0-5da2416d9035', // Alison Hardwell | 1 performance match, club
+        307990  => 'd8b25048-b8b6-42bc-865f-0ddb023d9b0e', // Chris Harris | handicap agrees (within 0.0), club
+        451877  => 'd8367086-2b96-4d54-9928-cd36c88793dc', // Rachel Harris | 1 performance match, club
+        419744  => '2f93ee80-a1a7-4d1e-87a2-898608e8e4ef', // Steve Harris | 1 performance match, club
+        898877  => 'c432b5a6-e98e-4ad8-8d88-d285349e4121', // Chris Harris | 1 same-day performance, handicap agrees (within 0.2), club
+        852590  => '3145609c-4b71-41dd-86ef-415cf956f044', // Stephanie Hart | 1 performance match, club
+        438251  => '77e234fb-41fd-47c2-b25a-b004053cc16b', // Charlotte Hartwright | 2 same-day performances, club
+        933179  => '7cbc9cdc-8142-4030-b20a-e988f903b60d', // Rod Hartwright | handicap agrees (within 0.1), club
+        84478   => 'c1682731-e554-4ff1-9268-38c6b6795b63', // Jessica Hathaway | 1 performance match, club
+        612619  => '3e4cb35c-648f-4963-adaa-6709bf1c77de', // Theresa Hayes | 2 performances match, handicap agrees (within 0.0), club
+        910164  => '86c93190-ec3a-4f31-b4d3-629644ec7d22', // Jenny Heather | 1 performance match, club
+        750204  => '1965d407-8475-46bb-9293-39a2c48e80e0', // Todd Heidesch | 2 performances match, handicap agrees (within 0.0), club
+        1308364 => 'c24bcd78-819d-4e6d-b7e6-75f1253f9082', // Emma Henning | handicap agrees (within 0.1), club
+        278938  => 'a30cfb3d-fa3f-49ac-a09a-054d8c3138be', // Neil Herron | 2 performances match, club
+        227899  => 'e00e6234-b337-43bc-b9f2-7fca9b82f050', // Stephen Hewitt | 2 performances match, handicap agrees (within 0.2), club
+        612846  => 'e0935655-fb8b-490f-a589-9a27997629d5', // Ruth Heywood | 1 performance match, club
+        1065021 => '43f9f886-0c4b-40a8-98d1-79a5918d2b4f', // Alison Higgins | handicap agrees (within 0.1), club
+        886104  => '4fab5178-3602-4f2e-8c08-e945bb32cb1b', // Claire Hill | 2 performances match, handicap agrees (within 0.2), club
+        1048263 => 'b2f61e39-dade-4a08-9dc8-388cd666afeb', // Keith Hinton | handicap agrees (within 0.0), club
+        510632  => '491ed56d-f562-4529-8de9-4674f1233cd6', // Usha Hira | 1 performance match, club
+        899075  => 'f13ca90d-5071-43d4-945d-5e8a19b2842d', // James Hitchcock | 1 performance match, handicap agrees (within 0.1), club
+        390048  => 'a1d0b4e8-e42f-4460-91b8-0c2bb0aa311e', // Dawn Hodgkins | 2 same-day performances, club
+        814380  => '2643c150-454d-44e3-a5f8-0c471c5e84e3', // Gavin Hole | 1 performance match, club
+        754259  => 'db16d3da-1c86-49ac-aceb-2f7687f00ca2', // Emma Holland | 1 same-day performance, handicap agrees (within 0.1), club
+        1326192 => 'e38cf623-a9ae-435d-8ffd-5bf1edecbafb', // Jane Holland | handicap agrees (within 0.0), club
+        112107  => '3d933137-8d58-44ed-ad5f-f3c1018c3c1b', // Nick Hooper | 1 performance match, handicap agrees (within 0.0), club
+        459886  => '027e37e8-8cc8-40ca-a3b8-797f58d6b84d', // Sharon Hooper | 1 performance match, handicap agrees (within 0.2), club
+        868915  => '6d66aadc-aa2c-416b-bccb-34fe5c1435ec', // Sarah Hopwood | 1 performance match, club
+        452472  => '63f034cb-3899-4fe1-80b9-e660110c1121', // Ian Hornabrook | handicap agrees (within 0.1), club
+        732390  => 'ff810a4b-3a7a-4731-ad76-5ee59039115d', // Maxine Hosell | 1 performance match, handicap agrees (within 0.0), club
+        785127  => '1b4563fc-4cfb-4418-8d6b-36d0261442c9', // Iwona Hudson | 2 performances match, club
+        311939  => '31d3a762-eabc-4448-9009-b9327258c042', // Paul Hudson | 2 performances match, handicap agrees (within 0.1), club
+        1264074 => '86c3b6b8-5365-46da-95f3-1708287f26fd', // Sian Hughes | handicap agrees (within 0.0), club
+        312407  => 'b3e85529-583d-4580-b937-d2d1dcf384e0', // David Hunter | handicap agrees (within 0.0), club
+        390692  => 'cb27c026-74b2-437c-ae0d-8a3fc49e7f35', // Amanda Husband | handicap agrees (within 0.1), club
+        312555  => '3b7f1865-128b-44f9-8cec-21f6664333d6', // Graham Hutchings | handicap agrees (within 0.1), club
+        1016268 => '6c43ff46-2925-4b89-b2d5-61b162c685dd', // James Hutchinson | 1 same-day performance, handicap agrees (within 0.3), club
+        312699  => '042ae009-2f29-4053-8e64-2b9b2c50a4cc', // Tim Hyman | 2 same-day performances, handicap agrees (within 0.0), club
+        1026355 => '4f53cc18-005f-433f-b988-b34226f538b8', // Stuart Ind | handicap agrees (within 0.2), club
+        917065  => '659907bd-29bb-43fb-b67c-a5eca40d8825', // Christopher Ireland | handicap agrees (within 0.2), club
+        511106  => '6080216c-a27c-4669-9544-0b932c7d2ace', // Derek Jackson | 1 performance match, handicap agrees (within 0.3), club
+        990030  => 'b201ff3f-1878-45c2-8835-404fd470ed1c', // Liz Jaeger | handicap agrees (within 0.2), club
+        1016446 => 'a3f2eede-ba20-44f2-93d1-2794e07568a1', // Andrew Jennings | 1 performance match, club
+        733637  => '5ed29a84-d97c-4301-a791-14d27c437efa', // Carl Jones | 2 performances match, handicap agrees (within 0.0), club
+        537874  => 'd5ea9739-00c0-4703-9a29-94c303402e55', // David Jones | 1 performance match, club
+        435447  => 'f3c96dae-0b50-410d-a874-cf12deee1f77', // Harvey Jones | 2 performances match, handicap agrees (within 0.1), club
+        149465  => '5b6bfc79-821d-4562-9421-79f276cdb5b1', // Kirsty Jones | 1 performance match, handicap agrees (within 0.0), club
+        511416  => 'd504184f-2a73-47ab-bf6e-61917c2dc3f6', // Mark Jones | 2 performances match, club
+        438970  => '2cf39e0f-b033-4e3e-8337-182d5258b6dc', // Catherine Jones | handicap agrees (within 0.0), club
+        990267  => 'd1899f4b-054d-4635-88a5-96238bc9cb95', // Gail Jones | 2 performances match, club
+        1198741 => 'a7e684df-7ab8-4e99-a57e-456c848c6e41', // Robert Jones | handicap agrees (within 0.2), club
+        1221544 => '9dffdc35-b6d1-44f4-a932-aae1cc5e744d', // Kelly Jones | handicap agrees (within 0.0), club
+        781009  => 'cef9ffc2-ae0e-4619-a0b1-e367ae769ace', // Martin Jukes | handicap agrees (within 0.2), club
+        23355   => '444ef21f-4a5f-405c-8996-4315443a8a94', // Nikki Juniper | 2 performances match, handicap agrees (within 0.2), club
+        315283  => '50171c28-fa40-4675-92b2-a4ebfbd6b8b4', // Maggie Keeble | 1 performance match, club
+        886333  => '76df6268-30f3-4321-83e3-e616847629b4', // Sally Keen | 1 same-day performance, handicap agrees (within 0.3), club
+        869979  => '59b887cc-ca31-414e-9b90-773c7dad6161', // Katie Kelleher | handicap agrees (within 0.0), club
+        553247  => '5692b1b0-7125-4b53-9e24-a1bd2e4b238f', // Sarah Kellett | 1 performance match, handicap agrees (within 0.2), club
+        453266  => 'cd9af111-05b9-4902-acd4-6e9da088297d', // Lisa Kemp | 1 performance match, handicap agrees (within 0.0), club
+        315574  => 'aa8e2abd-05df-4b00-baa0-41053ca19cd7', // Richard Kemp | handicap agrees (within 0.2), club
+        817449  => 'f29dca24-058e-4f37-805a-ba3f8e0b66f0', // Sarah Kemp | 2 performances match, club
+        391747  => '3a9c16bf-f7fb-4742-883a-6e14aaf26260', // Tracy Kennish-Ward | 2 same-day performances, club
+        722771  => '4e4380dd-150d-4d41-be9b-a07f75a873f1', // Mick Kennish-Ward | 1 performance match, handicap agrees (within 0.2), club
+        704953  => 'd770d772-d137-4bb9-8bc9-92165f419133', // James Kent | 2 performances match, handicap agrees (within 0.2), club
+        767064  => '35868aeb-2eb4-4161-bd5b-22c46d2fbb68', // Lesley-Anne Kerr | handicap agrees (within 0.1), club
+        734668  => '43dbf6c9-991d-43b6-8bbd-d793cefcfd99', // Emma Kerton | 2 performances match, handicap agrees (within 0.0), club
+        391862  => '2a3d9559-7e74-4a05-a496-21a7634da5e6', // Kevin Kilmartin | 2 same-day performances, club
+        1000073 => '328dcf9e-5588-48c3-b25c-8ed61f40e316', // Matthew Kimberley | 2 performances match, club
+        635306  => '2f33a038-a3f6-4bff-abc1-0f6dda7b802f', // James King | 2 performances match, club
+        817861  => '2a2f09ea-6891-4c63-86e7-a60fcb4413d8', // Anne Kingham | 1 performance match, club
+        917449  => '14f637ac-5579-4e0c-85b6-93bd58213226', // Duncan Kings | 2 performances match, club
+        756981  => 'e15c15ca-7c83-4c03-bcdb-b084486c1f85', // Emily Kingston | 2 performances match, handicap agrees (within 0.2), club
+        934192  => '25fe602b-5864-47b5-9016-95c5b8c3824a', // Kevin Kirkland | 2 same-day performances, club
+        917487  => '07d54722-55a4-4cc7-b538-31d1c3a0d0dd', // Richard Knight | 1 performance match, handicap agrees (within 0.2), club
+        316606  => '0bdde298-d6fe-4d83-b7c1-24e8fdcbdb23', // Deborah Knowles | 1 performance match, handicap agrees (within 0.1), club
+        1255285 => 'a9d9d275-4c38-422e-8fa3-0b6e41056cae', // Urszula Kurach | handicap agrees (within 0.2), club
+        1111923 => '83318a4d-598a-4325-bddf-5dbec87f7ae6', // Gareth Larner | handicap agrees (within 0.2), club
+        705353  => 'b7ae8f34-133b-40b7-812b-544a8122fbc0', // Neil Laurenson | 2 performances match, club
+        705354  => 'd6b6f066-6fdf-4ef6-9ae0-995fe96c9acb', // Rachel Laurenson | 1 performance match, club
+        793558  => '305a781a-c9b5-4f31-b71c-d1bf3fffe04b', // Alison Law | 1 performance match, handicap agrees (within 0.0), club
+        842869  => '0f0e2684-09cb-4359-80c5-2086534e35c7', // Tsu Law | 2 performances match, club
+        735408  => 'f9bf15d9-69be-459f-8cff-63d645ec639b', // Keith Lawrence | handicap agrees (within 0.3), club
+        886626  => '7d5be3b0-9ae4-406b-84b8-112d3d573164', // Katie Lee | 2 performances match, handicap agrees (within 0.0), club
+        1340798 => 'fb46f70f-80a5-4bf3-94cc-2b8e37ad6197', // Charlotte Lee | handicap agrees (within 0.0), club
+        318024  => 'ffa48097-f8ea-4922-84b5-89475091d84e', // Alison Leharne | 1 performance match, handicap agrees (within 0.0), club
+        1226169 => '67e477c4-afdf-48f8-9825-aaa55239942c', // Lucy Lewis | 2 performances match, handicap agrees (within 0.1), club
+        991117  => 'a19f83a6-8087-43cc-9939-88d26004d7a5', // Daniel Lightfoot | 2 performances match, club
+        736188  => '492ac192-925e-4a37-91f5-704476317965', // Chris Little | 1 performance match, club
+        870852  => '686ca864-6c01-4f90-b6cf-e9a279313baa', // Jason Lloyd | 2 performances match, club
+        675540  => 'c72e20c0-95db-4235-b87a-7c86f8760a7f', // Jane Lodge | 2 performances match, handicap agrees (within 0.2), club
+        849306  => '7558afbb-6519-4e97-bb1f-833e18158ce1', // Steve Lomas | 2 performances match, club
+        1140074 => 'b3fea50e-63bf-486f-aa3d-b7d01c5f2dc8', // Rebecca Lord | handicap agrees (within 0.2), club
+        675610  => '9bc30acb-f95f-44d6-b772-25c7462e1f25', // Susan Lovell | 1 performance match, handicap agrees (within 0.1), club
+        512288  => '204f9de3-950e-4ec8-81eb-d6f184bcd4e0', // Jemima Lowe | 2 performances match, handicap agrees (within 0.0), club
+        736614  => 'dd34a4ee-ceff-4dd8-9dc0-b42a46ef0f92', // Sam Luce | 2 same-day performances, club
+        819904  => 'ab6b0bb7-bf05-431f-bfb6-2b50c55f7f98', // Tim Lynch | 1 performance match, handicap agrees (within 0.1), club
+        795361  => 'f39c1b9b-7b26-4bf1-92fa-88e5773f2e49', // Darrin Lynn | legacy id, 1 performance match, club
+        1112049 => 'df86fe59-5a60-4d28-b585-99ecee8d492b', // Jonathan Mackey | 1 performance match, handicap agrees (within 0.0), club
+        1287839 => 'abd5f32b-effc-4290-b155-08b47efd9ec3', // Andy Maguire | 1 performance match, handicap agrees (within 0.1), club
+        852993  => 'a83f1a38-a53d-4963-bf72-7e8f09e900d0', // Steve Mahon | 2 performances match, handicap agrees (within 0.1), club
+        320298  => '2a046bd2-993e-4b18-91c5-611a4516b602', // Marianne Maisey | handicap agrees (within 0.1), club
+        320489  => '17ae4fca-e82f-41bc-ab60-07a96a96fbda', // Kareen Mann | legacy id, 1 performance match, handicap agrees (within 0.1), club
+        1199132 => '2af472f3-ff94-4251-b45e-bde3ed72a29b', // Lydia Mann | 1 performance match, club
+        907616  => '057ad9cf-081a-47c0-bc67-081b4e290ca5', // Daniel Manning | 2 same-day performances, club
+        422731  => 'dc0e115b-3542-40c1-a4c0-fa3dab084d37', // Paul Marston | 1 performance match, handicap agrees (within 0.1), club
+        321048  => 'cf60bee3-0b2c-4bba-a749-82ada562a038', // Fiona Martin | 2 performances match, handicap agrees (within 0.1), club
+        1026646 => 'dc2de408-f949-4faa-81cc-195bbfc1f568', // Michael Martin | handicap agrees (within 0.1), club
+        410667  => '494dfd39-9f0e-4141-8581-b234562c0a56', // James Matheson | 2 performances match, handicap agrees (within 0.1), club
+        853033  => '65759418-8019-49f6-a404-636bb2c45a6d', // Janet Maxwell-Stewart | 1 performance match, handicap agrees (within 0.3), club
+        321592  => '1fe250f1-4bac-4e11-96d0-87ebb1746058', // Andy Maybury | 2 same-day performances, handicap agrees (within 0.1), club
+        650053  => 'b9cb5a7e-c339-4339-abc3-2dc5b0c36ef9', // Campbell McClory | 2 performances match, handicap agrees (within 0.2), club
+        124657  => '3b25704f-d5ff-4e36-b4df-36375970a586', // Neil McDonald | 1 performance match, club
+        973976  => '3bc2a326-9b2f-4d23-ad87-7e5bfe18b0c6', // Ariane McGrahan | handicap agrees (within 0.0), club
+        941044  => 'b0a1c8ca-8360-4f4f-a0a3-935af565089a', // Kirsty McGregor | 1 performance match, club
+        878528  => '39c7db3d-e4fc-4774-92dc-da497e38134e', // Shona McHugh | 1 performance match, club
+        976771  => 'd7eabcf9-862e-4ad7-892f-26c13e448f93', // Amanda McKay | 1 performance match, club
+        706684  => '22edd182-6157-44e6-863f-d089bf500a80', // Marie McNally | 2 same-day performances, handicap agrees (within 0.2), club
+        157994  => '5681ea91-8f0d-4f3f-aef1-fd4eedbd43fb', // Jan McNelis | handicap agrees (within 0.0), club
+        121009  => 'd9328369-c942-410b-8ac1-480c37c3b56a', // Mark McNelis | 1 performance match, handicap agrees (within 0.3), club
+        599169  => '12a1a52e-fb39-4591-aae2-61d29ac21587', // Steve McNelis | handicap agrees (within 0.1), club
+        1300733 => '2380e8d5-2488-40e0-9e89-3fbb5e3d8944', // Guy Megson | handicap agrees (within 0.0), club
+        738736  => 'ec20abfe-5de8-4ff0-ad81-8b9d7a8a9b4a', // Simone Melia | 2 performances match, handicap agrees (within 0.0), club
+        323481  => 'a70c99a4-8278-4a5f-8647-9bf123b8f06e', // Philip Miles | 1 performance match, club
+        706901  => '3a594775-9afd-486e-9854-b8cb0b4e510c', // Colin Milligan | 2 same-day performances, club
+        1327079 => '230ea976-3e2c-4629-b218-e6c3efbd0f02', // Sharon Mills | handicap agrees (within 0.0), club
+        992142  => '5f2d28a4-05f0-4ea5-8d1c-144e95900146', // Andrew Milner | 1 same-day performance, handicap agrees (within 0.1), club
+        706951  => 'bfd8ecea-596d-489a-ac2d-ff4e45ababa4', // Marcus Mingins | 1 performance match, handicap agrees (within 0.2), club
+        323838  => 'a0c9a6b6-e69b-4a98-a78d-4edff38f5a07', // Margaret Minton | 1 performance match, handicap agrees (within 0.0), club
+        739237  => '7c418cc2-3d0c-465e-ab80-9aada64e660a', // Jenny Mitcham | 1 performance match, club
+        922577  => 'd3a1b09d-5647-443c-b58d-6b332bc5e2d6', // Danielle Mitchell | 2 performances match, club
+        599714  => '5fa29efd-a2b1-4a23-9e58-0a40424dbea1', // Pete Moody | 1 performance match, handicap agrees (within 0.1), club
+        758190  => '4e6abf09-5b82-464a-baf5-c4d9e95e4a01', // Matt Moon | 1 performance match, club
+        444681  => '0a43456e-34cd-46ae-9a41-5449c3f32c55', // Jane Morgan | 2 performances match, club
+        677077  => 'd8240e88-6ecd-42c4-8411-07475c0c30e0', // Karen Morgan | 2 performances match, club
+        324586  => '13014c0f-3297-4717-8147-049a337e2314', // Ruth Morgan | 2 performances match, club
+        423638  => 'dbc539f7-fc5c-4994-843e-4274042b70ad', // Jennifer Morris | 2 performances match, club
+        758319  => '4ed698cc-d1b4-48e2-8057-a30a138fdb17', // Claire Moten | 1 same-day performance, handicap agrees (within 0.3), club
+        766775  => '44330cc8-8a5c-4aad-bc21-74c879287203', // Sebastian Mudzo | 2 performances match, handicap agrees (within 0.2), club
+        974315  => '35fa9c54-3d47-4626-a41f-29fd8a7161cb', // Mark Mullins | 2 performances match, club
+        1196868 => 'fec3e146-5d55-4054-bcb2-bbe1f2371543', // Theresa Mulvey | handicap agrees (within 0.0), club
+        823301  => '019e9354-3b55-4dee-860c-58087f704834', // Fiona Murdy | 1 performance match, handicap agrees (within 0.2), club
+        659874  => 'a441c95d-b0f7-4ede-a507-3ae54083195c', // Craig Mussell | 2 performances match, handicap agrees (within 0.1), club
+        1078960 => 'c5d351e7-2576-412d-b469-af4ccf8c68a7', // Kate Naughton | 2 performances match, handicap agrees (within 0.0), club
+        707483  => '594bc4c8-7583-4b60-b12e-4cc181c398c6', // Julie Neale | 2 performances match, handicap agrees (within 0.0), club
+        325937  => '219051a5-566e-4754-b22a-d49295340e47', // Caroline Neil | 1 performance match, handicap agrees (within 0.0), club
+        326161  => '27624d45-abc4-47a0-885c-57e817490e1e', // Geoff Newman | 1 performance match, handicap agrees (within 0.1), club
+        326237  => '3d857ee3-e5d5-4843-8465-12da0e374f65', // Helen Newton | 1 performance match, handicap agrees (within 0.2), club
+        935285  => 'f1060219-42f2-4d28-a995-bc2296058179', // Jemma Newton-Smith | 2 performances match, club
+        1238814 => 'cf6a16d1-c890-4898-b00d-60ff25c64006', // Lucy Nichols | 2 same-day performances, club
+        887774  => '1fb3554f-66f7-4ca2-9eff-812191b8e437', // Keith Norgrove | 2 performances match, handicap agrees (within 0.0), club
+        935325  => 'b8b9ebb2-9b74-44d3-8148-0631c5b8846c', // Kay Norris | 2 same-day performances, club
+        824240  => '80b1c732-6ba7-48ec-a32f-4aa350fd24b7', // Richard Obideyi | 1 performance match, club
+        872890  => '6ea3ddf9-c147-4445-a404-9d2565963179', // Emma Oldham | 1 performance match, handicap agrees (within 0.1), club
+        1046191 => 'fa6c125a-87f1-459d-92e1-005cdb7af8b8', // Stuart Parker | handicap agrees (within 0.2), club
+        859002  => '079280d4-ef05-436f-a738-069aa5910049', // Phil Parkes | 1 performance match, handicap agrees (within 0.0), club
+        843939  => '37e71c1e-013b-44a2-b2be-1e9f0c5a221d', // Kate Parsons | 2 performances match, handicap agrees (within 0.3), club
+        1286512 => '18e5d1ee-336d-439f-8415-f525c255e451', // Shaune Pates | handicap agrees (within 0.2), club
+        929427  => '9b36b756-fbe7-47f7-98ba-0694fc15952c', // Adam Paulley | 2 performances match, club
+        909097  => '1b802672-a7b6-4a0c-8e66-6900fd106e40', // Nathan Pawley | handicap agrees (within 0.1), club
+        650839  => 'b12b6ec6-12a3-4364-8c9f-0c8ba05ce992', // Matt Payne | 1 performance match, club
+        974817  => '5929bd15-6f2e-421a-8500-29fb0a61359d', // Michelle Peers | 1 performance match, handicap agrees (within 0.1), club
+        908174  => '1c7d028a-7a36-49b6-ade7-aaed16822de2', // Bernadette Pelster | 1 same-day performance, handicap agrees (within 0.1), club
+        1244461 => 'e117a913-d62c-4b4e-b06c-9f6f3afb833e', // Gareth Pemberton | handicap agrees (within 0.0), club
+        794015  => '87b6f986-ce0d-4769-8a03-c5b82b40383a', // Joanne Perkins | 1 performance match, club
+        1240979 => '0c26961d-7ec0-433b-b7a0-aff85cafac77', // Jon Perks | handicap agrees (within 0.1), club
+        979889  => '4d18cab2-c980-41b7-b626-65e6f5c2fa5b', // Darren Perry | 1 performance match, handicap agrees (within 0.1), club
+        769936  => 'e5a4d7f7-f66c-4ac8-9f45-09c89db9fdff', // Mark Peverelli | handicap agrees (within 0.2), club
+        1300827 => 'f94ed1c8-8eaf-4f40-8353-e906612a57a9', // Hayley Phelps | 1 same-day performance, handicap agrees (within 0.1), club
+        1022419 => '2cf9b6ac-c004-4677-b367-924f73bb70e7', // Jonathan Phillips | handicap agrees (within 0.0), club
+        873560  => '58807cc2-9eda-4e98-b9e9-3f9ef06dbec3', // Mike Philpotts | 1 performance match, club
+        166201  => 'f8ea001f-6221-4b23-9e6a-7183b3f79849', // Tracy Pickering | 2 same-day performances, club
+        1066583 => 'ba28114d-3dff-46c5-b479-cf245c00440a', // Wendy Pickess | handicap agrees (within 0.1), club
+        763772  => '64c2be82-4c02-4910-bd8f-bf7589cdab8c', // Matt Pilott | handicap agrees (within 0.1), club
+        1279808 => 'b7edc096-3c9a-4a65-b25f-c6e8fa481108', // Ben Pinfield | handicap agrees (within 0.2), club
+        826310  => '12881b57-a1b4-4443-971b-bd07bcc7ab9e', // Glyn Pink | 2 performances match, club
+        844114  => '054264d7-55df-4bd4-a9cc-301cdb3832bb', // Emma Platt | handicap agrees (within 0.0), club
+        767883  => 'cb808689-f2d8-4c8c-b242-d07b6a25a564', // Laura Plummer | 1 performance match, handicap agrees (within 0.1), club
+        330749  => 'efb533cd-95ae-4fcf-b402-bd1e25b44fc1', // Maria Porter | 2 performances match, club
+        678790  => 'd9127df8-5928-47e7-9d8f-d2fff7a71869', // Richard Povey | 1 performance match, handicap agrees (within 0.0), club
+        1294865 => '807a7845-5b25-4d07-87c3-d4a74bd3cd96', // David Povey | handicap agrees (within 0.0), club
+        413389  => 'fd37e08f-416a-4aee-ae02-4ae12dcd51c5', // Sian Powell | legacy id, club
+        1255647 => '993a2d62-eaf9-4dec-88ff-d1ef58f92857', // David Powell | 2 same-day performances, handicap agrees (within 0.1), club
+        873813  => '59628880-fedf-4f6b-a0a9-16f7f4be5cec', // Adrian Price | 2 performances match, handicap agrees (within 0.2), club
+        1309045 => 'fad96765-f594-4202-b5a9-d3d485ac1d43', // Joanne Price | handicap agrees (within 0.0), club
+        1186037 => '43248de8-1c7c-45a2-bea9-a2b02906e563', // Ginny Prior | 2 same-day performances, club
+        708922  => 'becb5b21-3d64-43e1-bf5c-5ef502f21143', // Rhian Protheroe | 2 performances match, handicap agrees (within 0.2), club
+        873920  => '5fc2fa65-3fd7-4fb1-9cee-9869cb76b78f', // James Purser | 1 performance match, handicap agrees (within 0.0), club
+        523572  => 'ddecdb03-82f5-4838-90c8-53d373bc4a42', // Ian Radford | legacy id, 1 performance match, club
+        1130262 => '561580bc-3fb2-4346-95e7-70d0751fc640', // Daniel Ralph | handicap agrees (within 0.0), club
+        161563  => 'fecad256-44dd-412f-bdbd-c4cca7342bd8', // Richard Ralphs | 1 performance match, handicap agrees (within 0.0), club
+        1001254 => 'adbafcab-8a05-45e2-8111-1d65993866c7', // Vonnie Ralphs | 1 performance match, club
+        679133  => '5a0cb1db-3d72-463d-855b-f489c2c3f124', // Kim Randall | 1 performance match, club
+        742151  => 'ef2da5cc-ef3d-4812-8182-bffa24f9d191', // Annoula Raptis | 1 performance match, club
+        332219  => 'b7a6ecce-96a6-44bc-936a-e7ed8a91622c', // Susan Rathbone | 1 performance match, handicap agrees (within 0.1), club
+        874079  => '5e95dcb5-07b8-4541-807e-5e2004901f4b', // Caroline Raybould | 1 performance match, club
+        759337  => 'bd1fb5b8-c64e-4df5-93c5-e86e87cd329b', // Shelley Reader | 2 same-day performances, handicap agrees (within 0.1), club
+        542783  => '7bdfb3f7-f96c-459c-a719-4df353ee66d5', // Stacey Redpath | 2 performances match, handicap agrees (within 0.1), club
+        618973  => '8737e2a7-25ec-4664-97c7-9da417f9eff3', // Martin Reeves | 2 performances match, handicap agrees (within 0.1), club
+        860698  => '9099e1e8-bf49-440b-a61e-d727ff7ba244', // Peter Reeves | 2 performances match, handicap agrees (within 0.2), club
+        924013  => 'abdf6b5a-d286-4c4e-ad9c-31d597e9455b', // Rebecca Reeves | 2 same-day performances, club
+        795351  => 'efd9b39d-a605-4596-b03b-9d99a989914a', // Matthew Rendall | 2 performances match, club
+        709307  => '02b44f6e-aa4a-4ce4-94a6-9db41540f530', // Cindy Richards | 1 performance match, club
+        542992  => 'e8bdc741-31f2-4569-8305-3cf2f212c2a1', // Neil Richards | 2 performances match, club
+        1168541 => 'efb775b6-5367-4d65-b6fe-f42a8a1d9d1f', // Sarah Richards | 2 performances match, handicap agrees (within 0.1), club
+        543026  => 'd53db383-f585-4f82-b1e2-580dd88a1e21', // Jay Richmond | 2 performances match, handicap agrees (within 0.0), club
+        709380  => '677f0286-0239-4308-b8af-e68026a01e52', // Alexandra Ricketts | 2 same-day performances, handicap agrees (within 0.1), club
+        874371  => '203bd308-756e-4d4c-9737-0c3a36c0c4a5', // Alison Riley | 1 same-day performance, handicap agrees (within 0.1), club
+        363112  => 'edd4c9fd-faa8-46a5-b953-75a0d6a537fc', // Nichola Robinson | handicap agrees (within 0.1), club
+        936236  => 'de9be35e-7341-42ba-9a07-a0fb9c56de75', // Simon Robinson | 1 performance match, handicap agrees (within 0.1), club
+        1201664 => '82fd8f3d-3dd6-4a95-9315-ee6476a1a6e2', // Hannah Robinson | 2 same-day performances, handicap agrees (within 0.0), club
+        828792  => 'afdf4a3b-c81d-4eac-a7ea-67d9b361aa9c', // Anna Rolfe | 2 same-day performances, club
+        1212399 => 'ac5070f7-bfbf-4611-b212-55ae90f44841', // David Ronan-Hill | 2 performances match, club
+        350449  => '2f9d0807-f4b3-4c3c-bd47-97b3b6f816a6', // Heather Rook | 1 performance match, handicap agrees (within 0.1), club
+        651495  => 'bfda4ccc-1fb5-4f2a-824a-3213ec7a92ad', // Mark Rose | 1 same-day performance, handicap agrees (within 0.1), club
+        828874  => '9526ae9d-fe58-4855-bf3d-1de7dbe152ed', // Krystyna Rose | 2 performances match, handicap agrees (within 0.1), club
+        515045  => '7995a16c-7075-4f5f-b9e8-7c3633f04903', // Helen Rosewarne | 1 performance match, club
+        1042545 => '08338b4b-2368-43e5-b61f-b5a556a1a7e9', // Michelle Rothery | 1 same-day performance, handicap agrees (within 0.3), club
+        350669  => '4be1431b-3df4-430c-ac46-5ebdeefd2d99', // Sven Rouse | 1 performance match, club
+        1141026 => '480d9bef-638e-450a-b376-391580391781', // Lisa Rouse | handicap agrees (within 0.2), club
+        994847  => '645615dc-60ee-4cfc-ae60-a1cdb609b88e', // Michelle Ruddock | 1 performance match, handicap agrees (within 0.0), club
+        350914  => 'b0b3b8a0-7131-4594-a3b7-194823acf160', // Keith Ruff | 1 performance match, club
+        924364  => 'f598a8f4-9389-4425-acd5-a6fe202bd41f', // Rollo Rumford | 1 same-day performance, handicap agrees (within 0.0), club
+        456849  => 'fda4aa30-0a3e-4bab-a2bd-67ed8ab73f97', // Donna Rushton | handicap agrees (within 0.1), club
+        440959  => 'dfabb57c-95eb-48b0-9cef-53b471bc0903', // Natalie Rushton | 2 performances match, handicap agrees (within 0.1), club
+        901268  => 'e7977a64-e740-4ba2-9f98-ffaf93a64b4f', // Vicki Russell | 2 performances match, handicap agrees (within 0.2), club
+        924378  => '36f6d089-23b4-4ffa-82f5-4993004a4da1', // Adam Russell | 2 same-day performances, handicap agrees (within 0.1), club
+        351112  => '08e39569-2257-455e-af6f-632827515abc', // Vicky Rutter | 1 performance match, club
+        829475  => '5983e50f-0fed-4d57-a2b7-62de9d0a13f5', // Mark Sanders | 2 performances match, handicap agrees (within 0.1), club
+        1261332 => 'd1939331-5e17-4eeb-95f9-045cc2589157', // Jackie Sanders | handicap agrees (within 0.1), club
+        995056  => '9b4d7a87-6d96-4c7f-8987-9dfc8ba365c6', // Amy Sanderson | 2 same-day performances, club
+        334566  => 'af550b9a-7662-418a-9f44-5e0a7143e6ba', // Georgia Satchwell | 2 performances match, handicap agrees (within 0.1), club
+        1001510 => 'f14b514e-3780-45e5-8f5f-2b6a550980b3', // Gary Satchwell | 2 same-day performances, club
+        829860  => '4c08d904-ee3b-4e30-a794-4cfc704e6c5a', // Nigel Scott | 2 performances match, handicap agrees (within 0.0), club
+        960968  => '95e4c86f-08ed-45ca-bc4f-1fd2823c84d8', // Charles Scott | 2 same-day performances, club
+        829879  => 'cf367473-9a6b-4ca0-b69a-badcc2adb4a0', // Jade Scott-Walker | 1 same-day performance, handicap agrees (within 0.0), club
+        335470  => 'dae760ca-e210-4b7c-a182-aabb3a4fd2eb', // Claire Shacklock | handicap agrees (within 0.1), club
+        278178  => '5a280029-03a6-4316-916c-4ea504bfa630', // David Shacklock | handicap agrees (within 0.2), club
+        87594   => 'd1c0e148-ffcb-47c8-9707-d7f9bf23fdea', // Sue Shacklock | handicap agrees (within 0.0), club
+        733697  => 'c208e095-a60c-4308-b047-094b93d6cd66', // Hannah Sharp | 1 performance match, handicap agrees (within 0.1), club
+        759959  => 'bc29a9e7-296f-425e-ab04-705ab4cbdc29', // Steven Shaw | 2 performances match, club
+        875233  => '1570bde7-2468-4a72-ad5d-5df2d78cfb19', // Mark Shaw | 2 performances match, handicap agrees (within 0.2), club
+        146154  => '8ae168a0-df7b-4ec1-aa82-378a9013ae18', // Jacquelyn Sheldon | handicap agrees (within 0.0), club
+        769948  => 'e53b94bd-8082-48ae-8913-ee7df66fa796', // Philip Sheldon | handicap agrees (within 0.0), club
+        941789  => 'e7fb94f1-7ec3-40b4-8221-b5a3749ce923', // Claire Shepherd | 2 performances match, handicap agrees (within 0.0), club
+        901452  => '2a9f6e06-af61-437a-9bde-7459c5dca3ac', // Mark Shepherd | 2 performances match, handicap agrees (within 0.0), club
+        1168727 => 'f089e989-b322-46e6-943e-35eb04e78624', // Luke Sheppard | handicap agrees (within 0.2), club
+        441169  => '2cbd0b24-0935-41b1-a0c6-4448f34ff0bb', // Hazel Sherrington | 2 performances match, club
+        760016  => '03b46498-2c6d-4b56-9515-8830901841e7', // Simon Shorthouse | 1 performance match, club
+        952363  => '29bc37c1-10fd-4fa2-b747-169f805fb63f', // Lucy Sidwell | handicap agrees (within 0.1), club
+        1309221 => 'b0de0381-34f3-4445-91e3-9789989604d5', // Tina Silverwood | handicap agrees (within 0.0), club
+        760175  => '71bfcac9-45d9-4765-87b2-2d54dd8edb0a', // David Smith | 2 performances match, handicap agrees (within 0.0), club
+        337406  => 'c440e523-4642-430f-9eef-49c5616df645', // Lawrence Smith | 1 same-day performance, handicap agrees (within 0.1), club
+        889383  => 'ccd646d9-450f-408e-8705-67696664ac57', // Steve Smith | 1 performance match, handicap agrees (within 0.2), club
+        875588  => '09cb98d0-f9c7-4a63-894a-d97c3855dbc2', // Claire Smith | 2 performances match, club
+        955549  => '4a7af702-9432-48b2-bab6-15d33c6394cc', // Debbie Smith | 1 performance match, club
+        995972  => 'aa06fa99-e27f-459b-8231-0c57b73ab8e6', // Rachel Smith | 1 performance match, handicap agrees (within 0.3), club
+        1109110 => 'dfbf5bda-38c1-4efb-8db9-a3fe45255bef', // Barbara Smith | handicap agrees (within 0.1), club
+        1239227 => '19f2c623-e3aa-4094-acc2-2fdba7a57d98', // Gerard Smith | handicap agrees (within 0.2), club
+        1295608 => 'e8d91204-3cc9-416a-bbbc-1b226a54be11', // Matt Smith | 2 performances match, club
+        901670  => '212daf20-26b4-4e78-9cf1-2d45d2a48967', // Andy Southall | handicap agrees (within 0.0), club
+        444035  => '566cf6b1-6fba-4281-909c-6c69928a01b9', // Alan Southwick | 2 performances match, handicap agrees (within 0.2), club
+        544660  => 'b3521ce8-0757-4e36-8ca3-4d0954fdb897', // Kim Sparkes | 1 performance match, handicap agrees (within 0.0), club
+        1100453 => '23ca9c8d-5a60-442b-abf0-53d6b66e1c6f', // Jacqueline Spencer | 2 performances match, handicap agrees (within 0.1), club
+        457648  => '02fb6c09-622f-4035-8f06-d98512e54d09', // Nicola Sprague | 2 performances match, handicap agrees (within 0.0), club
+        363995  => '10d425ee-ca69-48f8-b0bc-a8ea2a52a2b2', // Liz Stacey | 2 same-day performances, handicap agrees (within 0.3), club
+        338581  => '9131d10a-264d-47f3-bf6f-821ba5984872', // Helen Stanley | handicap agrees (within 0.0), club
+        711425  => '99feb5aa-585b-4da8-9ae8-def5b527954f', // Lydia Stenson | 2 same-day performances, handicap agrees (within 0.0), club
+        1124134 => '0e96f47c-343c-4843-af8d-ea78caf37d5a', // Tim Stenson | 1 performance match, handicap agrees (within 0.2), club
+        774650  => '3df0a9bf-925e-410a-82cb-2c2b329a5aa3', // Amy Stewart | 2 performances match, handicap agrees (within 0.2), club
+        1328217 => '2db64379-9932-4875-8e1f-88f0c6ad28e6', // Catherine Still | handicap agrees (within 0.0), club
+        457815  => '8af48a97-7e5d-4b40-a634-392351f3a88f', // Bethan Stimson | 2 performances match, handicap agrees (within 0.1), club
+        876111  => '346ede25-6739-48e3-937a-608197a7f366', // Roger Stockman | 2 performances match, club
+        1318055 => '631e9eea-cf83-453f-be35-0c1c17ee5d72', // Thomas Stokes | handicap agrees (within 0.0), club
+        441473  => 'd17b6d46-1ba4-454c-bc9b-74a64f78411f', // Adam Stowe | 1 performance match, handicap agrees (within 0.0), club
+        1119611 => 'ef027c7d-5d41-4c29-90a4-8e19ba7709cc', // Emma Stowe | 1 performance match, club
+        1119613 => '7bfb75f3-23e1-46aa-8c26-f44e95300a6a', // Beth Straiton | 2 same-day performances, handicap agrees (within 0.0), club
+        1157029 => '3ea900fd-012c-46e7-92a2-2303fe4f1607', // Bruce Strong | handicap agrees (within 0.1), club
+        1248503 => '36e5c788-e8d5-4bc5-8720-3cf7e073eef0', // Jeremy Stubbs | handicap agrees (within 0.0), club
+        1310395 => 'a54ae2f6-eb01-4a61-94ed-bad2eeb7abdc', // Ceris Styler | handicap agrees (within 0.0), club
+        1103540 => '8d5741fb-8b48-4fa4-bed6-0d40ca08ce73', // Lloyd Sussex | 1 performance match, handicap agrees (within 0.0), club
+        339873  => '95d36ac6-8482-42d0-9b6d-a5d03d9c9b68', // Duncan Sutcliffe | handicap agrees (within 0.0), club
+        832962  => 'bca471d9-7481-4ecc-857f-04f768cc623b', // Katy Swatton | handicap agrees (within 0.1), club
+        1288015 => 'f08aba68-9c56-4e7e-8d6d-d4f66cd33afc', // Mark Tanser | handicap agrees (within 0.1), club
+        688143  => '4c5a96e8-1d36-4978-b254-b449436b1b24', // Ashley Taylor | 2 performances match, handicap agrees (within 0.0), club
+        958119  => '87c991a0-1ee8-4359-8ef1-443c1df1b78b', // Chris Taylor | 2 performances match, club
+        1346857 => 'be01fa49-ac62-4f08-bbb7-0b3c0bdf13af', // Harry Taylor | handicap agrees (within 0.0), club
+        736717  => '801116bb-5b98-471e-8329-e464a383255f', // Rebecca Terry | 2 performances match, club
+        1043284 => '859eb6c8-b2cb-497c-b3a7-3e6f3a7eb580', // Sophie Thomas | handicap agrees (within 0.1), club
+        441674  => '1bd40767-ba8b-4ad9-af49-119d27c17056', // Michelle Thompson | 2 performances match, handicap agrees (within 0.1), club
+        1002847 => 'ff4a3d8f-b06a-457a-956e-9d9c2b848f04', // Ruth Till | 1 performance match, club
+        737306  => 'e1dbf5a2-f6c0-4214-832c-e107f99389e8', // Alison Tomkinson | 1 performance match, club
+        545779  => '06884da2-a97d-4984-8b4e-4524fe3aa973', // Gary Tomkinson | 2 performances match, handicap agrees (within 0.1), club
+        937349  => 'ff919fea-6eca-45a4-8729-beab5db5e51a', // Dawn Townsend | 1 performance match, handicap agrees (within 0.0), club
+        621915  => 'ca01818d-caf5-46ed-9ba4-356890fa03e3', // Alison Townson | handicap agrees (within 0.0), club
+        342383  => 'ffced138-91a4-4104-bf7e-531cb59c6a38', // Nick Toy | 2 performances match, handicap agrees (within 0.1), club
+        1176377 => '25fa5944-343a-454b-b4cb-5e7de58827cd', // Andrew Trickett | 1 performance match, handicap agrees (within 0.2), club
+        681789  => '7314f4c5-1ad4-4e87-901c-7f1a68a9d940', // Will Turner | 2 performances match, handicap agrees (within 0.1), club
+        1003195 => '4cfb8f90-8c34-4365-8961-afec35f52ba6', // Alexandra Turner | 2 same-day performances, club
+        877389  => 'bf39cca2-6a0d-4430-b287-8816566a191b', // Paul Tustin | 1 performance match, club
+        937536  => '00e41567-26cd-47b9-aa09-7eb85ab78a0e', // Victoria Wadley | 2 same-day performances, handicap agrees (within 0.0), club
+        343899  => '9277f8a3-60db-4975-8bfe-40b3f00c9b08', // Stuart Wakelam | handicap agrees (within 0.1), club
+        622384  => 'ad94a94b-7340-4f2b-be44-c713205b0d56', // Ian Walker | handicap agrees (within 0.0), club
+        428414  => '3a84d783-a9df-4bbd-ab98-153035897f11', // Joanne Walker | 1 performance match, club
+        1261449 => '98362854-c32c-48bc-a4c1-a8644b4e2ba1', // Tom Wall | 1 same-day performance, handicap agrees (within 0.2), club
+        344197  => '05e65c62-ce80-4fce-9ad2-05e1d2eae1be', // Janice Wallace | 1 performance match, club
+        55205   => 'b8903ed2-90ca-455d-8084-802dad392da5', // Richard Walsh | 1 performance match, club
+        761334  => '1a10c696-ed60-44ee-a2f0-a64267721c7d', // Victoria Watkins | 1 performance match, club
+        1309497 => '585ea71e-a4e7-45f3-b410-bf85ea6f7a2f', // Neil Watkins | handicap agrees (within 0.0), club
+        1309496 => '8217d0fa-3006-46a2-86fc-3396088ebaea', // Amanda Watkins | handicap agrees (within 0.0), club
+        891447  => '95cd2ada-25a8-432d-a0de-e60ebe717a3e', // Karen Weaver | 2 performances match, club
+        1043821 => '81aecb0a-4810-4730-b554-63908df3a51a', // Tracy Whelan | 2 performances match, handicap agrees (within 0.0), club
+        622932  => '894ae9b8-bd0b-499b-a230-3e3595113f62', // Lucie White | 2 performances match, handicap agrees (within 0.0), club
+        622963  => '86209c8c-7272-49a6-b6c8-c4466d82b250', // Charm Whitehouse | handicap agrees (within 0.1), club
+        772176  => '8e71882e-e358-441f-963f-ceaa5c230751', // Toby Whitfield | legacy id, 1 performance match, handicap agrees (within 0.0), club
+        1054023 => '6f01ca9d-14ea-439c-b1fc-33bf70a96f6b', // Craig Wilkes | 2 same-day performances, club
+        1296265 => '983233e8-15c8-439b-90b5-7c2872ad1ebe', // Nick Wilkes | handicap agrees (within 0.0), club
+        926628  => '0d9ded01-7d93-483e-afbf-d0e2e04b2733', // Tony Wilkinson | 2 performances match, handicap agrees (within 0.3), club
+        937879  => '05db58c6-7b91-41d6-b8bb-b0e3afeeab69', // Amy Willetts | handicap agrees (within 0.1), club
+        837324  => '0f665560-7cd4-4d4a-b8e9-c1f9e07fd74c', // Ruth Williams | 2 performances match, handicap agrees (within 0.2), club
+        1134164 => '12559e34-8fa5-48e5-acb6-9283690e8b81', // Rebecca Williams | 1 performance match, club
+        1219150 => 'f33f8a5c-dc63-487e-9346-ef4da8844383', // Nigel Willis | handicap agrees (within 0.2), club
+        777737  => 'ca679158-c3f8-4fb9-9848-e0c3a23a4574', // Tracey Wilson | 1 performance match, club
+        768869  => '5406645f-0299-429d-9ea1-6ed7f235f3b6', // Alex Wilson | 2 performances match, handicap agrees (within 0.0), club
+        1109931 => 'b69532fc-7167-4f86-a80c-ff93aadeb18d', // Matthew Wilson | handicap agrees (within 0.1), club
+        547358  => '10d8b004-6bc1-4460-b6fc-b1c6d2475bb0', // Jo Winfield | 1 performance match, club
+        743542  => '8ecba666-b700-4c52-80ff-8642131d75be', // Dave Winman | 2 same-day performances, handicap agrees (within 0.0), club
+        978052  => '863b9a4e-ebb2-486c-9579-a44c7aab84ff', // Tim Winstanley | 2 performances match, handicap agrees (within 0.1), club
+        981628  => '56a2850c-f01a-4965-8eae-b84522bfaaa8', // Ashleigh Winstanley | 2 performances match, handicap agrees (within 0.1), club
+        517616  => 'e7a8b327-636f-4683-8246-e8e0f7f2bfde', // Marion Winwood | 1 performance match, handicap agrees (within 0.1), club
+        444496  => 'd0e011c4-a928-4f9c-9cd5-d67bc056bd78', // Eleanor Wise | 2 performances match, handicap agrees (within 0.1), club
+        743778  => 'e99e8772-7299-4b40-9086-1f864605642b', // Tina Wood | handicap agrees (within 0.2), club
+        1304571 => 'cf7b9b04-fddc-49b7-94e2-6eaa5ba70532', // Patryk Wozniak | 2 same-day performances, handicap agrees (within 0.1), club
+        761961  => '03768b5f-c86b-4b67-ae0c-a4d6c7ee02c3', // Craig Yardley | 1 performance match, club
+        547656  => 'adc766b1-fab0-4e59-a0fd-458e69f11b6e', // Nick Yarworth | 1 performance match, handicap agrees (within 0.2), club
+        744209  => '7ffeb844-674d-45a7-96be-796a930025c5', // Ed Yau | 1 performance match, club
+    ];
+
+    public function up(): void
+    {
+        if (!Schema::hasColumn('athletes', 'po10_guid')) {
+            return;
+        }
+
+        foreach ($this->map as $athleteId => $guid) {
+            // Never let two members point at one Power of 10 profile. These are
+            // name derived, so a duplicate means the match was wrong, and
+            // silently overwriting would graft someone else's results onto a
+            // member.
+            $takenBy = DB::table('athletes')
+                ->where('po10_guid', $guid)
+                ->where('athlete_id', '!=', $athleteId)
+                ->value('athlete_id');
+
+            if ($takenBy) {
+                continue;
+            }
+
+            DB::table('athletes')
+                ->where('athlete_id', $athleteId)
+                ->whereNull('po10_guid')
+                ->update(['po10_guid' => $guid]);
+        }
+    }
+
+    public function down(): void
+    {
+        if (!Schema::hasColumn('athletes', 'po10_guid')) {
+            return;
+        }
+
+        // Only clear what this migration set. Matching on the guid as well as
+        // the id leaves any value corrected by hand afterwards alone.
+        foreach ($this->map as $athleteId => $guid) {
+            DB::table('athletes')
+                ->where('athlete_id', $athleteId)
+                ->where('po10_guid', $guid)
+                ->update(['po10_guid' => null]);
+        }
+    }
+};

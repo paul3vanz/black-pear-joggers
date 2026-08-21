@@ -14,3 +14,4 @@ synth_*.json
 club.html
 cacert.pem
 __pycache__/
+review_confirmed.json
