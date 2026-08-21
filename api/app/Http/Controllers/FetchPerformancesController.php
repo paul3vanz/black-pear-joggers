@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Goutte\Client;
 use App\Jobs\FetchPerformancesJob;
 use App\Jobs\UpdatePersonalBestsJob;
 use App\Models\Athlete;
 use App\Models\Meeting;
 use App\Models\Performance;
-use Illuminate\Support\Facades\Artisan;
+use App\Services\PowerOfTenClient;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Log;
@@ -16,15 +15,20 @@ use DateTime;
 
 class FetchPerformancesController extends Controller
 {
-    public function __construct()
+    private PowerOfTenClient $powerOfTen;
+
+    public function __construct(?PowerOfTenClient $powerOfTen = null)
     {
+        $this->powerOfTen = $powerOfTen ?: new PowerOfTenClient();
     }
 
     public function queueAllFetchPerformances()
     {
         $athleteIds = array();
 
-        $athletes = Athlete::whereNotNull('urn')
+        // po10_guid replaces urn as the lookup key: the rebuilt Power of 10
+        // site is keyed by GUID and has no route that accepts a UKA URN.
+        $athletes = Athlete::whereNotNull('po10_guid')
             ->get()
             ->filter(function ($item) { return $item->affiliated; })
             ->values();
@@ -41,24 +45,43 @@ class FetchPerformancesController extends Controller
     public function fetchPerformances($athleteId)
     {
         Log::info('fetchPerformances', ['athleteId' => $athleteId]);
+
         $addedPerformances = array();
 
         $athletes = Athlete::where('athlete_id', '=', $athleteId)->get();
 
         foreach ($athletes as $athlete) {
+            if (!$athlete->po10_guid) {
+                Log::info('Skipping athlete with no Power of 10 GUID', ['athleteId' => $athleteId]);
+
+                continue;
+            }
+
             try {
-            $html = $this->fetchPowerOfTenAthleteProfile($athlete->urn);
+                $html = $this->powerOfTen->fetchAthletePage($athlete->po10_guid);
 
-            $addedPerformances = $this->parsePerformanceHistory($athlete, $html);
+                if ($html === null) {
+                    Log::info('No Power of 10 profile for athlete', ['athleteId' => $athleteId]);
 
-            Log::info('Added performances'. [
-                'athleteId' => $athleteId,
-                    'total' => $addedPerformances ? sizeof($addedPerformances) : 0,
-            ]);
+                    continue;
+                }
+
+                $addedPerformances = $this->storePerformances(
+                    $athlete,
+                    $this->powerOfTen->parsePerformances($html)
+                );
+
+                Log::info('Added performances', [
+                    'athleteId' => $athleteId,
+                    'total' => sizeof($addedPerformances),
+                ]);
             } catch (\Exception $e) {
-                return null;
+                Log::error('Error parsing performance history', [
+                    'athleteId' => $athleteId,
+                    'error' => $e->getMessage(),
+                ]);
 
-                Log::error('Error parsing performance history', ['athleteId' => $athleteId]);
+                return null;
             }
         }
 
@@ -105,35 +128,57 @@ class FetchPerformancesController extends Controller
         dispatch(new UpdatePersonalBestsJob());
     }
 
-    private function fetchPowerOfTenAthleteProfile($athleteUrn)
+    /**
+     * Replace the athlete's scraped performances with a freshly parsed set.
+     *
+     * Manually entered performances (manual = 1) are left alone, matching the
+     * previous behaviour.
+     */
+    private function storePerformances(Athlete $athlete, array $performances): array
     {
-        Log::info('fetchPowerOfTenProfile', ['urn' => $athleteUrn]);
+        // TODO: We want to keep all old data, just mark as old, not remove
+        Performance::whereNull('manual')
+            ->where('athlete_id', $athlete->id)
+            ->delete();
 
-        $fetchUrl = 'https://www.thepowerof10.info/athletes/profile.aspx?ukaurn=' . $athleteUrn;
-        $httpClient = new Client();
-        $html = $httpClient->request('GET', $fetchUrl);
+        $added = array();
 
-        return $html;
+        foreach ($performances as $performance) {
+            $added[] = $this->createPerformance([
+                'athlete_id' => $athlete->id,
+                'event' => $performance['event'],
+                'time' => $performance['time'],
+                'time_parsed' => $performance['timeParsed'],
+                'race' => $performance['meeting'],
+                'date' => $performance['date'],
+                'category' => $this->categoryForRace($athlete, $performance),
+                'po10MeetingId' => $performance['po10MeetingId'],
+            ]);
+        }
+
+        return $added;
+    }
+
+    /**
+     * Prefer the athlete's real age at the race where we know their date of
+     * birth, falling back to the age group Power of 10 recorded.
+     */
+    private function categoryForRace(Athlete $athlete, array $performance): ?string
+    {
+        if ($athlete->dob && $athlete->dob != '0000-00-00') {
+            $raceDate = new DateTime($performance['date']);
+            $birthDate = new DateTime($athlete->dob);
+            $ageAtRace = $raceDate->diff($birthDate);
+
+            return $this->convertAgeToAgeGroup((int) $ageAtRace->format('%y'));
+        }
+
+        return $performance['ageGroup'] ?? null;
     }
 
     private function createPerformance($performance)
     {
-        $meeting = Meeting::firstOrCreate(
-            [
-                'ukaMeetingId' => $performance['ukaMeetingId'],
-                'event' => $performance['event'],
-                'date' => $performance['date']
-            ],
-            [
-                'name' => $performance['race'],
-                'id' => Str::uuid(),
-            ]
-        );
-
-        if ($performance['race'] != $meeting->name) {
-            $meeting->name = $performance['race'];
-            $meeting->save();
-        }
+        $meeting = $this->resolveMeeting($performance);
 
         return Performance::firstOrCreate([
             'athlete_id' => $performance['athlete_id'],
@@ -144,119 +189,81 @@ class FetchPerformancesController extends Controller
         ]);
     }
 
-    private function rowIsYearAgeGroupHeader($tableRow)
+    /**
+     * Find or create the meeting a performance belongs to.
+     *
+     * Meetings used to be identified by the integer ukaMeetingId scraped from
+     * the old site. The rebuilt site issues GUIDs, and only supplies one for
+     * the most recent year, so we match on event + date + name instead.
+     *
+     * The complication is that the progression charts cap meeting names at 30
+     * characters ("Worcester Pitchcroft parkru..."), roughly a tenth of them.
+     * Treat a truncated name as a prefix match against what we already hold so
+     * we neither duplicate the meeting nor overwrite a good full name with a
+     * clipped one.
+     */
+    private function resolveMeeting($performance): Meeting
     {
-        return strpos($tableRow, 'colspan="12"') !== false;
-    }
+        $name = (string) $performance['race'];
 
-    private function parsePerformanceHistory(Athlete $athlete, $html)
-    {
+        // Only a handful of meetings can share an event and a date, so pull the
+        // candidates and prefix match in PHP. Doing it here rather than with a
+        // LIKE keeps names containing % or _ working and avoids depending on
+        // MySQL's non-standard backslash escaping.
+        $candidates = Meeting::where('event', $performance['event'])
+            ->where('date', $performance['date'])
+            ->get();
 
-        $addedPerformances = array();
+        $meeting = $candidates->first(fn($candidate) => $this->isSameMeeting($candidate->name, $name));
 
-        $tableRows = $html->filter('div[id=cphBody_pnlPerformances] table[class=alternatingrowspanel] tr');
-
-        // TODO: We want to keep all old data, just mark as old, not remove
-        $stalePerformances = Performance::whereNull('manual')
-            ->where('athlete_id', $athlete->id)
-            ->delete();
-
-        $currentHeader = '';
-        $currentYear = '';
-        $currentAgeGroup = '';
-
-        $tableRows->each(function ($tableRow, $i) use ($athlete, &$addedPerformances) {
-            // Check if this is a new division by age group
-            if ($this->rowIsYearAgeGroupHeader($tableRow->html())) {
-                $currentHeader = explode(' ', $tableRow->eq(0)->text());
-                $currentYear = $currentHeader[0];
-                $currentAgeGroup = $currentHeader[1];
-
-                if (!$currentAgeGroup) {
-                    Log::info('Error extracting year/age group', ['text' => $tableRow->eq(0)->text()]);
-                    die();
-                }
-
-                // Log::info('Found group of performances: ' . $currentYear . ', ' . $currentAgeGroup);
-
-                return;
-            }
-
-            // Skip if the row is full of headings, not data
-            if (trim($tableRow->children()->eq(0)->text()) === 'Event') {
-                return;
-            }
-
-            $tableCells = $tableRow->filter('td');
-
-            // <tr style="background-color:WhiteSmoke;">
-            // 0 <td>HM</td>
-            // 1 <td>84:16</td>
-            // 2 <td></td>
-            // 3 <td nowrap="" align="right"></td>
-            // 4 <td>84:19</td>
-            // 5 <td>23</td>
-            // 6 <td></td>
-            // 7 <td></td>
-            // 8 <td></td>
-            // 9 <td><a href="../results/results.aspx?meetingid=294267&amp;event=HM&amp;venue=Worcester&amp;date=15-Sep-19" target="_blank">Worcester</a></td>
-            // 10 <td>Worcester City Runs Half Marathon</td>
-            // 11 <td nowrap="" align="right">15 Sep 19</td>
-            // </tr>
-            $athleteId = $athlete->id;
-            $event = trim($tableCells->eq(0)->text());
-            $gunTime = trim($tableCells->eq(4)->text());
-            $chipTime = trim($tableCells->eq(1)->text());
-            $time = ($chipTime) ? $chipTime : $gunTime;
-            $timeParsed = $this->parseTime($time);
-            $race = trim($tableCells->eq(10)->text());
-            $dateTimestamp = strtotime(trim($tableCells->eq(11)->text()));
-            $date = date('Y-m-d', $dateTimestamp);
-
-            preg_match('/meetingid=([0-9]*)/i', $tableCells->eq(9)->filter('a')->first()->link()->getUri(), $ukaMeetingId);
-            $ukaMeetingId = $ukaMeetingId[1];
-
-            // Correct age category if date of birth known
-            if ($athlete->dob && $athlete->dob != '0000-00-00') {
-                $raceDate = new DateTime($date);
-                $birthDate = new DateTime($athlete->dob);
-                $ageAtRace = $raceDate->diff($birthDate);
-                $currentAgeGroup = $this->convertAgeToAgeGroup((int) $ageAtRace->format('%y'));
-            }
-
-            if (!$timeParsed) {
-                return;
-            }
-
-            $addedPerformances[] = $this->createPerformance([
-                'athlete_id' => $athleteId,
-                'event' => $event,
-                'time' => $time,
-                'time_parsed' => $timeParsed,
-                'race' => $race,
-                'date' => $date,
-                'category' => $currentAgeGroup,
-                'ukaMeetingId' => $ukaMeetingId,
-            ]);
-        });
-
-        return $addedPerformances;
-    }
-
-    private function parseTime($time)
-    {
-        $timeParts = explode(':', $time);
-        $timePartCount = sizeof($timeParts);
-
-        if ($timePartCount === 2) {
-            $timeParsed = ((int) $timeParts[0] * 60) + ((float) $timeParts[1]);
-        } else if ($timePartCount === 3) {
-            $timeParsed = ((int) $timeParts[0] * 3600) + ((int) $timeParts[1] * 60) + ((float) $timeParts[2]);
-        } else {
-            $timeParsed = (float) $time;
+        // Upgrade a previously truncated name now that we have the full one.
+        if ($meeting && !$this->isTruncated($name) && $meeting->name !== $name) {
+            $meeting->name = $name;
+            $meeting->save();
         }
 
-        return $timeParsed;
+        if (!$meeting) {
+            $meeting = Meeting::create([
+                'id' => Str::uuid(),
+                'event' => $performance['event'],
+                'date' => $performance['date'],
+                'name' => $name,
+                'po10MeetingId' => $performance['po10MeetingId'],
+            ]);
+        }
+
+        if ($performance['po10MeetingId'] && !$meeting->po10MeetingId) {
+            $meeting->po10MeetingId = $performance['po10MeetingId'];
+            $meeting->save();
+        }
+
+        return $meeting;
+    }
+
+    private function isTruncated(string $name): bool
+    {
+        return str_ends_with($name, '...');
+    }
+
+    /**
+     * Two meeting names refer to the same meeting if they are equal, or if
+     * either is the truncated form of the other.
+     */
+    private function isSameMeeting(string $stored, string $incoming): bool
+    {
+        if ($stored === $incoming) {
+            return true;
+        }
+
+        if ($this->isTruncated($incoming) && str_starts_with($stored, substr($incoming, 0, -3))) {
+            return true;
+        }
+
+        if ($this->isTruncated($stored) && str_starts_with($incoming, substr($stored, 0, -3))) {
+            return true;
+        }
+
+        return false;
     }
 
     private function convertAgeToAgeGroup($age)

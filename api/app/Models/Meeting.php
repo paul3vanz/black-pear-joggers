@@ -12,6 +12,7 @@ final class Meeting extends Model
     protected $fillable = [
         'id',
         'ukaMeetingId',
+        'po10MeetingId',
         'event',
         'name',
         'date',

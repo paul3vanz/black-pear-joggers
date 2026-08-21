@@ -16,6 +16,7 @@ final class Athlete extends Model
         'id',
         'urn',
         'athlete_id',
+        'po10_guid',
         'first_name',
         'last_name',
         'gender',
