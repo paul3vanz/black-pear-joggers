@@ -78,6 +78,67 @@ class PowerOfTenClientTest extends BaseTestCase
         $this->assertSame('40b2522e-08a7-4023-b815-46b409331dd4', $latest['po10MeetingId']);
     }
 
+    public function testPrefersTheChipTimeForEachYearsFastestRun()
+    {
+        $performances = $this->client->parsePerformances(self::$html);
+
+        $alcester = $this->performanceOn($performances, '2018-10-07', '10K');
+
+        // The progression chart publishes 38:25, the gun time. The site itself
+        // shows 38:23 with the gun time in brackets after it.
+        $this->assertSame('38:23', $alcester['time']);
+        $this->assertSame(2303.0, $alcester['timeParsed']);
+        $this->assertSame('38:25', $alcester['gunTime']);
+    }
+
+    public function testOnlyCorrectsRunsTheYearlyChartsPublishAChipTimeFor()
+    {
+        $performances = $this->client->parsePerformances(self::$html);
+
+        $corrected = array_filter($performances, fn($p) => isset($p['gunTimeParsed']));
+
+        // One per event per year that the athlete raced, and no more: the
+        // yearly charts only publish a chip time for each year's best run.
+        $this->assertCount(17, $corrected);
+
+        foreach ($corrected as $performance) {
+            // A chip time can never be slower than the gun time for the run.
+            $this->assertLessThan($performance['gunTimeParsed'], $performance['timeParsed']);
+            // And it must have been the same race, which the venue proves.
+            $this->assertNotNull($performance['venue']);
+        }
+    }
+
+    public function testCorrectingChipTimesDoesNotDuplicateOrLosePerformances()
+    {
+        $performances = $this->client->parsePerformances(self::$html);
+
+        $this->assertCount(471, $performances);
+
+        // Rewriting a time changes the key the row is stored under, so this
+        // guards against a corrected run reappearing alongside its old self.
+        $slots = [];
+        foreach ($performances as $performance) {
+            $slots[$performance['event'] . '|' . $performance['date']][] = $performance['time'];
+        }
+
+        $shared = array_filter($slots, fn($times) => count($times) > 1);
+
+        // New Year's Day 2020, two different parkruns. Nothing else doubles up.
+        $this->assertSame(['parkrun|2020-01-01'], array_keys($shared));
+    }
+
+    private function performanceOn(array $performances, string $date, string $event): array
+    {
+        foreach ($performances as $performance) {
+            if ($performance['date'] === $date && $performance['event'] === $event) {
+                return $performance;
+            }
+        }
+
+        $this->fail(sprintf('no %s performance on %s', $event, $date));
+    }
+
     public function testCrossCountryComesFromTheGridBecauseItIsNotCharted()
     {
         $events = array_column($this->client->parsePerformances(self::$html), 'event');

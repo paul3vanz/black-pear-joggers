@@ -171,6 +171,12 @@ class PowerOfTenClient
         $performances = $this->parseChartHistory($html);
         $formats = $this->eventFormats($html);
 
+        // The progression charts publish gun times. The yearly best charts
+        // publish the chip time for the same race, so correct each year's
+        // fastest run before merging; the grid still wins for the current year
+        // because it carries real chip times for every race, not just the best.
+        $performances = $this->applyChipTimes($performances, $this->parseYearlyBests($html));
+
         foreach ($this->parseGridPerformances($html, $formats) as $row) {
             $key = $this->performanceKey($row);
             $performances[$key] = array_merge($performances[$key] ?? [], $row);
@@ -180,6 +186,126 @@ class PowerOfTenClient
         usort($performances, fn($a, $b) => strcmp($a['date'], $b['date']));
 
         return $performances;
+    }
+
+    /**
+     * Best per event per year, from the yearly progression charts.
+     *
+     * These carry the chip time where the per-race charts carry the gun time,
+     * which is what the site itself shows as the personal best. Each entry
+     * names the venue, which is what lets us be sure we are correcting the
+     * right race.
+     *
+     * @return array<string, array<string, array{seconds: float, venue: ?string}>>
+     */
+    private function parseYearlyBests(string $html): array
+    {
+        $bests = [];
+
+        foreach ($this->chartEventKeys($html) as $index => $eventKey) {
+            $format = 'MinSec';
+            if (preg_match('/var dataFormatToUse' . $index . " = '(.*?)';/", $html, $m)) {
+                $format = $m[1];
+            }
+
+            if (in_array($format, self::DISTANCE_FORMATS, true)) {
+                continue; // field event, cannot be stored as a time
+            }
+
+            $years = $this->jsStringArray($html, 'dataLabels' . $index);
+            $values = $this->jsNumberArray($html, 'dataValues' . $index);
+            $venues = $this->jsStringArray($html, 'dataLocations' . $index);
+
+            $event = $this->normaliseEvent($eventKey);
+
+            foreach ($years as $i => $year) {
+                // Years the athlete did not race leave a hole in the values
+                // array rather than a zero, so a missing index is expected.
+                if (!preg_match('/^\d{4}$/', (string) $year) || !isset($values[$i])) {
+                    continue;
+                }
+
+                $seconds = $this->decodeChartValue($values[$i], $format);
+                if ($seconds === null) {
+                    continue;
+                }
+
+                $bests[$event][(string) $year] = [
+                    'seconds' => $seconds,
+                    'venue' => $venues[$i] ?? null,
+                ];
+            }
+        }
+
+        return $bests;
+    }
+
+    /**
+     * Replace a year's fastest gun time with the chip time for the same race.
+     *
+     * Only the fastest run of each event and year can be corrected, because
+     * that is the only one the yearly charts publish a chip time for. Every
+     * lifetime personal best is by definition also a yearly best, so records
+     * and awards are covered; ordinary runs keep the gun time. Chip times for
+     * the rest are only behind the reCAPTCHA gated endpoint.
+     */
+    private function applyChipTimes(array $performances, array $bests): array
+    {
+        if (!$bests) {
+            return $performances;
+        }
+
+        $fastest = [];
+        foreach ($performances as $key => $row) {
+            $slot = $row['event'] . '|' . substr($row['date'], 0, 4);
+            if (!isset($fastest[$slot])
+                || $row['timeParsed'] < $performances[$fastest[$slot]]['timeParsed']) {
+                $fastest[$slot] = $key;
+            }
+        }
+
+        foreach ($bests as $event => $years) {
+            foreach ($years as $year => $best) {
+                $key = $fastest[$event . '|' . $year] ?? null;
+                if ($key === null) {
+                    continue;
+                }
+
+                $row = $performances[$key];
+
+                // A chip time can never be slower than the gun time, so anything
+                // else means these are not the same run.
+                if ($best['seconds'] >= $row['timeParsed']) {
+                    continue;
+                }
+
+                // The venue is the check that this is the race we think it is.
+                // Without it a year whose best run is missing from the per-race
+                // chart would have its time written onto a different race.
+                if (!$this->sameVenue($best['venue'], $row['venue'])) {
+                    continue;
+                }
+
+                $row['gunTime'] = $row['time'];
+                $row['gunTimeParsed'] = $row['timeParsed'];
+                $row['timeParsed'] = $best['seconds'];
+                $row['time'] = $this->formatSeconds($best['seconds']);
+
+                unset($performances[$key]);
+                $performances[$this->performanceKey($row)] = $row;
+            }
+        }
+
+        return $performances;
+    }
+
+    private function sameVenue(?string $a, ?string $b): bool
+    {
+        if ($a === null || $b === null) {
+            return false;
+        }
+
+        return strcasecmp(trim($a), trim($b)) === 0;
     }
 
     private function performanceKey(array $row): string
