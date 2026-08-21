@@ -7,5 +7,10 @@ po10_capture.js
 po10_candidates.json
 matches.json
 review.csv
+po10_rankings_capture.js
+po10_rankings.json
+po10_discovered.json
+synth_*.json
+club.html
 cacert.pem
 __pycache__/

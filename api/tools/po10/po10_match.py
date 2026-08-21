@@ -161,7 +161,7 @@ def assess(athlete, cand, scraped, ours):
                 if any(d == td and abs(t - tt) <= 1 for td, tt in theirs["perfs"]))
     same_day = sum(1 for d, _ in ours["perfs"] if d in their_dates)
     if exact:
-        reasons.append("%d performance%s match" % (exact, "" if exact == 1 else "es"))
+        reasons.append("%d performance%s match" % (exact, "" if exact == 1 else "s"))
         score += 2 * exact
     elif same_day:
         reasons.append("%d same-day performance%s" % (same_day, "" if same_day == 1 else "s"))

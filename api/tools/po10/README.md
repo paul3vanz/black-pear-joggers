@@ -65,38 +65,45 @@ racing years ago are unreachable: finding their races needs a meeting from that
 era, and the only way to get one is to already know somebody who ran it. Use
 the capture route below instead.
 
-### po10_build_capture.py + po10_match.py
+### The recommended route: club rankings, then a free crawl
 
-The reliable way to map the whole roster, in two steps.
+Athlete-by-athlete search works but costs one reCAPTCHA-gated request per
+member, about 1400 of them, and the invisible challenge escalates to image
+puzzles after four or five in a row. Use this instead. It needs 84 gated
+requests rather than 1400, and everything after that is free.
 
-**Step 1 - collect candidates.** Athlete search is the natural way to do this
-and it is reCAPTCHA gated, so the search runs in a browser rather than here:
-
-```bash
-python po10_build_capture.py bpj_athletes_all.json po10_capture.js 600
-```
-
-Open <https://www.powerof10.uk/Home/AthleteSearch>, paste the generated file
-into the console and leave it. It queries first name plus surname for every
-athlete we lack a GUID for, driving the page's own `runSearch()` so the site's
-normal reCAPTCHA flow runs exactly as it does for someone clicking Search, and
-only reads the responses. Progress is kept in `localStorage`, so a reload
-resumes rather than restarting. It downloads `po10_candidates.json` at the end.
-
-Searching per athlete rather than per club matters: two thirds of the roster
-have lapsed, and their Power of 10 club is no longer ours, so a club search
-never returns them.
-
-Get the full roster (the default endpoint is filtered to affiliated members)
-with:
+**Step 1 - club rankings (browser, ~84 requests).** Club rankings are gated too,
+but one request covers a whole year of the club, and the year list goes back to
+2006. That is the part the old crawl could never reach.
 
 ```bash
-curl "https://bpj.org.uk/api/public/index.php/athletes?includeAllMembers=1"   -o bpj_athletes_all.json
+python po10_build_rankings_capture.py po10_rankings_capture.js
 ```
 
-**Step 2 - verify.** Never load a name match unattended; a wrong GUID silently
-grafts another runner's results onto a member. This checks every candidate
-against the site itself, which needs no reCAPTCHA:
+Open the club page, paste the file into the console, leave it running. Queries
+go oldest year first, because recent members are the ones we already have.
+Progress survives a reload. It downloads `po10_rankings.json`.
+
+Each ranking row carries the athlete GUID (`athid`) **and** the meeting GUID
+(`mtid`), and that second one is what makes the rest free.
+
+**Step 2 - crawl the meetings (no reCAPTCHA at all).**
+
+```bash
+python po10_crawl_meetings.py po10_rankings.json bpj_athletes_all.json --rounds 2
+```
+
+Meeting results pages are server rendered and list every competitor with their
+club, so each meeting hands over every club member who ran it. Those athletes'
+pages then yield more meetings from the same era, and it goes round again.
+Writes `po10_discovered.json` and a `po10_candidates.json` for step 3.
+
+Running this over just the 214 meetings already reachable from the 135 known
+athletes found 234 club athletes, 87 of them roster members with no GUID, of
+which 56 verified automatically. That was before any rankings capture at all.
+
+**Step 3 - verify.** Never load a name match unattended; a wrong GUID silently
+grafts another runner's results onto a member.
 
 ```bash
 python po10_match.py po10_candidates.json bpj_athletes_all.json
@@ -118,9 +125,27 @@ hard to get by chance.
 Writes `matches.json` (safe to load) and `review.csv` (everything else, with a
 link straight to the athlete page). On a 40 athlete ground-truth run against
 GUIDs already known to be correct, 33 were confirmed automatically with **no
-false positives**, and the other 7 fell to review. Expect a lower rate for
-lapsed members, who have neither a club match nor a recent handicap: roughly
-75% of current members and 58% of lapsed ones carry at least one signal.
+false positives**, and the other 7 fell to review.
+
+Get the full roster first; the default endpoint is filtered to affiliated
+members and returns 422 of 1555:
+
+```bash
+curl "https://bpj.org.uk/api/public/index.php/athletes?includeAllMembers=1"   -o bpj_athletes_all.json
+```
+
+### po10_build_capture.py - the fallback
+
+Same idea but one search per athlete, by first name and surname. Only worth
+running for whoever is still missing after the route above, since searching by
+name is the only way to find someone whose Power of 10 club is no longer ours.
+
+```bash
+python po10_build_capture.py bpj_athletes_all.json po10_capture.js 600
+```
+
+Paste into the console on <https://www.powerof10.uk/Home/AthleteSearch>. Expect
+an image challenge every few searches, so keep the list short.
 
 ## Known limitation
 
