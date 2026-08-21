@@ -5,9 +5,28 @@ Logs in storage\logs\lumen.log
 
 Tasks:
 
-- Fetch and parse power of 10 data for athlete
-- Fetch and parse run britain rankings for athlete
--
+- Fetch and parse Power of 10 data for athlete (performances and rankings)
+
+## Power of 10
+
+Power of 10 rebuilt their site in 2026. Athletes are keyed by GUID rather
+than by the integer ids we hold in `athletes.athlete_id`, every JSON
+endpoint sits behind reCAPTCHA, and runbritainrankings.com is gone, having
+folded into powerof10.uk.
+
+Scraping still works without touching the reCAPTCHA, because the athlete
+page embeds everything as JavaScript literals, including a copy of the
+payload the gated endpoint would return. Rankings now come off the same
+page as performances, so it is one request per athlete rather than two.
+
+`app/Services/PowerOfTenClient.php` does the reading, and
+`tools/po10/README.md` covers the detail and the one-off id mapping.
+
+**Athletes need `po10_guid` populating before any of this does anything.**
+Until then the nightly jobs log a warning and skip. Build the mapping with
+`tools/po10/po10_discover.py` and check the name matches by hand before
+loading them, since a wrong GUID attaches someone else's results to a
+member.
 
 ## Running locally
 
@@ -42,6 +61,7 @@ The following tasks run on a schedule to keep things automated:
 - 00:05: queue:fetch:memberships
 - 01:00: queue:fetch:performances
 - 04:00: queue:fetch:rankings
+  - Reads the runBritain handicap from the Power of 10 athlete page, since runbritainrankings.com no longer exists
 - 05:00: queue:work --stop-when-empty
 - 07:00: queue:fetch:updatepersonalbests
 
