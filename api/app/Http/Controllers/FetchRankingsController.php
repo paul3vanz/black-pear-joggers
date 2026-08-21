@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ChecksPowerOfTenColumn;
 use App\Jobs\FetchRankingsJob;
 use App\Models\Athlete;
 use App\Models\Ranking;
@@ -17,6 +18,8 @@ use Log;
  */
 class FetchRankingsController extends Controller
 {
+    use ChecksPowerOfTenColumn;
+
     private PowerOfTenClient $powerOfTen;
 
     public function __construct(?PowerOfTenClient $powerOfTen = null)
@@ -27,6 +30,10 @@ class FetchRankingsController extends Controller
     public function queueAllFetchRankings()
     {
         $athleteIds = array();
+
+        if (!$this->powerOfTenColumnExists()) {
+            return response()->json($athleteIds);
+        }
 
         $athletes = Athlete::whereNotNull('po10_guid')
             ->get()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ChecksPowerOfTenColumn;
 use App\Jobs\FetchPerformancesJob;
 use App\Jobs\UpdatePersonalBestsJob;
 use App\Models\Athlete;
@@ -15,6 +16,8 @@ use DateTime;
 
 class FetchPerformancesController extends Controller
 {
+    use ChecksPowerOfTenColumn;
+
     private PowerOfTenClient $powerOfTen;
 
     public function __construct(?PowerOfTenClient $powerOfTen = null)
@@ -25,6 +28,10 @@ class FetchPerformancesController extends Controller
     public function queueAllFetchPerformances()
     {
         $athleteIds = array();
+
+        if (!$this->powerOfTenColumnExists()) {
+            return response()->json($athleteIds);
+        }
 
         // po10_guid replaces urn as the lookup key: the rebuilt Power of 10
         // site is keyed by GUID and has no route that accepts a UKA URN.
