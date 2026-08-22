@@ -178,8 +178,7 @@ class PowerOfTenClient
         $performances = $this->applyChipTimes($performances, $this->parseYearlyBests($html));
 
         foreach ($this->parseGridPerformances($html, $formats) as $row) {
-            $key = $this->performanceKey($row);
-            $performances[$key] = array_merge($performances[$key] ?? [], $row);
+            $performances = $this->mergeGridRow($performances, $row);
         }
 
         $performances = array_values($performances);
@@ -297,6 +296,98 @@ class PowerOfTenClient
         }
 
         return $performances;
+    }
+
+    /**
+     * Fold one grid row into the set the charts produced.
+     *
+     * The grid publishes the chip time where the charts publish the gun time
+     * for the same run, so the two rarely agree and the race would otherwise
+     * be stored twice: once at each time. Retire the chart row the grid row
+     * supersedes and keep the gun time on the survivor.
+     */
+    private function mergeGridRow(array $performances, array $row): array
+    {
+        $key = $this->performanceKey($row);
+
+        // Identical times are the common case away from chip timed road races,
+        // and settle the question outright. Deal with them first so a track
+        // meeting's heats and final are never mistaken for one another below.
+        if (isset($performances[$key])) {
+            $performances[$key] = $this->mergeRows($performances[$key], $row);
+
+            return $performances;
+        }
+
+        $supersedes = $this->chartRowForSameRace($performances, $row);
+
+        if ($supersedes !== null) {
+            $row['gunTime'] = $performances[$supersedes]['time'];
+            $row['gunTimeParsed'] = $performances[$supersedes]['timeParsed'];
+            $performances[$key] = $this->mergeRows($performances[$supersedes], $row);
+            unset($performances[$supersedes]);
+
+            return $performances;
+        }
+
+        $performances[$key] = $this->mergeRows($performances[$key] ?? [], $row);
+
+        return $performances;
+    }
+
+    /**
+     * The chart row this grid row is a better copy of, or null.
+     *
+     * Same event, same day, same venue, and slower, because a chip time can
+     * never be slower than the gun time for the same run. Where a meeting held
+     * more than one round the closest match keeps each round paired with its
+     * own row.
+     */
+    private function chartRowForSameRace(array $performances, array $row): ?string
+    {
+        $match = null;
+        $closest = null;
+
+        foreach ($performances as $key => $candidate) {
+            if (($candidate['source'] ?? null) !== 'chart'
+                || $candidate['event'] !== $row['event']
+                || $candidate['date'] !== $row['date']
+                || !$this->sameVenue($candidate['venue'], $row['venue'])) {
+                continue;
+            }
+
+            $gap = $candidate['timeParsed'] - $row['timeParsed'];
+            if ($gap <= 0) {
+                continue;
+            }
+
+            if ($closest === null || $gap < $closest) {
+                $closest = $gap;
+                $match = $key;
+            }
+        }
+
+        return $match;
+    }
+
+    /**
+     * Overlay one row on another, leaving fields the newcomer has nothing for.
+     *
+     * The grid records no age group, so a plain array_merge would wipe the one
+     * the charts supply and cost us the category for members whose date of
+     * birth we do not hold.
+     */
+    private function mergeRows(array $existing, array $incoming): array
+    {
+        foreach ($incoming as $field => $value) {
+            if ($value === null && array_key_exists($field, $existing)) {
+                continue;
+            }
+
+            $existing[$field] = $value;
+        }
+
+        return $existing;
     }
 
     private function sameVenue(?string $a, ?string $b): bool
@@ -437,8 +528,11 @@ class PowerOfTenClient
                     }
 
                     // Chip time is the athlete's actual time where recorded.
-                    $display = $result['perfchip'] ?: ($result['perf'] ?? '');
-                    $seconds = $this->parseTime($display);
+                    // Reformat rather than store it as written, because the
+                    // grid runs the minutes past an hour ("84:42") where the
+                    // charts roll them over ("1:24:42").
+                    $mark = $result['perfchip'] ?: ($result['perf'] ?? '');
+                    $seconds = $this->parseTime($mark);
                     if ($seconds === null) {
                         continue;
                     }
@@ -448,7 +542,7 @@ class PowerOfTenClient
                         'rawEvent' => $result['evnt'] ?? null,
                         'date' => $date,
                         'timeParsed' => $seconds,
-                        'time' => $display,
+                        'time' => $this->formatSeconds($seconds),
                         'meeting' => $result['mtn'] ?? null,
                         'venue' => $result['venn'] ?? null,
                         'position' => $result['pos'] ?? null,
@@ -528,30 +622,112 @@ class PowerOfTenClient
      * Read a JavaScript array of single quoted strings. Written by hand rather
      * than by swapping quotes, because meeting names legitimately contain both
      * escaped apostrophes and double quotes.
+     *
+     * @return array<int, ?string> null where the array has a hole
      */
     private function jsStringArray(string $html, string $name): array
     {
-        if (!preg_match('/(?:var|let)\s+' . preg_quote($name, '/') . '\s*=\s*\[(.*?)\];/s', $html, $m)) {
+        $body = $this->jsArrayBody($html, $name);
+        if ($body === null) {
             return [];
         }
 
-        preg_match_all("/'((?:[^'\\\\]|\\\\.)*)'/s", $m[1], $items);
+        $values = [];
 
-        return array_map(
-            fn($value) => stripslashes($value),
-            $items[1]
-        );
+        foreach ($this->jsArrayElements($body) as $i => $element) {
+            $values[$i] = preg_match("/^'((?:[^'\\\\]|\\\\.)*)'$/s", $element, $m)
+                ? stripslashes($m[1])
+                : null;
+        }
+
+        return $values;
     }
 
+    /**
+     * @return array<int, ?float> null where the array has a hole
+     */
     private function jsNumberArray(string $html, string $name): array
     {
-        if (!preg_match('/(?:var|let)\s+' . preg_quote($name, '/') . '\s*=\s*\[(.*?)\];/s', $html, $m)) {
+        $body = $this->jsArrayBody($html, $name);
+        if ($body === null) {
             return [];
         }
 
-        preg_match_all('/-?\d+(?:\.\d+)?/', $m[1], $items);
+        $values = [];
 
-        return array_map('floatval', $items[0]);
+        foreach ($this->jsArrayElements($body) as $i => $element) {
+            $values[$i] = is_numeric($element) ? (float) $element : null;
+        }
+
+        return $values;
+    }
+
+    private function jsArrayBody(string $html, string $name): ?string
+    {
+        if (!preg_match('/(?:var|let)\s+' . preg_quote($name, '/') . '\s*=\s*\[(.*?)\];/s', $html, $m)) {
+            return null;
+        }
+
+        return $m[1];
+    }
+
+    /**
+     * Split a JavaScript array body into its elements, holes included.
+     *
+     * The yearly charts leave a hole for each year the athlete did not race,
+     * as in "[115600,,117500]". Drop the hole and every later value shifts
+     * onto the wrong year. Meeting names carry commas of their own
+     * ("'Worcester, Worcs'"), so walk the body tracking whether we are inside
+     * a quoted string rather than splitting on every comma.
+     *
+     * @return array<int, string> element source text, empty string for a hole
+     */
+    private function jsArrayElements(string $body): array
+    {
+        $elements = [];
+        $current = '';
+        $inString = false;
+        $length = strlen($body);
+
+        for ($i = 0; $i < $length; $i++) {
+            $char = $body[$i];
+
+            if ($inString) {
+                $current .= $char;
+
+                if ($char === '\\' && $i + 1 < $length) {
+                    $current .= $body[++$i];
+                } elseif ($char === "'") {
+                    $inString = false;
+                }
+
+                continue;
+            }
+
+            if ($char === "'") {
+                $inString = true;
+                $current .= $char;
+                continue;
+            }
+
+            if ($char === ',') {
+                $elements[] = trim($current);
+                $current = '';
+                continue;
+            }
+
+            $current .= $char;
+        }
+
+        $elements[] = trim($current);
+
+        // JavaScript reads a trailing comma as punctuation rather than a hole,
+        // so "[1,2,]" holds two values and not three.
+        if (end($elements) === '') {
+            array_pop($elements);
+        }
+
+        return $elements;
     }
 
     /**

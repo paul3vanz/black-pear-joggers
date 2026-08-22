@@ -18,12 +18,22 @@ class PowerOfTenClientTest extends BaseTestCase
 {
     private static string $html;
 
+    /**
+     * A second real athlete, kept because their charts are riddled with the
+     * holes that mark a year without racing, and because the grid and the
+     * charts disagree about one of their races.
+     */
+    private static string $sparseHtml;
+
     private PowerOfTenClient $client;
 
     public static function setUpBeforeClass(): void
     {
         $path = __DIR__ . '/fixtures/po10-athlete.html.gz';
         self::$html = gzdecode(file_get_contents($path));
+
+        $sparse = __DIR__ . '/fixtures/po10-athlete-sparse.html.gz';
+        self::$sparseHtml = gzdecode(file_get_contents($sparse));
     }
 
     protected function setUp(): void
@@ -220,6 +230,88 @@ class PowerOfTenClientTest extends BaseTestCase
             'over an hour' => [10634.0, '2:57:14'],
             'keeps hundredths' => [160.30, '2:40.30'],
         ];
+    }
+
+    public function testKeepsChartYearsAlignedAcrossYearsWithoutRacing()
+    {
+        $performances = $this->client->parsePerformances(self::$sparseHtml);
+
+        // Their 5K yearly chart reads [115600,,117500,114500] against the
+        // labels 2023 to 2026: a hole for 2024, then 19:35 in 2025 and 19:05
+        // in 2026. Collapse the hole and every later year shifts back one, so
+        // 2026's chip time lands on the 2025 race instead.
+        $race = $this->performanceOn($performances, '2026-05-22', '5K');
+
+        $this->assertSame('19:05', $race['time']);
+        $this->assertSame('20:08', $race['gunTime']);
+    }
+
+    public function testTheGridReplacesTheChartRowForARaceRatherThanAddingOne()
+    {
+        $performances = $this->client->parsePerformances(self::$sparseHtml);
+
+        // The charts publish 20:08 for this race and the grid 19:05. Storing
+        // both is what put the same run on the club standards table twice.
+        $matches = array_filter(
+            $performances,
+            fn($row) => $row['event'] === '5K' && $row['date'] === '2026-05-22'
+        );
+
+        $this->assertCount(1, $matches);
+    }
+
+    public function testNoRaceIsHeldAtTwoDifferentTimesAtOnce()
+    {
+        foreach ([self::$html, self::$sparseHtml] as $html) {
+            $sources = [];
+
+            foreach ($this->client->parsePerformances($html) as $row) {
+                $slot = $row['event'] . '|' . $row['date'] . '|' . $row['venue'];
+                $sources[$slot][] = $row['source'];
+            }
+
+            foreach ($sources as $slot => $found) {
+                // Two runs can share an event, a day and a venue, but they
+                // cannot come one from each source: that is the same run read
+                // twice, once at the chip time and once at the gun time.
+                $this->assertLessThan(
+                    2,
+                    count(array_unique($found)),
+                    "{$slot} was read from both the charts and the grid"
+                );
+            }
+        }
+    }
+
+    public function testGridTimesAreWrittenTheSameWayAsChartTimes()
+    {
+        $performances = $this->client->parsePerformances(self::$sparseHtml);
+
+        foreach ($performances as $row) {
+            if ($row['timeParsed'] < 3600) {
+                continue;
+            }
+
+            // The grid runs the minutes past an hour, so a 1:24:42 half
+            // marathon arrives as "84:42" and would sort and read wrongly
+            // alongside everything the charts supply.
+            $this->assertMatchesRegularExpression(
+                '/^\d+:[0-5]\d:[0-5]\d(\.\d\d)?$/',
+                $row['time'],
+                "{$row['event']} on {$row['date']}"
+            );
+        }
+    }
+
+    public function testTheGridDoesNotWipeTheAgeGroupTheChartsSupply()
+    {
+        $performances = $this->client->parsePerformances(self::$sparseHtml);
+
+        // The grid records no age group. Letting its blank win costs us the
+        // category for every member whose date of birth we do not hold.
+        $race = $this->performanceOn($performances, '2026-05-22', '5K');
+
+        $this->assertSame('V60', $race['ageGroup']);
     }
 
     public function testNormalisesEventNames()
