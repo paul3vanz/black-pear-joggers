@@ -8,14 +8,12 @@
     <ng-container *ngIf="loadingState === 'LOADED'">
       <p class="u-push-bottom-xl" *ngIf="results?.data">
         The following results are automatically taken from <a
-          href="https://www.thepowerof10.info/athletes/profile.aspx?athleteid={{results.data[0].athleteId}}"
-          target="_blank">Power of 10</a> and <a
-          href="http://www.runbritainrankings.com/runners/profile.aspx?athleteid={{results.data[0].athleteId}}"
-          target="_blank">Run Britain Rankings</a> as well as BPJ Magic Mile events. Races without UK Athletics race
-        licences are not included. If a performance is missing from here, but is showing on your profile, get in touch.
-        If it's not on your profile, use the <a href="http://www.runbritainrankings.com/user/claimhandicap.aspx"
-          target="_blank">Add Your Performances</a> link and if that doesn't work, <a
-          href="mailto:admin@runbritainrankings.com">contact UK Athletics</a>.
+          *ngIf="results.data[0].po10Guid; else noProfile"
+          href="https://www.powerof10.uk/Home/Athlete/{{results.data[0].po10Guid}}"
+          target="_blank" rel="noopener">Power of 10</a><ng-template #noProfile>Power of 10</ng-template>, as well as BPJ
+        Magic Mile events. Races without UK Athletics race licences are not included. If a performance is missing from
+        here but is showing on your profile, get in touch. If it is not on your profile,
+        <a href="mailto:admin@powerof10.uk">contact the Power of 10 team</a>.
       </p>
 
       <table class="u-btm-m">

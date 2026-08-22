@@ -1,6 +1,7 @@
 export type Performance = {
     award: Award;
     athleteId: number;
+    po10Guid?: string | null;
     firstName: string;
     lastName: string;
     gender: string;
@@ -11,6 +12,7 @@ export type Performance = {
     time: string;
     timeParsed: string;
     meetingId: number | string;
+    po10MeetingId?: string | null;
     meetingName: string;
     date: string;
     isPersonalBest: number;

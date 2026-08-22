@@ -55,9 +55,11 @@
           </td>
 
           <td class="nowrap">
-            <a href="https://www.thepowerof10.info/athletes/profile.aspx?athleteid={{ record.athlete_id }}" target="_blank">
+            <a *ngIf="record.po10_guid; else plainName"
+              href="https://www.powerof10.uk/Home/Athlete/{{ record.po10_guid }}" target="_blank" rel="noopener">
               {{ record.first_name }} {{ record.last_name }}
             </a>
+            <ng-template #plainName>{{ record.first_name }} {{ record.last_name }}</ng-template>
           </td>
 
           <td class="u-hidden@max-xs">{{ record.name | raceName }}</td>

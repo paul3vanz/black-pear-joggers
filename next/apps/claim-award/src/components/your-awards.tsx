@@ -5,6 +5,7 @@ import {
   useUser,
 } from '@black-pear-joggers/core-services';
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
+import { powerOfTenAthleteUrl } from '@black-pear-joggers/helpers';
 import { useMemo } from 'react';
 import { CertificatePreview } from './certificate-preview/certificate-preview';
 import { AwardsSummary } from '../types/awards-summary';
@@ -17,6 +18,8 @@ export function YourAwards() {
   const { data: results, isLoading: isLoadingPerformances } = usePerformances(
     userProfile?.athleteId
   );
+
+  const powerOfTenUrl = powerOfTenAthleteUrl(userProfile?.athlete?.po10_guid);
 
   const awardsSummaries = useMemo(() => {
     return results?.data ? getAwardsSummaries(results?.data) : null;
@@ -52,13 +55,13 @@ export function YourAwards() {
 
           <p className="mb-8">
             See the awards you have earned. The performances are taken from your{' '}
-            <a
-              href={`http://www.thepowerof10.info/athletes/profile.aspx?athleteid=${userProfile?.athleteId}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Power of 10
-            </a>{' '}
+            {powerOfTenUrl ? (
+              <a href={powerOfTenUrl} target="_blank" rel="noreferrer">
+                Power of 10
+              </a>
+            ) : (
+              'Power of 10'
+            )}{' '}
             profile, so please check that if anything is missing. You can also
             see your full set of results on your{' '}
             <a

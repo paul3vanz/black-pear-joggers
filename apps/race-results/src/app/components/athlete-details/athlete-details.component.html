@@ -27,12 +27,7 @@
       <div *ngIf="loadingState === 'LOADED' && athlete?.latest_ranking?.ranking"
         class="o-grid__item u-1/2 u-text-right u-hidden@max-xs">
         <p class="handicap">
-          <a href="https://www.runbritainrankings.com/runners/profile.aspx?athleteid={{ athlete?.id }}">
-            <img src="https://bpj.org.uk/wp-content/uploads/2015/11/run-britain-logo.png"
-              alt="View full results on runbritain">
-          </a>
-
-          Current ranking
+          runBritain handicap
 
           <strong class="handicap__score" [attr.title]="'Updated ' + (athlete?.latest_ranking.date | date: 'fromNow')">
             {{ athlete.latest_ranking.ranking }}

@@ -22,23 +22,19 @@
 
           <p><strong>{{ results?.data.length }}</strong> members in results</p>
 
-          <p class="u-hidden@xs">
-            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results?.data[0].ukaMeetingId }}">
-              View full results on runbritain
+          <p class="u-hidden@xs" *ngIf="results?.data[0].po10MeetingId">
+            <a href="https://www.powerof10.uk/Home/Results/{{ results?.data[0].po10MeetingId }}" target="_blank"
+              rel="noopener">
+              View full results on Power of 10
             </a>
           </p>
         </div>
 
         <div class="o-grid__item u-1/2 u-text-right u-hidden@max-xs">
-          <p>
-            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results?.data[0].ukaMeetingId }}">
-              <img src="https://bpj.org.uk/wp-content/uploads/2015/11/run-britain-logo.png" alt="View full results on runbritain">
-            </a>
-          </p>
-
-          <p>
-            <a href="https://www.runbritainrankings.com/results/results.aspx?meetingid={{ results?.data[0].ukaMeetingId }}">
-              View full results on runbritain
+          <p *ngIf="results?.data[0].po10MeetingId">
+            <a href="https://www.powerof10.uk/Home/Results/{{ results?.data[0].po10MeetingId }}" target="_blank"
+              rel="noopener">
+              View full results on Power of 10
             </a>
           </p>
         </div>

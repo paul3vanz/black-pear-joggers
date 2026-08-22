@@ -3,10 +3,12 @@ import { Button } from '@black-pear-joggers/button';
 import { Container } from '@black-pear-joggers/container';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useUser } from '@black-pear-joggers/core-services';
+import { powerOfTenAthleteUrl } from '@black-pear-joggers/helpers';
 
 export default function ProfilePage() {
   const { user, logout } = useAuth0();
   const { data: userProfile } = useUser();
+  const powerOfTenUrl = powerOfTenAthleteUrl(userProfile?.athlete?.po10_guid);
 
   return (
     <>
@@ -85,21 +87,11 @@ export default function ProfilePage() {
                   </a>
                 </li>
 
-                <li>
-                  <a
-                    href={`https://www.thepowerof10.info/athletes/profile.aspx?athleteid=${userProfile?.athleteId}`}
-                  >
-                    Your Power of 10 profile
-                  </a>
-                </li>
-
-                <li>
-                  <a
-                    href={`https://www.runbritainrankings.com/runners/profile.aspx?athleteid=${userProfile?.athleteId}`}
-                  >
-                    Your runbritain Rankings profile
-                  </a>
-                </li>
+                {powerOfTenUrl && (
+                  <li>
+                    <a href={powerOfTenUrl}>Your Power of 10 profile</a>
+                  </li>
+                )}
 
                 <li>
                   <a href={`https://bpj.org.uk/claim-award`}>

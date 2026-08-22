@@ -2,6 +2,9 @@ export interface Athlete {
     id: number;
     urn?: number;
     athlete_id: number;
+    // The rebuilt Power of 10 is keyed by GUID. Null until we have matched
+    // this member to a profile, so anything linking to one must cope.
+    po10_guid?: string | null;
     first_name: string;
     last_name: string;
     gender: string;

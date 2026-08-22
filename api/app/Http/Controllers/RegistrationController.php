@@ -99,6 +99,12 @@ class RegistrationController extends Controller
 
         Log::info("Got athlete ID: $athleteId");
 
+        if (!$athleteId) {
+            $registration->notes = 'Needs an athlete id adding by hand: '
+                . 'Power of 10 can no longer be searched by URN.';
+            $registration->save();
+        }
+
         if ($athleteId) {
             // Add athlete to athlete table
             $athlete = $this->createAthlete(
@@ -119,26 +125,25 @@ class RegistrationController extends Controller
         }
     }
 
+    /**
+     * There is no longer any way to look an athlete up by their UKA URN.
+     *
+     * This used to read thepowerof10.info/athletes/profile.aspx?ukaurn=, which
+     * does not resolve at all now: the request throws rather than 404s, and it
+     * was taking the whole registrations run down with it. The rebuilt site is
+     * keyed by GUID and its only search is behind reCAPTCHA, so there is
+     * nothing to point this at.
+     *
+     * Returning null leaves the registration in place rather than creating an
+     * athlete we cannot identify, so somebody can finish it by hand.
+     */
     private function fetchPowerOfTenAthleteId($athleteUrn)
     {
-        Log::info("fetchPowerOfTenProfile($athleteUrn)");
+        Log::info('Cannot look up a Power of 10 id by URN, the site that allowed it is gone', [
+            'urn' => $athleteUrn,
+        ]);
 
-        $fetchUrl = 'https://www.thepowerof10.info/athletes/profile.aspx?ukaurn=' . $athleteUrn;
-        $httpClient = new Client();
-        $html = $httpClient->request('GET', $fetchUrl);
-
-        $findProfileLink = $html->filter('a[id=cphBody_lnkEditAthlete]');
-
-        if ($findProfileLink->count()) {
-            $profileUrl = $findProfileLink->link()->getUri();
-            preg_match("/athleteid=(\d+)&/i", $profileUrl, $matches);
-            $athleteId = $matches[1];
-            Log::info("Found athlete ID: $athleteId");
-        } else {
-            return null;
-        }
-
-        return $athleteId;
+        return null;
     }
 
     public function createRegistrationsFromMemberships()

@@ -97,17 +97,13 @@ function MemberDetailsPage() {
           )}
         </ul>
 
-        <span className="mr-4">
-          <Button
-            text="Power of 10"
-            link={`https://thepowerof10.info/athletes/profile.aspx?ukaurn=${urn}`}
-          ></Button>
-        </span>
-
-        <Button
-          text="runbritain Rankings"
-          link={`https://www.runbritainrankings.com/runners/profile.aspx?ukaurn=${urn}`}
-        ></Button>
+        {/*
+          Power of 10 and runbritain links used to sit here, looked up by UKA
+          URN. The rebuilt Power of 10 is keyed by GUID and has no route that
+          takes a URN, and runbritainrankings.com is gone, so neither can be
+          rebuilt from what this page knows. Club members are not necessarily
+          our athletes, so there is no GUID on hand either.
+        */}
       </Container>
     </Stack>
   );

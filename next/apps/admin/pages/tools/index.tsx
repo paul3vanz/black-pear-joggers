@@ -15,6 +15,40 @@ interface LoadingState {
   [key: string]: boolean;
 }
 
+/**
+ * Say what happened in a sentence where we recognise the shape of the reply,
+ * and fall back to the raw JSON where we do not. Queueing the whole club used
+ * to render several hundred athlete ids into the page.
+ */
+function ResultBody(props: { data: any }) {
+  const { data } = props;
+
+  if (data && typeof data === 'object' && typeof data.queued === 'number') {
+    return (
+      <p>
+        Queued <strong>{data.queued}</strong> athletes. They will be fetched
+        when the queue next runs.
+      </p>
+    );
+  }
+
+  if (data && typeof data === 'object' && typeof data.affectedRows === 'number') {
+    return (
+      <p>
+        Updated <strong>{data.affectedRows}</strong> rows.
+      </p>
+    );
+  }
+
+  return (
+    <div className="bg-gray-100 p-3 rounded border">
+      <pre className="text-sm whitespace-pre-wrap break-words max-h-96 overflow-auto">
+        {typeof data === 'string' ? data : JSON.stringify(data, null, 2)}
+      </pre>
+    </div>
+  );
+}
+
 export default function Tools() {
   const [loading, setLoading] = useState<LoadingState>({});
   const [results, setResults] = useState<{ [key: string]: ApiResult }>({});
@@ -70,29 +104,20 @@ export default function Tools() {
         <p>
           <Button
             text={
-              loading.fetchPerformances
-                ? 'Fetching...'
-                : 'Fetch all performances'
+              loading.fetchAthletes ? 'Queueing...' : 'Fetch all from Power of 10'
             }
             onClick={() =>
-              handleApiCall(
-                `${config.baseApiUrl}/fetch/performances`,
-                'fetchPerformances'
-              )
+              handleApiCall(`${config.baseApiUrl}/fetch/athletes`, 'fetchAthletes')
             }
           />
         </p>
 
-        <p>
-          <Button
-            text={loading.fetchRankings ? 'Fetching...' : 'Fetch all rankings'}
-            onClick={() =>
-              handleApiCall(
-                `${config.baseApiUrl}/fetch/rankings`,
-                'fetchRankings'
-              )
-            }
-          />
+        <p className="text-sm text-gray-600">
+          Queues every affiliated member with a Power of 10 profile. One job per
+          athlete reads their page once and takes both the performances and the
+          handicap off it. Nothing happens until the queue runs, which it does
+          at 5am, so this returns straight away. To fetch someone now, use the
+          button on their athlete page, or select them on the athletes page.
         </p>
 
         <p>
@@ -169,13 +194,7 @@ export default function Tools() {
                   )}
 
                   {result.data && (
-                    <div className="bg-gray-100 p-3 rounded border">
-                      <pre className="text-sm whitespace-pre-wrap break-words max-h-96 overflow-auto">
-                        {typeof result.data === 'string'
-                          ? result.data
-                          : JSON.stringify(result.data, null, 2)}
-                      </pre>
-                    </div>
+                    <ResultBody data={result.data} />
                   )}
                 </div>
               </div>

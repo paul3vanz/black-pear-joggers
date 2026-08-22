@@ -49,7 +49,7 @@ class PerformanceController extends Controller
 
         ksort($filters);
 
-        $cacheKey = 'performances-v6-' . json_encode($filters);
+        $cacheKey = 'performances-v7-' . json_encode($filters);
 
         $performances = Cache::remember($cacheKey, 5, function () use ($request) {
 
@@ -85,6 +85,9 @@ class PerformanceController extends Controller
                     'meetings.date',
                     'meetings.event',
                     'meetings.ukaMeetingId',
+                    // Only set for meetings we have scraped since the rebuild,
+                    // so a link to the results has to cope with it being null.
+                    'meetings.po10MeetingId',
                     'meetings.name AS meetingName',
                     'memberships.competitiveRegStatus AS membershipStatus',
                     'performances.id',

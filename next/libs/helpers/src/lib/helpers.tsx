@@ -145,3 +145,19 @@ export function newsPostUrl(publishedAt: string, slug: string): string {
 export function hasWindow(): boolean {
   return typeof window !== 'undefined';
 }
+
+/**
+ * Link to an athlete's Power of 10 profile.
+ *
+ * The rebuilt site is keyed by GUID. The old integer athlete id it replaced
+ * does not resolve to anything, so an athlete we have not mapped yet has no
+ * profile to link to and callers should show nothing rather than a dead link.
+ */
+export function powerOfTenAthleteUrl(
+  guid: string | null | undefined
+): string | null {
+  return guid ? `https://www.powerof10.uk/Home/Athlete/${guid}` : null;
+}
+
+export const powerOfTenClubUrl =
+  'https://www.powerof10.uk/Home/Club/60614dd5-24df-4e8f-a65e-6a14e26c9b70';
