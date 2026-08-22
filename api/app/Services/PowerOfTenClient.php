@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 use Log;
 
 /**
@@ -86,6 +87,10 @@ class PowerOfTenClient
 
     private Client $httpClient;
 
+    private ?string $lastGuid = null;
+
+    private ?string $lastHtml = null;
+
     public function __construct(?Client $httpClient = null)
     {
         $this->httpClient = $httpClient ?: new Client([
@@ -94,6 +99,10 @@ class PowerOfTenClient
                 'User-Agent' => self::USER_AGENT,
                 'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Accept-Language' => 'en-GB,en;q=0.9',
+                // An athlete page is 340 KB of HTML and 50 KB compressed, and
+                // the nightly run reads one per member. Guzzle does not ask
+                // for this on our behalf, so ask for it here.
+                'Accept-Encoding' => 'gzip',
             ],
         ]);
     }
@@ -103,6 +112,13 @@ class PowerOfTenClient
      */
     public function fetchAthletePage(string $guid): ?string
     {
+        // Both the performances and the runBritain handicap are read off this
+        // one page, and the nightly run wants each in turn. Hold the last page
+        // so the second read costs nothing rather than a second download.
+        if ($guid === $this->lastGuid) {
+            return $this->lastHtml;
+        }
+
         $url = self::BASE_URL . '/Home/Athlete/' . $guid;
 
         try {
@@ -113,16 +129,35 @@ class PowerOfTenClient
             return null;
         }
 
-        $html = (string) $response->getBody();
+        $html = $this->decodeBody($response);
 
         // The site answers 200 with a friendly page rather than a 404.
         if (str_contains($html, 'could not be found')) {
             Log::info('Power of 10 athlete not found', ['guid' => $guid]);
 
-            return null;
+            $html = null;
         }
 
+        $this->lastGuid = $guid;
+        $this->lastHtml = $html;
+
         return $html;
+    }
+
+    /**
+     * Guzzle normally unwraps a compressed response for us. Where it has not,
+     * unwrap it here rather than hand the parser a page of compressed bytes,
+     * which reads as an athlete who has never raced instead of as a failure.
+     */
+    private function decodeBody(ResponseInterface $response): string
+    {
+        $body = (string) $response->getBody();
+
+        if (str_starts_with($body, "\x1f\x8b")) {
+            $body = gzdecode($body) ?: $body;
+        }
+
+        return $body;
     }
 
     // ---------------------------------------------------------------- profile

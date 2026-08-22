@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        'App\Console\Commands\QueueFetchAthletes',
         'App\Console\Commands\QueueFetchPerformances',
         'App\Console\Commands\QueueFetchRankings',
         'App\Console\Commands\QueueFetchMemberships',
@@ -33,8 +34,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('queue:registrations')->dailyAt('00:00');
         $schedule->command('queue:fetch:memberships')->everySixHours();
         $schedule->command('queue:fetch:payments')->everySixHours();
-        $schedule->command('queue:fetch:performances')->dailyAt('01:00');
-        $schedule->command('queue:fetch:rankings')->dailyAt('04:00');
+        // One job per athlete covers both the performances and the handicap,
+        // because both are read off the same page. queue:fetch:performances
+        // and queue:fetch:rankings still work on their own, by hand.
+        $schedule->command('queue:fetch:athletes')->dailyAt('01:00');
         $schedule->command('queue:work --stop-when-empty')->dailyAt('05:00');
         $schedule->command('queue:fetch:updatepersonalbests')->dailyAt('07:00');
         $schedule->command('db:cleanup')->dailyAt('23:00');
