@@ -20,7 +20,7 @@ class RecordsController extends Controller
     /* Club records */
     public function getRecords(Request $request)
     {
-        $records = Cache::remember('records-v4', 28800, function () use ($request) {
+        $records = Cache::remember('records-v5', 28800, function () use ($request) {
             $filters = [];
             $filterString = '';
             $groupString = '';
@@ -97,7 +97,7 @@ class RecordsController extends Controller
             ]
         );
 
-        Cache::forget('records-v3');
+        Cache::forget('records-v5');
 
         return response()->json($insert);
     }
