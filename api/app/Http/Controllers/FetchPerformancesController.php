@@ -51,15 +51,36 @@ class FetchPerformancesController extends Controller
 
     public function fetchPerformances($athleteId)
     {
+        return response()->json($this->fetchPerformancesFor($athleteId));
+    }
+
+    /**
+     * Scrape and store one athlete's performances, reporting what happened.
+     *
+     * Returns a summary rather than the rows themselves so the admin app can
+     * say whether it worked and what it found without rendering a few hundred
+     * records into a browser tab.
+     *
+     * @return array{success: bool, athleteId: mixed, added: int, firstDate: ?string, lastDate: ?string, message: ?string}
+     */
+    public function fetchPerformancesFor($athleteId): array
+    {
         Log::info('fetchPerformances', ['athleteId' => $athleteId]);
 
-        $addedPerformances = array();
-
         $athletes = Athlete::where('athlete_id', '=', $athleteId)->get();
+
+        if ($athletes->isEmpty()) {
+            return $this->outcome($athleteId, false, 'No athlete with that id');
+        }
+
+        $added = 0;
+        $dates = [];
+        $failure = null;
 
         foreach ($athletes as $athlete) {
             if (!$athlete->po10_guid) {
                 Log::info('Skipping athlete with no Power of 10 GUID', ['athleteId' => $athleteId]);
+                $failure = $failure ?: 'No Power of 10 profile linked';
 
                 continue;
             }
@@ -69,18 +90,18 @@ class FetchPerformancesController extends Controller
 
                 if ($html === null) {
                     Log::info('No Power of 10 profile for athlete', ['athleteId' => $athleteId]);
+                    $failure = $failure ?: 'Power of 10 has no profile at that address';
 
                     continue;
                 }
 
-                $addedPerformances = $this->storePerformances(
-                    $athlete,
-                    $this->powerOfTen->parsePerformances($html)
-                );
+                $performances = $this->powerOfTen->parsePerformances($html);
+                $added += sizeof($this->storePerformances($athlete, $performances));
+                $dates = array_merge($dates, array_column($performances, 'date'));
 
                 Log::info('Added performances', [
                     'athleteId' => $athleteId,
-                    'total' => sizeof($addedPerformances),
+                    'total' => $added,
                 ]);
             } catch (\Exception $e) {
                 Log::error('Error parsing performance history', [
@@ -88,11 +109,36 @@ class FetchPerformancesController extends Controller
                     'error' => $e->getMessage(),
                 ]);
 
-                return null;
+                return $this->outcome($athleteId, false, $e->getMessage());
             }
         }
 
-        return response()->json($addedPerformances);
+        if ($failure && !$added) {
+            return $this->outcome($athleteId, false, $failure);
+        }
+
+        sort($dates);
+
+        return [
+            'success' => true,
+            'athleteId' => $athleteId,
+            'added' => $added,
+            'firstDate' => $dates[0] ?? null,
+            'lastDate' => $dates ? end($dates) : null,
+            'message' => null,
+        ];
+    }
+
+    private function outcome($athleteId, bool $success, ?string $message): array
+    {
+        return [
+            'success' => $success,
+            'athleteId' => $athleteId,
+            'added' => 0,
+            'firstDate' => null,
+            'lastDate' => null,
+            'message' => $message,
+        ];
     }
 
     public function updatePersonalBests()

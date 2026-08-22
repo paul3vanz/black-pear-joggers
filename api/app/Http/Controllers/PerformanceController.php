@@ -49,7 +49,7 @@ class PerformanceController extends Controller
 
         ksort($filters);
 
-        $cacheKey = 'performances-v5-' . json_encode($filters);
+        $cacheKey = 'performances-v6-' . json_encode($filters);
 
         $performances = Cache::remember($cacheKey, 5, function () use ($request) {
 
@@ -76,6 +76,9 @@ class PerformanceController extends Controller
                         'CAST(IFNULL(MAX(awards.id),0) AS UNSIGNED) AS award'
                     ),
                     'athletes.id AS athleteId',
+                    // The rebuilt Power of 10 is keyed by GUID, so the old
+                    // integer id no longer builds a link to anyone's profile.
+                    'athletes.po10_guid AS po10Guid',
                     'athletes.first_name AS firstName',
                     'athletes.last_name AS lastName',
                     'athletes.gender',

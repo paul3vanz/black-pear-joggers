@@ -2,10 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\FetchPerformancesController;
-use App\Http\Controllers\FetchRankingsController;
+use App\Http\Controllers\FetchAthletesController;
 use App\Models\Athlete;
-use App\Services\PowerOfTenClient;
 use Log;
 
 /**
@@ -27,10 +25,7 @@ class FetchAthleteJob extends Job
 
     public function handle()
     {
-        $powerOfTen = new PowerOfTenClient();
-
-        (new FetchPerformancesController($powerOfTen))->fetchPerformances($this->athlete->athlete_id);
-        (new FetchRankingsController($powerOfTen))->fetchRankings($this->athlete->athlete_id);
+        (new FetchAthletesController())->fetchAthleteFor($this->athlete->athlete_id);
 
         Log::info('Fetch athlete', ['athleteId' => $this->athlete->athlete_id]);
     }

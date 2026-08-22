@@ -54,6 +54,7 @@ $router->get('/payments/fetch', 'FetchPaymentsController@fetchPayments');
 
 $router->group(['prefix' => 'fetch'], function ($router) {
     $router->get('athletes', 'FetchAthletesController@queueAllFetchAthletes');
+    $router->get('athlete/{athleteId}', 'FetchAthletesController@fetchAthlete');
     $router->get('performances/{athleteId}', 'FetchPerformancesController@fetchPerformances');
     $router->get('performances', 'FetchPerformancesController@queueAllFetchPerformances');
     $router->get('rankings/{athleteId}', 'FetchRankingsController@fetchRankings');

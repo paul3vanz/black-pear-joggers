@@ -51,15 +51,33 @@ class FetchRankingsController extends Controller
 
     public function fetchRankings($athleteId)
     {
+        return response()->json($this->fetchRankingsFor($athleteId));
+    }
+
+    /**
+     * Scrape and store one athlete's handicap history, reporting what
+     * happened. Shaped like the performance fetch so the admin app can show
+     * both outcomes the same way.
+     *
+     * @return array{success: bool, athleteId: mixed, added: int, message: ?string}
+     */
+    public function fetchRankingsFor($athleteId): array
+    {
         Log::info("fetchRankings($athleteId)");
 
-        $addedRankings = array();
-
         $athletes = Athlete::where('athlete_id', '=', $athleteId)->get();
+
+        if ($athletes->isEmpty()) {
+            return ['success' => false, 'athleteId' => $athleteId, 'added' => 0, 'message' => 'No athlete with that id'];
+        }
+
+        $added = 0;
+        $failure = null;
 
         foreach ($athletes as $athlete) {
             if (!$athlete->po10_guid) {
                 Log::info('Skipping athlete with no Power of 10 GUID', ['athleteId' => $athleteId]);
+                $failure = $failure ?: 'No Power of 10 profile linked';
 
                 continue;
             }
@@ -68,19 +86,24 @@ class FetchRankingsController extends Controller
 
             if ($html === null) {
                 Log::info('No ranking profile for athlete ' . $athleteId);
+                $failure = $failure ?: 'Power of 10 has no profile at that address';
 
                 continue;
             }
 
-            $addedRankings = $this->storeRankings(
+            $added += sizeof($this->storeRankings(
                 $athlete,
                 $this->powerOfTen->parseRankings($html)
-            );
+            ));
 
-            Log::info('Added ' . sizeof($addedRankings) . ' rankings for athlete ' . $athleteId);
+            Log::info('Added ' . $added . ' rankings for athlete ' . $athleteId);
         }
 
-        return response()->json($addedRankings);
+        if ($failure && !$added) {
+            return ['success' => false, 'athleteId' => $athleteId, 'added' => 0, 'message' => $failure];
+        }
+
+        return ['success' => true, 'athleteId' => $athleteId, 'added' => $added, 'message' => null];
     }
 
     private function storeRankings(Athlete $athlete, array $rankings): array
