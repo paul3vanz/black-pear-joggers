@@ -27,6 +27,7 @@ routes = [
   "bpj.org.uk/leagues/champions-league*",
   "bpj.org.uk/leagues/cross-country*",
   "bpj.org.uk/leagues/parkrun-tours*",
+  "bpj.org.uk/live-results*",
   "bpj.org.uk/logo*",
   "bpj.org.uk/london-marathon-club-ballot*",
   "bpj.org.uk/magic-mile*",

@@ -254,37 +254,24 @@ class PowerOfTenClient
             return $performances;
         }
 
-        $fastest = [];
+        $byYear = [];
         foreach ($performances as $key => $row) {
-            $slot = $row['event'] . '|' . substr($row['date'], 0, 4);
-            if (!isset($fastest[$slot])
-                || $row['timeParsed'] < $performances[$fastest[$slot]]['timeParsed']) {
-                $fastest[$slot] = $key;
-            }
+            $byYear[$row['event'] . '|' . substr($row['date'], 0, 4)][] = $key;
         }
 
         foreach ($bests as $event => $years) {
             foreach ($years as $year => $best) {
-                $key = $fastest[$event . '|' . $year] ?? null;
+                $key = $this->runForYearlyBest(
+                    $performances,
+                    $byYear[$event . '|' . $year] ?? [],
+                    $best
+                );
+
                 if ($key === null) {
                     continue;
                 }
 
                 $row = $performances[$key];
-
-                // A chip time can never be slower than the gun time, so anything
-                // else means these are not the same run.
-                if ($best['seconds'] >= $row['timeParsed']) {
-                    continue;
-                }
-
-                // The venue is the check that this is the race we think it is.
-                // Without it a year whose best run is missing from the per-race
-                // chart would have its time written onto a different race.
-                if (!$this->sameVenue($best['venue'], $row['venue'])) {
-                    continue;
-                }
-
                 $row['gunTime'] = $row['time'];
                 $row['gunTimeParsed'] = $row['timeParsed'];
                 $row['timeParsed'] = $best['seconds'];
@@ -388,6 +375,53 @@ class PowerOfTenClient
         }
 
         return $existing;
+    }
+
+    /**
+     * The run a yearly best belongs to, or null.
+     *
+     * The venue names the race, and is the check that stops a year whose best
+     * is missing from the per race charts having its time written onto some
+     * other race. Do not assume the year's fastest run is the one to correct:
+     * the yearly charts rank by chip time and the per race charts by gun time,
+     * so a big city race with a long wait on the start line can be the year's
+     * best while another run looks faster here. Take the closest run at that
+     * venue which the chip time would speed up, since a chip time is never
+     * slower than the gun time for the same run.
+     */
+    private function runForYearlyBest(array $performances, array $keys, array $best): ?string
+    {
+        $match = null;
+        $closest = null;
+
+        foreach ($keys as $key) {
+            $row = $performances[$key];
+
+            if (!$this->sameVenue($best['venue'], $row['venue'])) {
+                continue;
+            }
+
+            $gap = $row['timeParsed'] - $best['seconds'];
+
+            // The per race charts already hold a run at this time, so the year
+            // was not chip timed at all and there is nothing here to correct.
+            // Without this an athlete who raced the same venue twice would
+            // have the year's best written onto their slower run as well.
+            if (abs($gap) < 0.005) {
+                return null;
+            }
+
+            if ($gap < 0) {
+                continue;
+            }
+
+            if ($closest === null || $gap < $closest) {
+                $closest = $gap;
+                $match = $key;
+            }
+        }
+
+        return $match;
     }
 
     private function sameVenue(?string $a, ?string $b): bool

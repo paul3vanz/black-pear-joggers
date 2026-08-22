@@ -314,6 +314,33 @@ class PowerOfTenClientTest extends BaseTestCase
         $this->assertSame('V60', $race['ageGroup']);
     }
 
+    public function testChipTimesFollowTheVenueRatherThanTheYearsFastestGunTime()
+    {
+        $performances = $this->client->parsePerformances(self::$sparseHtml);
+
+        // Their 2022 half marathons are Worcester at 1:39:57 and Manchester at
+        // 1:44:45, and the yearly chart puts the year's best at 1:34:48 in
+        // Manchester: ten minutes of that gun time was spent waiting to cross
+        // the start. Pick the run by venue, or the slow gun time hides the
+        // year's best behind a race that merely started on time.
+        $race = $this->performanceOn($performances, '2022-10-09', 'HM');
+
+        $this->assertSame('1:34:48', $race['time']);
+        $this->assertSame('1:44:45', $race['gunTime']);
+    }
+
+    public function testDoesNotWriteAYearsBestOntoASecondRunAtTheSameVenue()
+    {
+        $performances = $this->client->parsePerformances(self::$html);
+
+        // Two Hereford 5Ks in 2016, 19:27 in April and 20:09 in May, and the
+        // year's best is the 19:27 the April run already holds. Matching on
+        // venue alone would find the May run as well and rewrite it to a time
+        // that was never run there.
+        $this->assertSame('19:27', $this->performanceOn($performances, '2016-04-06', '5K')['time']);
+        $this->assertSame('20:09', $this->performanceOn($performances, '2016-05-04', '5K')['time']);
+    }
+
     public function testNormalisesEventNames()
     {
         $this->assertSame('HM', $this->client->normaliseEvent('Half Marathon'));
