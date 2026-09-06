@@ -1,0 +1,31 @@
+info:
+  name: Get parkrun tourists (members with 10 or more different parkrun venues)
+  type: http
+  seq: 2
+  tags:
+    - Parkrun
+
+http:
+  method: GET
+  url: "{{baseUrl}}/parkrun/tourists"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/parkrun/tourists"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

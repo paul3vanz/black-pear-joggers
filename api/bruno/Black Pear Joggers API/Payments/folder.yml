@@ -1,0 +1,6 @@
+info:
+  name: Payments
+  type: folder
+
+request:
+  auth: inherit

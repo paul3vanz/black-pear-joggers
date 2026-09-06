@@ -1,0 +1,6 @@
+info:
+  name: MagicMile
+  type: folder
+
+request:
+  auth: inherit

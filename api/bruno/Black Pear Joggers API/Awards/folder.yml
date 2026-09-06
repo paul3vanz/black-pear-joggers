@@ -1,0 +1,6 @@
+info:
+  name: Awards
+  type: folder
+
+request:
+  auth: inherit

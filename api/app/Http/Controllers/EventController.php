@@ -16,6 +16,14 @@ class EventController extends Controller
 
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Events"},
+     *   path="/events",
+     *   summary="Get all events",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getEvents() {
         $events = Event::query()->get()->all();
         return response()->json($events);

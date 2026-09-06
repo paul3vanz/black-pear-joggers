@@ -1,0 +1,81 @@
+info:
+  name: Get club records
+  type: http
+  seq: 1
+  tags:
+    - Records
+
+http:
+  method: GET
+  url: "{{baseUrl}}/records"
+  params:
+    - name: gender
+      value: M
+      type: query
+      disabled: true
+    - name: gender
+      value: W
+      type: query
+      disabled: true
+    - name: category
+      value: ""
+      type: query
+      disabled: true
+    - name: event
+      value: ""
+      type: query
+      disabled: true
+    - name: group
+      value: distance
+      type: query
+      disabled: true
+    - name: group
+      value: gender
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/records"
+      method: GET
+      params:
+        - name: gender
+          value: M
+          type: query
+          disabled: true
+        - name: gender
+          value: W
+          type: query
+          disabled: true
+        - name: category
+          value: ""
+          type: query
+          disabled: true
+        - name: event
+          value: ""
+          type: query
+          disabled: true
+        - name: group
+          value: distance
+          type: query
+          disabled: true
+        - name: group
+          value: gender
+          type: query
+          disabled: true
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

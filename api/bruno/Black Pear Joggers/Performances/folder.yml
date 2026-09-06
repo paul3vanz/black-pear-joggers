@@ -1,0 +1,6 @@
+info:
+  name: Performances
+  type: folder
+
+request:
+  auth: inherit

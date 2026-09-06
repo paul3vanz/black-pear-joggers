@@ -18,6 +18,14 @@ class MagicMileController extends Controller
     {
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"MagicMile"},
+     *   path="/magicmile",
+     *   summary="Get all magic mile results",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getAll()
     {
         $query = MagicMile::query()
@@ -52,6 +60,31 @@ class MagicMileController extends Controller
         return response()->json($results);
     }
 
+    /**
+     * @OA\Post(
+     *   tags={"MagicMile"},
+     *   path="/magicmile",
+     *   summary="Store a magic mile result",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *       required={"firstName","lastName","gender","category","date","location","predictedTime","actualTime"},
+     *       @OA\Property(property="athleteId", type="integer", nullable=true),
+     *       @OA\Property(property="firstName", type="string"),
+     *       @OA\Property(property="lastName", type="string"),
+     *       @OA\Property(property="gender", type="string", enum={"M", "W"}),
+     *       @OA\Property(property="category", type="string"),
+     *       @OA\Property(property="date", type="string", format="date"),
+     *       @OA\Property(property="location", type="string"),
+     *       @OA\Property(property="predictedTime", type="string"),
+     *       @OA\Property(property="actualTime", type="string"),
+     *     )
+     *   ),
+     *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     * )
+     */
     public function store(Request $request)
     {
         if (!Gate::allows('magicMile:admin')) {
@@ -89,6 +122,17 @@ class MagicMileController extends Controller
         return view('magicmile.create');
     }
 
+    /**
+     * @OA\Delete(
+     *   tags={"MagicMile"},
+     *   path="/magicmile/{id}",
+     *   summary="Delete a magic mile result",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     * )
+     */
     public function delete(string $id)
     {
         if (!Gate::allows('magicMile:admin')) {
@@ -99,6 +143,14 @@ class MagicMileController extends Controller
         return response()->json($id);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"MagicMile"},
+     *   path="/magicmile/syncmagicmile",
+     *   summary="Sync magic mile results into meetings and performances",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function syncMagicMileResults()
     {
         $results = MagicMile::query()->where(function ($query) {

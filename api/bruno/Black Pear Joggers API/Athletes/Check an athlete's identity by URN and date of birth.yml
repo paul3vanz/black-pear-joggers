@@ -1,0 +1,63 @@
+info:
+  name: Check an athlete's identity by URN and date of birth
+  type: http
+  seq: 5
+  tags:
+    - Athletes
+
+http:
+  method: GET
+  url: "{{baseUrl}}/athleteIdvCheck"
+  params:
+    - name: urn
+      value: ""
+      type: query
+    - name: dob
+      value: ""
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/athleteIdvCheck"
+      method: GET
+      params:
+        - name: urn
+          value: ""
+          type: query
+        - name: dob
+          value: ""
+          type: query
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""
+  - name: 404 Response
+    description: Not found
+    request:
+      url: "{{baseUrl}}/athleteIdvCheck"
+      method: GET
+      params:
+        - name: urn
+          value: ""
+          type: query
+        - name: dob
+          value: ""
+          type: query
+    response:
+      status: 404
+      statusText: Not Found
+      body:
+        type: text
+        data: ""

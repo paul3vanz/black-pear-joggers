@@ -16,6 +16,14 @@ class PaymentsController extends Controller
 
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Payments"},
+     *   path="/payments",
+     *   summary="Get all payments",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getPayments() {
         $payments = Payment::query()->get()->all();
         return response()->json($payments);

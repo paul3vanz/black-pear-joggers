@@ -1,0 +1,47 @@
+info:
+  name: Get standards by gender
+  type: http
+  seq: 2
+  tags:
+    - Standards
+
+http:
+  method: GET
+  url: "{{baseUrl}}/standards/:gender"
+  params:
+    - name: gender
+      value: M
+      type: path
+    - name: gender
+      value: W
+      type: path
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/standards/:gender"
+      method: GET
+      params:
+        - name: gender
+          value: M
+          type: path
+        - name: gender
+          value: W
+          type: path
+          disabled: true
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

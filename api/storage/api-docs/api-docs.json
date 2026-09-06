@@ -10,6 +10,1267 @@
         "version": "0.1"
     },
     "paths": {
+        "/athletes": {
+            "get": {
+                "tags": [
+                    "Athletes"
+                ],
+                "summary": "Get all athletes",
+                "operationId": "00fe92a4e1301760c8603c7fb6796984",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "includeAllMembers",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/athlete/{id}": {
+            "get": {
+                "tags": [
+                    "Athletes"
+                ],
+                "summary": "Get an athlete by ID",
+                "operationId": "aae03fc6bf8a3c395961d029abeb41f6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Athletes"
+                ],
+                "summary": "Delete an athlete",
+                "operationId": "6c78886aec56b7a7ca6483594039f7fc",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Athletes"
+                ],
+                "summary": "Update an athlete",
+                "operationId": "c88218b0370eb4ecfd98ae4365db9279",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "urn",
+                                    "athleteId",
+                                    "firstName",
+                                    "lastName",
+                                    "gender",
+                                    "dob"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "urn": {
+                                        "type": "integer"
+                                    },
+                                    "athleteId": {
+                                        "type": "integer"
+                                    },
+                                    "firstName": {
+                                        "type": "string"
+                                    },
+                                    "lastName": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "M",
+                                            "W"
+                                        ]
+                                    },
+                                    "dob": {
+                                        "type": "string",
+                                        "format": "date"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/athleteIdvCheck": {
+            "get": {
+                "tags": [
+                    "Athletes"
+                ],
+                "summary": "Check an athlete's identity by URN and date of birth",
+                "operationId": "ba9dee991092e39ef0be260732d7e105",
+                "parameters": [
+                    {
+                        "name": "urn",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "dob",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/athlete": {
+            "post": {
+                "tags": [
+                    "Athletes"
+                ],
+                "summary": "Create an athlete",
+                "operationId": "5b68b902cb02a1e384dc65429caaa7c7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "urn",
+                                    "athleteId",
+                                    "firstName",
+                                    "lastName",
+                                    "gender",
+                                    "dob"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "urn": {
+                                        "type": "integer"
+                                    },
+                                    "athleteId": {
+                                        "type": "integer"
+                                    },
+                                    "firstName": {
+                                        "type": "string"
+                                    },
+                                    "lastName": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "M",
+                                            "W"
+                                        ]
+                                    },
+                                    "dob": {
+                                        "type": "string",
+                                        "format": "date"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/members/totals": {
+            "get": {
+                "tags": [
+                    "Athletes"
+                ],
+                "summary": "Get total counts of paid members, by membership type",
+                "operationId": "cb538609c40472ce87321ef05fa4c722",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/awardclaim": {
+            "get": {
+                "tags": [
+                    "AwardClaims"
+                ],
+                "summary": "Get all award claims",
+                "operationId": "787eed9a536fe3b10fac3620898adb35",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "AwardClaims"
+                ],
+                "summary": "Submit a club standards award claim",
+                "operationId": "935091293cd2b0e9c647b08b0357b003",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "gender",
+                                    "category",
+                                    "award",
+                                    "firstName",
+                                    "lastName",
+                                    "email",
+                                    "races"
+                                ],
+                                "properties": {
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "M",
+                                            "W"
+                                        ]
+                                    },
+                                    "category": {
+                                        "type": "string"
+                                    },
+                                    "award": {
+                                        "type": "string"
+                                    },
+                                    "firstName": {
+                                        "type": "string"
+                                    },
+                                    "lastName": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "races": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/awardclaim/{id}/{uniqueToken}": {
+            "get": {
+                "tags": [
+                    "AwardClaims"
+                ],
+                "summary": "Get an award claim by ID and unique token",
+                "operationId": "5c157d5984c9bb8e616cac87722495d7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "uniqueToken",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/awardclaim/toggleverified/{id}": {
+            "post": {
+                "tags": [
+                    "AwardClaims"
+                ],
+                "summary": "Toggle whether an award claim is verified",
+                "operationId": "02c3c1cdb27547b91feea04a0f544917",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/awardclaim/archive/{id}": {
+            "post": {
+                "tags": [
+                    "AwardClaims"
+                ],
+                "summary": "Archive an award claim",
+                "operationId": "e7ad8557033783dd265805e83a455509",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/awardclaim/delete/{id}": {
+            "post": {
+                "tags": [
+                    "AwardClaims"
+                ],
+                "summary": "Delete an award claim",
+                "operationId": "f7d9de42fb151e52e43fdd6d11e834e1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/awardclaim/{id}": {
+            "patch": {
+                "tags": [
+                    "AwardClaims"
+                ],
+                "summary": "Update an award claim, and optionally its races",
+                "operationId": "bdeb0040817cac34c62cc3cc05343bb0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/awardclaim/{id}/race": {
+            "post": {
+                "tags": [
+                    "AwardClaims"
+                ],
+                "summary": "Update a race on an award claim",
+                "operationId": "87c8d4099793360167257552a93ba9a0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "race"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "race": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/awards": {
+            "get": {
+                "tags": [
+                    "Awards"
+                ],
+                "summary": "Get all awards",
+                "operationId": "44b63584ea9ad6ba1897cc66bc7920f7",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/athletes/awards": {
+            "get": {
+                "tags": [
+                    "Awards"
+                ],
+                "summary": "Get award-winning performances, optionally filtered by athlete and year",
+                "operationId": "ea29f44ca3c3e17f156e56adbd338154",
+                "parameters": [
+                    {
+                        "name": "athlete",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/checkout": {
+            "post": {
+                "tags": [
+                    "Checkout"
+                ],
+                "summary": "Create a Stripe checkout session",
+                "operationId": "5efad262ed891c131d3af84274d57580",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "priceId",
+                                    "quantity"
+                                ],
+                                "properties": {
+                                    "priceId": {
+                                        "type": "string"
+                                    },
+                                    "quantity": {
+                                        "type": "integer"
+                                    },
+                                    "namePrinting": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/events": {
+            "get": {
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Get all events",
+                "operationId": "e43d73e90b9e7bdd56c9dcad65ef30f8",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/fetch/athletes": {
+            "get": {
+                "tags": [
+                    "Fetch"
+                ],
+                "summary": "Queue a Power of 10 fetch for every affiliated athlete with a profile",
+                "description": "Queue the nightly read for every affiliated member with a profile.",
+                "operationId": "40f359f6cf316934f41dccc2fe36f2d3",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/fetch/athlete/{athleteId}": {
+            "get": {
+                "tags": [
+                    "Fetch"
+                ],
+                "summary": "Fetch and store one athlete's performances and rankings from Power of 10",
+                "operationId": "244f49e72a03cfaae4d86f560bc08117",
+                "parameters": [
+                    {
+                        "name": "athleteId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/payments/fetch": {
+            "get": {
+                "tags": [
+                    "Fetch"
+                ],
+                "summary": "Fetch membership payments and store any new or changed records",
+                "operationId": "cca50acd784760b9e20b6de7bf1d2645",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/fetch/performances": {
+            "get": {
+                "tags": [
+                    "Fetch"
+                ],
+                "summary": "Queue a Power of 10 performances fetch for every affiliated athlete with a profile",
+                "operationId": "74e3ef4399b0697487f8c3a5bfed876b",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/fetch/performances/{athleteId}": {
+            "get": {
+                "tags": [
+                    "Fetch"
+                ],
+                "summary": "Fetch and store one athlete's performances from Power of 10",
+                "operationId": "8561fc7ad3b57a026c9ecd31ed75657a",
+                "parameters": [
+                    {
+                        "name": "athleteId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/fetch/updatepersonalbests": {
+            "get": {
+                "tags": [
+                    "Fetch"
+                ],
+                "summary": "Recalculate the isPersonalBest flag for all performances",
+                "operationId": "88c871002ebee01d6c7f3712dffc7360",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/fetch/rankings": {
+            "get": {
+                "tags": [
+                    "Fetch"
+                ],
+                "summary": "Queue a Power of 10 rankings fetch for every affiliated athlete with a profile",
+                "operationId": "da7e81bf4ec4844e57c4d414c8a70dfb",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/fetch/rankings/{athleteId}": {
+            "get": {
+                "tags": [
+                    "Fetch"
+                ],
+                "summary": "Fetch and store one athlete's runBritain handicap history from Power of 10",
+                "operationId": "a9c2467973af7754e785fb67d1819fa0",
+                "parameters": [
+                    {
+                        "name": "athleteId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/logs": {
+            "get": {
+                "tags": [
+                    "Logs"
+                ],
+                "summary": "Get all logs",
+                "operationId": "25d93029277b6453f8be134f65fc61ad",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/magicmile": {
+            "get": {
+                "tags": [
+                    "MagicMile"
+                ],
+                "summary": "Get all magic mile results",
+                "operationId": "080e9c9cf118c8a8c6b6d49b3ee81557",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "MagicMile"
+                ],
+                "summary": "Store a magic mile result",
+                "operationId": "c4cbf09cd182750861235220e4373451",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "firstName",
+                                    "lastName",
+                                    "gender",
+                                    "category",
+                                    "date",
+                                    "location",
+                                    "predictedTime",
+                                    "actualTime"
+                                ],
+                                "properties": {
+                                    "athleteId": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "firstName": {
+                                        "type": "string"
+                                    },
+                                    "lastName": {
+                                        "type": "string"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "M",
+                                            "W"
+                                        ]
+                                    },
+                                    "category": {
+                                        "type": "string"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "location": {
+                                        "type": "string"
+                                    },
+                                    "predictedTime": {
+                                        "type": "string"
+                                    },
+                                    "actualTime": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/magicmile/{id}": {
+            "delete": {
+                "tags": [
+                    "MagicMile"
+                ],
+                "summary": "Delete a magic mile result",
+                "operationId": "8fc19d4a91e2974681b2f15dd682b2a6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/magicmile/syncmagicmile": {
+            "get": {
+                "tags": [
+                    "MagicMile"
+                ],
+                "summary": "Sync magic mile results into meetings and performances",
+                "operationId": "c0728d2fabf12c214a5ae152267a0079",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/meetings": {
+            "get": {
+                "tags": [
+                    "Meetings"
+                ],
+                "summary": "Get all meetings",
+                "operationId": "b4d8126bd59539d137faf68da6cf8f0c",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "event",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "fromDate",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "toDate",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/meetings/{id}": {
+            "get": {
+                "tags": [
+                    "Meetings"
+                ],
+                "summary": "Get a meeting by ID",
+                "operationId": "1da43791e05807cb13a80be619d47c5d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/membership/{firstName}/{lastName}/{dateOfBirth}": {
+            "get": {
+                "tags": [
+                    "Membership"
+                ],
+                "summary": "Check UKA membership by name and date of birth",
+                "operationId": "e2ef527ec12dec194c23c74d16726951",
+                "parameters": [
+                    {
+                        "name": "firstName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "lastName",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "dateOfBirth",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/membership/{urn}": {
+            "get": {
+                "tags": [
+                    "Membership"
+                ],
+                "summary": "Check UKA membership by URN",
+                "operationId": "74e10761e72d7828fef467ea4d81a74e",
+                "parameters": [
+                    {
+                        "name": "urn",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/clubs": {
+            "get": {
+                "tags": [
+                    "Membership"
+                ],
+                "summary": "Get all UKA clubs",
+                "operationId": "c5bafd06fea8ce76b45d200e862914b8",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/clubs/{clubId}/members": {
+            "get": {
+                "tags": [
+                    "Membership"
+                ],
+                "summary": "Get all UKA members of a club",
+                "operationId": "0106431b63d3857aaaf20a6b95849286",
+                "parameters": [
+                    {
+                        "name": "clubId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/storeClubMembers": {
+            "get": {
+                "tags": [
+                    "Membership"
+                ],
+                "summary": "Fetch club members from UKA and store them in the membership table",
+                "operationId": "0ccb72280642a771883429e4e608abd1",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/members/leaguemembers": {
+            "get": {
+                "tags": [
+                    "Membership"
+                ],
+                "summary": "Get all registered members",
+                "operationId": "516fc7769ebc2b0d643402b1f123d480",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/parkrun/alphabet": {
+            "get": {
+                "tags": [
+                    "Parkrun"
+                ],
+                "summary": "Get parkrun alphabet/challenge progress for a year",
+                "operationId": "1307fa68860ead9a8bd28e91dcae3a49",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "challenge",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/parkrun/tourists": {
+            "get": {
+                "tags": [
+                    "Parkrun"
+                ],
+                "summary": "Get parkrun tourists (members with 10 or more different parkrun venues)",
+                "operationId": "b9a37142298e06c5d04e83648da9a932",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/payments": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Get all payments",
+                "operationId": "09c919ce7a40277f7e32b409c1afebf2",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/performances": {
             "get": {
                 "tags": [
@@ -32,6 +1293,256 @@
                         "description": "OK"
                     }
                 }
+            }
+        },
+        "/performances/{id}": {
+            "get": {
+                "tags": [
+                    "Performances"
+                ],
+                "summary": "Get a performance by ID",
+                "operationId": "b28c5417f233f62e3b7c68e1d6787025",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/rankings/{athleteId}": {
+            "get": {
+                "tags": [
+                    "Rankings"
+                ],
+                "summary": "Get an athlete's runBritain rankings history",
+                "operationId": "21b7166e3d4a036ed0f9db2b89658e28",
+                "parameters": [
+                    {
+                        "name": "athleteId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/rankings/{athleteId}/{year}": {
+            "get": {
+                "tags": [
+                    "Rankings"
+                ],
+                "summary": "Get an athlete's runBritain rankings history for a year",
+                "operationId": "1f099996e70d97ef0520307b87f9593c",
+                "parameters": [
+                    {
+                        "name": "athleteId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/records": {
+            "get": {
+                "tags": [
+                    "Records"
+                ],
+                "summary": "Get club records",
+                "operationId": "42712d55c7ea8e69618967e62e7d7c4d",
+                "parameters": [
+                    {
+                        "name": "gender",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "M",
+                                "W"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "event",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "group",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "distance",
+                                "gender"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/records/query": {
+            "post": {
+                "tags": [
+                    "Records"
+                ],
+                "summary": "Flag a club record performance for review",
+                "operationId": "277d81c930a5553a184fa7b2666c19c9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "record",
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "record": {
+                                        "type": "object"
+                                    },
+                                    "reason": {
+                                        "type": "string"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/registrations": {
+            "get": {
+                "tags": [
+                    "Registrations"
+                ],
+                "summary": "Get all registrations",
+                "operationId": "71b13ddba782f6632d62e3c919e4a200",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Registrations"
+                ],
+                "summary": "Delete registration by ID",
+                "operationId": "e6a27aad3201536cf962507aaa451a97",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/registrations/queue": {
+            "get": {
+                "tags": [
+                    "Registrations"
+                ],
+                "summary": "Queue processing of all registrations",
+                "operationId": "0530480f6086c40245e1107420934fb7",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/registrations/createregistrationsfrommemberships": {
+            "get": {
+                "tags": [
+                    "Registrations"
+                ],
+                "summary": "Create registrations for club members not already tracked as athletes",
+                "operationId": "64e27915b1e9aa4f8316263f454b2805",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/standards": {
@@ -124,6 +1635,79 @@
                     }
                 }
             }
+        },
+        "/user": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get the authenticated user",
+                "operationId": "ed7384d7b0315a693466a7528ac2c3a8",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Set the authenticated user's linked athlete",
+                "operationId": "6fb24543a466ed63862b72318006b4ef",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "athleteId"
+                                ],
+                                "properties": {
+                                    "athleteId": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/token": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get the authenticated user's token",
+                "operationId": "4b8b71bf761a6623e2fd1961cef4d674",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -140,6 +1724,13 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     }

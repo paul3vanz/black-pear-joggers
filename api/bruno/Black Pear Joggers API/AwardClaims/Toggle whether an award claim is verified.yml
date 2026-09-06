@@ -1,0 +1,56 @@
+info:
+  name: Toggle whether an award claim is verified
+  type: http
+  seq: 4
+  tags:
+    - AwardClaims
+
+http:
+  method: POST
+  url: "{{baseUrl}}/awardclaim/toggleverified/:id"
+  params:
+    - name: id
+      value: ""
+      type: path
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/awardclaim/toggleverified/:id"
+      method: POST
+      params:
+        - name: id
+          value: ""
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/awardclaim/toggleverified/:id"
+      method: POST
+      params:
+        - name: id
+          value: ""
+          type: path
+    response:
+      status: 403
+      statusText: Forbidden
+      body:
+        type: text
+        data: ""

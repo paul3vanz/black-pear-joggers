@@ -19,6 +19,16 @@ class ParkrunController extends Controller
     {
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Parkrun"},
+     *   path="/parkrun/alphabet",
+     *   summary="Get parkrun alphabet/challenge progress for a year",
+     *   @OA\Parameter(name="year", in="query", required=true, @OA\Schema(type="integer")),
+     *   @OA\Parameter(name="challenge", in="query", required=true, @OA\Schema(type="string")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getParkrunAlphabet(Request $request)
     {
         $year = $request->input('year');
@@ -95,6 +105,14 @@ class ParkrunController extends Controller
         return response()->json($results);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Parkrun"},
+     *   path="/parkrun/tourists",
+     *   summary="Get parkrun tourists (members with 10 or more different parkrun venues)",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getParkrunTourists(Request $request)
     {
         $results = DB::select("

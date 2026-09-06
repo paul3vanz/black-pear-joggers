@@ -1,0 +1,29 @@
+opencollection: 1.0.0
+
+info:
+  name: Black Pear Joggers API
+  version: "1"
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
+    openapi:
+      - sourceUrl: http://localhost:8000/docs
+        groupBy: tags
+        lastSyncDate: 2026-09-04T09:08:45.334Z
+        specHash: d4174e89f93b0d552887ceefc8a4471b
+        autoCheck: true
+        autoCheckInterval: 5

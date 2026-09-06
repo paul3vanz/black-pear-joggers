@@ -1,0 +1,6 @@
+info:
+  name: Checkout
+  type: folder
+
+request:
+  auth: inherit

@@ -1,0 +1,6 @@
+info:
+  name: Registrations
+  type: folder
+
+request:
+  auth: inherit

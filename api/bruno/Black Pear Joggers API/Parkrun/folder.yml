@@ -1,0 +1,6 @@
+info:
+  name: Parkrun
+  type: folder
+
+request:
+  auth: inherit

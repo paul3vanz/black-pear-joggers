@@ -1,0 +1,6 @@
+info:
+  name: Meetings
+  type: folder
+
+request:
+  auth: inherit

@@ -28,6 +28,13 @@ class FetchAthletesController extends Controller
 
     /**
      * Queue the nightly read for every affiliated member with a profile.
+     *
+     * @OA\Get(
+     *   tags={"Fetch"},
+     *   path="/fetch/athletes",
+     *   summary="Queue a Power of 10 fetch for every affiliated athlete with a profile",
+     *   @OA\Response(response=200, description="OK"),
+     * )
      */
     public function queueAllFetchAthletes()
     {
@@ -56,6 +63,15 @@ class FetchAthletesController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Fetch"},
+     *   path="/fetch/athlete/{athleteId}",
+     *   summary="Fetch and store one athlete's performances and rankings from Power of 10",
+     *   @OA\Parameter(name="athleteId", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function fetchAthlete($athleteId)
     {
         return response()->json($this->fetchAthleteFor($athleteId));

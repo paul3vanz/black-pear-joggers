@@ -1,0 +1,31 @@
+info:
+  name: Get all registered members
+  type: http
+  seq: 6
+  tags:
+    - Membership
+
+http:
+  method: GET
+  url: "{{baseUrl}}/members/leaguemembers"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/members/leaguemembers"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

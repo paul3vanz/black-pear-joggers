@@ -11,6 +11,19 @@ class MeetingController extends Controller
     {
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Meetings"},
+     *   path="/meetings",
+     *   summary="Get all meetings",
+     *   @OA\Parameter(name="year", in="query", required=false, @OA\Schema(type="integer")),
+     *   @OA\Parameter(name="search", in="query", required=false, @OA\Schema(type="string")),
+     *   @OA\Parameter(name="event", in="query", required=false, @OA\Schema(type="string")),
+     *   @OA\Parameter(name="fromDate", in="query", required=false, @OA\Schema(type="string", format="date")),
+     *   @OA\Parameter(name="toDate", in="query", required=false, @OA\Schema(type="string", format="date")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getMeetings(Request $request)
     {
         $meetings = Meeting::query()->orderBy('date', 'desc');
@@ -41,6 +54,15 @@ class MeetingController extends Controller
         return response()->json($meetings);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Meetings"},
+     *   path="/meetings/{id}",
+     *   summary="Get a meeting by ID",
+     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getMeetingById($id)
     {
         $meeting = Meeting::find($id)->with('athlete')->withCount('performances as performancesCount')->first();

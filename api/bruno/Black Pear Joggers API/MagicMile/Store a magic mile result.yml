@@ -1,0 +1,86 @@
+info:
+  name: Store a magic mile result
+  type: http
+  seq: 2
+  tags:
+    - MagicMile
+
+http:
+  method: POST
+  url: "{{baseUrl}}/magicmile"
+  body:
+    type: json
+    data: |-
+      {
+        "athleteId": 0,
+        "firstName": "",
+        "lastName": "",
+        "gender": "M",
+        "category": "",
+        "date": "",
+        "location": "",
+        "predictedTime": "",
+        "actualTime": ""
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/magicmile"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "athleteId": 0,
+            "firstName": "",
+            "lastName": "",
+            "gender": "M",
+            "category": "",
+            "date": "",
+            "location": "",
+            "predictedTime": "",
+            "actualTime": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/magicmile"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "athleteId": 0,
+            "firstName": "",
+            "lastName": "",
+            "gender": "M",
+            "category": "",
+            "date": "",
+            "location": "",
+            "predictedTime": "",
+            "actualTime": ""
+          }
+    response:
+      status: 403
+      statusText: Forbidden
+      body:
+        type: text
+        data: ""

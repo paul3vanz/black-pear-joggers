@@ -1,0 +1,49 @@
+info:
+  name: Get award-winning performances, optionally filtered by athlete and year
+  type: http
+  seq: 2
+  tags:
+    - Awards
+
+http:
+  method: GET
+  url: "{{baseUrl}}/athletes/awards"
+  params:
+    - name: athlete
+      value: ""
+      type: query
+      disabled: true
+    - name: year
+      value: ""
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/athletes/awards"
+      method: GET
+      params:
+        - name: athlete
+          value: ""
+          type: query
+          disabled: true
+        - name: year
+          value: ""
+          type: query
+          disabled: true
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

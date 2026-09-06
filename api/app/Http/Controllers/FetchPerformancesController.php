@@ -25,6 +25,14 @@ class FetchPerformancesController extends Controller
         $this->powerOfTen = $powerOfTen ?: new PowerOfTenClient();
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Fetch"},
+     *   path="/fetch/performances",
+     *   summary="Queue a Power of 10 performances fetch for every affiliated athlete with a profile",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function queueAllFetchPerformances()
     {
         $athleteIds = array();
@@ -49,6 +57,15 @@ class FetchPerformancesController extends Controller
         return response()->json($athleteIds);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Fetch"},
+     *   path="/fetch/performances/{athleteId}",
+     *   summary="Fetch and store one athlete's performances from Power of 10",
+     *   @OA\Parameter(name="athleteId", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function fetchPerformances($athleteId)
     {
         return response()->json($this->fetchPerformancesFor($athleteId));
@@ -141,6 +158,14 @@ class FetchPerformancesController extends Controller
         ];
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Fetch"},
+     *   path="/fetch/updatepersonalbests",
+     *   summary="Recalculate the isPersonalBest flag for all performances",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function updatePersonalBests()
     {
         $update = DB::update("

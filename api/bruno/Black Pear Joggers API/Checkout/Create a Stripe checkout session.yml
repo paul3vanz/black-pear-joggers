@@ -1,0 +1,47 @@
+info:
+  name: Create a Stripe checkout session
+  type: http
+  seq: 1
+  tags:
+    - Checkout
+
+http:
+  method: POST
+  url: "{{baseUrl}}/checkout"
+  body:
+    type: json
+    data: |-
+      {
+        "priceId": "",
+        "quantity": 0,
+        "namePrinting": ""
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/checkout"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "priceId": "",
+            "quantity": 0,
+            "namePrinting": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

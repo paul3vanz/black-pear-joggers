@@ -1,0 +1,73 @@
+info:
+  name: Get all meetings
+  type: http
+  seq: 1
+  tags:
+    - Meetings
+
+http:
+  method: GET
+  url: "{{baseUrl}}/meetings"
+  params:
+    - name: year
+      value: ""
+      type: query
+      disabled: true
+    - name: search
+      value: ""
+      type: query
+      disabled: true
+    - name: event
+      value: ""
+      type: query
+      disabled: true
+    - name: fromDate
+      value: ""
+      type: query
+      disabled: true
+    - name: toDate
+      value: ""
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/meetings"
+      method: GET
+      params:
+        - name: year
+          value: ""
+          type: query
+          disabled: true
+        - name: search
+          value: ""
+          type: query
+          disabled: true
+        - name: event
+          value: ""
+          type: query
+          disabled: true
+        - name: fromDate
+          value: ""
+          type: query
+          disabled: true
+        - name: toDate
+          value: ""
+          type: query
+          disabled: true
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

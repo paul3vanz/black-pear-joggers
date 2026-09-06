@@ -1,0 +1,56 @@
+info:
+  name: Check UKA membership by URN
+  type: http
+  seq: 2
+  tags:
+    - Membership
+
+http:
+  method: GET
+  url: "{{baseUrl}}/membership/:urn"
+  params:
+    - name: urn
+      value: ""
+      type: path
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/membership/:urn"
+      method: GET
+      params:
+        - name: urn
+          value: ""
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/membership/:urn"
+      method: GET
+      params:
+        - name: urn
+          value: ""
+          type: path
+    response:
+      status: 403
+      statusText: Forbidden
+      body:
+        type: text
+        data: ""

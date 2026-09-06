@@ -1,0 +1,6 @@
+info:
+  name: Records
+  type: folder
+
+request:
+  auth: inherit

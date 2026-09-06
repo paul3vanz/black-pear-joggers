@@ -1,0 +1,31 @@
+info:
+  name: Fetch club members from UKA and store them in the membership table
+  type: http
+  seq: 5
+  tags:
+    - Membership
+
+http:
+  method: GET
+  url: "{{baseUrl}}/storeClubMembers"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/storeClubMembers"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

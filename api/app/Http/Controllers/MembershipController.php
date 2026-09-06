@@ -16,6 +16,19 @@ use DateTimeZone;
 
 class MembershipController extends Controller
 {
+    /**
+     * @OA\Get(
+     *   tags={"Membership"},
+     *   path="/membership/{firstName}/{lastName}/{dateOfBirth}",
+     *   summary="Check UKA membership by name and date of birth",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Parameter(name="firstName", in="path", required=true, @OA\Schema(type="string")),
+     *   @OA\Parameter(name="lastName", in="path", required=true, @OA\Schema(type="string")),
+     *   @OA\Parameter(name="dateOfBirth", in="path", required=true, @OA\Schema(type="string", format="date")),
+     *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     * )
+     */
     public function checkNameDob(string $firstName, string $lastName, string $dateOfBirth)
     {
         if (!Gate::allows('members:read')) {
@@ -27,6 +40,17 @@ class MembershipController extends Controller
         return response()->json(MembershipController::fetchUrl("/race-provider/individuals?firstname=$firstName&lastname=$lastName&dob=$dateOfBirth"));
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Membership"},
+     *   path="/membership/{urn}",
+     *   summary="Check UKA membership by URN",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Parameter(name="urn", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     * )
+     */
     public function responseCheckUrn(int $urn)
     {
         if (!Gate::allows('members:read')) {
@@ -36,6 +60,16 @@ class MembershipController extends Controller
         return response()->json($this->checkUrn($urn));
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Membership"},
+     *   path="/clubs",
+     *   summary="Get all UKA clubs",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     * )
+     */
     public function getClubs()
     {
         if (!Gate::allows('clubs:read')) {
@@ -44,6 +78,17 @@ class MembershipController extends Controller
         return response()->json(MembershipController::fetchUrl('/race-provider/clubs'));
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Membership"},
+     *   path="/clubs/{clubId}/members",
+     *   summary="Get all UKA members of a club",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Parameter(name="clubId", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     * )
+     */
     public function getClubMembers(int $clubId = 1606, $skipAuthCheck = false)
     {
         if (!Gate::allows('members:read') && !$skipAuthCheck) {
@@ -62,6 +107,14 @@ class MembershipController extends Controller
         return MembershipController::fetchUrl("/race-provider/individuals/$urn?eventDate=$date");
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Membership"},
+     *   path="/storeClubMembers",
+     *   summary="Fetch club members from UKA and store them in the membership table",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function storeClubMembers()
     {
         Log::info('storeClubMembers executed');
@@ -132,6 +185,14 @@ class MembershipController extends Controller
         return getcwd() . DIRECTORY_SEPARATOR . env(env('UKA_ENVIRONMENT') . '_UKA_PEM_FILENAME');
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Membership"},
+     *   path="/members/leaguemembers",
+     *   summary="Get all registered members",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getRegisteredMembers(Request $request)
     {
         $members = Membership::query()->where('competitiveRegStatus', 'Registered')->get();

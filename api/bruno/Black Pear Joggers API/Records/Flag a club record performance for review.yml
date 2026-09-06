@@ -1,0 +1,47 @@
+info:
+  name: Flag a club record performance for review
+  type: http
+  seq: 2
+  tags:
+    - Records
+
+http:
+  method: POST
+  url: "{{baseUrl}}/records/query"
+  body:
+    type: json
+    data: |-
+      {
+        "record": {},
+        "reason": "",
+        "notes": ""
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/records/query"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "record": {},
+            "reason": "",
+            "notes": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

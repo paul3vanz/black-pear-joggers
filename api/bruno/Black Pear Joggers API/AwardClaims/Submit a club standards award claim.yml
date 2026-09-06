@@ -1,0 +1,59 @@
+info:
+  name: Submit a club standards award claim
+  type: http
+  seq: 2
+  tags:
+    - AwardClaims
+
+http:
+  method: POST
+  url: "{{baseUrl}}/awardclaim"
+  body:
+    type: json
+    data: |-
+      {
+        "gender": "M",
+        "category": "",
+        "award": "",
+        "firstName": "",
+        "lastName": "",
+        "email": "",
+        "races": [
+          {}
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/awardclaim"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "gender": "M",
+            "category": "",
+            "award": "",
+            "firstName": "",
+            "lastName": "",
+            "email": "",
+            "races": [
+              {}
+            ]
+          }
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

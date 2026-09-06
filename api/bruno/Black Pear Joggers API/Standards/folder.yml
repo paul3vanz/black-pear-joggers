@@ -1,0 +1,6 @@
+info:
+  name: Standards
+  type: folder
+
+request:
+  auth: inherit

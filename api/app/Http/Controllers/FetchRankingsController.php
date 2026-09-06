@@ -27,6 +27,14 @@ class FetchRankingsController extends Controller
         $this->powerOfTen = $powerOfTen ?: new PowerOfTenClient();
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Fetch"},
+     *   path="/fetch/rankings",
+     *   summary="Queue a Power of 10 rankings fetch for every affiliated athlete with a profile",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function queueAllFetchRankings()
     {
         $athleteIds = array();
@@ -49,6 +57,15 @@ class FetchRankingsController extends Controller
         return response()->json($athleteIds);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Fetch"},
+     *   path="/fetch/rankings/{athleteId}",
+     *   summary="Fetch and store one athlete's runBritain handicap history from Power of 10",
+     *   @OA\Parameter(name="athleteId", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function fetchRankings($athleteId)
     {
         return response()->json($this->fetchRankingsFor($athleteId));

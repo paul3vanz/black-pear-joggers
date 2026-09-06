@@ -1,0 +1,45 @@
+info:
+  name: Get an award claim by ID and unique token
+  type: http
+  seq: 3
+  tags:
+    - AwardClaims
+
+http:
+  method: GET
+  url: "{{baseUrl}}/awardclaim/:id/:uniqueToken"
+  params:
+    - name: id
+      value: ""
+      type: path
+    - name: uniqueToken
+      value: ""
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/awardclaim/:id/:uniqueToken"
+      method: GET
+      params:
+        - name: id
+          value: ""
+          type: path
+        - name: uniqueToken
+          value: ""
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

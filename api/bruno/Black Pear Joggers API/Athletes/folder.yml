@@ -1,0 +1,6 @@
+info:
+  name: Athletes
+  type: folder
+
+request:
+  auth: inherit

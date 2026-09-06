@@ -1,0 +1,78 @@
+info:
+  name: Create an athlete
+  type: http
+  seq: 6
+  tags:
+    - Athletes
+
+http:
+  method: POST
+  url: "{{baseUrl}}/athlete"
+  body:
+    type: json
+    data: |-
+      {
+        "id": 0,
+        "urn": 0,
+        "athleteId": 0,
+        "firstName": "",
+        "lastName": "",
+        "gender": "M",
+        "dob": ""
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/athlete"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "id": 0,
+            "urn": 0,
+            "athleteId": 0,
+            "firstName": "",
+            "lastName": "",
+            "gender": "M",
+            "dob": ""
+          }
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/athlete"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "id": 0,
+            "urn": 0,
+            "athleteId": 0,
+            "firstName": "",
+            "lastName": "",
+            "gender": "M",
+            "dob": ""
+          }
+    response:
+      status: 403
+      statusText: Forbidden
+      body:
+        type: text
+        data: ""

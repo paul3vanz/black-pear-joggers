@@ -1,0 +1,74 @@
+info:
+  name: Check UKA membership by name and date of birth
+  type: http
+  seq: 1
+  tags:
+    - Membership
+
+http:
+  method: GET
+  url: "{{baseUrl}}/membership/:firstName/:lastName/:dateOfBirth"
+  params:
+    - name: firstName
+      value: ""
+      type: path
+    - name: lastName
+      value: ""
+      type: path
+    - name: dateOfBirth
+      value: ""
+      type: path
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/membership/:firstName/:lastName/:dateOfBirth"
+      method: GET
+      params:
+        - name: firstName
+          value: ""
+          type: path
+        - name: lastName
+          value: ""
+          type: path
+        - name: dateOfBirth
+          value: ""
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/membership/:firstName/:lastName/:dateOfBirth"
+      method: GET
+      params:
+        - name: firstName
+          value: ""
+          type: path
+        - name: lastName
+          value: ""
+          type: path
+        - name: dateOfBirth
+          value: ""
+          type: path
+    response:
+      status: 403
+      statusText: Forbidden
+      body:
+        type: text
+        data: ""

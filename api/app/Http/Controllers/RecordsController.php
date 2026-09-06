@@ -17,6 +17,18 @@ class RecordsController extends Controller
      */
     public function __construct() {}
 
+    /**
+     * @OA\Get(
+     *   tags={"Records"},
+     *   path="/records",
+     *   summary="Get club records",
+     *   @OA\Parameter(name="gender", in="query", required=false, @OA\Schema(type="string", enum={"M", "W"})),
+     *   @OA\Parameter(name="category", in="query", required=false, @OA\Schema(type="string")),
+     *   @OA\Parameter(name="event", in="query", required=false, @OA\Schema(type="string")),
+     *   @OA\Parameter(name="group", in="query", required=false, @OA\Schema(type="string", enum={"distance", "gender"})),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     /* Club records */
     public function getRecords(Request $request)
     {
@@ -85,6 +97,23 @@ class RecordsController extends Controller
         return response()->json($records);
     }
 
+    /**
+     * @OA\Post(
+     *   tags={"Records"},
+     *   path="/records/query",
+     *   summary="Flag a club record performance for review",
+     *   @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *       required={"record","reason"},
+     *       @OA\Property(property="record", type="object"),
+     *       @OA\Property(property="reason", type="string"),
+     *       @OA\Property(property="notes", type="string", nullable=true),
+     *     )
+     *   ),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function queryRecord(Request $request)
     {
         $insert = DB::table('performanceFlags')->insert(

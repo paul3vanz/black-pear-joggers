@@ -1,0 +1,33 @@
+info:
+  name: Get all award claims
+  type: http
+  seq: 1
+  tags:
+    - AwardClaims
+
+http:
+  method: GET
+  url: "{{baseUrl}}/awardclaim"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/awardclaim"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

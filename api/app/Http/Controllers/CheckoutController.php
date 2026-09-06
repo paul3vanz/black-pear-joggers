@@ -17,6 +17,23 @@ class CheckoutController extends Controller
     {
     }
 
+    /**
+     * @OA\Post(
+     *   tags={"Checkout"},
+     *   path="/checkout",
+     *   summary="Create a Stripe checkout session",
+     *   @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *       required={"priceId","quantity"},
+     *       @OA\Property(property="priceId", type="string"),
+     *       @OA\Property(property="quantity", type="integer"),
+     *       @OA\Property(property="namePrinting", type="string", nullable=true),
+     *     )
+     *   ),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function createSession(Request $request)
     {
         $namePrinting = $request->input('namePrinting', null);

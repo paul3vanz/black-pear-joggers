@@ -1,0 +1,45 @@
+info:
+  name: Set the authenticated user's linked athlete
+  type: http
+  seq: 2
+  tags:
+    - User
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/user"
+  body:
+    type: json
+    data: |-
+      {
+        "athleteId": 0
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/user"
+      method: PUT
+      body:
+        type: json
+        data: |-
+          {
+            "athleteId": 0
+          }
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

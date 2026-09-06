@@ -1,0 +1,33 @@
+info:
+  name: Queue processing of all registrations
+  type: http
+  seq: 3
+  tags:
+    - Registrations
+
+http:
+  method: GET
+  url: "{{baseUrl}}/registrations/queue"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/registrations/queue"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

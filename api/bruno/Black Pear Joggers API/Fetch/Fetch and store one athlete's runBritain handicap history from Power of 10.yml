@@ -1,0 +1,39 @@
+info:
+  name: Fetch and store one athlete's runBritain handicap history from Power of 10
+  type: http
+  seq: 8
+  tags:
+    - Fetch
+
+http:
+  method: GET
+  url: "{{baseUrl}}/fetch/rankings/:athleteId"
+  params:
+    - name: athleteId
+      value: ""
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/fetch/rankings/:athleteId"
+      method: GET
+      params:
+        - name: athleteId
+          value: ""
+          type: path
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

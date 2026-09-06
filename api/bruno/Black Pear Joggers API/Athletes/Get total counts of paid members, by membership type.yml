@@ -1,0 +1,31 @@
+info:
+  name: Get total counts of paid members, by membership type
+  type: http
+  seq: 7
+  tags:
+    - Athletes
+
+http:
+  method: GET
+  url: "{{baseUrl}}/members/totals"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/members/totals"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""

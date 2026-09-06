@@ -18,6 +18,14 @@ class AwardController extends Controller
 
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Awards"},
+     *   path="/awards",
+     *   summary="Get all awards",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getAwards() {
         $awards = Award::query()->get()->all();
         return response()->json($awards);
@@ -33,6 +41,16 @@ class AwardController extends Controller
         return response()->json($award);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Awards"},
+     *   path="/athletes/awards",
+     *   summary="Get award-winning performances, optionally filtered by athlete and year",
+     *   @OA\Parameter(name="athlete", in="query", required=false, @OA\Schema(type="integer")),
+     *   @OA\Parameter(name="year", in="query", required=false, @OA\Schema(type="integer")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getAthleteAwards(Request $request) {
         $filters = [];
         $filterString = '';

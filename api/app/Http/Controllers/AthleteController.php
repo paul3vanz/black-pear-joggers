@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Gate;
 
 class AthleteController extends Controller
 {
+    /**
+     * @OA\Get(
+     *   tags={"Athletes"},
+     *   path="/athletes",
+     *   summary="Get all athletes",
+     *   @OA\Parameter(name="search", in="query", required=false, @OA\Schema(type="string")),
+     *   @OA\Parameter(name="includeAllMembers", in="query", required=false, @OA\Schema(type="boolean")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getAthletes(Request $request)
     {
         $searchTerm = preg_replace('/[^\da-z ]/i', '', $request->input('search'));
@@ -52,6 +62,15 @@ class AthleteController extends Controller
         return response()->json($athletes);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Athletes"},
+     *   path="/athlete/{id}",
+     *   summary="Get an athlete by ID",
+     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getAthlete($id)
     {
         $athlete = Athlete::query()
@@ -64,6 +83,17 @@ class AthleteController extends Controller
         return response()->json($athlete);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Athletes"},
+     *   path="/athleteIdvCheck",
+     *   summary="Check an athlete's identity by URN and date of birth",
+     *   @OA\Parameter(name="urn", in="query", required=true, @OA\Schema(type="integer")),
+     *   @OA\Parameter(name="dob", in="query", required=true, @OA\Schema(type="string", format="date")),
+     *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=404, description="Not found"),
+     * )
+     */
     public function athleteIdvCheck(Request $request)
     {
         $this->validate($request, [
@@ -94,6 +124,28 @@ class AthleteController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *   tags={"Athletes"},
+     *   path="/athlete",
+     *   summary="Create an athlete",
+     *   @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *       required={"id","urn","athleteId","firstName","lastName","gender","dob"},
+     *       @OA\Property(property="id", type="integer"),
+     *       @OA\Property(property="urn", type="integer"),
+     *       @OA\Property(property="athleteId", type="integer"),
+     *       @OA\Property(property="firstName", type="string"),
+     *       @OA\Property(property="lastName", type="string"),
+     *       @OA\Property(property="gender", type="string", enum={"M", "W"}),
+     *       @OA\Property(property="dob", type="string", format="date"),
+     *     )
+     *   ),
+     *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     * )
+     */
     public function createAthlete(Request $request)
     {
         if (!Gate::allows('athletes:admin')) {
@@ -113,6 +165,29 @@ class AthleteController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Patch(
+     *   tags={"Athletes"},
+     *   path="/athlete/{id}",
+     *   summary="Update an athlete",
+     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *       required={"id","urn","athleteId","firstName","lastName","gender","dob"},
+     *       @OA\Property(property="id", type="integer"),
+     *       @OA\Property(property="urn", type="integer"),
+     *       @OA\Property(property="athleteId", type="integer"),
+     *       @OA\Property(property="firstName", type="string"),
+     *       @OA\Property(property="lastName", type="string"),
+     *       @OA\Property(property="gender", type="string", enum={"M", "W"}),
+     *       @OA\Property(property="dob", type="string", format="date"),
+     *     )
+     *   ),
+     *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     * )
+     */
     public function updateAthlete($id, Request $request)
     {
         if (!Gate::allows('athletes:admin')) {
@@ -131,6 +206,16 @@ class AthleteController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Delete(
+     *   tags={"Athletes"},
+     *   path="/athlete/{id}",
+     *   summary="Delete an athlete",
+     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Response(response=204, description="No content"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     * )
+     */
     public function deleteAthlete($id)
     {
         if (!Gate::allows('athletes:admin')) {
@@ -156,6 +241,14 @@ class AthleteController extends Controller
         return response()->json($athlete);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Athletes"},
+     *   path="/members/totals",
+     *   summary="Get total counts of paid members, by membership type",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getMembershipTotals()
     {
         $results = DB::select("

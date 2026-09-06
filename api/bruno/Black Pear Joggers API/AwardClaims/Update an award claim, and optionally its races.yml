@@ -1,0 +1,65 @@
+info:
+  name: Update an award claim, and optionally its races
+  type: http
+  seq: 7
+  tags:
+    - AwardClaims
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/awardclaim/:id"
+  params:
+    - name: id
+      value: ""
+      type: path
+  body:
+    type: json
+    data: "{}"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/awardclaim/:id"
+      method: PATCH
+      params:
+        - name: id
+          value: ""
+          type: path
+      body:
+        type: json
+        data: "{}"
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: ""
+  - name: 403 Response
+    description: Forbidden
+    request:
+      url: "{{baseUrl}}/awardclaim/:id"
+      method: PATCH
+      params:
+        - name: id
+          value: ""
+          type: path
+      body:
+        type: json
+        data: "{}"
+    response:
+      status: 403
+      statusText: Forbidden
+      body:
+        type: text
+        data: ""

@@ -23,6 +23,14 @@ class FetchPaymentsController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Fetch"},
+     *   path="/payments/fetch",
+     *   summary="Fetch membership payments and store any new or changed records",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function fetchPayments()
     {
         Log::info('fetchPayments executed');

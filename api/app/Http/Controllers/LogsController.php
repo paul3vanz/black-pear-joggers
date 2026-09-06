@@ -16,6 +16,14 @@ class LogsController extends Controller
 
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Logs"},
+     *   path="/logs",
+     *   summary="Get all logs",
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getLogs() {
         $logs = Log::query()->orderBy('created_at', 'desc')->get()->all();
         return response()->json($logs);

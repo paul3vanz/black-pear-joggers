@@ -1,0 +1,6 @@
+info:
+  name: Fetch
+  type: folder
+
+request:
+  auth: inherit

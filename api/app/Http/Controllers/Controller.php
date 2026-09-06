@@ -14,6 +14,12 @@ use Laravel\Lumen\Routing\Controller as BaseController;
  *     url="https://bpj.org.uk"
  *   )
  * )
+ * @OA\SecurityScheme(
+ *   securityScheme="bearerAuth",
+ *   type="http",
+ *   scheme="bearer",
+ *   bearerFormat="JWT"
+ * )
  */
 class Controller extends BaseController
 {

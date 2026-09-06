@@ -26,6 +26,7 @@ class RegistrationController extends Controller
      *   tags={"Registrations"},
      *   path="/registrations",
      *   summary="Get all registrations",
+     *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=200, description="OK"),
      * )
      */
@@ -41,6 +42,7 @@ class RegistrationController extends Controller
      *   tags={"Registrations"},
      *   path="/registrations",
      *   summary="Delete registration by ID",
+     *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=200, description="OK"),
      * )
      */
@@ -50,6 +52,15 @@ class RegistrationController extends Controller
         return response()->json($id);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Registrations"},
+     *   path="/registrations/queue",
+     *   summary="Queue processing of all registrations",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function queueAllRegistrations()
     {
         $registrations = Registration::get()->all();
@@ -146,6 +157,15 @@ class RegistrationController extends Controller
         return null;
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Registrations"},
+     *   path="/registrations/createregistrationsfrommemberships",
+     *   summary="Create registrations for club members not already tracked as athletes",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function createRegistrationsFromMemberships()
     {
         $members = collect($this->membershipController->getClubMembers(1606, true)->getData()->Athletes);

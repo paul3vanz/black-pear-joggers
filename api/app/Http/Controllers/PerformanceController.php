@@ -178,6 +178,15 @@ class PerformanceController extends Controller
         return response()->json($performances);
     }
 
+    /**
+     * @OA\Get(
+     *   tags={"Performances"},
+     *   path="/performances/{id}",
+     *   summary="Get a performance by ID",
+     *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Response(response=200, description="OK"),
+     * )
+     */
     public function getPerformance($id)
     {
         $performance = Performance::query()->find($id)->with('meeting')->with('meeting');
