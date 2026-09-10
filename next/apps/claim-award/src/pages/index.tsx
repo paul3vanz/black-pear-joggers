@@ -5,6 +5,9 @@ import { CurrentTargets } from '../components/current-targets';
 import { useUser } from '@black-pear-joggers/core-services';
 import { PersonalBests } from '../components/personal-bests';
 import { Stack } from '@black-pear-joggers/stack';
+import { CLAIM_MODE } from '../config/claim-mode';
+import { MyClaims } from '../components/my-claims/my-claims';
+import { ClaimWizard } from '../components/claim-wizard/claim-wizard';
 
 function AwardClaimHomePage() {
   const { data: userProfile, isLoading: isLoadingUser } = useUser();
@@ -20,24 +23,28 @@ function AwardClaimHomePage() {
           <h1>Club standards awards</h1>
 
           <p>
-            Check your progress on the{' '}
-            <a href="https://apps.bpj.org.uk/club-standards/">
-              club standards awards scheme
-            </a>{' '}
-            below. You can claim your award if in any calendar year you have
-            been a member of the club throughout the period over which all the
-            runs have taken place and you have the required standard for at
-            least three of the five distances in your age category (your age
+            You can claim an award if in any calendar year you have been a
+            member of the club throughout the period over which all the runs
+            have taken place and you have the required standard for at least
+            three of the five distances in your age category (your age
             counting as of the date of the run).
           </p>
         </Container>
       </Stack>
 
-      <PersonalBests />
-
       <CurrentTargets />
 
-      <YourAwards />
+      {CLAIM_MODE === 'auto' ? (
+        <>
+          <PersonalBests />
+          <YourAwards />
+        </>
+      ) : (
+        <>
+          <MyClaims athleteId={userProfile?.athleteId} />
+          <ClaimWizard />
+        </>
+      )}
     </>
   );
 }

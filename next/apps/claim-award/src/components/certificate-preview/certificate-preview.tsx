@@ -9,11 +9,15 @@ import { Award } from 'apps/claim-award/src/types/award';
 import { useRef } from 'react';
 
 type Props = {
-  athlete: Athlete;
+  athlete: Pick<Athlete, 'first_name' | 'last_name' | 'gender'>;
   year: number;
   category: string;
   performances: Performance[];
   award: Award;
+  // Defaults to true so the existing auto-built awards (already earned,
+  // nothing to verify) keep printing exactly as before. Manual claims pass
+  // false until an admin has verified them.
+  printable?: boolean;
 };
 
 export function CertificatePreview(props: Props) {
@@ -21,6 +25,7 @@ export function CertificatePreview(props: Props) {
   const certificatePrintContainer = document.getElementById(
     'certificate-print-container'
   );
+  const printable = props.printable ?? true;
 
   function onPrintClick() {
     if (certificatePrintContainer && certificateRef.current) {
@@ -35,6 +40,13 @@ export function CertificatePreview(props: Props) {
         ref={certificateRef}
         className="certificate bg-white mb-4 w-auto p-4 relative bg-[url('https://bpj.org.uk/certificate/certificate.png')] bg-[length:1px_1px] bg-no-repeat"
       >
+        {!printable && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-10 pointer-events-none">
+            <span className="uppercase font-bold text-2xl text-orange-400 border-4 border-orange-400 rounded px-4 py-2 -rotate-12">
+              Pending verification
+            </span>
+          </div>
+        )}
         <img
           src={`https://bpj.org.uk/certificate/certificate-badge-${Award[
             props.award
@@ -123,9 +135,18 @@ export function CertificatePreview(props: Props) {
       </div>
 
       <p className="mb-8">
-        <button className="underline font-bold" onClick={() => onPrintClick()}>
-          Print certificate
-        </button>
+        {printable ? (
+          <button
+            className="underline font-bold"
+            onClick={() => onPrintClick()}
+          >
+            Print certificate
+          </button>
+        ) : (
+          <span className="text-gray-500" title="Available once your claim has been verified">
+            Print certificate (pending verification)
+          </span>
+        )}
       </p>
     </>
   );

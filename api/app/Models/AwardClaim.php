@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 final class AwardClaim extends Model {
 
@@ -18,6 +19,7 @@ final class AwardClaim extends Model {
   protected $table = 'awardClaim';
 
 	protected $fillable = [
+    'athleteId',
 		'gender',
     'category',
     'award',
@@ -25,11 +27,27 @@ final class AwardClaim extends Model {
 		'lastName',
     'email',
     'verified',
+    'token',
   ];
 
   protected $hidden = [
-    'email'
-];
+    'email',
+    'token',
+  ];
+
+  protected $casts = [
+    'athleteId' => 'integer',
+    'verified' => 'boolean',
+  ];
+
+  protected static function boot()
+  {
+    parent::boot();
+
+    static::creating(function (AwardClaim $claim) {
+      $claim->token = $claim->token ?: (string) Str::uuid();
+    });
+  }
 
 	public function races() {
 		return $this->hasMany('App\Models\AwardClaimRace', 'claimId', 'id');

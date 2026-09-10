@@ -14,7 +14,8 @@ export interface AwardClaimRace {
 
 export interface AwardClaim {
   id: number;
-  athleteId?: any;
+  athleteId?: number;
+  token?: string;
   gender: string;
   category: string;
   award: string;

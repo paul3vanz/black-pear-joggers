@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\AwardClaim;
 use App\Models\AwardClaimRace;
+use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Log;
@@ -20,17 +22,34 @@ class AwardClaimController extends Controller
      * @OA\Get(
      *   tags={"AwardClaims"},
      *   path="/awardclaim",
-     *   summary="Get all award claims",
+     *   summary="Get all award claims, optionally filtered to one athlete",
      *   security={{"bearerAuth":{}}},
+     *   @OA\Parameter(name="athleteId", in="query", required=false, @OA\Schema(type="integer")),
      *   @OA\Response(response=200, description="OK"),
      * )
      */
-    public function getAll()
+    public function getAll(Request $request)
     {
-        $claims = AwardClaim::query()->with('races')->get();
+        $query = AwardClaim::query()->with('races');
+
+        if ($request->filled('athleteId')) {
+            $query->where('athleteId', $request->input('athleteId'));
+        }
+
+        $claims = $query->get();
 
         if (Gate::allows('clubStandards:admin')) {
-            $claims->makeVisible(['email']);
+            $claims->makeVisible(['email', 'token']);
+        } else {
+            $currentAthleteId = optional(User::where('id', Auth::user()['sub'] ?? null)->first())->athleteId;
+
+            if ($currentAthleteId) {
+                $claims->each(function (AwardClaim $claim) use ($currentAthleteId) {
+                    if ($claim->athleteId === $currentAthleteId) {
+                        $claim->makeVisible(['token']);
+                    }
+                });
+            }
         }
 
         $claims = $claims->all();
@@ -46,6 +65,7 @@ class AwardClaimController extends Controller
      *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *   @OA\Parameter(name="uniqueToken", in="path", required=true, @OA\Schema(type="string")),
      *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=404, description="Not found"),
      * )
      */
     public function getClaim($id, $uniqueToken)
@@ -54,6 +74,12 @@ class AwardClaimController extends Controller
             ->where('id', '=', $id)
             ->with('races')
             ->first();
+
+        if (!$claim || !hash_equals((string) $claim->token, (string) $uniqueToken)) {
+            abort(404);
+        }
+
+        $claim->makeVisible(['token']);
 
         return response()->json($claim);
     }
@@ -183,7 +209,8 @@ class AwardClaimController extends Controller
      * @OA\Post(
      *   tags={"AwardClaims"},
      *   path="/awardclaim",
-     *   summary="Submit a club standards award claim",
+     *   summary="Submit a club standards award claim as the authenticated athlete",
+     *   security={{"bearerAuth":{}}},
      *   @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(
@@ -198,6 +225,7 @@ class AwardClaimController extends Controller
      *     )
      *   ),
      *   @OA\Response(response=200, description="OK"),
+     *   @OA\Response(response=400, description="No athlete linked to this account"),
      * )
      */
     public function submitClaim(Request $request)
@@ -212,7 +240,14 @@ class AwardClaimController extends Controller
             'races' => 'required',
         ]);
 
+        $user = User::where('id', Auth::user()['sub'])->first();
+
+        if (!$user || !$user->athleteId) {
+            return response()->json(['message' => 'No athlete linked to this account'], 400);
+        }
+
         $claim = AwardClaim::create([
+            'athleteId' => $user->athleteId,
             'gender' => $request->input('gender'),
             'category' => $request->input('category'),
             'award' => $request->input('award'),
@@ -224,6 +259,8 @@ class AwardClaimController extends Controller
         Log::channel('slackAwardClaims')->info("Club standards {$request->input('award')} award claim submitted by {$request->input('firstName')} {$request->input('lastName')}");
 
         $claim->races()->createMany($request->input('races'));
+
+        $claim->makeVisible(['token']);
 
         return response()->json($claim);
     }

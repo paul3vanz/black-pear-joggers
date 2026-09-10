@@ -15,7 +15,6 @@ $router->get('/athleteIdvCheck', 'AthleteController@athleteIdvCheck');
 $router->get('/athletes/awards', 'AwardController@getAthleteAwards');
 
 $router->get('/awardclaim/{id}/{uniqueToken}', 'AwardClaimController@getClaim');
-$router->post('/awardclaim', 'AwardClaimController@submitClaim');
 $router->post('/awardclaim/{id}/race', 'AwardClaimController@submitClaimRace');
 
 $router->group([
@@ -27,6 +26,7 @@ $router->group([
     $router->post('delete/{id}', 'AwardClaimController@delete');
     $router->get('', 'AwardClaimController@getAll');
     $router->patch('{id}', 'AwardClaimController@update');
+    $router->post('', 'AwardClaimController@submitClaim');
 });
 
 $router->group(['middleware' => 'auth', 'prefix' => 'membership'], function ($router) {

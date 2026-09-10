@@ -183,16 +183,23 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
               <td className="px-4 py-2">
                 <button
                   className="mr-3"
-                  title="View certificate"
+                  title={
+                    awardClaim.verified
+                      ? 'View / print certificate'
+                      : 'View certificate (printing available once verified)'
+                  }
                   onClick={() =>
                     window.open(
-                      'https://apps.bpj.org.uk/club-standards/?certificateId=' +
-                        awardClaim.id
+                      `https://apps.bpj.org.uk/claim-award/certificate?id=${awardClaim.id}&token=${awardClaim.token}`
                     )
                   }
                 >
                   <FontAwesomeIcon
-                    className="cursor-pointer"
+                    className={
+                      awardClaim.verified
+                        ? 'cursor-pointer'
+                        : 'cursor-pointer opacity-50'
+                    }
                     size="lg"
                     icon={faPrint}
                   />

@@ -1,5 +1,5 @@
 import useSWRImmutable from 'swr/immutable';
-import { AwardClaim } from './award-claims.interface';
+import { AwardClaim, AwardClaimRace } from './award-claims.interface';
 import { config } from '../config';
 import { fetcher, post } from './fetcher';
 import { getYear, isSameYear, parseISO } from 'date-fns';
@@ -19,6 +19,49 @@ export function useAwardClaims() {
     isLoading: !error && !data,
     isError: error,
   };
+}
+
+export function useMyAwardClaims(athleteId?: number) {
+  const { data, error } = useSWRImmutable<AwardClaim[], string>(
+    athleteId ? `${awardClaimsUrl}?athleteId=${athleteId}` : null,
+    fetcher
+  );
+
+  return {
+    myAwardClaims: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+}
+
+export function useAwardClaim(id?: number, token?: string) {
+  const { data, error } = useSWRImmutable<AwardClaim, string>(
+    id && token ? `${config.baseApiUrl}/awardclaim/${id}/${token}` : null,
+    fetcher
+  );
+
+  return {
+    awardClaim: data,
+    isLoading: !error && !data,
+    isError: error,
+  };
+}
+
+export type NewAwardClaim = Pick<
+  AwardClaim,
+  'gender' | 'category' | 'award' | 'firstName' | 'lastName' | 'email'
+> & {
+  races: Pick<AwardClaimRace, 'distance' | 'time' | 'timeParsed' | 'date' | 'race' | 'award'>[];
+};
+
+export async function submitClaim(claim: NewAwardClaim): Promise<AwardClaim> {
+  const response = await post(awardClaimsUrl, claim);
+
+  if (!response.ok) {
+    throw new Error(response.status.toString());
+  }
+
+  return response.json();
 }
 
 export async function toggleVerified(

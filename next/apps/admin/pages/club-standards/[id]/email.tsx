@@ -30,6 +30,7 @@ function AwardClaimDetailsPage() {
         firstName: awardClaim!.firstName,
         award: awardClaim!.award,
         certificateId: awardClaim!.id,
+        token: awardClaim!.token,
       }),
     });
   });
