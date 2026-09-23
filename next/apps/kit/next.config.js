@@ -13,6 +13,10 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
+  compiler: {
+    // Stable, hash-based componentIds prevent SSR/client hydration mismatches.
+    styledComponents: true,
+  },
   output: 'export',
   distDir: 'exported',
 };

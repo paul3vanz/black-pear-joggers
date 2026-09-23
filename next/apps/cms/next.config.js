@@ -58,6 +58,12 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
+  compiler: {
+    // Without this, styled-components assigns componentIds in module-eval
+    // order, which differs between the server and client bundles (different
+    // chunk splitting per page) and causes SSR hydration mismatches.
+    styledComponents: true,
+  },
   async redirects() {
     return [
       {
