@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Container } from '@black-pear-joggers/container';
-import { formatRelative, friendlyDate } from '@black-pear-joggers/helpers';
+import { formatRelative, shortUkDate } from '@black-pear-joggers/helpers';
 import { getAllPosts } from '../../core/queries/get-all-posts';
 import { InferGetStaticPropsType } from 'next';
 import { legacyPosts } from '../../data/legacyPosts';
@@ -43,7 +43,10 @@ export default function SiteMap(
               <li className="mb-2" key={post.date}>
                 <a href={post.url}>{post.title}</a>{' '}
                 <span className="text-gray-500">
-                  {formatRelative(post.date)} ({friendlyDate(post.date)})
+                  {formatRelative(post.date)}
+                </span>{' '}
+                <span className="text-gray-400 text-xs">
+                  ({shortUkDate(post.date)})
                 </span>
               </li>
             ))}
