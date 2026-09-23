@@ -77,7 +77,13 @@ export function timestamp(date?: string) {
 }
 
 export function formatRelative(date: string): string {
-  const relativeString = formatDistance(new Date(), parseISO(date));
+  const parsedDate = parseISO(date);
+
+  if (isToday(parsedDate)) {
+    return 'Today';
+  }
+
+  const relativeString = formatDistance(new Date(), parsedDate);
 
   return `${relativeString.charAt(0).toUpperCase()}${relativeString.substr(
     1
