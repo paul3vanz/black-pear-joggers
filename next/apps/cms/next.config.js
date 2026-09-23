@@ -64,15 +64,6 @@ const nextConfig = {
     // chunk splitting per page) and causes SSR hydration mismatches.
     styledComponents: true,
   },
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/home',
-        permanent: false,
-      },
-    ];
-  },
 };
 
 const plugins = [

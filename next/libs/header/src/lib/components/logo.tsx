@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const Logo = () => (
-  <Link href="https://bpj.org.uk">
+  <Link href="/">
     <img
       className="h-8 sm:h-12 w-auto my-4"
       src="https://bpj.org.uk/download-logo/bpj-logo-alt.svg"
