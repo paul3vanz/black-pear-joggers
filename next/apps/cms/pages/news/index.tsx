@@ -39,7 +39,7 @@ export default function SiteMap(
           <h2>Older posts</h2>
 
           <ul className="list-disc pl-5 mb-4">
-            {legacyPosts.reverse().map((post) => (
+            {[...legacyPosts].reverse().map((post) => (
               <li className="mb-2" key={post.date}>
                 <a href={post.url}>{post.title}</a>{' '}
                 <span className="text-gray-500">
