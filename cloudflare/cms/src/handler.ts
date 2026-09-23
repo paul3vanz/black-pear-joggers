@@ -17,10 +17,6 @@ export async function handleRequest(request: Request) {
     url = url.replace(baseUrl, netlifyCms);
   }
 
-  if ([`${baseUrl}`, `${baseUrl}/`].includes(request.url)) {
-    url = `${netlifyCms}/home`;
-  }
-
   if (region && blockedRegions.includes(region.toUpperCase())) {
     response = new Response('Access denied: This page is not available in your region.', {
       status: 403,
