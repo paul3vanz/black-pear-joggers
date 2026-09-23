@@ -13,18 +13,18 @@ interface RecentNewsProps {
 }
 
 export function RecentNews(props: RecentNewsProps) {
-  const monthsSinceLastPost = differenceInCalendarMonths(
-    new Date(),
-    parseISO(props.posts[0].publishedAt)
+  const recentPosts = props.posts?.filter(
+    (post) =>
+      differenceInCalendarMonths(new Date(), parseISO(post.publishedAt)) <= 2
   );
 
-  return monthsSinceLastPost <= 2 ? (
+  return recentPosts?.length ? (
     <Stack backgroundColour={BackgroundColour.Dark}>
       <Container wide={true}>
         <h2>Recent news</h2>
 
-        <Cards maxColumns={props.posts?.length < 3 ? props.posts.length : 3}>
-          {props.posts?.map((post) => (
+        <Cards maxColumns={recentPosts.length < 3 ? recentPosts.length : 3}>
+          {recentPosts.map((post) => (
             <Card
               key={post._id}
               headline={post.title}
