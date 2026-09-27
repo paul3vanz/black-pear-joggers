@@ -190,7 +190,7 @@ export function AwardClaimsTable(props: AwardClaimsTableProps) {
                   }
                   onClick={() =>
                     window.open(
-                      `https://apps.bpj.org.uk/claim-award/certificate?id=${awardClaim.id}&token=${awardClaim.token}`
+                      `https://bpj.org.uk/claim-award/certificate?id=${awardClaim.id}&token=${awardClaim.token}`
                     )
                   }
                 >
