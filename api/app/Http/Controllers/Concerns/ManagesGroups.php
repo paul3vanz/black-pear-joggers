@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Concerns;
 
 use App\Models\ClubSession;
+use App\Models\SessionAttendee;
 use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
 
@@ -32,6 +33,22 @@ trait ManagesGroups
             ->where('member_id', $member->id)
             ->where('status', SessionGroupLeader::CONFIRMED)
             ->exists();
+    }
+
+    /**
+     * Someone leading a group is going on that run, so mark them as attending it.
+     * An existing response keeps its per-run pace; "not going" or "maybe" becomes
+     * "going". Leaving the group as a leader later does not undo this.
+     */
+    protected function attendAsLeader($club, ClubSession $session, SessionGroup $group, $member): void
+    {
+        $row = SessionAttendee::firstOrNew(['session_id' => $session->id, 'member_id' => $member->id]);
+        $row->fill([
+            'club_id' => $club->id,
+            'status' => SessionAttendee::GOING,
+            'group_id' => $group->id,
+        ]);
+        $row->save();
     }
 
     /** A live session of this club, or null. */

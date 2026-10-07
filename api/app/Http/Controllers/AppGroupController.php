@@ -205,6 +205,7 @@ class AppGroupController extends Controller
                     'member_id' => $member->id,
                     'role' => 'leader',
                 ]);
+                $this->attendAsLeader($club, $session, $group, $member);
             }
 
             $session->touchForChange();
@@ -369,6 +370,7 @@ class AppGroupController extends Controller
                 $group->save();
             }
 
+            $this->attendAsLeader($club, $group->session, $group, $member);
             $group->session->touchForChange();
         });
 

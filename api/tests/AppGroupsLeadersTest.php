@@ -302,6 +302,67 @@ class AppGroupsLeadersTest extends AppGroupsBase
         $this->assertLessThanOrEqual(14, $queries, "Too many queries: $queries");
     }
 
+    // ---- leaders attend their own group ----------------------------------
+
+    public function testCreatingAGroupAsLeaderMarksTheLeaderAsGoingInIt()
+    {
+        $s = $this->session();
+        [, $group] = $this->api('POST', "/sessions/{$s->id}/groups", 'plain', ['lead' => true, 'paceUnit' => 'mi', 'paceFromS' => 570]);
+
+        $row = SessionAttendee::where('session_id', $s->id)->where('member_id', $this->plain->id)->first();
+        $this->assertSame('going', $row->status);
+        $this->assertSame($group['id'], $row->group_id);
+
+        [, $feed] = $this->api('GET', '/sessions', 'plain');
+        $this->assertSame('going', $feed['items'][0]['summary']['myStatus']);
+        $this->assertSame($group['id'], $feed['items'][0]['summary']['myGroupId']);
+        $this->assertTrue($feed['items'][0]['summary']['myLeading']);
+    }
+
+    public function testJoiningAsLeaderMovesAndKeepsThePacePerRun()
+    {
+        $s = $this->session();
+        $other = $this->group($s, [$this->leaderB]);
+        $mine = $this->group($s, [$this->leaderB]);
+        // Already coming to a different group, with a pace for this run.
+        $this->attend($s, $this->leaderA, 'maybe', $other, ['pace_unit' => 'km', 'pace_from_s' => 330]);
+
+        $this->api('POST', "/groups/{$mine->id}/leaders", 'leaderA');
+
+        $row = SessionAttendee::where('session_id', $s->id)->where('member_id', $this->leaderA->id)->first();
+        $this->assertSame('going', $row->status);
+        $this->assertSame($mine->id, $row->group_id);
+        $this->assertSame('km', $row->pace_unit);
+        $this->assertSame(330, (int) $row->pace_from_s);
+        $this->assertSame(1, SessionAttendee::where('session_id', $s->id)->where('member_id', $this->leaderA->id)->count());
+    }
+
+    public function testNotGoingBecomesGoingWhenYouLead()
+    {
+        $s = $this->session();
+        $this->attend($s, $this->plain, 'not_going');
+
+        $this->api('POST', "/sessions/{$s->id}/groups", 'plain', ['lead' => true]);
+
+        $row = SessionAttendee::where('session_id', $s->id)->where('member_id', $this->plain->id)->first();
+        $this->assertSame('going', $row->status);
+    }
+
+    public function testLeaderlessGroupsAndWithdrawingDoNotChangeAttendance()
+    {
+        $s = $this->session();
+        $this->api('POST', "/sessions/{$s->id}/groups", 'committee', ['lead' => false]);
+        $this->assertSame(0, SessionAttendee::where('session_id', $s->id)->count());
+
+        [, $group] = $this->api('POST', "/sessions/{$s->id}/groups", 'leaderA', ['lead' => true]);
+        $this->api('DELETE', "/groups/{$group['id']}/leaders/me", 'leaderA');
+
+        // Stepping down as leader leaves them going in the group.
+        $row = SessionAttendee::where('session_id', $s->id)->where('member_id', $this->leaderA->id)->first();
+        $this->assertSame('going', $row->status);
+        $this->assertSame($group['id'], $row->group_id);
+    }
+
     public function testGroupChangesBumpTheSessionAndSinceDeliversIt()
     {
         $s = $this->session();

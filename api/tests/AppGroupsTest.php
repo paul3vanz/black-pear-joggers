@@ -30,7 +30,8 @@ class AppGroupsTest extends AppGroupsBase
         $this->assertSame(0, $body['sortOrder']);
         $this->assertSame($this->plain->id, $body['leaders'][0]['memberId']);
         $this->assertSame('leader', $body['leaders'][0]['role']);
-        $this->assertSame(0, $body['goingCount']);
+        // The leader is going on their own run, so they count as attending.
+        $this->assertSame(1, $body['goingCount']);
     }
 
     public function testLeaderlessGroupNeedsCommitteeAdminOrCoordinator()
