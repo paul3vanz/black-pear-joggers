@@ -54,6 +54,9 @@ abstract class AppApiTestCase extends TestCase
             '2026_10_07_090100_create_posts_table.php',
             '2026_10_07_090200_create_notifications_table.php',
             '2026_10_07_090300_create_notification_preferences_table.php',
+            '2026_10_08_090000_create_venues_table.php',
+            '2026_10_08_090100_create_session_series_table.php',
+            '2026_10_08_090200_create_sessions_table.php',
         ]);
 
         // Stand in for the Auth0 verification: the sub comes from a header.

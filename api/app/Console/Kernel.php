@@ -22,6 +22,7 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\QueueUpdatePersonalBests',
         'App\Console\Commands\StartDatabaseCleanup',
         'App\Console\Commands\SetMemberRole',
+        'App\Console\Commands\GenerateSessions',
     ];
 
     /**
@@ -45,5 +46,7 @@ class Kernel extends ConsoleKernel
             ->everyMinute();
         $schedule->command('queue:fetch:updatepersonalbests')->dailyAt('07:00');
         $schedule->command('db:cleanup')->dailyAt('23:00');
+        // Club runs: materialise sessions 8 weeks ahead from their weekly series (idempotent).
+        $schedule->command('app:generate-sessions')->hourly();
     }
 }

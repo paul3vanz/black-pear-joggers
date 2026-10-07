@@ -135,6 +135,24 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->post('notifications/read', 'AppNotificationController@markRead');
         $router->get('notification-preferences', 'AppNotificationController@preferences');
         $router->put('notification-preferences', 'AppNotificationController@updatePreferences');
+
+        // Phase 3: club runs schedule
+        $router->get('venues', 'AppVenueController@index');
+        $router->post('venues', 'AppVenueController@store');
+        $router->patch('venues/{id}', 'AppVenueController@update');
+        $router->delete('venues/{id}', 'AppVenueController@destroy');
+
+        $router->get('series', 'AppSeriesController@index');
+        $router->post('series', 'AppSeriesController@store');
+        $router->patch('series/{id}', 'AppSeriesController@update');
+        $router->delete('series/{id}', 'AppSeriesController@destroy');
+
+        $router->get('sessions', 'AppSessionController@index');
+        $router->post('sessions', 'AppSessionController@store');
+        $router->patch('sessions/{id}', 'AppSessionController@update');
+        $router->post('sessions/{id}/cancel', 'AppSessionController@cancel');
+        $router->post('sessions/{id}/restore', 'AppSessionController@restore');
+        $router->delete('sessions/{id}', 'AppSessionController@destroy');
     });
 });
 

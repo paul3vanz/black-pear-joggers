@@ -67,6 +67,8 @@ The following tasks run on a schedule to keep things automated:
 - Every minute: queue:work --queue=notifications --stop-when-empty --max-time=50
   - Sends the push notifications queued by the members' app (inbox rows are written straight away).
   - Needs `FCM_SERVICE_ACCOUNT_PATH` (path to a Google service-account JSON file). Without it, pushes are skipped and a warning is logged.
+- Hourly: app:generate-sessions
+  - Materialises club run sessions 8 weeks ahead from their weekly series (idempotent). Run by hand with `php artisan app:generate-sessions [--series=<id>]`; every series write in the app also runs it for that series.
 
 The host cron must run `php artisan schedule:run` **every minute** for any of these to fire, not just daily.
 
