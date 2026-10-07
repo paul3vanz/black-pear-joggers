@@ -71,6 +71,7 @@ $app->middleware([
 
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
+    'club' => App\Http\Middleware\ResolveClub::class,
 ]);
 
 /*

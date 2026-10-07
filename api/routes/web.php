@@ -114,6 +114,30 @@ $router->get('/test', 'TestController@test');
 
 $router->get('/uka', 'ScraperController@fetchMembers');
 
+// Members' app (Flutter). Contract: ../mobile/docs/api-contract.md
+$router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
+    $router->get('me', 'AppMeController@getMe');
+    $router->post('clubs/{clubId}/link', ['middleware' => 'club:optional', 'uses' => 'AppMembershipController@link']);
+    $router->delete('clubs/{clubId}/link', ['middleware' => 'club:optional', 'uses' => 'AppMembershipController@unlink']);
+    $router->get('clubs/{clubId}/profile', ['middleware' => 'club:required', 'uses' => 'AppMembershipController@profile']);
+
+    // Phase 2: devices, club updates, notifications
+    $router->post('devices', 'AppDeviceController@register');
+    $router->delete('devices/{token:.+}', 'AppDeviceController@unregister'); // FCM tokens contain ':'
+
+    $router->group(['middleware' => 'club:required', 'prefix' => 'clubs/{clubId}'], function ($router) {
+        $router->get('posts', 'AppPostController@index');
+        $router->post('posts', 'AppPostController@store');
+        $router->patch('posts/{id}', 'AppPostController@update');
+        $router->delete('posts/{id}', 'AppPostController@destroy');
+
+        $router->get('notifications', 'AppNotificationController@index');
+        $router->post('notifications/read', 'AppNotificationController@markRead');
+        $router->get('notification-preferences', 'AppNotificationController@preferences');
+        $router->put('notification-preferences', 'AppNotificationController@updatePreferences');
+    });
+});
+
 $router->group(['middleware' => 'auth', 'prefix' => 'user'], function ($router) {
     $router->get('', 'UserController@getUser');
     $router->put('', 'UserController@setUser');

@@ -64,6 +64,11 @@ The following tasks run on a schedule to keep things automated:
   - Reads the runBritain handicap from the Power of 10 athlete page, since runbritainrankings.com no longer exists
 - 05:00: queue:work --stop-when-empty
 - 07:00: queue:fetch:updatepersonalbests
+- Every minute: queue:work --queue=notifications --stop-when-empty --max-time=50
+  - Sends the push notifications queued by the members' app (inbox rows are written straight away).
+  - Needs `FCM_SERVICE_ACCOUNT_PATH` (path to a Google service-account JSON file). Without it, pushes are skipped and a warning is logged.
+
+The host cron must run `php artisan schedule:run` **every minute** for any of these to fire, not just daily.
 
 ## Available endpoints
 

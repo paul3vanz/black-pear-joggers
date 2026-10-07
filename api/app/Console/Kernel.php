@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\QueueProcessRegistrations',
         'App\Console\Commands\QueueUpdatePersonalBests',
         'App\Console\Commands\StartDatabaseCleanup',
+        'App\Console\Commands\SetMemberRole',
     ];
 
     /**
@@ -39,6 +40,9 @@ class Kernel extends ConsoleKernel
         // and queue:fetch:rankings still work on their own, by hand.
         $schedule->command('queue:fetch:athletes')->dailyAt('01:00');
         $schedule->command('queue:work --stop-when-empty')->dailyAt('05:00');
+        // Push notifications: needs host cron running `php artisan schedule:run` every minute.
+        $schedule->command('queue:work --queue=notifications --stop-when-empty --max-time=50')
+            ->everyMinute();
         $schedule->command('queue:fetch:updatepersonalbests')->dailyAt('07:00');
         $schedule->command('db:cleanup')->dailyAt('23:00');
     }
