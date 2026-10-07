@@ -57,6 +57,10 @@ abstract class AppApiTestCase extends TestCase
             '2026_10_08_090000_create_venues_table.php',
             '2026_10_08_090100_create_session_series_table.php',
             '2026_10_08_090200_create_sessions_table.php',
+            '2026_10_09_090000_create_session_groups_table.php',
+            '2026_10_09_090100_create_session_group_leaders_table.php',
+            '2026_10_09_090200_create_session_attendees_table.php',
+            '2026_10_09_090300_create_member_preferences_table.php',
         ]);
 
         // Stand in for the Auth0 verification: the sub comes from a header.

@@ -153,6 +153,23 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->post('sessions/{id}/cancel', 'AppSessionController@cancel');
         $router->post('sessions/{id}/restore', 'AppSessionController@restore');
         $router->delete('sessions/{id}', 'AppSessionController@destroy');
+
+        // Phase 4: groups, leaders, attendance, preferences
+        $router->post('sessions/{sessionId}/groups', 'AppGroupController@store');
+        $router->patch('groups/{id}', 'AppGroupController@update');
+        $router->delete('groups/{id}', 'AppGroupController@destroy');
+        $router->post('groups/{id}/leaders', 'AppGroupController@join');
+        $router->delete('groups/{id}/leaders/me', 'AppGroupController@withdraw');
+
+        $router->put('sessions/{sessionId}/attendance', 'AppAttendanceController@update');
+        $router->get('sessions/{sessionId}/attendance', 'AppAttendanceController@show');
+        $router->get('sessions/{sessionId}/plan', 'AppAttendanceController@plan');
+
+        $router->get('preferences', 'AppPreferenceController@show');
+        $router->put('preferences', 'AppPreferenceController@update');
+
+        $router->get('members', 'AppMemberController@index');
+        $router->patch('members/{memberId}/roles', 'AppMemberController@updateRoles');
     });
 });
 

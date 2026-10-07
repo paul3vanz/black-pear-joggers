@@ -45,8 +45,12 @@ class RunPresenter
         ];
     }
 
-    /** Expects the `series` and `coordinator` relations loaded. */
-    public static function session(ClubSession $session): array
+    /**
+     * Expects the `series` and `coordinator` relations loaded. Groups and the
+     * summary use the relations from GroupPresenter::eagerLoads() (loaded here when
+     * missing) and are computed for $callerMemberId.
+     */
+    public static function session(ClubSession $session, ?string $callerMemberId = null): array
     {
         return [
             'id' => $session->id,
@@ -67,6 +71,8 @@ class RunPresenter
             'coordinatorName' => $session->coordinator ? $session->coordinator->display_name : null,
             'isDetached' => (bool) $session->is_detached,
             'original' => self::original($session),
+            'groups' => GroupPresenter::groupsFor($session),
+            'summary' => GroupPresenter::summary($session, $callerMemberId),
             'updatedAt' => NotificationPresenter::time($session->updated_at),
             'deletedAt' => NotificationPresenter::time($session->deleted_at),
         ];

@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\ManagesRuns;
 use App\Models\ClubMember;
 use App\Models\ClubSession;
 use App\Models\SessionSeries;
+use App\Services\GroupPresenter;
 use App\Services\NotificationPresenter;
 use App\Services\RunPresenter;
 use App\Services\SessionGenerator;
@@ -35,12 +36,19 @@ class AppSessionController extends Controller
 
     private function load(ClubSession $session): ClubSession
     {
-        return $session->load('series', 'coordinator');
+        return $session->load(array_merge(['series', 'coordinator'], GroupPresenter::eagerLoads()));
     }
 
-    private function json(ClubSession $session, int $status = 200)
+    private function json(Request $request, ClubSession $session, int $status = 200)
     {
-        return response()->json(RunPresenter::session($this->load($session->fresh())), $status);
+        return response()->json(RunPresenter::session($this->load($session->fresh()), $this->callerId($request)), $status);
+    }
+
+    private function callerId(Request $request): ?string
+    {
+        $member = $request->attributes->get('member');
+
+        return $member ? $member->id : null;
     }
 
     private function invalid(string $field, string $message)
@@ -96,8 +104,10 @@ class AppSessionController extends Controller
 
         $serverTime = $this->serverTime();
         $since = $this->since($request);
+        $callerId = $this->callerId($request);
 
-        $query = ClubSession::where('club_id', $club->id)->with('series', 'coordinator');
+        $query = ClubSession::where('club_id', $club->id)
+            ->with(array_merge(['series', 'coordinator'], GroupPresenter::eagerLoads()));
 
         if ($since) {
             $query->withTrashed()->where('updated_at', '>=', $since)->orderBy('updated_at')->orderBy('id');
@@ -111,8 +121,8 @@ class AppSessionController extends Controller
         }
 
         return response()->json([
-            'items' => $query->get()->map(function ($session) {
-                return RunPresenter::session($session);
+            'items' => $query->get()->map(function ($session) use ($callerId) {
+                return RunPresenter::session($session, $callerId);
             })->all(),
             'serverTime' => NotificationPresenter::time($serverTime),
         ]);
@@ -167,7 +177,7 @@ class AppSessionController extends Controller
                 return $this->idConflict();
             }
 
-            return response()->json(RunPresenter::session($this->load($existing)), 200);
+            return response()->json(RunPresenter::session($this->load($existing), $this->callerId($request)), 200);
         }
 
         if (($bad = $this->checkVenue($club, $request->input('venueId')))
@@ -195,7 +205,7 @@ class AppSessionController extends Controller
 
         $session->save();
 
-        return $this->json($session, 201);
+        return $this->json($request, $session, 201);
     }
 
     /**
@@ -267,7 +277,7 @@ class AppSessionController extends Controller
 
         $session->save();
 
-        return $this->json($session);
+        return $this->json($request, $session);
     }
 
     /**
@@ -333,7 +343,7 @@ class AppSessionController extends Controller
         $session->is_detached = true;
         $session->save();
 
-        return $this->json($session);
+        return $this->json($request, $session);
     }
 
     /**

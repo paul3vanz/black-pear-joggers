@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Club;
 use App\Models\ClubSession;
+use App\Models\SessionAttendee;
+use App\Models\SessionGroup;
 use App\Models\SessionSeries;
 use Illuminate\Support\Carbon;
 
@@ -14,7 +16,8 @@ use Illuminate\Support\Carbon;
  * Idempotent: a run with nothing to change writes nothing, so `updated_at`
  * (and therefore the app's `?since=` sync) only moves when a row really changes.
  * Detached sessions (edited or cancelled by hand), past sessions, `notes` and
- * `coordinator_member_id` are never touched.
+ * `coordinator_member_id` are never touched. A future session that no longer matches
+ * its series but has a group or going/maybe sign-ups is detached instead of deleted.
  */
 class SessionGenerator
 {
@@ -79,12 +82,29 @@ class SessionGenerator
         // Future, non-detached rows that no longer match the series.
         foreach ($existing as $date => $session) {
             if (!$session->is_detached && !$session->trashed() && !in_array($date, $wanted, true)) {
+                if ($this->hasSignUps($session)) {
+                    // Never wipe leaders' groups or members' RSVPs because the series moved on:
+                    // keep the run as a one-off the committee can cancel or delete deliberately.
+                    $session->is_detached = true;
+                    $session->save();
+
+                    continue;
+                }
+
                 $session->delete();
                 $stats['deleted']++;
             }
         }
 
         return $stats;
+    }
+
+    /** True when the run has a live group or any going/maybe attendance. */
+    private function hasSignUps(ClubSession $session): bool
+    {
+        return SessionGroup::where('session_id', $session->id)->exists()
+            || SessionAttendee::where('session_id', $session->id)
+                ->whereIn('status', [SessionAttendee::GOING, SessionAttendee::MAYBE])->exists();
     }
 
     /** Runs every series (soft-deleted ones too, so their future sessions are cleaned up). */

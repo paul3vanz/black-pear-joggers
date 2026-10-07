@@ -63,6 +63,34 @@ final class ClubSession extends Model
         return $value ? substr((string) $value, 0, 10) : null;
     }
 
+    /** Bumps updated_at so `?since=` sync delivers a change to groups, leaders or attendance. */
+    public function touchForChange(): void
+    {
+        $this->updated_at = \Illuminate\Support\Carbon::now();
+        $this->save();
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === self::STATUS_CANCELLED;
+    }
+
+    /** A session is past once it has ended. */
+    public function hasEnded(): bool
+    {
+        return $this->ends_at !== null && $this->ends_at->lt(\Illuminate\Support\Carbon::now());
+    }
+
+    public function groups()
+    {
+        return $this->hasMany(SessionGroup::class, 'session_id');
+    }
+
+    public function attendees()
+    {
+        return $this->hasMany(SessionAttendee::class, 'session_id');
+    }
+
     public function series()
     {
         return $this->belongsTo(SessionSeries::class, 'series_id')->withTrashed();
