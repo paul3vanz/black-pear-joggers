@@ -55,10 +55,34 @@ class FcmClient
         return false;
     }
 
+    /** False only when `.env` has FCM_ACTION_BUTTONS=false (then no message is data-only). */
+    public static function actionButtonsEnabled(): bool
+    {
+        $value = env('FCM_ACTION_BUTTONS', true);
+
+        if (is_string($value)) {
+            $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        }
+
+        return $value ?? true;
+    }
+
     /** The FCM v1 request body for one notification to one device. */
     public function buildMessage(Device $device, Notification $notification): array
     {
         $data = $notification->data ?? [];
+
+        $common = [
+            'notificationId' => (string) $notification->id,
+            'clubId' => (string) $notification->club_id,
+            'userId' => (string) $device->user_id,
+            'category' => (string) $notification->category,
+            'route' => (string) ($data['route'] ?? ''),
+        ];
+
+        if (!empty($data['actions']) && self::actionButtonsEnabled()) {
+            return $this->buildActionMessage($device, $notification, $common, $data);
+        }
 
         return ['message' => [
             'token' => $device->token,
@@ -66,18 +90,42 @@ class FcmClient
                 'title' => $notification->title,
                 'body' => $notification->body,
             ],
-            'data' => [
-                'notificationId' => (string) $notification->id,
-                'clubId' => (string) $notification->club_id,
-                'userId' => (string) $device->user_id,
-                'category' => (string) $notification->category,
-                'route' => (string) ($data['route'] ?? ''),
-            ],
+            'data' => $common,
             'android' => [
                 'notification' => ['channel_id' => $notification->category],
             ],
             'apns' => [
                 'payload' => ['aps' => ['sound' => 'default']],
+            ],
+        ]];
+    }
+
+    /**
+     * Data-only message: Android cannot show action buttons on a `notification`
+     * message, so the app builds the notification itself from `data`. iOS still
+     * gets a normal alert and the BPJ_RUN_REMINDER category for its buttons.
+     */
+    private function buildActionMessage(Device $device, Notification $notification, array $common, array $data): array
+    {
+        $actions = $data['actions'];
+
+        return ['message' => [
+            'token' => $device->token,
+            'data' => $common + [
+                'title' => (string) $notification->title,
+                'body' => (string) $notification->body,
+                'sessionId' => (string) ($data['sessionId'] ?? ''),
+                'actions' => is_array($actions) ? implode(',', $actions) : (string) $actions,
+                'actionToken' => (string) ($data['actionToken'] ?? ''),
+                'tag' => (string) ($notification->dedupe_key ?? ''),
+            ],
+            'android' => ['priority' => 'high'],
+            'apns' => [
+                'payload' => ['aps' => [
+                    'alert' => ['title' => $notification->title, 'body' => $notification->body],
+                    'sound' => 'default',
+                    'category' => 'BPJ_RUN_REMINDER',
+                ]],
             ],
         ]];
     }

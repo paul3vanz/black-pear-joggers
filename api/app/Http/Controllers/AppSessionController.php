@@ -8,6 +8,7 @@ use App\Models\ClubSession;
 use App\Models\SessionSeries;
 use App\Services\GroupPresenter;
 use App\Services\NotificationPresenter;
+use App\Services\RunNotifier;
 use App\Services\RunPresenter;
 use App\Services\SessionGenerator;
 use Illuminate\Http\Request;
@@ -253,6 +254,7 @@ class AppSessionController extends Controller
         }
 
         $before = [$session->title, $session->venue_id, $session->local_start_time, $session->starts_at->diffInMinutes($session->ends_at)];
+        $movedFrom = ['starts_at' => $session->starts_at->copy(), 'venue_id' => $session->venue_id];
 
         foreach (['title' => 'title', 'venueId' => 'venue_id', 'notes' => 'notes', 'coordinatorMemberId' => 'coordinator_member_id'] as $key => $column) {
             if ($request->has($key)) {
@@ -276,6 +278,10 @@ class AppSessionController extends Controller
         }
 
         $session->save();
+
+        if (!$movedFrom['starts_at']->equalTo($session->starts_at) || $movedFrom['venue_id'] !== $session->venue_id) {
+            app(RunNotifier::class)->sessionChanged($session, 'changed', $this->callerId($request), $movedFrom);
+        }
 
         return $this->json($request, $session);
     }
@@ -338,10 +344,15 @@ class AppSessionController extends Controller
         }
 
         $cancelling = $status === ClubSession::STATUS_CANCELLED;
+        $statusBefore = $session->status;
         $session->status = $status;
         $session->cancel_reason = $cancelling ? $request->input('reason') : null;
         $session->is_detached = true;
         $session->save();
+
+        if ($statusBefore !== $status) {
+            app(RunNotifier::class)->sessionChanged($session, $cancelling ? 'cancelled' : 'restored', $this->callerId($request));
+        }
 
         return $this->json($request, $session);
     }

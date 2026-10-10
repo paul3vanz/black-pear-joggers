@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\StartDatabaseCleanup',
         'App\Console\Commands\SetMemberRole',
         'App\Console\Commands\GenerateSessions',
+        'App\Console\Commands\SendTestPush',
     ];
 
     /**

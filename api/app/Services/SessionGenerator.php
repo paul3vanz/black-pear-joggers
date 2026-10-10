@@ -18,6 +18,8 @@ use Illuminate\Support\Carbon;
  * Detached sessions (edited or cancelled by hand), past sessions, `notes` and
  * `coordinator_member_id` are never touched. A future session that no longer matches
  * its series but has a group or going/maybe sign-ups is detached instead of deleted.
+ * When a series edit moves an existing upcoming run (start time or venue), the people
+ * signed up to it are told through RunNotifier; plain creation notifies nobody.
  */
 class SessionGenerator
 {
@@ -67,6 +69,7 @@ class SessionGenerator
             }
 
             $wasTrashed = $session->trashed();
+            $movedFrom = ['starts_at' => $session->starts_at ? $session->starts_at->copy() : null, 'venue_id' => $session->venue_id];
             $session->fill($fields);
 
             if ($wasTrashed) {
@@ -74,8 +77,13 @@ class SessionGenerator
                 $session->save();
                 $stats['restored']++;
             } elseif ($session->isDirty()) {
+                $moved = $session->isDirty('starts_at') || $session->isDirty('venue_id');
                 $session->save();
                 $stats['updated']++;
+
+                if ($moved) {
+                    app(RunNotifier::class)->sessionChanged($session, 'changed', null, $movedFrom);
+                }
             }
         }
 

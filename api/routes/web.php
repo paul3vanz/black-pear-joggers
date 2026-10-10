@@ -115,6 +115,9 @@ $router->get('/test', 'TestController@test');
 $router->get('/uka', 'ScraperController@fetchMembers');
 
 // Members' app (Flutter). Contract: ../mobile/docs/api-contract.md
+// Phase 5: answers a reminder from its notification button. No sign-in: the notification's actionToken is the credential.
+$router->post('app/notification-actions', ['middleware' => 'throttle:30,1', 'uses' => 'AppNotificationActionController@store']);
+
 $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
     $router->get('me', 'AppMeController@getMe');
     $router->post('clubs/{clubId}/link', ['middleware' => 'club:optional', 'uses' => 'AppMembershipController@link']);
@@ -135,6 +138,8 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->post('notifications/read', 'AppNotificationController@markRead');
         $router->get('notification-preferences', 'AppNotificationController@preferences');
         $router->put('notification-preferences', 'AppNotificationController@updatePreferences');
+        $router->get('notification-settings', 'AppNotificationSettingsController@show');
+        $router->put('notification-settings', 'AppNotificationSettingsController@update');
 
         // Phase 3: club runs schedule
         $router->get('venues', 'AppVenueController@index');

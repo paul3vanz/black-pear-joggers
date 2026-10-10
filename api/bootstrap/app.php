@@ -72,6 +72,7 @@ $app->middleware([
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
     'club' => App\Http\Middleware\ResolveClub::class,
+    'throttle' => App\Http\Middleware\ThrottleByIp::class,
 ]);
 
 /*

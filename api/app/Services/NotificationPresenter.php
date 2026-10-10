@@ -40,12 +40,16 @@ class NotificationPresenter
 
     public static function notification(Notification $notification): array
     {
+        // The action token only ever travels in the push, never through the inbox API.
+        $data = $notification->data ?? [];
+        unset($data['actionToken']);
+
         return [
             'id' => $notification->id,
             'category' => $notification->category,
             'title' => $notification->title,
             'body' => $notification->body,
-            'data' => (object) ($notification->data ?? []),
+            'data' => (object) $data,
             'createdAt' => self::time($notification->created_at),
             'readAt' => self::time($notification->read_at),
         ];

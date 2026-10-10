@@ -6,10 +6,10 @@ use App\Http\Controllers\Concerns\ManagesGroups;
 use App\Models\MemberPreference;
 use App\Models\SessionAttendee;
 use App\Models\SessionGroup;
+use App\Services\AttendanceService;
 use App\Services\GroupPresenter;
 use App\Services\NotificationPresenter;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * RSVP to a run, and the online session plan (Phase 4).
@@ -90,24 +90,9 @@ class AppAttendanceController extends Controller
             return $this->invalidField('groupId', 'groupId does not match a group of this session.');
         }
 
-        $row = DB::transaction(function () use ($club, $member, $session, $status, $groupId, $unit, $from, $to) {
-            $row = SessionAttendee::firstOrNew(['session_id' => $session->id, 'member_id' => $member->id]);
-            $row->fill([
-                'club_id' => $club->id,
-                'status' => $status,
-                'group_id' => $groupId,
-                'pace_unit' => $unit,
-                'pace_from_s' => $from !== null ? (int) $from : null,
-                'pace_to_s' => $to !== null ? (int) $to : null,
-            ]);
-            $row->updated_at = \Illuminate\Support\Carbon::now(); // saved even when nothing else changed
-            $row->save();
-            $session->touchForChange();
+        $row = app(AttendanceService::class)->set($club, $member, $session, $status, $groupId, $unit, $from, $to);
 
-            return $row;
-        });
-
-        return response()->json($this->row($row->fresh()));
+        return response()->json($this->row($row));
     }
 
     /**

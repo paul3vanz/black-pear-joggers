@@ -19,13 +19,16 @@ final class Notification extends Model
         'title',
         'body',
         'data',
+        'dedupe_key',
         'read_at',
         'pushed_at',
+        'push_requested_at',
     ];
 
     protected $casts = [
         'data' => 'array',
         'read_at' => 'datetime',
         'pushed_at' => 'datetime',
+        'push_requested_at' => 'datetime',
     ];
 }

@@ -19,6 +19,11 @@ final class MemberPreference extends Model
         'distance_unit',
         'pace_from_s',
         'pace_to_s',
+        'push_daily_cap',
+    ];
+
+    protected $casts = [
+        'push_daily_cap' => 'integer',
     ];
 
     public function member()
