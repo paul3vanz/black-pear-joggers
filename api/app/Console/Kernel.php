@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\SetMemberRole',
         'App\Console\Commands\GenerateSessions',
         'App\Console\Commands\SendTestPush',
+        'App\Console\Commands\SendReminders',
     ];
 
     /**
@@ -49,5 +50,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('db:cleanup')->dailyAt('23:00');
         // Club runs: materialise sessions 8 weeks ahead from their weekly series (idempotent).
         $schedule->command('app:generate-sessions')->hourly();
+        // Run reminders and leaders-needed alerts (idempotent). The lock expires after 9 minutes so a
+        // crashed run can never block the next ones.
+        $schedule->command('app:send-reminders')->everyTenMinutes()->withoutOverlapping(9);
     }
 }

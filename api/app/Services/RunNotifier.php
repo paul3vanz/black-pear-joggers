@@ -41,7 +41,8 @@ class RunNotifier
     public function sessionChanged(ClubSession $session, string $kind, ?string $actorId = null, array $before = []): void
     {
         $this->guard('session change', function () use ($session, $kind, $actorId, $before) {
-            if (!$this->isOpen($session)) {
+            // Only runs still to happen; a move of a cancelled run is nobody's news.
+            if ($session->trashed() || $session->hasEnded() || ($kind === 'changed' && $session->isCancelled())) {
                 return;
             }
 
@@ -68,7 +69,211 @@ class RunNotifier
         });
     }
 
+    /**
+     * The last leader of a group stepped down, so it needs one (D36). Its attendees get a
+     * locked notice; `leader`-role members whose pace fits get "leaders needed".
+     */
+    public function leaderWithdrawn(SessionGroup $group, ?string $actorId = null): void
+    {
+        $this->guard('leader withdrawn', function () use ($group, $actorId) {
+            $session = $group->session;
+
+            if (!$session || !$this->isOpen($session)) {
+                return;
+            }
+
+            $club = Club::find($group->club_id);
+            $tz = $this->tz($club);
+            $day = RunText::day($session->starts_at, $tz);
+            $time = RunText::time($session->starts_at, $tz);
+            $data = RunText::data($session, $group->id);
+
+            $attendees = $this->activeIds($club, SessionAttendee::where('group_id', $group->id)
+                ->whereIn('status', [SessionAttendee::GOING, SessionAttendee::MAYBE])->pluck('member_id')->all(), $actorId);
+
+            $this->notifyByUnit($club, $attendees, self::CHANGES, $data, [
+                'dedupeKey' => 'leader_withdrawn:' . $group->id, 'onDuplicate' => 'replace',
+            ], function (?string $unit) use ($group, $day) {
+                $name = RunText::groupName($group, $unit) ?: 'your group';
+
+                return ['Your group needs a leader', RunText::clip("The leader of $name on $day has stepped down. Open the run to help find a new one.")];
+            });
+
+            $candidates = $this->availableLeaders($club, $session, array_merge($attendees, [$actorId]), $group);
+
+            $this->notifyByUnit($club, $candidates, NotificationCategories::LEADERS_NEEDED, $data, [
+                'dedupeKey' => 'leaders_needed_group:' . $group->id, 'onDuplicate' => 'skip',
+            ], function (?string $unit) use ($group, $day, $time) {
+                $name = RunText::groupName($group, $unit);
+
+                return [
+                    'Leader needed: ' . ($name ?: $day),
+                    RunText::clip(($name ?: 'A group') . " at $time on $day has no leader. Can you lead it?"),
+                ];
+            });
+        });
+    }
+
+    /**
+     * A group was deleted; $attendeeIds are the people who were signed up to it, read before
+     * the delete turned them into unassigned runners.
+     */
+    public function groupRemoved(SessionGroup $group, array $attendeeIds, ?string $actorId = null): void
+    {
+        $this->guard('group removed', function () use ($group, $attendeeIds, $actorId) {
+            $session = ClubSession::find($group->session_id);
+
+            if (!$session || !$this->isOpen($session)) {
+                return;
+            }
+
+            $club = Club::find($group->club_id);
+            $day = RunText::day($session->starts_at, $this->tz($club));
+
+            $this->notifyByUnit($club, $this->activeIds($club, $attendeeIds, $actorId), self::CHANGES, RunText::data($session, $group->id), [
+                'dedupeKey' => 'group_removed:' . $group->id, 'onDuplicate' => 'replace',
+            ], function (?string $unit) use ($group, $day) {
+                $name = RunText::groupName($group, $unit) ?: 'Your group';
+
+                return ['Group removed', RunText::clip("$name on $day was removed. You're still down for the run: open it to pick another group.")];
+            });
+        });
+    }
+
+    /** Queues the 3 minute delayed "matching group" check for a group (never throws). */
+    public function queueGroupMatch(SessionGroup $group, ?string $actorId = null): void
+    {
+        $this->guard('group match queue', function () use ($group, $actorId) {
+            dispatch((new \App\Jobs\NotifyMatchingGroupJob($group->id, $actorId))->delay(self::GROUP_MATCH_DELAY));
+        });
+    }
+
+    /**
+     * Tells members whose pace fits a newly added or re-paced group (runs from the delayed job
+     * and re-checks everything, so a deleted or fixed group sends nothing).
+     *
+     * @return int how many members were notified
+     */
+    public function matchGroup(string $groupId, ?string $actorId = null): int
+    {
+        $group = SessionGroup::find($groupId);
+        $session = $group ? $group->session : null;
+
+        if (!$group || !$session || !$this->isOpen($session) || PaceMatcher::groupBand($group) === null) {
+            return 0;
+        }
+
+        $club = Club::find($group->club_id);
+        $attendees = SessionAttendee::where('session_id', $session->id)->get()->keyBy('member_id');
+        $groups = SessionGroup::where('session_id', $session->id)->get()->keyBy('id');
+        $prefs = MemberPreference::where('club_id', $club->id)->get()->keyBy('member_id');
+        $leaders = SessionGroupLeader::where('group_id', $group->id)->where('status', SessionGroupLeader::CONFIRMED)->pluck('member_id')->all();
+
+        $ids = [];
+        foreach ($this->activeIds($club, ClubMember::where('club_id', $club->id)->pluck('id'), $actorId) as $id) {
+            $answer = $attendees->get($id);
+            $pref = $prefs->get($id);
+
+            if (in_array($id, $leaders, true)
+                || ($answer && $answer->status === SessionAttendee::NOT_GOING)
+                || ($answer && $answer->group_id === $group->id)
+                || !PaceMatcher::memberFitsGroup($answer, $pref, $group)) {
+                continue;
+            }
+
+            $current = $answer && $answer->group_id ? $groups->get($answer->group_id) : null;
+
+            if ($current && PaceMatcher::memberFitsGroup($answer, $pref, $current)) {
+                continue; // already in a group that suits them
+            }
+
+            $ids[] = $id;
+        }
+
+        $tz = $this->tz($club);
+        $day = RunText::day($session->starts_at, $tz);
+        $time = RunText::time($session->starts_at, $tz);
+
+        return $this->notifyByUnit($club, $ids, NotificationCategories::GROUP_MATCHES, RunText::data($session, $group->id), [
+            'dedupeKey' => 'group_match:' . $session->id, 'onDuplicate' => 'skip',
+        ], function (?string $unit) use ($group, $session, $day, $time) {
+            $name = RunText::groupName($group, $unit) ?: 'pace group';
+
+            return [
+                "New group: $name",
+                RunText::clip("{$session->title} on $day at $time has a new group at your pace. Want to join it?"),
+            ];
+        });
+    }
+
     // ---- shared helpers -----------------------------------------------------------
+
+    /**
+     * Sends one message per pace unit (so pace text reads in the recipient's units).
+     *
+     * @param string[]                    $ids
+     * @param callable(string): array     $text unit => [title, body]
+     * @return int rows written
+     */
+    public function notifyByUnit(Club $club, array $ids, string $category, array $data, array $options, callable $text): int
+    {
+        if (!$ids) {
+            return 0;
+        }
+
+        $byUnit = [];
+        foreach ($this->unitsFor($club, $ids) as $id => $unit) {
+            $byUnit[$unit][] = $id;
+        }
+
+        $written = 0;
+        foreach ($byUnit as $unit => $members) {
+            [$title, $body] = $text($unit);
+            $written += count(app(NotificationService::class)->notifyMembers($club, $members, $category, $title, $body, $data, false, $options));
+        }
+
+        return $written;
+    }
+
+    /**
+     * `leader`-role active members who could lead $group (or any needy group in the run): not
+     * leading anything in the run, not "not going", and whose pace fits the group's (or who
+     * have no pace, or whose group has none).
+     *
+     * @param array<int, string|null> $exclude member ids to leave out
+     * @return string[]
+     */
+    public function availableLeaders(Club $club, ClubSession $session, array $exclude, ?SessionGroup $group = null): array
+    {
+        $leading = SessionGroupLeader::where('status', SessionGroupLeader::CONFIRMED)
+            ->whereIn('group_id', SessionGroup::where('session_id', $session->id)->pluck('id'))
+            ->pluck('member_id')->all();
+        $answers = SessionAttendee::where('session_id', $session->id)->get()->keyBy('member_id');
+        $prefs = MemberPreference::where('club_id', $club->id)->get()->keyBy('member_id');
+        $groupBand = $group ? PaceMatcher::groupBand($group) : null;
+
+        $ids = [];
+        foreach (ClubMember::where('club_id', $club->id)->where('status', 'active')->get() as $member) {
+            $answer = $answers->get($member->id);
+
+            if (!$member->hasRole('leader')
+                || in_array($member->id, $exclude, true)
+                || in_array($member->id, $leading, true)
+                || ($answer && $answer->status === SessionAttendee::NOT_GOING)) {
+                continue;
+            }
+
+            $band = PaceMatcher::memberBand($answer, $prefs->get($member->id));
+
+            if ($groupBand !== null && $band !== null && !PaceMatcher::overlaps($band, $groupBand)) {
+                continue;
+            }
+
+            $ids[] = $member->id;
+        }
+
+        return $ids;
+    }
 
     /** Runs $fn; a failure is logged and swallowed. */
     public function guard(string $what, callable $fn): void

@@ -7,6 +7,7 @@ use App\Models\ClubMember;
 use App\Models\ClubSession;
 use App\Models\MemberPreference;
 use App\Models\Notification;
+use App\Models\SessionGroupLeader;
 use App\Models\SessionSeries;
 use App\Models\Venue;
 use App\Services\NotificationService;
@@ -268,7 +269,6 @@ class AppRunNotificationsTest extends AppGroupsBase
         $this->generate($series);
         $run = $this->run19th($series);
         $this->attend($run, $this->plain, 'going');
-        $other = $this->run19th($series)->replicate();
 
         $series->start_time = '18:30';
         $series->save();
@@ -321,6 +321,200 @@ class AppRunNotificationsTest extends AppGroupsBase
         $this->generate($series);
 
         $this->assertSame('Renamed run', ClubSession::find($run->id)->title);
+        $this->assertSame(0, Notification::count());
+    }
+
+    // ---- the last leader withdraws -------------------------------------------------
+
+    private function pace(ClubMember $member, int $from, ?int $to = null, string $unit = 'mi'): void
+    {
+        MemberPreference::create(['club_id' => 1, 'member_id' => $member->id, 'pace_unit' => $unit, 'pace_from_s' => $from, 'pace_to_s' => $to]);
+    }
+
+    /** A paced run with a 9:30-10:00/mi group led by leaderA. */
+    private function ledGroup(array $session = [], array $group = [])
+    {
+        $s = $this->session($session);
+        $g = $this->group($s, [$this->leaderA], $group + ['pace_unit' => 'mi', 'pace_from_s' => 570, 'pace_to_s' => 600, 'label' => 'Steady']);
+        $this->attend($s, $this->leaderA, 'going', $g);
+
+        return [$s, $g];
+    }
+
+    public function testTheLastLeaderWithdrawingTellsTheGroupAndFittingLeaders()
+    {
+        [$s, $g] = $this->ledGroup();
+        $maybe = $this->member_('maybe', 301);
+        $out = $this->member_('out', 302);
+        $this->attend($s, $this->plain, 'going', $g);
+        $this->attend($s, $maybe, 'maybe', $g);
+        $this->attend($s, $out, 'not_going');
+
+        $fits = $this->member_('fits', 311, ['leader']);
+        $this->pace($fits, 560, 600);
+        $slow = $this->member_('slow', 312, ['leader']);
+        $this->pace($slow, 780, 840);
+        $noPace = $this->member_('nopace', 313, ['leader']);
+        $notGoing = $this->member_('notgoing', 314, ['leader']);
+        $this->attend($s, $notGoing, 'not_going');
+        $this->pace($notGoing, 570, 600);
+        $leadsElsewhere = $this->member_('elsewhere', 315, ['leader']);
+        $this->pace($leadsElsewhere, 570, 600);
+        $this->group($s, [$leadsElsewhere]);
+        $insider = $this->member_('insider', 316, ['leader']);
+        $this->attend($s, $insider, 'going', $g);
+        $ordinary = $this->member_('ordinary', 317);
+        $this->pace($ordinary, 570, 600);
+
+        [$status, $body] = $this->api('DELETE', "/groups/{$g->id}/leaders/me", 'leaderA');
+        $this->assertSame(200, $status);
+        $this->assertSame('needs_leader', $body['status']);
+
+        foreach ([$this->plain, $maybe, $insider] as $who) {
+            $rows = $this->inbox($who);
+            $this->assertCount(1, $rows, $who->display_name);
+            $this->assertSame('my_group_changes', $rows[0]->category);
+            $this->assertSame('Your group needs a leader', $rows[0]->title);
+            $this->assertSame('leader_withdrawn:' . $g->id, $rows[0]->dedupe_key);
+            $this->assertSame('/runs/' . $s->id, $rows[0]->data['route']);
+            $this->assertSame($g->id, $rows[0]->data['groupId']);
+            $this->assertStringContainsString('Steady 9:30-10:00/mi', $rows[0]->body);
+        }
+
+        foreach ([$fits, $noPace, $this->leaderB] as $who) {
+            $rows = $this->inbox($who);
+            $this->assertCount(1, $rows, $who->display_name);
+            $this->assertSame('leaders_needed', $rows[0]->category);
+            $this->assertSame('leaders_needed_group:' . $g->id, $rows[0]->dedupe_key);
+            $this->assertSame('/runs/' . $s->id, $rows[0]->data['route']);
+            $this->assertStringContainsString('Steady 9:30-10:00/mi', $rows[0]->title);
+        }
+
+        // The leader themselves, the "not going", the slow leader, the one leading elsewhere
+        // and a member without the role hear nothing; the insider is told once, not twice.
+        foreach ([$this->leaderA, $out, $slow, $notGoing, $leadsElsewhere, $ordinary, $this->coord] as $who) {
+            $this->assertSame(0, $this->inboxCount($who), $who->display_name);
+        }
+    }
+
+    public function testPaceTextIsInTheRecipientsUnit()
+    {
+        [$s, $g] = $this->ledGroup();
+        $this->attend($s, $this->plain, 'going', $g);
+        $this->pace($this->plain, 340, 360, 'km');
+
+        $this->api('DELETE', "/groups/{$g->id}/leaders/me", 'leaderA');
+
+        $this->assertStringContainsString('Steady 5:54-6:13/km', $this->inbox($this->plain)[0]->body);
+    }
+
+    public function testWithdrawingTwiceDoesNotNotifyTwiceButAChangedGroupReplacesAndPushesAgain()
+    {
+        [$s, $g] = $this->ledGroup();
+        $this->attend($s, $this->plain, 'going', $g);
+        $fits = $this->member_('fits', 311, ['leader']);
+        $this->pace($fits, 560, 600);
+
+        $this->api('DELETE', "/groups/{$g->id}/leaders/me", 'leaderA');
+        $this->assertSame(2, $this->pushes()); // attendees (locked) and leaders_needed
+        $first = $this->inbox($this->plain)[0];
+
+        // Replaying the withdraw is a no-op.
+        $this->api('DELETE', "/groups/{$g->id}/leaders/me", 'leaderA');
+        $this->assertSame(2, $this->pushes());
+
+        // Joined again and withdrew again with nothing different: same news, nothing new.
+        $this->api('POST', "/groups/{$g->id}/leaders", 'leaderA');
+        $this->api('DELETE', "/groups/{$g->id}/leaders/me", 'leaderA');
+        $this->assertSame(1, $this->inboxCount($this->plain));
+        $this->assertSame(2, $this->pushes());
+
+        // The group changed meanwhile: the notice is replaced in place and pushed again.
+        $this->api('POST', "/groups/{$g->id}/leaders", 'leaderA');
+        $this->api('PATCH', "/groups/{$g->id}", 'leaderA', ['label' => 'Brisk']);
+        $this->api('DELETE', "/groups/{$g->id}/leaders/me", 'leaderA');
+
+        $rows = $this->inbox($this->plain);
+        $this->assertCount(1, $rows);
+        $this->assertSame($first->id, $rows[0]->id);
+        $this->assertStringContainsString('Brisk', $rows[0]->body);
+        $this->assertNull($rows[0]->read_at);
+        $this->assertSame(3, $this->pushes()); // leaders_needed uses skip: still one row, no re-push
+        $this->assertSame(1, $this->inboxCount($fits));
+    }
+
+    public function testAnotherLeaderRemainingMeansNobodyIsToldAndRoutesRunsStayActive()
+    {
+        [$s, $g] = $this->ledGroup();
+        SessionGroupLeader::create(['club_id' => 1, 'group_id' => $g->id, 'member_id' => $this->leaderB->id]);
+        $this->attend($s, $this->plain, 'going', $g);
+
+        $this->api('DELETE', "/groups/{$g->id}/leaders/me", 'leaderA');
+        $this->assertSame(0, Notification::count());
+
+        $routes = $this->session(['group_mode' => 'routes', 'date' => '2026-10-19']);
+        $rg = $this->group($routes, [$this->leaderA], ['status' => 'active']);
+        $this->attend($routes, $this->plain, 'going', $rg);
+
+        $this->api('DELETE', "/groups/{$rg->id}/leaders/me", 'leaderA');
+        $this->assertSame(0, Notification::count());
+    }
+
+    // ---- a group is removed ----------------------------------------------------------
+
+    public function testRemovingAGroupTellsItsAttendeesOnly()
+    {
+        [$s, $g] = $this->ledGroup();
+        $maybe = $this->member_('maybe', 301);
+        $out = $this->member_('out', 302);
+        $this->attend($s, $this->plain, 'going', $g);
+        $this->attend($s, $maybe, 'maybe', $g);
+        $this->attend($s, $out, 'not_going');
+        $other = $this->group($s, [$this->leaderB]);
+        $elsewhere = $this->member_('elsewhere', 303);
+        $this->attend($s, $elsewhere, 'going', $other);
+
+        [$status] = $this->api('DELETE', "/groups/{$g->id}", 'leaderA');
+        $this->assertSame(204, $status);
+
+        foreach ([$this->plain, $maybe] as $who) {
+            $rows = $this->inbox($who);
+            $this->assertCount(1, $rows, $who->display_name);
+            $this->assertSame('my_group_changes', $rows[0]->category);
+            $this->assertSame('Group removed', $rows[0]->title);
+            $this->assertSame('group_removed:' . $g->id, $rows[0]->dedupe_key);
+            $this->assertSame('/runs/' . $s->id, $rows[0]->data['route']);
+            $this->assertSame($s->id, $rows[0]->data['sessionId']);
+        }
+
+        // The deleting leader is the actor; the rest were not in the group.
+        foreach ([$this->leaderA, $out, $elsewhere, $this->leaderB] as $who) {
+            $this->assertSame(0, $this->inboxCount($who), $who->display_name);
+        }
+
+        // Replaying the delete says nothing more.
+        $this->api('DELETE', "/groups/{$g->id}", 'leaderA');
+        $this->assertSame(2, Notification::count());
+    }
+
+    public function testRemovingAnEmptyGroupSaysNothing()
+    {
+        $g = $this->group($this->session(), [$this->leaderA]);
+
+        $this->api('DELETE', "/groups/{$g->id}", 'committee');
+
+        $this->assertSame(0, Notification::count());
+    }
+
+    public function testRemovingAGroupOnAPastRunIsRefusedAndSilent()
+    {
+        $s = $this->pastSession();
+        $g = $this->group($s, [$this->leaderA]);
+        $this->attend($s, $this->plain, 'going', $g);
+
+        [$status] = $this->api('DELETE', "/groups/{$g->id}", 'leaderA');
+
+        $this->assertSame(409, $status);
         $this->assertSame(0, Notification::count());
     }
 

@@ -8,6 +8,7 @@ use App\Models\SessionAttendee;
 use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
 use App\Services\GroupPresenter;
+use App\Services\RunNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -213,6 +214,10 @@ class AppGroupController extends Controller
             return $group;
         });
 
+        if ($group->pace_from_s !== null) {
+            app(RunNotifier::class)->queueGroupMatch($group, $member->id);
+        }
+
         return $this->respond($group, 201);
     }
 
@@ -262,12 +267,24 @@ class AppGroupController extends Controller
             return $bad;
         }
 
+        $paceBefore = $this->paceOf($group);
+
         DB::transaction(function () use ($group, $changes) {
             $group->fill($changes)->save();
             $group->session->touchForChange();
         });
 
+        if ($group->pace_from_s !== null && $paceBefore !== $this->paceOf($group)) {
+            app(RunNotifier::class)->queueGroupMatch($group, $member->id);
+        }
+
         return $this->respond($group);
+    }
+
+    /** The pace columns as a comparable value. */
+    private function paceOf(SessionGroup $group): array
+    {
+        return [$group->pace_unit, $group->pace_from_s, $group->pace_to_s];
     }
 
     private function canEdit(SessionGroup $group, $member): bool
@@ -309,11 +326,19 @@ class AppGroupController extends Controller
             return $bad;
         }
 
+        $signedUp = SessionAttendee::where('group_id', $group->id)
+            ->whereIn('status', [SessionAttendee::GOING, SessionAttendee::MAYBE])
+            ->pluck('member_id')->all();
+
         DB::transaction(function () use ($group) {
             SessionAttendee::where('group_id', $group->id)->update(['group_id' => null, 'updated_at' => Carbon::now()]);
             $group->delete();
             $group->session->touchForChange();
         });
+
+        if ($signedUp) {
+            app(RunNotifier::class)->groupRemoved($group, $signedUp, $member->id);
+        }
 
         return response('', 204);
     }
@@ -407,8 +432,10 @@ class AppGroupController extends Controller
             ->where('status', SessionGroupLeader::CONFIRMED)
             ->first();
 
+        $needsLeader = false;
+
         if ($row) {
-            DB::transaction(function () use ($row, $group) {
+            DB::transaction(function () use ($row, $group, &$needsLeader) {
                 $row->fill(['status' => SessionGroupLeader::WITHDRAWN, 'withdrawn_at' => Carbon::now()])->save();
 
                 $remaining = SessionGroupLeader::where('group_id', $group->id)
@@ -417,10 +444,15 @@ class AppGroupController extends Controller
                 if ($remaining === 0 && $this->expectsLeaders($group->session)) {
                     $group->status = SessionGroup::STATUS_NEEDS_LEADER;
                     $group->save();
+                    $needsLeader = true;
                 }
 
                 $group->session->touchForChange();
             });
+        }
+
+        if ($needsLeader) {
+            app(RunNotifier::class)->leaderWithdrawn($group, $member->id);
         }
 
         return $this->respond($group);
