@@ -149,21 +149,36 @@ class RunNotifier
     }
 
     /**
-     * Tells members whose pace fits a newly added or re-paced group (runs from the delayed job
-     * and re-checks everything, so a deleted or fixed group sends nothing).
+     * Runs from the delayed job and re-checks everything, so a deleted group or a run that is
+     * cancelled or over sends nothing. Two things can happen for a newly added group:
+     *  - members whose pace fits it are told (group_matches), when it has a pace;
+     *  - once it is past the "pick your group" time, going members with no group and no usual
+     *    pace are nudged to choose one (run_reminders, never twice per run).
      *
-     * @return int how many members were notified
+     * @return int how many notifications were written
      */
-    public function matchGroup(string $groupId, ?string $actorId = null): int
+    public function matchGroup(string $groupId, ?string $actorId = null, ?Carbon $now = null): int
     {
         $group = SessionGroup::find($groupId);
         $session = $group ? $group->session : null;
 
-        if (!$group || !$session || !$this->isOpen($session) || PaceMatcher::groupBand($group) === null) {
+        if (!$group || !$session || !$this->isOpen($session)) {
             return 0;
         }
 
         $club = Club::find($group->club_id);
+        $written = PaceMatcher::groupBand($group) === null ? 0 : $this->notifyPaceMatches($club, $session, $group, $actorId);
+
+        // A failure to nudge must not hide the group_match result above (the job has no retry).
+        $this->guard('pick group nudge', function () use ($club, $session, $actorId, $now, &$written) {
+            $written += $this->nudgePickGroup($club, $session, $now ? $now->copy() : Carbon::now(), true, $actorId);
+        });
+
+        return $written;
+    }
+
+    private function notifyPaceMatches(Club $club, ClubSession $session, SessionGroup $group, ?string $actorId): int
+    {
         $attendees = SessionAttendee::where('session_id', $session->id)->get()->keyBy('member_id');
         $groups = SessionGroup::where('session_id', $session->id)->get()->keyBy('id');
         $prefs = MemberPreference::where('club_id', $club->id)->get()->keyBy('member_id');
@@ -204,6 +219,90 @@ class RunNotifier
                 RunText::clip("{$session->title} on $day at $time has a new group at your pace. Want to join it?"),
             ];
         });
+    }
+
+    // ---- "pick your pace group" nudge (D50) ---------------------------------------
+
+    /** Hours before the start that the nudge goes out, and the earliest local hour it ever does. */
+    const PICK_GROUP_LEAD_HOURS = 3;
+    const PICK_GROUP_EARLIEST_HOUR = 8;
+
+    /** The club-local moment from which people who are going but chose no group are nudged. */
+    public function pickGroupTime(ClubSession $session, string $tz): Carbon
+    {
+        $due = $session->starts_at->copy()->setTimezone($tz)->subHours(self::PICK_GROUP_LEAD_HOURS);
+
+        return $due->hour < self::PICK_GROUP_EARLIEST_HOUR ? $due->copy()->setTime(self::PICK_GROUP_EARLIEST_HOUR, 0) : $due;
+    }
+
+    /**
+     * Nudges going members who are in no group (and lead none) to pick one, when the run has at
+     * least one active group, it is scheduled and has not started, and it is past pickGroupTime.
+     * One per member per run (key pick_group:<sessionId>, skip), so it is safe to call repeatedly.
+     *
+     * @param bool $noUsualPaceOnly only members with no pace at all (those with one are told by group_matches)
+     * @return int notifications written
+     */
+    public function nudgePickGroup(Club $club, ClubSession $session, Carbon $now, bool $noUsualPaceOnly = false, ?string $actorId = null): int
+    {
+        $tz = $this->tz($club);
+
+        if ($session->trashed() || $session->isCancelled() || !$session->starts_at->gt($now->copy()->utc())
+            || $now->lt($this->pickGroupTime($session, $tz))) {
+            return 0;
+        }
+
+        $groups = SessionGroup::where('session_id', $session->id)->where('status', SessionGroup::STATUS_ACTIVE)->get();
+
+        if ($groups->isEmpty()) {
+            return 0;
+        }
+
+        $leading = SessionGroupLeader::where('status', SessionGroupLeader::CONFIRMED)
+            ->whereIn('group_id', SessionGroup::where('session_id', $session->id)->pluck('id'))
+            ->pluck('member_id')->all();
+
+        $going = SessionAttendee::where('session_id', $session->id)
+            ->where('status', SessionAttendee::GOING)
+            ->whereNull('group_id')
+            ->get();
+
+        if ($noUsualPaceOnly) {
+            $prefs = MemberPreference::where('club_id', $club->id)->whereIn('member_id', $going->pluck('member_id'))->get()->keyBy('member_id');
+            $going = $going->filter(function (SessionAttendee $answer) use ($prefs) {
+                return PaceMatcher::memberBand($answer, $prefs->get($answer->member_id)) === null;
+            });
+        }
+
+        $ids = $this->activeIds($club, array_diff($going->pluck('member_id')->all(), $leading), $actorId);
+
+        if (!$ids) {
+            return 0;
+        }
+
+        $local = $session->starts_at->copy()->setTimezone($tz);
+        $today = $now->copy()->setTimezone($tz);
+
+        if ($local->isSameDay($today)) {
+            $when = $local->hour >= 17 ? "Tonight's" : "Today's";
+        } elseif ($local->isSameDay($today->copy()->addDay())) {
+            $when = "Tomorrow's";
+        } else {
+            $when = $local->format('l') . "'s";
+        }
+
+        $n = $groups->count();
+
+        return count(app(NotificationService::class)->notifyMembers(
+            $club,
+            $ids,
+            NotificationCategories::RUN_REMINDERS,
+            'Pick your pace group',
+            RunText::clip("$when run has $n pace " . ($n === 1 ? 'group' : 'groups') . '. Tap to choose yours'),
+            RunText::data($session),
+            false,
+            ['dedupeKey' => 'pick_group:' . $session->id, 'onDuplicate' => 'skip']
+        ));
     }
 
     // ---- shared helpers -----------------------------------------------------------

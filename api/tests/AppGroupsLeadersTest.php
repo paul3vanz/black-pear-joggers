@@ -55,11 +55,20 @@ class AppGroupsLeadersTest extends AppGroupsBase
         $this->assertSame(422, $status);
         $this->assertArrayHasKey('paceToS', $body['errors']);
 
+        // Clearing the pace as well as the label would leave an unnamed, paceless group: 422 on label.
         [$status, $body] = $this->api('PATCH', "/groups/{$g->id}", 'leaderA', [
             'label' => null, 'paceFromS' => null, 'paceToS' => null, 'distanceValue' => null,
         ]);
+        $this->assertSame(422, $status);
+        $this->assertArrayHasKey('label', $body['errors']);
+        $this->assertSame('Steady', SessionGroup::find($g->id)->label);
+
+        // Clearing the pace while keeping the label is fine.
+        [$status, $body] = $this->api('PATCH', "/groups/{$g->id}", 'leaderA', [
+            'paceFromS' => null, 'paceToS' => null, 'distanceValue' => null,
+        ]);
         $this->assertSame(200, $status);
-        $this->assertNull($body['label']);
+        $this->assertSame('Steady', $body['label']);
         $this->assertNull($body['paceFromS']);
         $this->assertNull($body['paceFromSPerKm']);
         $this->assertNull($body['distanceM']);
@@ -342,7 +351,7 @@ class AppGroupsLeadersTest extends AppGroupsBase
         $s = $this->session();
         $this->attend($s, $this->plain, 'not_going');
 
-        $this->api('POST', "/sessions/{$s->id}/groups", 'plain', ['lead' => true]);
+        $this->api('POST', "/sessions/{$s->id}/groups", 'plain', ['lead' => true, 'label' => 'Walk']);
 
         $row = SessionAttendee::where('session_id', $s->id)->where('member_id', $this->plain->id)->first();
         $this->assertSame('going', $row->status);
@@ -351,10 +360,10 @@ class AppGroupsLeadersTest extends AppGroupsBase
     public function testLeaderlessGroupsAndWithdrawingDoNotChangeAttendance()
     {
         $s = $this->session();
-        $this->api('POST', "/sessions/{$s->id}/groups", 'committee', ['lead' => false]);
+        $this->api('POST', "/sessions/{$s->id}/groups", 'committee', ['lead' => false, 'label' => 'Walk']);
         $this->assertSame(0, SessionAttendee::where('session_id', $s->id)->count());
 
-        [, $group] = $this->api('POST', "/sessions/{$s->id}/groups", 'leaderA', ['lead' => true]);
+        [, $group] = $this->api('POST', "/sessions/{$s->id}/groups", 'leaderA', ['lead' => true, 'label' => 'Walk']);
         $this->api('DELETE', "/groups/{$group['id']}/leaders/me", 'leaderA');
 
         // Stepping down as leader leaves them going in the group.

@@ -27,7 +27,7 @@ class AppSessionController extends Controller
             'title' => $required . '|string|max:255',
             'localDate' => $required . '|date_format:Y-m-d',
             'startTime' => $required . '|date_format:H:i',
-            'durationMin' => $required . '|integer|between:15,600',
+            'durationMin' => 'nullable|integer|between:15,600',
             'venueId' => 'nullable|uuid',
             'notes' => 'nullable|string',
             'groupMode' => ($creating ? 'required' : 'nullable') . '|in:' . implode(',', SessionSeries::GROUP_MODES),
@@ -61,6 +61,12 @@ class AppSessionController extends Controller
         ], 422);
     }
 
+    /** Stated length in minutes, null when the run has no end time. */
+    private function durationOf(ClubSession $session): ?int
+    {
+        return $session->has_end ? (int) $session->starts_at->diffInMinutes($session->ends_at) : null;
+    }
+
     /** 422 unless the id is a live member of this club (or empty). */
     private function checkCoordinator($club, $memberId)
     {
@@ -75,13 +81,13 @@ class AppSessionController extends Controller
      * @OA\Get(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions",
-     *   summary="Club runs. Without since: localDate in [from, to] (default today..+60 days). With since: all changes incl. tombstones.",
+     *   summary="Club runs. Without since: localDate in [from, to] (default today..+60 days). With since: all changes incl. tombstones, and the runs of any series edited since then (series image).",
      *   security={{"bearerAuth":{}}},
      *   @OA\Parameter(name="clubId", in="path", required=true, @OA\Schema(type="integer")),
      *   @OA\Parameter(name="from", in="query", required=false, @OA\Schema(type="string", format="date")),
      *   @OA\Parameter(name="to", in="query", required=false, @OA\Schema(type="string", format="date")),
      *   @OA\Parameter(name="since", in="query", required=false, @OA\Schema(type="string", format="date-time")),
-     *   @OA\Response(response=200, description="{ items: Session[], serverTime }"),
+     *   @OA\Response(response=200, description="{ items: Session[] (endsAt and localEndTime are null when the run has no end time; imageUrl is the series image), serverTime }"),
      *   @OA\Response(response=403, description="Not linked to this club"),
      *   @OA\Response(response=422, description="Bad from, to or since"),
      * )
@@ -111,7 +117,13 @@ class AppSessionController extends Controller
             ->with(array_merge(['series', 'coordinator'], GroupPresenter::eagerLoads()));
 
         if ($since) {
-            $query->withTrashed()->where('updated_at', '>=', $since)->orderBy('updated_at')->orderBy('id');
+            // Also the runs of a series edited since then (its image shows on every run). One WHERE, so no row twice.
+            $query->withTrashed()
+                ->where(function ($q) use ($club, $since) {
+                    $q->where('updated_at', '>=', $since)
+                        ->orWhereIn('series_id', SessionSeries::where('club_id', $club->id)->where('updated_at', '>=', $since)->select('id'));
+                })
+                ->orderBy('updated_at')->orderBy('id');
         } else {
             $today = $this->clubToday($club);
             $from = $request->query('from') ?: $today;
@@ -139,12 +151,12 @@ class AppSessionController extends Controller
      *   @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(
-     *       required={"title","localDate","startTime","durationMin","groupMode"},
+     *       required={"title","localDate","startTime","groupMode"},
      *       @OA\Property(property="id", type="string", format="uuid"),
      *       @OA\Property(property="title", type="string"),
      *       @OA\Property(property="localDate", type="string", format="date"),
      *       @OA\Property(property="startTime", type="string", example="19:00"),
-     *       @OA\Property(property="durationMin", type="integer"),
+     *       @OA\Property(property="durationMin", type="integer", minimum=15, maximum=600, nullable=true, description="Optional. Omit or null = no end time (the run still counts as ending after 3 hours). On PATCH, null clears it."),
      *       @OA\Property(property="venueId", type="string", format="uuid", nullable=true),
      *       @OA\Property(property="notes", type="string", nullable=true),
      *       @OA\Property(property="groupMode", type="string", enum={"paced","single","open","routes"}),
@@ -196,7 +208,7 @@ class AppSessionController extends Controller
         ] + SessionGenerator::times(
             $request->input('localDate'),
             $request->input('startTime'),
-            (int) $request->input('durationMin'),
+            $request->input('durationMin') === null ? null : (int) $request->input('durationMin'),
             $club->timezone ?: 'Europe/London'
         ));
 
@@ -213,7 +225,7 @@ class AppSessionController extends Controller
      * @OA\Patch(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions/{id}",
-     *   summary="Edit one run (committee/admin). Changing title, time, duration or venue of a series occurrence detaches it from the series.",
+     *   summary="Edit one run (committee/admin). Changing title, time, duration or venue of a series occurrence detaches it from the series. durationMin null clears the end time; leaving it out keeps it.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Parameter(name="clubId", in="path", required=true, @OA\Schema(type="integer")),
      *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
@@ -253,7 +265,7 @@ class AppSessionController extends Controller
             return $bad;
         }
 
-        $before = [$session->title, $session->venue_id, $session->local_start_time, $session->starts_at->diffInMinutes($session->ends_at)];
+        $before = [$session->title, $session->venue_id, $session->local_start_time, $this->durationOf($session)];
         $movedFrom = ['starts_at' => $session->starts_at->copy(), 'venue_id' => $session->venue_id];
 
         foreach (['title' => 'title', 'venueId' => 'venue_id', 'notes' => 'notes', 'coordinatorMemberId' => 'coordinator_member_id'] as $key => $column) {
@@ -262,14 +274,17 @@ class AppSessionController extends Controller
             }
         }
 
+        // Key absent keeps the current length; an explicit null clears the end time.
+        $duration = $request->has('durationMin') ? $request->input('durationMin') : $before[3];
+
         $session->fill(SessionGenerator::times(
             $request->input('localDate', $session->localDateYmd()),
             $request->input('startTime', $session->local_start_time),
-            (int) $request->input('durationMin', $before[3]),
+            $duration === null ? null : (int) $duration,
             $club->timezone ?: 'Europe/London'
         ));
 
-        $after = [$session->title, $session->venue_id, $session->local_start_time, $session->starts_at->diffInMinutes($session->ends_at)];
+        $after = [$session->title, $session->venue_id, $session->local_start_time, $this->durationOf($session)];
 
         // Notes and coordinator are never overwritten by the generator, so only a
         // change to something the series controls needs to detach the row.

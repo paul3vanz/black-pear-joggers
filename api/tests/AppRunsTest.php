@@ -610,6 +610,8 @@ class AppRunsTest extends AppApiTestCase
         $this->call_('POST', '/app/clubs/1/series', 'u|committee', $this->seriesBody());
         $this->call_('POST', '/app/clubs/1/sessions', 'u|committee', $this->adHocBody(['localDate' => '2027-01-01']));
         ClubSession::query()->update(['updated_at' => '2026-10-01 00:00:00']);
+        // A series edited since then re-sends its runs (series image), so age the series too.
+        SessionSeries::query()->update(['updated_at' => '2026-10-01 00:00:00']);
 
         Carbon::setTestNow(Carbon::parse('2026-10-05 12:30:00', 'UTC'));
         $this->call_('DELETE', '/app/clubs/1/sessions/' . self::X1, 'u|committee');

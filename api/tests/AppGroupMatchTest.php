@@ -78,13 +78,18 @@ class AppGroupMatchTest extends AppGroupsBase
         $this->assertSame(180, $job->delay);
     }
 
-    public function testCreatingAGroupWithoutAPaceQueuesNothing()
+    public function testCreatingAGroupWithoutAPaceQueuesTheJobToo()
     {
+        // 2026-10-13: it may be worth a "pick your group" nudge; the job sends no pace match for it.
         $s = $this->session();
+        $this->attend($s, $this->plain, 'going');
 
         $this->api('POST', "/sessions/{$s->id}/groups", 'leaderA', ['lead' => true, 'label' => 'Jog/walk']);
 
-        $this->assertSame(0, $this->queued());
+        $this->assertSame(1, $this->queued());
+        $job = Queue::pushed(NotifyMatchingGroupJob::class)->first();
+        ($job)->handle(app(RunNotifier::class));
+        $this->assertSame(0, Notification::where('category', 'group_matches')->count());
     }
 
     public function testReplayingACreateDoesNotQueueAgain()

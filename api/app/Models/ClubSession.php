@@ -23,6 +23,7 @@ final class ClubSession extends Model
     protected $attributes = [
         'status' => 'scheduled',
         'is_detached' => false,
+        'has_end' => true,
     ];
 
     protected $fillable = [
@@ -35,6 +36,7 @@ final class ClubSession extends Model
         'local_date',
         'local_start_time',
         'local_end_time',
+        'has_end',
         'venue_id',
         'title',
         'notes',
@@ -49,6 +51,7 @@ final class ClubSession extends Model
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'is_detached' => 'boolean',
+        'has_end' => 'boolean',
     ];
 
     public function localDateYmd(): string

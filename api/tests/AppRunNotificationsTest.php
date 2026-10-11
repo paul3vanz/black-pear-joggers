@@ -169,8 +169,8 @@ class AppRunNotificationsTest extends AppGroupsBase
         $this->assertSame(200, $status);
 
         $row = $this->inbox($this->plain)[0];
-        $this->assertSame('Run moved: now 19:30 at Riverside', $row->title);
-        $this->assertSame('Monday club run on Monday 12 Oct is now 19:30 at Riverside. Was 19:00.', $row->body);
+        $this->assertSame('Run moved: now 7:30pm at Riverside', $row->title);
+        $this->assertSame('Monday club run on Monday 12 Oct is now 7:30pm at Riverside. Was 7pm.', $row->body);
         $this->assertSame('/runs/' . $s->id, $row->data['route']);
         $this->assertSame('my_group_changes', $row->category);
     }
@@ -185,8 +185,8 @@ class AppRunNotificationsTest extends AppGroupsBase
         $this->api('PATCH', "/sessions/{$s->id}", 'committee', ['venueId' => $new->id]);
 
         $row = $this->inbox($this->plain)[0];
-        $this->assertSame('Run moved: now 19:00 at Riverside', $row->title);
-        $this->assertStringContainsString('Was 19:00 at Pitchcroft.', $row->body);
+        $this->assertSame('Run moved: now 7pm at Riverside', $row->title);
+        $this->assertStringContainsString('Was 7pm at Pitchcroft.', $row->body);
     }
 
     public function testADateChangeOnAnAdHocRunIsSpelledOut()
@@ -197,8 +197,8 @@ class AppRunNotificationsTest extends AppGroupsBase
         $this->api('PATCH', "/sessions/{$s->id}", 'committee', ['localDate' => '2026-10-14']);
 
         $row = $this->inbox($this->plain)[0];
-        $this->assertSame('Run moved: now Wed 14 Oct 19:00', $row->title);
-        $this->assertStringContainsString('Was Mon 12 Oct 19:00.', $row->body);
+        $this->assertSame('Run moved: now Wed 14 Oct 7pm', $row->title);
+        $this->assertStringContainsString('Was Mon 12 Oct 7pm.', $row->body);
     }
 
     public function testChangesThatDoNotMoveTheRunAreSilent()
@@ -277,7 +277,7 @@ class AppRunNotificationsTest extends AppGroupsBase
         $this->assertGreaterThan(0, $stats['updated']);
         $rows = $this->inbox($this->plain);
         $this->assertCount(1, $rows);
-        $this->assertSame('Run moved: now 18:30', $rows[0]->title);
+        $this->assertSame('Run moved: now 6:30pm', $rows[0]->title);
         $this->assertSame('/runs/' . $run->id, $rows[0]->data['route']);
         $this->assertSame(1, Notification::count()); // other runs have nobody signed up
 
@@ -304,7 +304,7 @@ class AppRunNotificationsTest extends AppGroupsBase
 
         $rows = $this->inbox($this->plain);
         $this->assertCount(1, $rows);
-        $this->assertSame('Run moved: now 19:00 at Riverside', $rows[0]->title);
+        $this->assertSame('Run moved: now 7pm at Riverside', $rows[0]->title);
         $this->assertSame('/runs/' . $run->id, $rows[0]->data['route']);
     }
 

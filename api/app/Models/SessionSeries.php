@@ -36,6 +36,7 @@ final class SessionSeries extends Model
         'valid_until',
         'group_mode',
         'cms_slug',
+        'image_url',
     ];
 
     protected $casts = [

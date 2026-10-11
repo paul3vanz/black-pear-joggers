@@ -86,7 +86,7 @@ class AppGroupsTest extends AppGroupsBase
 
         // The same id on another run is a conflict, not a silent reuse.
         $other = $this->session(['date' => '2026-10-19']);
-        [$status3, $body3] = $this->api('POST', "/sessions/{$other->id}/groups", 'plain', ['id' => $id, 'lead' => true]);
+        [$status3, $body3] = $this->api('POST', "/sessions/{$other->id}/groups", 'plain', ['id' => $id, 'lead' => true, 'label' => 'A']);
         $this->assertSame(409, $status3);
         $this->assertSame('conflict', $body3['error']);
     }
@@ -94,12 +94,12 @@ class AppGroupsTest extends AppGroupsBase
     public function testCreateOnCancelledPastOrUnknownSession()
     {
         $cancelled = $this->session(['status' => 'cancelled']);
-        [$status, $body] = $this->api('POST', "/sessions/{$cancelled->id}/groups", 'plain', ['lead' => true]);
+        [$status, $body] = $this->api('POST', "/sessions/{$cancelled->id}/groups", 'plain', ['lead' => true, 'label' => 'Run']);
         $this->assertSame(409, $status);
         $this->assertSame('session_cancelled', $body['error']);
 
         $past = $this->pastSession();
-        [$status, $body] = $this->api('POST', "/sessions/{$past->id}/groups", 'plain', ['lead' => true]);
+        [$status, $body] = $this->api('POST', "/sessions/{$past->id}/groups", 'plain', ['lead' => true, 'label' => 'Run']);
         $this->assertSame(409, $status);
         $this->assertSame('session_past', $body['error']);
 
@@ -137,9 +137,11 @@ class AppGroupsTest extends AppGroupsBase
             'range' => [['paceUnit' => 'km', 'paceFromS' => 330, 'paceToS' => 360]],
             'equal range ends' => [['paceUnit' => 'mi', 'paceFromS' => 600, 'paceToS' => 600]],
             'no pace' => [['kind' => 'jog_walk', 'label' => 'Jog/walk']],
-            'distance only' => [['distanceValue' => 5, 'distanceUnit' => 'km']],
+            'distance only, labelled' => [['label' => '5k route', 'distanceValue' => 5, 'distanceUnit' => 'km']],
+            'pace without a label' => [['paceUnit' => 'mi', 'paceFromS' => 570, 'label' => null]],
+            'label at the limit' => [['label' => str_repeat('x', 80)]],
             'bounds' => [['paceUnit' => 'mi', 'paceFromS' => 180, 'paceToS' => 1800, 'distanceValue' => 0.1, 'distanceUnit' => 'mi']],
-            'nothing at all' => [[]],
+            'label only' => [['label' => 'Social']],
         ];
     }
 
@@ -168,6 +170,13 @@ class AppGroupsTest extends AppGroupsBase
             'distance without unit' => [['distanceValue' => 3], 'distanceUnit'],
             'distance too short' => [['distanceValue' => 0.05, 'distanceUnit' => 'mi'], 'distanceValue'],
             'distance too long' => [['distanceValue' => 201, 'distanceUnit' => 'km'], 'distanceValue'],
+            'nothing at all' => [[], 'label'],
+            'distance only' => [['distanceValue' => 5, 'distanceUnit' => 'km'], 'label'],
+            'kind only' => [['kind' => 'jog_walk'], 'label'],
+            'empty label, no pace' => [['label' => ''], 'label'],
+            'null label, no pace' => [['label' => null], 'label'],
+            'blank label, no pace' => [['label' => '   '], 'label'],
+            'description is no substitute' => [['description' => 'Easy'], 'label'],
             'unknown kind' => [['kind' => 'sprint'], 'kind'],
             'label too long' => [['label' => str_repeat('x', 81)], 'label'],
             'description too long' => [['description' => str_repeat('x', 1001)], 'description'],
@@ -198,7 +207,7 @@ class AppGroupsTest extends AppGroupsBase
         $this->assertNull($km['paceToSPerKm']);
         $this->assertSame(5000, $km['distanceM']);
 
-        [, $none] = $this->api('POST', "/sessions/{$s->id}/groups", 'plain', ['lead' => true]);
+        [, $none] = $this->api('POST', "/sessions/{$s->id}/groups", 'plain', ['lead' => true, 'label' => 'Social']);
         $this->assertNull($none['paceUnit']);
         $this->assertNull($none['paceFromSPerKm']);
         $this->assertNull($none['distanceM']);

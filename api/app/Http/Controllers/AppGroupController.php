@@ -59,6 +59,11 @@ class AppGroupController extends Controller
             return $this->invalidField('distanceUnit', 'distanceUnit is required when distanceValue is given.');
         }
 
+        // A group with no pace is told apart by its name ("Walk", "Route A"), so the label is required then.
+        if ($values['pace_from_s'] === null && trim((string) $values['label']) === '') {
+            return $this->invalidField('label', 'label is required when the group has no pace.');
+        }
+
         return null;
     }
 
@@ -128,7 +133,7 @@ class AppGroupController extends Controller
      * @OA\Post(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions/{sessionId}/groups",
-     *   summary="Create a pace group. Any linked member with lead=true (they lead it); leaderless groups need committee, admin or the coordinator. Idempotent on id.",
+     *   summary="Create a pace group. Any linked member with lead=true (they lead it); leaderless groups need committee, admin or the coordinator. Idempotent on id. A group with no pace needs a label (422 on label).",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=201, description="The group (200 on a replayed id)"),
      *   @OA\Response(response=403, description="Not allowed"),
@@ -214,9 +219,8 @@ class AppGroupController extends Controller
             return $group;
         });
 
-        if ($group->pace_from_s !== null) {
-            app(RunNotifier::class)->queueGroupMatch($group, $member->id);
-        }
+        // Always: a pace group may match people, and any new group may be worth a "pick your group" nudge.
+        app(RunNotifier::class)->queueGroupMatch($group, $member->id);
 
         return $this->respond($group, 201);
     }
@@ -225,7 +229,7 @@ class AppGroupController extends Controller
      * @OA\Patch(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/groups/{id}",
-     *   summary="Edit a group (its leaders, the coordinator, committee or admin). Fields sent as null are cleared.",
+     *   summary="Edit a group (its leaders, the coordinator, committee or admin). Fields sent as null are cleared. The result must have a pace or a label (422 on label).",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=200, description="The group"),
      *   @OA\Response(response=403, description="Not allowed"),

@@ -26,10 +26,56 @@ class RunText
         return self::local($time, $tz)->format('l j M');
     }
 
-    /** "19:30" */
+    /** "7:30pm" (club-local start of an instant). */
     public static function time(Carbon $time, string $tz): string
     {
-        return self::local($time, $tz)->format('H:i');
+        return self::clock(self::local($time, $tz)->format('H:i'));
+    }
+
+    /**
+     * The club's way of writing a time: 24-hour "HH:MM" in, "h[:mm]am|pm" out.
+     * No leading zero, minutes dropped on the hour: 07:00 = "7am", 19:30 = "7:30pm",
+     * 12:00 = "12pm" (noon), 00:00 = "12am" (midnight). Anything unparseable comes back unchanged.
+     */
+    public static function clock(string $hm): string
+    {
+        [$h, $m, $suffix] = self::clockParts($hm) ?? [null, null, null];
+
+        if ($h === null) {
+            return $hm;
+        }
+
+        return $h . ($m === 0 ? '' : sprintf(':%02d', $m)) . $suffix;
+    }
+
+    /**
+     * A start-end range: "7-8:30pm" when both ends share am/pm, "11am-1pm" when they do not,
+     * and just the start ("7pm") when there is no end.
+     */
+    public static function range(string $startHm, ?string $endHm): string
+    {
+        $start = self::clockParts($startHm);
+        $end = $endHm === null ? null : self::clockParts($endHm);
+
+        if (!$start || !$end) {
+            return self::clock($startHm);
+        }
+
+        $first = $start[0] . ($start[1] === 0 ? '' : sprintf(':%02d', $start[1])) . ($start[2] === $end[2] ? '' : $start[2]);
+
+        return $first . '-' . self::clock($endHm);
+    }
+
+    /** @return array{0:int,1:int,2:string}|null hour (1-12), minute, am|pm */
+    private static function clockParts(string $hm): ?array
+    {
+        if (!preg_match('/^(\d{1,2}):(\d{2})(?::\d{2})?$/', trim($hm), $match) || (int) $match[1] > 23 || (int) $match[2] > 59) {
+            return null;
+        }
+
+        $hour = (int) $match[1];
+
+        return [$hour % 12 === 0 ? 12 : $hour % 12, (int) $match[2], $hour >= 12 ? 'pm' : 'am'];
     }
 
     public static function venueName(?string $venueId): ?string

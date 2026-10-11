@@ -21,7 +21,7 @@ class SendReminders extends Command
     {
         $stats = $service->run();
 
-        $this->info(sprintf('%d reminders, %d leaders-needed alerts.', $stats['reminders'], $stats['leadersNeeded']));
+        $this->info(sprintf('%d reminders, %d leaders-needed alerts, %d pick-a-group nudges.', $stats['reminders'], $stats['leadersNeeded'], $stats['pickGroup']));
 
         return 0;
     }

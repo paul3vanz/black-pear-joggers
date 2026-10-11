@@ -19,8 +19,10 @@ use Illuminate\Support\Carbon;
  *
  *  - morning-of reminders (`run_reminders`, with going / not-going buttons)
  *  - "leaders needed" for runs within 72 hours (`leaders_needed`)
+ *  - "pick your pace group" for going members with no group (`run_reminders`, D50): from 3 hours
+ *    before the start, never before 08:00 local, only while the run has an active group
  *
- * Both are idempotent through dedupe keys, so the command can run late or twice.
+ * All are idempotent through dedupe keys, so the command can run late or twice.
  * "Now" is injected so tests can fix the clock; times are the club's local time.
  */
 class RunReminderService
@@ -45,12 +47,12 @@ class RunReminderService
     }
 
     /**
-     * @return array{reminders: int, leadersNeeded: int} notifications written
+     * @return array{reminders: int, leadersNeeded: int, pickGroup: int} notifications written
      */
     public function run(?Carbon $now = null): array
     {
         $now = $now ? $now->copy() : Carbon::now();
-        $stats = ['reminders' => 0, 'leadersNeeded' => 0];
+        $stats = ['reminders' => 0, 'leadersNeeded' => 0, 'pickGroup' => 0];
 
         foreach (Club::all() as $club) {
             $tz = $this->notifier->tz($club);
@@ -69,6 +71,11 @@ class RunReminderService
                     if ($this->leadersCheckIsOpen($now, $tz)) {
                         $stats['leadersNeeded'] += $this->alertLeaders($club, $session, $tz);
                     }
+                });
+
+                // Its own guard: a failure here must not stop the other runs' reminders.
+                $this->notifier->guard('pick group ' . $session->id, function () use ($club, $session, $now, &$stats) {
+                    $stats['pickGroup'] += $this->notifier->nudgePickGroup($club, $session, $now);
                 });
             }
         }
@@ -135,7 +142,7 @@ class RunReminderService
         $units = $this->notifier->unitsFor($club, $ids);
         $when = $session->starts_at->copy()->setTimezone($tz);
         $title = ($when->isSameDay($now->copy()->setTimezone($tz)) ? 'Today' : 'Tomorrow')
-            . ' at ' . $when->format('H:i') . ': ' . $session->title;
+            . ' at ' . RunText::time($session->starts_at, $tz) . ': ' . $session->title;
         $written = 0;
 
         foreach ($ids as $id) {

@@ -77,7 +77,7 @@ class AppRunRemindersTest extends AppGroupsBase
 
         $this->assertSame(1, $this->runAt('2026-10-12 07:00')['reminders']); // 08:00 BST
         $row = $this->got($this->plain)[0];
-        $this->assertSame('Today at 19:00: Monday club run', $row->title);
+        $this->assertSame('Today at 7pm: Monday club run', $row->title);
     }
 
     public function testNothingIsSentOnceTheRunHasStarted()
@@ -115,7 +115,7 @@ class AppRunRemindersTest extends AppGroupsBase
 
         $this->assertSame(0, $this->runAt('2026-10-11 16:59')['reminders']); // 17:59 BST
         $this->assertSame(1, $this->runAt('2026-10-11 17:00')['reminders']); // 18:00 BST
-        $this->assertSame('Tomorrow at 10:59: Monday club run', $this->got($this->plain)[0]->title);
+        $this->assertSame('Tomorrow at 10:59am: Monday club run', $this->got($this->plain)[0]->title);
     }
 
     public function testEarlyRunsCreatedLateAreStillRemindedBeforeTheyStart()
@@ -389,7 +389,7 @@ class AppRunRemindersTest extends AppGroupsBase
         Carbon::setTestNow(Carbon::parse('2026-10-12 08:00', 'UTC'));
 
         $this->assertSame(0, $this->artisan('app:send-reminders'));
-        $this->assertStringContainsString('1 reminders, 1 leaders-needed alerts.', \Illuminate\Support\Facades\Artisan::output());
+        $this->assertStringContainsString('1 reminders, 1 leaders-needed alerts, 0 pick-a-group nudges.', \Illuminate\Support\Facades\Artisan::output());
 
         $this->assertSame(1, $this->total('run_reminders'));
     }

@@ -25,6 +25,9 @@ class SessionGenerator
 {
     const HORIZON_DAYS = 56; // 8 weeks
 
+    /** A run without a stated end is treated as lasting this long (3 hours). */
+    const NO_END_MINUTES = 180;
+
     /** @var array<int, string> club id => timezone */
     private $timezones = [];
 
@@ -176,18 +179,19 @@ class SessionGenerator
             'title' => $series->title,
             'venue_id' => $series->venue_id,
             'group_mode' => $series->group_mode,
-        ] + self::times($date, $series->startHm(), (int) $series->duration_min, $tz);
+        ] + self::times($date, $series->startHm(), $series->duration_min === null ? null : (int) $series->duration_min, $tz);
     }
 
     /**
-     * Club-local date + start (HH:MM) + duration to the session time columns.
+     * Club-local date + start (HH:MM) + optional duration to the session time columns.
      * The local wall-clock time is converted with the club timezone, so a
      * 19:00 run is 18:00Z in BST and 19:00Z in GMT.
      */
-    public static function times(string $date, string $startHm, int $durationMin, string $tz): array
+    public static function times(string $date, string $startHm, ?int $durationMin, string $tz): array
     {
         $starts = Carbon::createFromFormat('Y-m-d H:i', "$date $startHm", $tz)->utc();
-        $ends = $starts->copy()->addMinutes($durationMin);
+        // No stated end: the run still counts as lasting NO_END_MINUTES for every "has it ended" rule.
+        $ends = $starts->copy()->addMinutes($durationMin ?? self::NO_END_MINUTES);
 
         return [
             'starts_at' => $starts,
@@ -195,6 +199,7 @@ class SessionGenerator
             'local_date' => $date,
             'local_start_time' => $startHm,
             'local_end_time' => $ends->copy()->setTimezone($tz)->format('H:i'),
+            'has_end' => $durationMin !== null,
         ];
     }
 

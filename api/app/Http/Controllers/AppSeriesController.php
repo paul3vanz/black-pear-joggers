@@ -26,6 +26,7 @@ class AppSeriesController extends Controller
         'validUntil' => 'valid_until',
         'groupMode' => 'group_mode',
         'cmsSlug' => 'cms_slug',
+        'imageUrl' => 'image_url',
     ];
 
     private function rules(bool $creating): array
@@ -39,13 +40,22 @@ class AppSeriesController extends Controller
             'venueId' => 'nullable|uuid',
             'weekday' => $required . '|integer|between:1,7',
             'startTime' => $required . '|date_format:H:i',
-            'durationMin' => $required . '|integer|between:15,600',
+            'durationMin' => 'nullable|integer|between:15,600',
             'intervalWeeks' => 'sometimes|required|integer|between:1,8',
             'validFrom' => 'sometimes|required|date_format:Y-m-d',
             'validUntil' => 'nullable|date_format:Y-m-d',
             'groupMode' => $required . '|in:' . implode(',', SessionSeries::GROUP_MODES),
             'cmsSlug' => 'nullable|string|max:100',
+            'imageUrl' => ['nullable', 'string', 'max:500', 'regex:/^https?:\/\//'],
         ];
+    }
+
+    /** The request value for a field; an empty imageUrl means "no image". */
+    private function value(Request $request, string $key)
+    {
+        $value = $request->input($key);
+
+        return $key === 'imageUrl' && $value === '' ? null : $value;
     }
 
     private function untilBeforeFrom()
@@ -65,7 +75,7 @@ class AppSeriesController extends Controller
      *   security={{"bearerAuth":{}}},
      *   @OA\Parameter(name="clubId", in="path", required=true, @OA\Schema(type="integer")),
      *   @OA\Parameter(name="since", in="query", required=false, @OA\Schema(type="string", format="date-time")),
-     *   @OA\Response(response=200, description="{ items: Series[], serverTime }"),
+     *   @OA\Response(response=200, description="{ items: Series[] (durationMin and imageUrl may be null), serverTime }"),
      *   @OA\Response(response=403, description="Not linked to this club"),
      * )
      */
@@ -104,19 +114,20 @@ class AppSeriesController extends Controller
      *   @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(
-     *       required={"title","weekday","startTime","durationMin","groupMode"},
+     *       required={"title","weekday","startTime","groupMode"},
      *       @OA\Property(property="id", type="string", format="uuid"),
      *       @OA\Property(property="title", type="string"),
      *       @OA\Property(property="description", type="string", nullable=true),
      *       @OA\Property(property="venueId", type="string", format="uuid", nullable=true),
      *       @OA\Property(property="weekday", type="integer", minimum=1, maximum=7),
      *       @OA\Property(property="startTime", type="string", example="19:00"),
-     *       @OA\Property(property="durationMin", type="integer", minimum=15, maximum=600),
+     *       @OA\Property(property="durationMin", type="integer", minimum=15, maximum=600, nullable=true, description="Optional. Omit or null = no end time (sessions get no endsAt and still count as ending after 3 hours)."),
      *       @OA\Property(property="intervalWeeks", type="integer", minimum=1, maximum=8),
      *       @OA\Property(property="validFrom", type="string", format="date"),
      *       @OA\Property(property="validUntil", type="string", format="date", nullable=true),
      *       @OA\Property(property="groupMode", type="string", enum={"paced","single","open","routes"}),
      *       @OA\Property(property="cmsSlug", type="string", nullable=true),
+     *       @OA\Property(property="imageUrl", type="string", nullable=true, maxLength=500, description="http(s) URL of the picture shown above each run, null clears it"),
      *     )
      *   ),
      *   @OA\Response(response=201, description="The series (200 when the id was already used)"),
@@ -164,7 +175,7 @@ class AppSeriesController extends Controller
 
         foreach (self::FIELDS as $key => $column) {
             if ($key !== 'validFrom' && $request->has($key)) {
-                $series->{$column} = $request->input($key);
+                $series->{$column} = $this->value($request, $key);
             }
         }
 
@@ -182,10 +193,16 @@ class AppSeriesController extends Controller
      * @OA\Patch(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/series/{id}",
-     *   summary="Edit a series (committee/admin). Future non-detached sessions are regenerated.",
+     *   summary="Edit a series (committee/admin). Future non-detached sessions are regenerated. durationMin null removes the end time; imageUrl null removes the picture.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Parameter(name="clubId", in="path", required=true, @OA\Schema(type="integer")),
      *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *   @OA\RequestBody(
+     *     @OA\JsonContent(
+     *       @OA\Property(property="durationMin", type="integer", minimum=15, maximum=600, nullable=true),
+     *       @OA\Property(property="imageUrl", type="string", nullable=true, maxLength=500, description="http(s) URL, null clears it"),
+     *     )
+     *   ),
      *   @OA\Response(response=200, description="The updated series"),
      *   @OA\Response(response=403, description="Not a committee member or admin"),
      *   @OA\Response(response=404, description="No such series"),
@@ -218,7 +235,7 @@ class AppSeriesController extends Controller
 
         foreach (self::FIELDS as $key => $column) {
             if ($request->has($key)) {
-                $series->{$column} = $request->input($key);
+                $series->{$column} = $this->value($request, $key);
             }
         }
 

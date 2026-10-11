@@ -21,6 +21,9 @@ abstract class AppApiTestCase extends TestCase
 {
     protected const DOB = '1983-01-01';
 
+    /** @var array<string, \Illuminate\Database\Migrations\Migration> loaded migration instances by file */
+    private static $migrations = [];
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -66,6 +69,9 @@ abstract class AppApiTestCase extends TestCase
             '2026_10_10_090200_add_push_daily_cap_to_member_preferences_table.php',
             '2026_10_12_090000_create_group_messages_table.php',
             '2026_10_12_090100_create_group_thread_states_table.php',
+            '2026_10_13_090000_make_series_duration_nullable.php',
+            '2026_10_13_090100_add_image_url_to_session_series_table.php',
+            '2026_10_13_090200_add_has_end_to_sessions_table.php',
         ]);
 
         // Stand in for the Auth0 verification: the sub comes from a header.
@@ -112,7 +118,13 @@ abstract class AppApiTestCase extends TestCase
     protected function runMigrations(array $files): void
     {
         foreach ($files as $file) {
-            (require base_path('database/migrations/' . $file))->up();
+            // Each require defines a new anonymous class, so load every migration once per run
+            // (hundreds of tests re-running them would otherwise exhaust the default memory limit).
+            if (!isset(self::$migrations[$file])) {
+                self::$migrations[$file] = require base_path('database/migrations/' . $file);
+            }
+
+            self::$migrations[$file]->up();
         }
     }
 
