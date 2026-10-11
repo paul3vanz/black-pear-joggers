@@ -173,6 +173,14 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->get('preferences', 'AppPreferenceController@show');
         $router->put('preferences', 'AppPreferenceController@update');
 
+        // Phase 6: group messaging
+        $router->get('groups/{groupId}/messages', 'AppGroupMessageController@index');
+        $router->post('groups/{groupId}/messages', 'AppGroupMessageController@store');
+        $router->post('groups/{groupId}/messages/read', 'AppGroupMessageController@markRead');
+        $router->delete('groups/{groupId}/messages/{id}', 'AppGroupMessageController@destroy');
+        $router->put('groups/{groupId}/thread', 'AppGroupMessageController@updateThread');
+        $router->get('threads', 'AppGroupMessageController@threads');
+
         $router->get('members', 'AppMemberController@index');
         $router->patch('members/{memberId}/roles', 'AppMemberController@updateRoles');
     });
