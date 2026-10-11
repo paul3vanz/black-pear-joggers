@@ -1,0 +1,77 @@
+/// Phase 3 fixtures matching docs/api-contract.md.
+Map<String, Object?> venueJson(
+  String id, {
+  String name = 'Old Elizabethans Cricket Club',
+  String? address = 'Pitchcroft Lane, Worcester',
+  double? lat,
+  double? lng,
+  String? deletedAt,
+}) => {
+  'id': id,
+  'name': name,
+  'address': address,
+  'lat': lat,
+  'lng': lng,
+  'notes': null,
+  'updatedAt': '2026-10-01T10:00:00.000Z',
+  'deletedAt': deletedAt,
+};
+
+Map<String, Object?> seriesJson(
+  String id, {
+  String title = 'Monday club run',
+  String? venueId = 'v1',
+  String? cmsSlug = 'monday-club-run',
+  String? deletedAt,
+}) => {
+  'id': id,
+  'title': title,
+  'description': null,
+  'venueId': venueId,
+  'weekday': 1,
+  'startTime': '19:00',
+  'durationMin': 90,
+  'intervalWeeks': 1,
+  'validFrom': '2026-01-01',
+  'validUntil': null,
+  'groupMode': 'paced',
+  'cmsSlug': cmsSlug,
+  'updatedAt': '2026-10-01T10:00:00.000Z',
+  'deletedAt': deletedAt,
+};
+
+Map<String, Object?> sessionJson(
+  String id, {
+  required String localDate,
+  String start = '19:00',
+  String end = '20:30',
+  String title = 'Monday club run',
+  String? venueId = 'v1',
+  String? seriesId = 's1',
+  String status = 'scheduled',
+  String? cancelReason,
+  Map<String, Object?>? original,
+  String groupMode = 'paced',
+  String? deletedAt,
+}) => {
+  'id': id,
+  'seriesId': seriesId,
+  'occurrenceDate': seriesId == null ? null : localDate,
+  'title': title,
+  'venueId': venueId,
+  'notes': null,
+  'startsAt': '${localDate}T18:00:00Z',
+  'endsAt': '${localDate}T19:30:00Z',
+  'localDate': localDate,
+  'localStartTime': start,
+  'localEndTime': end,
+  'groupMode': groupMode,
+  'status': status,
+  'cancelReason': cancelReason,
+  'coordinatorMemberId': null,
+  'coordinatorName': null,
+  'isDetached': original != null || status == 'cancelled',
+  'original': original,
+  'updatedAt': '2026-10-05T10:00:00.000Z',
+  'deletedAt': deletedAt,
+};

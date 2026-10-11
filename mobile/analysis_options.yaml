@@ -1,0 +1,22 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - "**/*.g.dart"
+  language:
+    # Closest thing to TypeScript's `strict: true`.
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_dynamic_calls
+    - prefer_single_quotes
+    - unawaited_futures
+    - use_super_parameters
+    - sort_child_properties_last

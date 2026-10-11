@@ -1,0 +1,10763 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'app_database.dart';
+
+// ignore_for_file: type=lint
+class $MembershipsTable extends Memberships
+    with TableInfo<$MembershipsTable, Membership> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MembershipsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubNameMeta = const VerificationMeta(
+    'clubName',
+  );
+  @override
+  late final GeneratedColumn<String> clubName = GeneratedColumn<String>(
+    'club_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubSlugMeta = const VerificationMeta(
+    'clubSlug',
+  );
+  @override
+  late final GeneratedColumn<String> clubSlug = GeneratedColumn<String>(
+    'club_slug',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _joinUrlMeta = const VerificationMeta(
+    'joinUrl',
+  );
+  @override
+  late final GeneratedColumn<String> joinUrl = GeneratedColumn<String>(
+    'join_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rolesJsonMeta = const VerificationMeta(
+    'rolesJson',
+  );
+  @override
+  late final GeneratedColumn<String> rolesJson = GeneratedColumn<String>(
+    'roles_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _athleteIdMeta = const VerificationMeta(
+    'athleteId',
+  );
+  @override
+  late final GeneratedColumn<int> athleteId = GeneratedColumn<int>(
+    'athlete_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _firstNameMeta = const VerificationMeta(
+    'firstName',
+  );
+  @override
+  late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
+    'first_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastNameMeta = const VerificationMeta(
+    'lastName',
+  );
+  @override
+  late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
+    'last_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _genderMeta = const VerificationMeta('gender');
+  @override
+  late final GeneratedColumn<String> gender = GeneratedColumn<String>(
+    'gender',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    memberId,
+    clubId,
+    clubName,
+    clubSlug,
+    joinUrl,
+    status,
+    rolesJson,
+    athleteId,
+    firstName,
+    lastName,
+    gender,
+    category,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'memberships';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Membership> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('club_name')) {
+      context.handle(
+        _clubNameMeta,
+        clubName.isAcceptableOrUnknown(data['club_name']!, _clubNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubNameMeta);
+    }
+    if (data.containsKey('club_slug')) {
+      context.handle(
+        _clubSlugMeta,
+        clubSlug.isAcceptableOrUnknown(data['club_slug']!, _clubSlugMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubSlugMeta);
+    }
+    if (data.containsKey('join_url')) {
+      context.handle(
+        _joinUrlMeta,
+        joinUrl.isAcceptableOrUnknown(data['join_url']!, _joinUrlMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('roles_json')) {
+      context.handle(
+        _rolesJsonMeta,
+        rolesJson.isAcceptableOrUnknown(data['roles_json']!, _rolesJsonMeta),
+      );
+    }
+    if (data.containsKey('athlete_id')) {
+      context.handle(
+        _athleteIdMeta,
+        athleteId.isAcceptableOrUnknown(data['athlete_id']!, _athleteIdMeta),
+      );
+    }
+    if (data.containsKey('first_name')) {
+      context.handle(
+        _firstNameMeta,
+        firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta),
+      );
+    }
+    if (data.containsKey('last_name')) {
+      context.handle(
+        _lastNameMeta,
+        lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta),
+      );
+    }
+    if (data.containsKey('gender')) {
+      context.handle(
+        _genderMeta,
+        gender.isAcceptableOrUnknown(data['gender']!, _genderMeta),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {memberId};
+  @override
+  Membership map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Membership(
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      clubName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}club_name'],
+      )!,
+      clubSlug: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}club_slug'],
+      )!,
+      joinUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}join_url'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      rolesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}roles_json'],
+      )!,
+      athleteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}athlete_id'],
+      ),
+      firstName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_name'],
+      ),
+      lastName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_name'],
+      ),
+      gender: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}gender'],
+      ),
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $MembershipsTable createAlias(String alias) {
+    return $MembershipsTable(attachedDatabase, alias);
+  }
+}
+
+class Membership extends DataClass implements Insertable<Membership> {
+  final String memberId;
+  final int clubId;
+  final String clubName;
+  final String clubSlug;
+  final String? joinUrl;
+  final String status;
+
+  /// JSON array of role strings, e.g. `["leader"]`.
+  final String rolesJson;
+  final int? athleteId;
+  final String? firstName;
+  final String? lastName;
+  final String? gender;
+  final String? category;
+  final DateTime updatedAt;
+  const Membership({
+    required this.memberId,
+    required this.clubId,
+    required this.clubName,
+    required this.clubSlug,
+    this.joinUrl,
+    required this.status,
+    required this.rolesJson,
+    this.athleteId,
+    this.firstName,
+    this.lastName,
+    this.gender,
+    this.category,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['member_id'] = Variable<String>(memberId);
+    map['club_id'] = Variable<int>(clubId);
+    map['club_name'] = Variable<String>(clubName);
+    map['club_slug'] = Variable<String>(clubSlug);
+    if (!nullToAbsent || joinUrl != null) {
+      map['join_url'] = Variable<String>(joinUrl);
+    }
+    map['status'] = Variable<String>(status);
+    map['roles_json'] = Variable<String>(rolesJson);
+    if (!nullToAbsent || athleteId != null) {
+      map['athlete_id'] = Variable<int>(athleteId);
+    }
+    if (!nullToAbsent || firstName != null) {
+      map['first_name'] = Variable<String>(firstName);
+    }
+    if (!nullToAbsent || lastName != null) {
+      map['last_name'] = Variable<String>(lastName);
+    }
+    if (!nullToAbsent || gender != null) {
+      map['gender'] = Variable<String>(gender);
+    }
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  MembershipsCompanion toCompanion(bool nullToAbsent) {
+    return MembershipsCompanion(
+      memberId: Value(memberId),
+      clubId: Value(clubId),
+      clubName: Value(clubName),
+      clubSlug: Value(clubSlug),
+      joinUrl: joinUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(joinUrl),
+      status: Value(status),
+      rolesJson: Value(rolesJson),
+      athleteId: athleteId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(athleteId),
+      firstName: firstName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(firstName),
+      lastName: lastName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastName),
+      gender: gender == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gender),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Membership.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Membership(
+      memberId: serializer.fromJson<String>(json['memberId']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      clubName: serializer.fromJson<String>(json['clubName']),
+      clubSlug: serializer.fromJson<String>(json['clubSlug']),
+      joinUrl: serializer.fromJson<String?>(json['joinUrl']),
+      status: serializer.fromJson<String>(json['status']),
+      rolesJson: serializer.fromJson<String>(json['rolesJson']),
+      athleteId: serializer.fromJson<int?>(json['athleteId']),
+      firstName: serializer.fromJson<String?>(json['firstName']),
+      lastName: serializer.fromJson<String?>(json['lastName']),
+      gender: serializer.fromJson<String?>(json['gender']),
+      category: serializer.fromJson<String?>(json['category']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'memberId': serializer.toJson<String>(memberId),
+      'clubId': serializer.toJson<int>(clubId),
+      'clubName': serializer.toJson<String>(clubName),
+      'clubSlug': serializer.toJson<String>(clubSlug),
+      'joinUrl': serializer.toJson<String?>(joinUrl),
+      'status': serializer.toJson<String>(status),
+      'rolesJson': serializer.toJson<String>(rolesJson),
+      'athleteId': serializer.toJson<int?>(athleteId),
+      'firstName': serializer.toJson<String?>(firstName),
+      'lastName': serializer.toJson<String?>(lastName),
+      'gender': serializer.toJson<String?>(gender),
+      'category': serializer.toJson<String?>(category),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Membership copyWith({
+    String? memberId,
+    int? clubId,
+    String? clubName,
+    String? clubSlug,
+    Value<String?> joinUrl = const Value.absent(),
+    String? status,
+    String? rolesJson,
+    Value<int?> athleteId = const Value.absent(),
+    Value<String?> firstName = const Value.absent(),
+    Value<String?> lastName = const Value.absent(),
+    Value<String?> gender = const Value.absent(),
+    Value<String?> category = const Value.absent(),
+    DateTime? updatedAt,
+  }) => Membership(
+    memberId: memberId ?? this.memberId,
+    clubId: clubId ?? this.clubId,
+    clubName: clubName ?? this.clubName,
+    clubSlug: clubSlug ?? this.clubSlug,
+    joinUrl: joinUrl.present ? joinUrl.value : this.joinUrl,
+    status: status ?? this.status,
+    rolesJson: rolesJson ?? this.rolesJson,
+    athleteId: athleteId.present ? athleteId.value : this.athleteId,
+    firstName: firstName.present ? firstName.value : this.firstName,
+    lastName: lastName.present ? lastName.value : this.lastName,
+    gender: gender.present ? gender.value : this.gender,
+    category: category.present ? category.value : this.category,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Membership copyWithCompanion(MembershipsCompanion data) {
+    return Membership(
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      clubName: data.clubName.present ? data.clubName.value : this.clubName,
+      clubSlug: data.clubSlug.present ? data.clubSlug.value : this.clubSlug,
+      joinUrl: data.joinUrl.present ? data.joinUrl.value : this.joinUrl,
+      status: data.status.present ? data.status.value : this.status,
+      rolesJson: data.rolesJson.present ? data.rolesJson.value : this.rolesJson,
+      athleteId: data.athleteId.present ? data.athleteId.value : this.athleteId,
+      firstName: data.firstName.present ? data.firstName.value : this.firstName,
+      lastName: data.lastName.present ? data.lastName.value : this.lastName,
+      gender: data.gender.present ? data.gender.value : this.gender,
+      category: data.category.present ? data.category.value : this.category,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Membership(')
+          ..write('memberId: $memberId, ')
+          ..write('clubId: $clubId, ')
+          ..write('clubName: $clubName, ')
+          ..write('clubSlug: $clubSlug, ')
+          ..write('joinUrl: $joinUrl, ')
+          ..write('status: $status, ')
+          ..write('rolesJson: $rolesJson, ')
+          ..write('athleteId: $athleteId, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('gender: $gender, ')
+          ..write('category: $category, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    memberId,
+    clubId,
+    clubName,
+    clubSlug,
+    joinUrl,
+    status,
+    rolesJson,
+    athleteId,
+    firstName,
+    lastName,
+    gender,
+    category,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Membership &&
+          other.memberId == this.memberId &&
+          other.clubId == this.clubId &&
+          other.clubName == this.clubName &&
+          other.clubSlug == this.clubSlug &&
+          other.joinUrl == this.joinUrl &&
+          other.status == this.status &&
+          other.rolesJson == this.rolesJson &&
+          other.athleteId == this.athleteId &&
+          other.firstName == this.firstName &&
+          other.lastName == this.lastName &&
+          other.gender == this.gender &&
+          other.category == this.category &&
+          other.updatedAt == this.updatedAt);
+}
+
+class MembershipsCompanion extends UpdateCompanion<Membership> {
+  final Value<String> memberId;
+  final Value<int> clubId;
+  final Value<String> clubName;
+  final Value<String> clubSlug;
+  final Value<String?> joinUrl;
+  final Value<String> status;
+  final Value<String> rolesJson;
+  final Value<int?> athleteId;
+  final Value<String?> firstName;
+  final Value<String?> lastName;
+  final Value<String?> gender;
+  final Value<String?> category;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const MembershipsCompanion({
+    this.memberId = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.clubName = const Value.absent(),
+    this.clubSlug = const Value.absent(),
+    this.joinUrl = const Value.absent(),
+    this.status = const Value.absent(),
+    this.rolesJson = const Value.absent(),
+    this.athleteId = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.category = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MembershipsCompanion.insert({
+    required String memberId,
+    required int clubId,
+    required String clubName,
+    required String clubSlug,
+    this.joinUrl = const Value.absent(),
+    required String status,
+    this.rolesJson = const Value.absent(),
+    this.athleteId = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.category = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : memberId = Value(memberId),
+       clubId = Value(clubId),
+       clubName = Value(clubName),
+       clubSlug = Value(clubSlug),
+       status = Value(status),
+       updatedAt = Value(updatedAt);
+  static Insertable<Membership> custom({
+    Expression<String>? memberId,
+    Expression<int>? clubId,
+    Expression<String>? clubName,
+    Expression<String>? clubSlug,
+    Expression<String>? joinUrl,
+    Expression<String>? status,
+    Expression<String>? rolesJson,
+    Expression<int>? athleteId,
+    Expression<String>? firstName,
+    Expression<String>? lastName,
+    Expression<String>? gender,
+    Expression<String>? category,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (memberId != null) 'member_id': memberId,
+      if (clubId != null) 'club_id': clubId,
+      if (clubName != null) 'club_name': clubName,
+      if (clubSlug != null) 'club_slug': clubSlug,
+      if (joinUrl != null) 'join_url': joinUrl,
+      if (status != null) 'status': status,
+      if (rolesJson != null) 'roles_json': rolesJson,
+      if (athleteId != null) 'athlete_id': athleteId,
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
+      if (gender != null) 'gender': gender,
+      if (category != null) 'category': category,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MembershipsCompanion copyWith({
+    Value<String>? memberId,
+    Value<int>? clubId,
+    Value<String>? clubName,
+    Value<String>? clubSlug,
+    Value<String?>? joinUrl,
+    Value<String>? status,
+    Value<String>? rolesJson,
+    Value<int?>? athleteId,
+    Value<String?>? firstName,
+    Value<String?>? lastName,
+    Value<String?>? gender,
+    Value<String?>? category,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return MembershipsCompanion(
+      memberId: memberId ?? this.memberId,
+      clubId: clubId ?? this.clubId,
+      clubName: clubName ?? this.clubName,
+      clubSlug: clubSlug ?? this.clubSlug,
+      joinUrl: joinUrl ?? this.joinUrl,
+      status: status ?? this.status,
+      rolesJson: rolesJson ?? this.rolesJson,
+      athleteId: athleteId ?? this.athleteId,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      gender: gender ?? this.gender,
+      category: category ?? this.category,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (clubName.present) {
+      map['club_name'] = Variable<String>(clubName.value);
+    }
+    if (clubSlug.present) {
+      map['club_slug'] = Variable<String>(clubSlug.value);
+    }
+    if (joinUrl.present) {
+      map['join_url'] = Variable<String>(joinUrl.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (rolesJson.present) {
+      map['roles_json'] = Variable<String>(rolesJson.value);
+    }
+    if (athleteId.present) {
+      map['athlete_id'] = Variable<int>(athleteId.value);
+    }
+    if (firstName.present) {
+      map['first_name'] = Variable<String>(firstName.value);
+    }
+    if (lastName.present) {
+      map['last_name'] = Variable<String>(lastName.value);
+    }
+    if (gender.present) {
+      map['gender'] = Variable<String>(gender.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MembershipsCompanion(')
+          ..write('memberId: $memberId, ')
+          ..write('clubId: $clubId, ')
+          ..write('clubName: $clubName, ')
+          ..write('clubSlug: $clubSlug, ')
+          ..write('joinUrl: $joinUrl, ')
+          ..write('status: $status, ')
+          ..write('rolesJson: $rolesJson, ')
+          ..write('athleteId: $athleteId, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('gender: $gender, ')
+          ..write('category: $category, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProfilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rolesJsonMeta = const VerificationMeta(
+    'rolesJson',
+  );
+  @override
+  late final GeneratedColumn<String> rolesJson = GeneratedColumn<String>(
+    'roles_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _athleteRowIdMeta = const VerificationMeta(
+    'athleteRowId',
+  );
+  @override
+  late final GeneratedColumn<int> athleteRowId = GeneratedColumn<int>(
+    'athlete_row_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _athleteIdMeta = const VerificationMeta(
+    'athleteId',
+  );
+  @override
+  late final GeneratedColumn<int> athleteId = GeneratedColumn<int>(
+    'athlete_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _po10GuidMeta = const VerificationMeta(
+    'po10Guid',
+  );
+  @override
+  late final GeneratedColumn<String> po10Guid = GeneratedColumn<String>(
+    'po10_guid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _firstNameMeta = const VerificationMeta(
+    'firstName',
+  );
+  @override
+  late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
+    'first_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastNameMeta = const VerificationMeta(
+    'lastName',
+  );
+  @override
+  late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
+    'last_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _genderMeta = const VerificationMeta('gender');
+  @override
+  late final GeneratedColumn<String> gender = GeneratedColumn<String>(
+    'gender',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activeMeta = const VerificationMeta('active');
+  @override
+  late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
+    'active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _affiliatedMeta = const VerificationMeta(
+    'affiliated',
+  );
+  @override
+  late final GeneratedColumn<bool> affiliated = GeneratedColumn<bool>(
+    'affiliated',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("affiliated" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _competitiveRegStatusMeta =
+      const VerificationMeta('competitiveRegStatus');
+  @override
+  late final GeneratedColumn<String> competitiveRegStatus =
+      GeneratedColumn<String>(
+        'competitive_reg_status',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _firstClaimClubNameMeta =
+      const VerificationMeta('firstClaimClubName');
+  @override
+  late final GeneratedColumn<String> firstClaimClubName =
+      GeneratedColumn<String>(
+        'first_claim_club_name',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _resultsUrlMeta = const VerificationMeta(
+    'resultsUrl',
+  );
+  @override
+  late final GeneratedColumn<String> resultsUrl = GeneratedColumn<String>(
+    'results_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _powerOf10UrlMeta = const VerificationMeta(
+    'powerOf10Url',
+  );
+  @override
+  late final GeneratedColumn<String> powerOf10Url = GeneratedColumn<String>(
+    'power_of10_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _claimAwardUrlMeta = const VerificationMeta(
+    'claimAwardUrl',
+  );
+  @override
+  late final GeneratedColumn<String> claimAwardUrl = GeneratedColumn<String>(
+    'claim_award_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    memberId,
+    clubId,
+    status,
+    rolesJson,
+    athleteRowId,
+    athleteId,
+    po10Guid,
+    firstName,
+    lastName,
+    gender,
+    category,
+    active,
+    affiliated,
+    competitiveRegStatus,
+    firstClaimClubName,
+    resultsUrl,
+    powerOf10Url,
+    claimAwardUrl,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'profiles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Profile> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('roles_json')) {
+      context.handle(
+        _rolesJsonMeta,
+        rolesJson.isAcceptableOrUnknown(data['roles_json']!, _rolesJsonMeta),
+      );
+    }
+    if (data.containsKey('athlete_row_id')) {
+      context.handle(
+        _athleteRowIdMeta,
+        athleteRowId.isAcceptableOrUnknown(
+          data['athlete_row_id']!,
+          _athleteRowIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('athlete_id')) {
+      context.handle(
+        _athleteIdMeta,
+        athleteId.isAcceptableOrUnknown(data['athlete_id']!, _athleteIdMeta),
+      );
+    }
+    if (data.containsKey('po10_guid')) {
+      context.handle(
+        _po10GuidMeta,
+        po10Guid.isAcceptableOrUnknown(data['po10_guid']!, _po10GuidMeta),
+      );
+    }
+    if (data.containsKey('first_name')) {
+      context.handle(
+        _firstNameMeta,
+        firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta),
+      );
+    }
+    if (data.containsKey('last_name')) {
+      context.handle(
+        _lastNameMeta,
+        lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta),
+      );
+    }
+    if (data.containsKey('gender')) {
+      context.handle(
+        _genderMeta,
+        gender.isAcceptableOrUnknown(data['gender']!, _genderMeta),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('active')) {
+      context.handle(
+        _activeMeta,
+        active.isAcceptableOrUnknown(data['active']!, _activeMeta),
+      );
+    }
+    if (data.containsKey('affiliated')) {
+      context.handle(
+        _affiliatedMeta,
+        affiliated.isAcceptableOrUnknown(data['affiliated']!, _affiliatedMeta),
+      );
+    }
+    if (data.containsKey('competitive_reg_status')) {
+      context.handle(
+        _competitiveRegStatusMeta,
+        competitiveRegStatus.isAcceptableOrUnknown(
+          data['competitive_reg_status']!,
+          _competitiveRegStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('first_claim_club_name')) {
+      context.handle(
+        _firstClaimClubNameMeta,
+        firstClaimClubName.isAcceptableOrUnknown(
+          data['first_claim_club_name']!,
+          _firstClaimClubNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('results_url')) {
+      context.handle(
+        _resultsUrlMeta,
+        resultsUrl.isAcceptableOrUnknown(data['results_url']!, _resultsUrlMeta),
+      );
+    }
+    if (data.containsKey('power_of10_url')) {
+      context.handle(
+        _powerOf10UrlMeta,
+        powerOf10Url.isAcceptableOrUnknown(
+          data['power_of10_url']!,
+          _powerOf10UrlMeta,
+        ),
+      );
+    }
+    if (data.containsKey('claim_award_url')) {
+      context.handle(
+        _claimAwardUrlMeta,
+        claimAwardUrl.isAcceptableOrUnknown(
+          data['claim_award_url']!,
+          _claimAwardUrlMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {memberId};
+  @override
+  Profile map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Profile(
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      rolesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}roles_json'],
+      )!,
+      athleteRowId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}athlete_row_id'],
+      ),
+      athleteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}athlete_id'],
+      ),
+      po10Guid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}po10_guid'],
+      ),
+      firstName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_name'],
+      ),
+      lastName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_name'],
+      ),
+      gender: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}gender'],
+      ),
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      ),
+      active: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}active'],
+      )!,
+      affiliated: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}affiliated'],
+      )!,
+      competitiveRegStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}competitive_reg_status'],
+      ),
+      firstClaimClubName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}first_claim_club_name'],
+      ),
+      resultsUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}results_url'],
+      ),
+      powerOf10Url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}power_of10_url'],
+      ),
+      claimAwardUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}claim_award_url'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ProfilesTable createAlias(String alias) {
+    return $ProfilesTable(attachedDatabase, alias);
+  }
+}
+
+class Profile extends DataClass implements Insertable<Profile> {
+  final String memberId;
+  final int clubId;
+  final String status;
+  final String rolesJson;
+  final int? athleteRowId;
+  final int? athleteId;
+  final String? po10Guid;
+  final String? firstName;
+  final String? lastName;
+  final String? gender;
+  final String? category;
+  final bool active;
+  final bool affiliated;
+  final String? competitiveRegStatus;
+  final String? firstClaimClubName;
+  final String? resultsUrl;
+  final String? powerOf10Url;
+  final String? claimAwardUrl;
+  final DateTime updatedAt;
+  const Profile({
+    required this.memberId,
+    required this.clubId,
+    required this.status,
+    required this.rolesJson,
+    this.athleteRowId,
+    this.athleteId,
+    this.po10Guid,
+    this.firstName,
+    this.lastName,
+    this.gender,
+    this.category,
+    required this.active,
+    required this.affiliated,
+    this.competitiveRegStatus,
+    this.firstClaimClubName,
+    this.resultsUrl,
+    this.powerOf10Url,
+    this.claimAwardUrl,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['member_id'] = Variable<String>(memberId);
+    map['club_id'] = Variable<int>(clubId);
+    map['status'] = Variable<String>(status);
+    map['roles_json'] = Variable<String>(rolesJson);
+    if (!nullToAbsent || athleteRowId != null) {
+      map['athlete_row_id'] = Variable<int>(athleteRowId);
+    }
+    if (!nullToAbsent || athleteId != null) {
+      map['athlete_id'] = Variable<int>(athleteId);
+    }
+    if (!nullToAbsent || po10Guid != null) {
+      map['po10_guid'] = Variable<String>(po10Guid);
+    }
+    if (!nullToAbsent || firstName != null) {
+      map['first_name'] = Variable<String>(firstName);
+    }
+    if (!nullToAbsent || lastName != null) {
+      map['last_name'] = Variable<String>(lastName);
+    }
+    if (!nullToAbsent || gender != null) {
+      map['gender'] = Variable<String>(gender);
+    }
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
+    }
+    map['active'] = Variable<bool>(active);
+    map['affiliated'] = Variable<bool>(affiliated);
+    if (!nullToAbsent || competitiveRegStatus != null) {
+      map['competitive_reg_status'] = Variable<String>(competitiveRegStatus);
+    }
+    if (!nullToAbsent || firstClaimClubName != null) {
+      map['first_claim_club_name'] = Variable<String>(firstClaimClubName);
+    }
+    if (!nullToAbsent || resultsUrl != null) {
+      map['results_url'] = Variable<String>(resultsUrl);
+    }
+    if (!nullToAbsent || powerOf10Url != null) {
+      map['power_of10_url'] = Variable<String>(powerOf10Url);
+    }
+    if (!nullToAbsent || claimAwardUrl != null) {
+      map['claim_award_url'] = Variable<String>(claimAwardUrl);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  ProfilesCompanion toCompanion(bool nullToAbsent) {
+    return ProfilesCompanion(
+      memberId: Value(memberId),
+      clubId: Value(clubId),
+      status: Value(status),
+      rolesJson: Value(rolesJson),
+      athleteRowId: athleteRowId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(athleteRowId),
+      athleteId: athleteId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(athleteId),
+      po10Guid: po10Guid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(po10Guid),
+      firstName: firstName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(firstName),
+      lastName: lastName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastName),
+      gender: gender == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gender),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
+      active: Value(active),
+      affiliated: Value(affiliated),
+      competitiveRegStatus: competitiveRegStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(competitiveRegStatus),
+      firstClaimClubName: firstClaimClubName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(firstClaimClubName),
+      resultsUrl: resultsUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resultsUrl),
+      powerOf10Url: powerOf10Url == null && nullToAbsent
+          ? const Value.absent()
+          : Value(powerOf10Url),
+      claimAwardUrl: claimAwardUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(claimAwardUrl),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Profile.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Profile(
+      memberId: serializer.fromJson<String>(json['memberId']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      status: serializer.fromJson<String>(json['status']),
+      rolesJson: serializer.fromJson<String>(json['rolesJson']),
+      athleteRowId: serializer.fromJson<int?>(json['athleteRowId']),
+      athleteId: serializer.fromJson<int?>(json['athleteId']),
+      po10Guid: serializer.fromJson<String?>(json['po10Guid']),
+      firstName: serializer.fromJson<String?>(json['firstName']),
+      lastName: serializer.fromJson<String?>(json['lastName']),
+      gender: serializer.fromJson<String?>(json['gender']),
+      category: serializer.fromJson<String?>(json['category']),
+      active: serializer.fromJson<bool>(json['active']),
+      affiliated: serializer.fromJson<bool>(json['affiliated']),
+      competitiveRegStatus: serializer.fromJson<String?>(
+        json['competitiveRegStatus'],
+      ),
+      firstClaimClubName: serializer.fromJson<String?>(
+        json['firstClaimClubName'],
+      ),
+      resultsUrl: serializer.fromJson<String?>(json['resultsUrl']),
+      powerOf10Url: serializer.fromJson<String?>(json['powerOf10Url']),
+      claimAwardUrl: serializer.fromJson<String?>(json['claimAwardUrl']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'memberId': serializer.toJson<String>(memberId),
+      'clubId': serializer.toJson<int>(clubId),
+      'status': serializer.toJson<String>(status),
+      'rolesJson': serializer.toJson<String>(rolesJson),
+      'athleteRowId': serializer.toJson<int?>(athleteRowId),
+      'athleteId': serializer.toJson<int?>(athleteId),
+      'po10Guid': serializer.toJson<String?>(po10Guid),
+      'firstName': serializer.toJson<String?>(firstName),
+      'lastName': serializer.toJson<String?>(lastName),
+      'gender': serializer.toJson<String?>(gender),
+      'category': serializer.toJson<String?>(category),
+      'active': serializer.toJson<bool>(active),
+      'affiliated': serializer.toJson<bool>(affiliated),
+      'competitiveRegStatus': serializer.toJson<String?>(competitiveRegStatus),
+      'firstClaimClubName': serializer.toJson<String?>(firstClaimClubName),
+      'resultsUrl': serializer.toJson<String?>(resultsUrl),
+      'powerOf10Url': serializer.toJson<String?>(powerOf10Url),
+      'claimAwardUrl': serializer.toJson<String?>(claimAwardUrl),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Profile copyWith({
+    String? memberId,
+    int? clubId,
+    String? status,
+    String? rolesJson,
+    Value<int?> athleteRowId = const Value.absent(),
+    Value<int?> athleteId = const Value.absent(),
+    Value<String?> po10Guid = const Value.absent(),
+    Value<String?> firstName = const Value.absent(),
+    Value<String?> lastName = const Value.absent(),
+    Value<String?> gender = const Value.absent(),
+    Value<String?> category = const Value.absent(),
+    bool? active,
+    bool? affiliated,
+    Value<String?> competitiveRegStatus = const Value.absent(),
+    Value<String?> firstClaimClubName = const Value.absent(),
+    Value<String?> resultsUrl = const Value.absent(),
+    Value<String?> powerOf10Url = const Value.absent(),
+    Value<String?> claimAwardUrl = const Value.absent(),
+    DateTime? updatedAt,
+  }) => Profile(
+    memberId: memberId ?? this.memberId,
+    clubId: clubId ?? this.clubId,
+    status: status ?? this.status,
+    rolesJson: rolesJson ?? this.rolesJson,
+    athleteRowId: athleteRowId.present ? athleteRowId.value : this.athleteRowId,
+    athleteId: athleteId.present ? athleteId.value : this.athleteId,
+    po10Guid: po10Guid.present ? po10Guid.value : this.po10Guid,
+    firstName: firstName.present ? firstName.value : this.firstName,
+    lastName: lastName.present ? lastName.value : this.lastName,
+    gender: gender.present ? gender.value : this.gender,
+    category: category.present ? category.value : this.category,
+    active: active ?? this.active,
+    affiliated: affiliated ?? this.affiliated,
+    competitiveRegStatus: competitiveRegStatus.present
+        ? competitiveRegStatus.value
+        : this.competitiveRegStatus,
+    firstClaimClubName: firstClaimClubName.present
+        ? firstClaimClubName.value
+        : this.firstClaimClubName,
+    resultsUrl: resultsUrl.present ? resultsUrl.value : this.resultsUrl,
+    powerOf10Url: powerOf10Url.present ? powerOf10Url.value : this.powerOf10Url,
+    claimAwardUrl: claimAwardUrl.present
+        ? claimAwardUrl.value
+        : this.claimAwardUrl,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Profile copyWithCompanion(ProfilesCompanion data) {
+    return Profile(
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      status: data.status.present ? data.status.value : this.status,
+      rolesJson: data.rolesJson.present ? data.rolesJson.value : this.rolesJson,
+      athleteRowId: data.athleteRowId.present
+          ? data.athleteRowId.value
+          : this.athleteRowId,
+      athleteId: data.athleteId.present ? data.athleteId.value : this.athleteId,
+      po10Guid: data.po10Guid.present ? data.po10Guid.value : this.po10Guid,
+      firstName: data.firstName.present ? data.firstName.value : this.firstName,
+      lastName: data.lastName.present ? data.lastName.value : this.lastName,
+      gender: data.gender.present ? data.gender.value : this.gender,
+      category: data.category.present ? data.category.value : this.category,
+      active: data.active.present ? data.active.value : this.active,
+      affiliated: data.affiliated.present
+          ? data.affiliated.value
+          : this.affiliated,
+      competitiveRegStatus: data.competitiveRegStatus.present
+          ? data.competitiveRegStatus.value
+          : this.competitiveRegStatus,
+      firstClaimClubName: data.firstClaimClubName.present
+          ? data.firstClaimClubName.value
+          : this.firstClaimClubName,
+      resultsUrl: data.resultsUrl.present
+          ? data.resultsUrl.value
+          : this.resultsUrl,
+      powerOf10Url: data.powerOf10Url.present
+          ? data.powerOf10Url.value
+          : this.powerOf10Url,
+      claimAwardUrl: data.claimAwardUrl.present
+          ? data.claimAwardUrl.value
+          : this.claimAwardUrl,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Profile(')
+          ..write('memberId: $memberId, ')
+          ..write('clubId: $clubId, ')
+          ..write('status: $status, ')
+          ..write('rolesJson: $rolesJson, ')
+          ..write('athleteRowId: $athleteRowId, ')
+          ..write('athleteId: $athleteId, ')
+          ..write('po10Guid: $po10Guid, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('gender: $gender, ')
+          ..write('category: $category, ')
+          ..write('active: $active, ')
+          ..write('affiliated: $affiliated, ')
+          ..write('competitiveRegStatus: $competitiveRegStatus, ')
+          ..write('firstClaimClubName: $firstClaimClubName, ')
+          ..write('resultsUrl: $resultsUrl, ')
+          ..write('powerOf10Url: $powerOf10Url, ')
+          ..write('claimAwardUrl: $claimAwardUrl, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    memberId,
+    clubId,
+    status,
+    rolesJson,
+    athleteRowId,
+    athleteId,
+    po10Guid,
+    firstName,
+    lastName,
+    gender,
+    category,
+    active,
+    affiliated,
+    competitiveRegStatus,
+    firstClaimClubName,
+    resultsUrl,
+    powerOf10Url,
+    claimAwardUrl,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Profile &&
+          other.memberId == this.memberId &&
+          other.clubId == this.clubId &&
+          other.status == this.status &&
+          other.rolesJson == this.rolesJson &&
+          other.athleteRowId == this.athleteRowId &&
+          other.athleteId == this.athleteId &&
+          other.po10Guid == this.po10Guid &&
+          other.firstName == this.firstName &&
+          other.lastName == this.lastName &&
+          other.gender == this.gender &&
+          other.category == this.category &&
+          other.active == this.active &&
+          other.affiliated == this.affiliated &&
+          other.competitiveRegStatus == this.competitiveRegStatus &&
+          other.firstClaimClubName == this.firstClaimClubName &&
+          other.resultsUrl == this.resultsUrl &&
+          other.powerOf10Url == this.powerOf10Url &&
+          other.claimAwardUrl == this.claimAwardUrl &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ProfilesCompanion extends UpdateCompanion<Profile> {
+  final Value<String> memberId;
+  final Value<int> clubId;
+  final Value<String> status;
+  final Value<String> rolesJson;
+  final Value<int?> athleteRowId;
+  final Value<int?> athleteId;
+  final Value<String?> po10Guid;
+  final Value<String?> firstName;
+  final Value<String?> lastName;
+  final Value<String?> gender;
+  final Value<String?> category;
+  final Value<bool> active;
+  final Value<bool> affiliated;
+  final Value<String?> competitiveRegStatus;
+  final Value<String?> firstClaimClubName;
+  final Value<String?> resultsUrl;
+  final Value<String?> powerOf10Url;
+  final Value<String?> claimAwardUrl;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const ProfilesCompanion({
+    this.memberId = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.rolesJson = const Value.absent(),
+    this.athleteRowId = const Value.absent(),
+    this.athleteId = const Value.absent(),
+    this.po10Guid = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.category = const Value.absent(),
+    this.active = const Value.absent(),
+    this.affiliated = const Value.absent(),
+    this.competitiveRegStatus = const Value.absent(),
+    this.firstClaimClubName = const Value.absent(),
+    this.resultsUrl = const Value.absent(),
+    this.powerOf10Url = const Value.absent(),
+    this.claimAwardUrl = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProfilesCompanion.insert({
+    required String memberId,
+    required int clubId,
+    required String status,
+    this.rolesJson = const Value.absent(),
+    this.athleteRowId = const Value.absent(),
+    this.athleteId = const Value.absent(),
+    this.po10Guid = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.gender = const Value.absent(),
+    this.category = const Value.absent(),
+    this.active = const Value.absent(),
+    this.affiliated = const Value.absent(),
+    this.competitiveRegStatus = const Value.absent(),
+    this.firstClaimClubName = const Value.absent(),
+    this.resultsUrl = const Value.absent(),
+    this.powerOf10Url = const Value.absent(),
+    this.claimAwardUrl = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : memberId = Value(memberId),
+       clubId = Value(clubId),
+       status = Value(status),
+       updatedAt = Value(updatedAt);
+  static Insertable<Profile> custom({
+    Expression<String>? memberId,
+    Expression<int>? clubId,
+    Expression<String>? status,
+    Expression<String>? rolesJson,
+    Expression<int>? athleteRowId,
+    Expression<int>? athleteId,
+    Expression<String>? po10Guid,
+    Expression<String>? firstName,
+    Expression<String>? lastName,
+    Expression<String>? gender,
+    Expression<String>? category,
+    Expression<bool>? active,
+    Expression<bool>? affiliated,
+    Expression<String>? competitiveRegStatus,
+    Expression<String>? firstClaimClubName,
+    Expression<String>? resultsUrl,
+    Expression<String>? powerOf10Url,
+    Expression<String>? claimAwardUrl,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (memberId != null) 'member_id': memberId,
+      if (clubId != null) 'club_id': clubId,
+      if (status != null) 'status': status,
+      if (rolesJson != null) 'roles_json': rolesJson,
+      if (athleteRowId != null) 'athlete_row_id': athleteRowId,
+      if (athleteId != null) 'athlete_id': athleteId,
+      if (po10Guid != null) 'po10_guid': po10Guid,
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
+      if (gender != null) 'gender': gender,
+      if (category != null) 'category': category,
+      if (active != null) 'active': active,
+      if (affiliated != null) 'affiliated': affiliated,
+      if (competitiveRegStatus != null)
+        'competitive_reg_status': competitiveRegStatus,
+      if (firstClaimClubName != null)
+        'first_claim_club_name': firstClaimClubName,
+      if (resultsUrl != null) 'results_url': resultsUrl,
+      if (powerOf10Url != null) 'power_of10_url': powerOf10Url,
+      if (claimAwardUrl != null) 'claim_award_url': claimAwardUrl,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProfilesCompanion copyWith({
+    Value<String>? memberId,
+    Value<int>? clubId,
+    Value<String>? status,
+    Value<String>? rolesJson,
+    Value<int?>? athleteRowId,
+    Value<int?>? athleteId,
+    Value<String?>? po10Guid,
+    Value<String?>? firstName,
+    Value<String?>? lastName,
+    Value<String?>? gender,
+    Value<String?>? category,
+    Value<bool>? active,
+    Value<bool>? affiliated,
+    Value<String?>? competitiveRegStatus,
+    Value<String?>? firstClaimClubName,
+    Value<String?>? resultsUrl,
+    Value<String?>? powerOf10Url,
+    Value<String?>? claimAwardUrl,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ProfilesCompanion(
+      memberId: memberId ?? this.memberId,
+      clubId: clubId ?? this.clubId,
+      status: status ?? this.status,
+      rolesJson: rolesJson ?? this.rolesJson,
+      athleteRowId: athleteRowId ?? this.athleteRowId,
+      athleteId: athleteId ?? this.athleteId,
+      po10Guid: po10Guid ?? this.po10Guid,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      gender: gender ?? this.gender,
+      category: category ?? this.category,
+      active: active ?? this.active,
+      affiliated: affiliated ?? this.affiliated,
+      competitiveRegStatus: competitiveRegStatus ?? this.competitiveRegStatus,
+      firstClaimClubName: firstClaimClubName ?? this.firstClaimClubName,
+      resultsUrl: resultsUrl ?? this.resultsUrl,
+      powerOf10Url: powerOf10Url ?? this.powerOf10Url,
+      claimAwardUrl: claimAwardUrl ?? this.claimAwardUrl,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (rolesJson.present) {
+      map['roles_json'] = Variable<String>(rolesJson.value);
+    }
+    if (athleteRowId.present) {
+      map['athlete_row_id'] = Variable<int>(athleteRowId.value);
+    }
+    if (athleteId.present) {
+      map['athlete_id'] = Variable<int>(athleteId.value);
+    }
+    if (po10Guid.present) {
+      map['po10_guid'] = Variable<String>(po10Guid.value);
+    }
+    if (firstName.present) {
+      map['first_name'] = Variable<String>(firstName.value);
+    }
+    if (lastName.present) {
+      map['last_name'] = Variable<String>(lastName.value);
+    }
+    if (gender.present) {
+      map['gender'] = Variable<String>(gender.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
+    }
+    if (affiliated.present) {
+      map['affiliated'] = Variable<bool>(affiliated.value);
+    }
+    if (competitiveRegStatus.present) {
+      map['competitive_reg_status'] = Variable<String>(
+        competitiveRegStatus.value,
+      );
+    }
+    if (firstClaimClubName.present) {
+      map['first_claim_club_name'] = Variable<String>(firstClaimClubName.value);
+    }
+    if (resultsUrl.present) {
+      map['results_url'] = Variable<String>(resultsUrl.value);
+    }
+    if (powerOf10Url.present) {
+      map['power_of10_url'] = Variable<String>(powerOf10Url.value);
+    }
+    if (claimAwardUrl.present) {
+      map['claim_award_url'] = Variable<String>(claimAwardUrl.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfilesCompanion(')
+          ..write('memberId: $memberId, ')
+          ..write('clubId: $clubId, ')
+          ..write('status: $status, ')
+          ..write('rolesJson: $rolesJson, ')
+          ..write('athleteRowId: $athleteRowId, ')
+          ..write('athleteId: $athleteId, ')
+          ..write('po10Guid: $po10Guid, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('gender: $gender, ')
+          ..write('category: $category, ')
+          ..write('active: $active, ')
+          ..write('affiliated: $affiliated, ')
+          ..write('competitiveRegStatus: $competitiveRegStatus, ')
+          ..write('firstClaimClubName: $firstClaimClubName, ')
+          ..write('resultsUrl: $resultsUrl, ')
+          ..write('powerOf10Url: $powerOf10Url, ')
+          ..write('claimAwardUrl: $claimAwardUrl, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PostsTable extends Posts with TableInfo<$PostsTable, Post> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PostsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMdMeta = const VerificationMeta('bodyMd');
+  @override
+  late final GeneratedColumn<String> bodyMd = GeneratedColumn<String>(
+    'body_md',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
+  @override
+  late final GeneratedColumn<String> priority = GeneratedColumn<String>(
+    'priority',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('normal'),
+  );
+  static const VerificationMeta _audienceMeta = const VerificationMeta(
+    'audience',
+  );
+  @override
+  late final GeneratedColumn<String> audience = GeneratedColumn<String>(
+    'audience',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('all'),
+  );
+  static const VerificationMeta _publishedAtMeta = const VerificationMeta(
+    'publishedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> publishedAt = GeneratedColumn<DateTime>(
+    'published_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pinnedUntilMeta = const VerificationMeta(
+    'pinnedUntil',
+  );
+  @override
+  late final GeneratedColumn<DateTime> pinnedUntil = GeneratedColumn<DateTime>(
+    'pinned_until',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _authorMemberIdMeta = const VerificationMeta(
+    'authorMemberId',
+  );
+  @override
+  late final GeneratedColumn<String> authorMemberId = GeneratedColumn<String>(
+    'author_member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _authorNameMeta = const VerificationMeta(
+    'authorName',
+  );
+  @override
+  late final GeneratedColumn<String> authorName = GeneratedColumn<String>(
+    'author_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    clubId,
+    title,
+    bodyMd,
+    priority,
+    audience,
+    publishedAt,
+    pinnedUntil,
+    authorMemberId,
+    authorName,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'posts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Post> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('body_md')) {
+      context.handle(
+        _bodyMdMeta,
+        bodyMd.isAcceptableOrUnknown(data['body_md']!, _bodyMdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMdMeta);
+    }
+    if (data.containsKey('priority')) {
+      context.handle(
+        _priorityMeta,
+        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
+      );
+    }
+    if (data.containsKey('audience')) {
+      context.handle(
+        _audienceMeta,
+        audience.isAcceptableOrUnknown(data['audience']!, _audienceMeta),
+      );
+    }
+    if (data.containsKey('published_at')) {
+      context.handle(
+        _publishedAtMeta,
+        publishedAt.isAcceptableOrUnknown(
+          data['published_at']!,
+          _publishedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_publishedAtMeta);
+    }
+    if (data.containsKey('pinned_until')) {
+      context.handle(
+        _pinnedUntilMeta,
+        pinnedUntil.isAcceptableOrUnknown(
+          data['pinned_until']!,
+          _pinnedUntilMeta,
+        ),
+      );
+    }
+    if (data.containsKey('author_member_id')) {
+      context.handle(
+        _authorMemberIdMeta,
+        authorMemberId.isAcceptableOrUnknown(
+          data['author_member_id']!,
+          _authorMemberIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_authorMemberIdMeta);
+    }
+    if (data.containsKey('author_name')) {
+      context.handle(
+        _authorNameMeta,
+        authorName.isAcceptableOrUnknown(data['author_name']!, _authorNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_authorNameMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Post map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Post(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      bodyMd: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body_md'],
+      )!,
+      priority: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}priority'],
+      )!,
+      audience: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}audience'],
+      )!,
+      publishedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}published_at'],
+      )!,
+      pinnedUntil: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}pinned_until'],
+      ),
+      authorMemberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}author_member_id'],
+      )!,
+      authorName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}author_name'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PostsTable createAlias(String alias) {
+    return $PostsTable(attachedDatabase, alias);
+  }
+}
+
+class Post extends DataClass implements Insertable<Post> {
+  final String id;
+  final int clubId;
+  final String title;
+  final String bodyMd;
+
+  /// `normal` | `important`.
+  final String priority;
+
+  /// `all` | `leaders` | `committee`.
+  final String audience;
+  final DateTime publishedAt;
+  final DateTime? pinnedUntil;
+  final String authorMemberId;
+  final String authorName;
+  final DateTime updatedAt;
+  const Post({
+    required this.id,
+    required this.clubId,
+    required this.title,
+    required this.bodyMd,
+    required this.priority,
+    required this.audience,
+    required this.publishedAt,
+    this.pinnedUntil,
+    required this.authorMemberId,
+    required this.authorName,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['club_id'] = Variable<int>(clubId);
+    map['title'] = Variable<String>(title);
+    map['body_md'] = Variable<String>(bodyMd);
+    map['priority'] = Variable<String>(priority);
+    map['audience'] = Variable<String>(audience);
+    map['published_at'] = Variable<DateTime>(publishedAt);
+    if (!nullToAbsent || pinnedUntil != null) {
+      map['pinned_until'] = Variable<DateTime>(pinnedUntil);
+    }
+    map['author_member_id'] = Variable<String>(authorMemberId);
+    map['author_name'] = Variable<String>(authorName);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  PostsCompanion toCompanion(bool nullToAbsent) {
+    return PostsCompanion(
+      id: Value(id),
+      clubId: Value(clubId),
+      title: Value(title),
+      bodyMd: Value(bodyMd),
+      priority: Value(priority),
+      audience: Value(audience),
+      publishedAt: Value(publishedAt),
+      pinnedUntil: pinnedUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pinnedUntil),
+      authorMemberId: Value(authorMemberId),
+      authorName: Value(authorName),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Post.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Post(
+      id: serializer.fromJson<String>(json['id']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      title: serializer.fromJson<String>(json['title']),
+      bodyMd: serializer.fromJson<String>(json['bodyMd']),
+      priority: serializer.fromJson<String>(json['priority']),
+      audience: serializer.fromJson<String>(json['audience']),
+      publishedAt: serializer.fromJson<DateTime>(json['publishedAt']),
+      pinnedUntil: serializer.fromJson<DateTime?>(json['pinnedUntil']),
+      authorMemberId: serializer.fromJson<String>(json['authorMemberId']),
+      authorName: serializer.fromJson<String>(json['authorName']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'clubId': serializer.toJson<int>(clubId),
+      'title': serializer.toJson<String>(title),
+      'bodyMd': serializer.toJson<String>(bodyMd),
+      'priority': serializer.toJson<String>(priority),
+      'audience': serializer.toJson<String>(audience),
+      'publishedAt': serializer.toJson<DateTime>(publishedAt),
+      'pinnedUntil': serializer.toJson<DateTime?>(pinnedUntil),
+      'authorMemberId': serializer.toJson<String>(authorMemberId),
+      'authorName': serializer.toJson<String>(authorName),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Post copyWith({
+    String? id,
+    int? clubId,
+    String? title,
+    String? bodyMd,
+    String? priority,
+    String? audience,
+    DateTime? publishedAt,
+    Value<DateTime?> pinnedUntil = const Value.absent(),
+    String? authorMemberId,
+    String? authorName,
+    DateTime? updatedAt,
+  }) => Post(
+    id: id ?? this.id,
+    clubId: clubId ?? this.clubId,
+    title: title ?? this.title,
+    bodyMd: bodyMd ?? this.bodyMd,
+    priority: priority ?? this.priority,
+    audience: audience ?? this.audience,
+    publishedAt: publishedAt ?? this.publishedAt,
+    pinnedUntil: pinnedUntil.present ? pinnedUntil.value : this.pinnedUntil,
+    authorMemberId: authorMemberId ?? this.authorMemberId,
+    authorName: authorName ?? this.authorName,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Post copyWithCompanion(PostsCompanion data) {
+    return Post(
+      id: data.id.present ? data.id.value : this.id,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      title: data.title.present ? data.title.value : this.title,
+      bodyMd: data.bodyMd.present ? data.bodyMd.value : this.bodyMd,
+      priority: data.priority.present ? data.priority.value : this.priority,
+      audience: data.audience.present ? data.audience.value : this.audience,
+      publishedAt: data.publishedAt.present
+          ? data.publishedAt.value
+          : this.publishedAt,
+      pinnedUntil: data.pinnedUntil.present
+          ? data.pinnedUntil.value
+          : this.pinnedUntil,
+      authorMemberId: data.authorMemberId.present
+          ? data.authorMemberId.value
+          : this.authorMemberId,
+      authorName: data.authorName.present
+          ? data.authorName.value
+          : this.authorName,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Post(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('title: $title, ')
+          ..write('bodyMd: $bodyMd, ')
+          ..write('priority: $priority, ')
+          ..write('audience: $audience, ')
+          ..write('publishedAt: $publishedAt, ')
+          ..write('pinnedUntil: $pinnedUntil, ')
+          ..write('authorMemberId: $authorMemberId, ')
+          ..write('authorName: $authorName, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    clubId,
+    title,
+    bodyMd,
+    priority,
+    audience,
+    publishedAt,
+    pinnedUntil,
+    authorMemberId,
+    authorName,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Post &&
+          other.id == this.id &&
+          other.clubId == this.clubId &&
+          other.title == this.title &&
+          other.bodyMd == this.bodyMd &&
+          other.priority == this.priority &&
+          other.audience == this.audience &&
+          other.publishedAt == this.publishedAt &&
+          other.pinnedUntil == this.pinnedUntil &&
+          other.authorMemberId == this.authorMemberId &&
+          other.authorName == this.authorName &&
+          other.updatedAt == this.updatedAt);
+}
+
+class PostsCompanion extends UpdateCompanion<Post> {
+  final Value<String> id;
+  final Value<int> clubId;
+  final Value<String> title;
+  final Value<String> bodyMd;
+  final Value<String> priority;
+  final Value<String> audience;
+  final Value<DateTime> publishedAt;
+  final Value<DateTime?> pinnedUntil;
+  final Value<String> authorMemberId;
+  final Value<String> authorName;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const PostsCompanion({
+    this.id = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.bodyMd = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.audience = const Value.absent(),
+    this.publishedAt = const Value.absent(),
+    this.pinnedUntil = const Value.absent(),
+    this.authorMemberId = const Value.absent(),
+    this.authorName = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PostsCompanion.insert({
+    required String id,
+    required int clubId,
+    required String title,
+    required String bodyMd,
+    this.priority = const Value.absent(),
+    this.audience = const Value.absent(),
+    required DateTime publishedAt,
+    this.pinnedUntil = const Value.absent(),
+    required String authorMemberId,
+    required String authorName,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       clubId = Value(clubId),
+       title = Value(title),
+       bodyMd = Value(bodyMd),
+       publishedAt = Value(publishedAt),
+       authorMemberId = Value(authorMemberId),
+       authorName = Value(authorName),
+       updatedAt = Value(updatedAt);
+  static Insertable<Post> custom({
+    Expression<String>? id,
+    Expression<int>? clubId,
+    Expression<String>? title,
+    Expression<String>? bodyMd,
+    Expression<String>? priority,
+    Expression<String>? audience,
+    Expression<DateTime>? publishedAt,
+    Expression<DateTime>? pinnedUntil,
+    Expression<String>? authorMemberId,
+    Expression<String>? authorName,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (clubId != null) 'club_id': clubId,
+      if (title != null) 'title': title,
+      if (bodyMd != null) 'body_md': bodyMd,
+      if (priority != null) 'priority': priority,
+      if (audience != null) 'audience': audience,
+      if (publishedAt != null) 'published_at': publishedAt,
+      if (pinnedUntil != null) 'pinned_until': pinnedUntil,
+      if (authorMemberId != null) 'author_member_id': authorMemberId,
+      if (authorName != null) 'author_name': authorName,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PostsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? clubId,
+    Value<String>? title,
+    Value<String>? bodyMd,
+    Value<String>? priority,
+    Value<String>? audience,
+    Value<DateTime>? publishedAt,
+    Value<DateTime?>? pinnedUntil,
+    Value<String>? authorMemberId,
+    Value<String>? authorName,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return PostsCompanion(
+      id: id ?? this.id,
+      clubId: clubId ?? this.clubId,
+      title: title ?? this.title,
+      bodyMd: bodyMd ?? this.bodyMd,
+      priority: priority ?? this.priority,
+      audience: audience ?? this.audience,
+      publishedAt: publishedAt ?? this.publishedAt,
+      pinnedUntil: pinnedUntil ?? this.pinnedUntil,
+      authorMemberId: authorMemberId ?? this.authorMemberId,
+      authorName: authorName ?? this.authorName,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (bodyMd.present) {
+      map['body_md'] = Variable<String>(bodyMd.value);
+    }
+    if (priority.present) {
+      map['priority'] = Variable<String>(priority.value);
+    }
+    if (audience.present) {
+      map['audience'] = Variable<String>(audience.value);
+    }
+    if (publishedAt.present) {
+      map['published_at'] = Variable<DateTime>(publishedAt.value);
+    }
+    if (pinnedUntil.present) {
+      map['pinned_until'] = Variable<DateTime>(pinnedUntil.value);
+    }
+    if (authorMemberId.present) {
+      map['author_member_id'] = Variable<String>(authorMemberId.value);
+    }
+    if (authorName.present) {
+      map['author_name'] = Variable<String>(authorName.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PostsCompanion(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('title: $title, ')
+          ..write('bodyMd: $bodyMd, ')
+          ..write('priority: $priority, ')
+          ..write('audience: $audience, ')
+          ..write('publishedAt: $publishedAt, ')
+          ..write('pinnedUntil: $pinnedUntil, ')
+          ..write('authorMemberId: $authorMemberId, ')
+          ..write('authorName: $authorName, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $InboxItemsTable extends InboxItems
+    with TableInfo<$InboxItemsTable, InboxItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InboxItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dataJsonMeta = const VerificationMeta(
+    'dataJson',
+  );
+  @override
+  late final GeneratedColumn<String> dataJson = GeneratedColumn<String>(
+    'data_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _readAtMeta = const VerificationMeta('readAt');
+  @override
+  late final GeneratedColumn<DateTime> readAt = GeneratedColumn<DateTime>(
+    'read_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _readPendingMeta = const VerificationMeta(
+    'readPending',
+  );
+  @override
+  late final GeneratedColumn<bool> readPending = GeneratedColumn<bool>(
+    'read_pending',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("read_pending" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    clubId,
+    category,
+    title,
+    body,
+    dataJson,
+    createdAt,
+    readAt,
+    readPending,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'inbox_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InboxItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('data_json')) {
+      context.handle(
+        _dataJsonMeta,
+        dataJson.isAcceptableOrUnknown(data['data_json']!, _dataJsonMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('read_at')) {
+      context.handle(
+        _readAtMeta,
+        readAt.isAcceptableOrUnknown(data['read_at']!, _readAtMeta),
+      );
+    }
+    if (data.containsKey('read_pending')) {
+      context.handle(
+        _readPendingMeta,
+        readPending.isAcceptableOrUnknown(
+          data['read_pending']!,
+          _readPendingMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  InboxItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InboxItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      dataJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data_json'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      readAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}read_at'],
+      ),
+      readPending: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}read_pending'],
+      )!,
+    );
+  }
+
+  @override
+  $InboxItemsTable createAlias(String alias) {
+    return $InboxItemsTable(attachedDatabase, alias);
+  }
+}
+
+class InboxItem extends DataClass implements Insertable<InboxItem> {
+  final String id;
+  final int clubId;
+  final String category;
+  final String title;
+  final String body;
+
+  /// JSON object, e.g. `{"route":"/updates/<postId>"}`.
+  final String dataJson;
+  final DateTime createdAt;
+  final DateTime? readAt;
+
+  /// True while a local "mark read" hasn't reached the server yet. The next refresh
+  /// retries it. Cleared once the POST succeeds.
+  final bool readPending;
+  const InboxItem({
+    required this.id,
+    required this.clubId,
+    required this.category,
+    required this.title,
+    required this.body,
+    required this.dataJson,
+    required this.createdAt,
+    this.readAt,
+    required this.readPending,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['club_id'] = Variable<int>(clubId);
+    map['category'] = Variable<String>(category);
+    map['title'] = Variable<String>(title);
+    map['body'] = Variable<String>(body);
+    map['data_json'] = Variable<String>(dataJson);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || readAt != null) {
+      map['read_at'] = Variable<DateTime>(readAt);
+    }
+    map['read_pending'] = Variable<bool>(readPending);
+    return map;
+  }
+
+  InboxItemsCompanion toCompanion(bool nullToAbsent) {
+    return InboxItemsCompanion(
+      id: Value(id),
+      clubId: Value(clubId),
+      category: Value(category),
+      title: Value(title),
+      body: Value(body),
+      dataJson: Value(dataJson),
+      createdAt: Value(createdAt),
+      readAt: readAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(readAt),
+      readPending: Value(readPending),
+    );
+  }
+
+  factory InboxItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InboxItem(
+      id: serializer.fromJson<String>(json['id']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      category: serializer.fromJson<String>(json['category']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      dataJson: serializer.fromJson<String>(json['dataJson']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      readAt: serializer.fromJson<DateTime?>(json['readAt']),
+      readPending: serializer.fromJson<bool>(json['readPending']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'clubId': serializer.toJson<int>(clubId),
+      'category': serializer.toJson<String>(category),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String>(body),
+      'dataJson': serializer.toJson<String>(dataJson),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'readAt': serializer.toJson<DateTime?>(readAt),
+      'readPending': serializer.toJson<bool>(readPending),
+    };
+  }
+
+  InboxItem copyWith({
+    String? id,
+    int? clubId,
+    String? category,
+    String? title,
+    String? body,
+    String? dataJson,
+    DateTime? createdAt,
+    Value<DateTime?> readAt = const Value.absent(),
+    bool? readPending,
+  }) => InboxItem(
+    id: id ?? this.id,
+    clubId: clubId ?? this.clubId,
+    category: category ?? this.category,
+    title: title ?? this.title,
+    body: body ?? this.body,
+    dataJson: dataJson ?? this.dataJson,
+    createdAt: createdAt ?? this.createdAt,
+    readAt: readAt.present ? readAt.value : this.readAt,
+    readPending: readPending ?? this.readPending,
+  );
+  InboxItem copyWithCompanion(InboxItemsCompanion data) {
+    return InboxItem(
+      id: data.id.present ? data.id.value : this.id,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      category: data.category.present ? data.category.value : this.category,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      dataJson: data.dataJson.present ? data.dataJson.value : this.dataJson,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      readAt: data.readAt.present ? data.readAt.value : this.readAt,
+      readPending: data.readPending.present
+          ? data.readPending.value
+          : this.readPending,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InboxItem(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('category: $category, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('dataJson: $dataJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('readAt: $readAt, ')
+          ..write('readPending: $readPending')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    clubId,
+    category,
+    title,
+    body,
+    dataJson,
+    createdAt,
+    readAt,
+    readPending,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InboxItem &&
+          other.id == this.id &&
+          other.clubId == this.clubId &&
+          other.category == this.category &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.dataJson == this.dataJson &&
+          other.createdAt == this.createdAt &&
+          other.readAt == this.readAt &&
+          other.readPending == this.readPending);
+}
+
+class InboxItemsCompanion extends UpdateCompanion<InboxItem> {
+  final Value<String> id;
+  final Value<int> clubId;
+  final Value<String> category;
+  final Value<String> title;
+  final Value<String> body;
+  final Value<String> dataJson;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> readAt;
+  final Value<bool> readPending;
+  final Value<int> rowid;
+  const InboxItemsCompanion({
+    this.id = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.category = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.dataJson = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.readAt = const Value.absent(),
+    this.readPending = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InboxItemsCompanion.insert({
+    required String id,
+    required int clubId,
+    required String category,
+    required String title,
+    required String body,
+    this.dataJson = const Value.absent(),
+    required DateTime createdAt,
+    this.readAt = const Value.absent(),
+    this.readPending = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       clubId = Value(clubId),
+       category = Value(category),
+       title = Value(title),
+       body = Value(body),
+       createdAt = Value(createdAt);
+  static Insertable<InboxItem> custom({
+    Expression<String>? id,
+    Expression<int>? clubId,
+    Expression<String>? category,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<String>? dataJson,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? readAt,
+    Expression<bool>? readPending,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (clubId != null) 'club_id': clubId,
+      if (category != null) 'category': category,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (dataJson != null) 'data_json': dataJson,
+      if (createdAt != null) 'created_at': createdAt,
+      if (readAt != null) 'read_at': readAt,
+      if (readPending != null) 'read_pending': readPending,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InboxItemsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? clubId,
+    Value<String>? category,
+    Value<String>? title,
+    Value<String>? body,
+    Value<String>? dataJson,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? readAt,
+    Value<bool>? readPending,
+    Value<int>? rowid,
+  }) {
+    return InboxItemsCompanion(
+      id: id ?? this.id,
+      clubId: clubId ?? this.clubId,
+      category: category ?? this.category,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      dataJson: dataJson ?? this.dataJson,
+      createdAt: createdAt ?? this.createdAt,
+      readAt: readAt ?? this.readAt,
+      readPending: readPending ?? this.readPending,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (dataJson.present) {
+      map['data_json'] = Variable<String>(dataJson.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (readAt.present) {
+      map['read_at'] = Variable<DateTime>(readAt.value);
+    }
+    if (readPending.present) {
+      map['read_pending'] = Variable<bool>(readPending.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InboxItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('category: $category, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('dataJson: $dataJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('readAt: $readAt, ')
+          ..write('readPending: $readPending, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SyncCursorsTable extends SyncCursors
+    with TableInfo<$SyncCursorsTable, SyncCursor> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncCursorsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverTimeMeta = const VerificationMeta(
+    'serverTime',
+  );
+  @override
+  late final GeneratedColumn<String> serverTime = GeneratedColumn<String>(
+    'server_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, serverTime];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_cursors';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncCursor> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('server_time')) {
+      context.handle(
+        _serverTimeMeta,
+        serverTime.isAcceptableOrUnknown(data['server_time']!, _serverTimeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_serverTimeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  SyncCursor map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncCursor(
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      serverTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_time'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncCursorsTable createAlias(String alias) {
+    return $SyncCursorsTable(attachedDatabase, alias);
+  }
+}
+
+class SyncCursor extends DataClass implements Insertable<SyncCursor> {
+  final String key;
+  final String serverTime;
+  const SyncCursor({required this.key, required this.serverTime});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['server_time'] = Variable<String>(serverTime);
+    return map;
+  }
+
+  SyncCursorsCompanion toCompanion(bool nullToAbsent) {
+    return SyncCursorsCompanion(key: Value(key), serverTime: Value(serverTime));
+  }
+
+  factory SyncCursor.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncCursor(
+      key: serializer.fromJson<String>(json['key']),
+      serverTime: serializer.fromJson<String>(json['serverTime']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'serverTime': serializer.toJson<String>(serverTime),
+    };
+  }
+
+  SyncCursor copyWith({String? key, String? serverTime}) => SyncCursor(
+    key: key ?? this.key,
+    serverTime: serverTime ?? this.serverTime,
+  );
+  SyncCursor copyWithCompanion(SyncCursorsCompanion data) {
+    return SyncCursor(
+      key: data.key.present ? data.key.value : this.key,
+      serverTime: data.serverTime.present
+          ? data.serverTime.value
+          : this.serverTime,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncCursor(')
+          ..write('key: $key, ')
+          ..write('serverTime: $serverTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, serverTime);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncCursor &&
+          other.key == this.key &&
+          other.serverTime == this.serverTime);
+}
+
+class SyncCursorsCompanion extends UpdateCompanion<SyncCursor> {
+  final Value<String> key;
+  final Value<String> serverTime;
+  final Value<int> rowid;
+  const SyncCursorsCompanion({
+    this.key = const Value.absent(),
+    this.serverTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncCursorsCompanion.insert({
+    required String key,
+    required String serverTime,
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       serverTime = Value(serverTime);
+  static Insertable<SyncCursor> custom({
+    Expression<String>? key,
+    Expression<String>? serverTime,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (serverTime != null) 'server_time': serverTime,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncCursorsCompanion copyWith({
+    Value<String>? key,
+    Value<String>? serverTime,
+    Value<int>? rowid,
+  }) {
+    return SyncCursorsCompanion(
+      key: key ?? this.key,
+      serverTime: serverTime ?? this.serverTime,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (serverTime.present) {
+      map['server_time'] = Variable<String>(serverTime.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncCursorsCompanion(')
+          ..write('key: $key, ')
+          ..write('serverTime: $serverTime, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $VenuesTable extends Venues with TableInfo<$VenuesTable, Venue> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $VenuesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _addressMeta = const VerificationMeta(
+    'address',
+  );
+  @override
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+    'address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _latMeta = const VerificationMeta('lat');
+  @override
+  late final GeneratedColumn<double> lat = GeneratedColumn<double>(
+    'lat',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lngMeta = const VerificationMeta('lng');
+  @override
+  late final GeneratedColumn<double> lng = GeneratedColumn<double>(
+    'lng',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    clubId,
+    name,
+    address,
+    lat,
+    lng,
+    notes,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'venues';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Venue> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('address')) {
+      context.handle(
+        _addressMeta,
+        address.isAcceptableOrUnknown(data['address']!, _addressMeta),
+      );
+    }
+    if (data.containsKey('lat')) {
+      context.handle(
+        _latMeta,
+        lat.isAcceptableOrUnknown(data['lat']!, _latMeta),
+      );
+    }
+    if (data.containsKey('lng')) {
+      context.handle(
+        _lngMeta,
+        lng.isAcceptableOrUnknown(data['lng']!, _lngMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Venue map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Venue(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      address: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address'],
+      ),
+      lat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lat'],
+      ),
+      lng: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lng'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $VenuesTable createAlias(String alias) {
+    return $VenuesTable(attachedDatabase, alias);
+  }
+}
+
+class Venue extends DataClass implements Insertable<Venue> {
+  final String id;
+  final int clubId;
+  final String name;
+  final String? address;
+  final double? lat;
+  final double? lng;
+  final String? notes;
+  final DateTime updatedAt;
+  const Venue({
+    required this.id,
+    required this.clubId,
+    required this.name,
+    this.address,
+    this.lat,
+    this.lng,
+    this.notes,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['club_id'] = Variable<int>(clubId);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || address != null) {
+      map['address'] = Variable<String>(address);
+    }
+    if (!nullToAbsent || lat != null) {
+      map['lat'] = Variable<double>(lat);
+    }
+    if (!nullToAbsent || lng != null) {
+      map['lng'] = Variable<double>(lng);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  VenuesCompanion toCompanion(bool nullToAbsent) {
+    return VenuesCompanion(
+      id: Value(id),
+      clubId: Value(clubId),
+      name: Value(name),
+      address: address == null && nullToAbsent
+          ? const Value.absent()
+          : Value(address),
+      lat: lat == null && nullToAbsent ? const Value.absent() : Value(lat),
+      lng: lng == null && nullToAbsent ? const Value.absent() : Value(lng),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Venue.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Venue(
+      id: serializer.fromJson<String>(json['id']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      name: serializer.fromJson<String>(json['name']),
+      address: serializer.fromJson<String?>(json['address']),
+      lat: serializer.fromJson<double?>(json['lat']),
+      lng: serializer.fromJson<double?>(json['lng']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'clubId': serializer.toJson<int>(clubId),
+      'name': serializer.toJson<String>(name),
+      'address': serializer.toJson<String?>(address),
+      'lat': serializer.toJson<double?>(lat),
+      'lng': serializer.toJson<double?>(lng),
+      'notes': serializer.toJson<String?>(notes),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Venue copyWith({
+    String? id,
+    int? clubId,
+    String? name,
+    Value<String?> address = const Value.absent(),
+    Value<double?> lat = const Value.absent(),
+    Value<double?> lng = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    DateTime? updatedAt,
+  }) => Venue(
+    id: id ?? this.id,
+    clubId: clubId ?? this.clubId,
+    name: name ?? this.name,
+    address: address.present ? address.value : this.address,
+    lat: lat.present ? lat.value : this.lat,
+    lng: lng.present ? lng.value : this.lng,
+    notes: notes.present ? notes.value : this.notes,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Venue copyWithCompanion(VenuesCompanion data) {
+    return Venue(
+      id: data.id.present ? data.id.value : this.id,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      name: data.name.present ? data.name.value : this.name,
+      address: data.address.present ? data.address.value : this.address,
+      lat: data.lat.present ? data.lat.value : this.lat,
+      lng: data.lng.present ? data.lng.value : this.lng,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Venue(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('name: $name, ')
+          ..write('address: $address, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('notes: $notes, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, clubId, name, address, lat, lng, notes, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Venue &&
+          other.id == this.id &&
+          other.clubId == this.clubId &&
+          other.name == this.name &&
+          other.address == this.address &&
+          other.lat == this.lat &&
+          other.lng == this.lng &&
+          other.notes == this.notes &&
+          other.updatedAt == this.updatedAt);
+}
+
+class VenuesCompanion extends UpdateCompanion<Venue> {
+  final Value<String> id;
+  final Value<int> clubId;
+  final Value<String> name;
+  final Value<String?> address;
+  final Value<double?> lat;
+  final Value<double?> lng;
+  final Value<String?> notes;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const VenuesCompanion({
+    this.id = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.address = const Value.absent(),
+    this.lat = const Value.absent(),
+    this.lng = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  VenuesCompanion.insert({
+    required String id,
+    required int clubId,
+    required String name,
+    this.address = const Value.absent(),
+    this.lat = const Value.absent(),
+    this.lng = const Value.absent(),
+    this.notes = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       clubId = Value(clubId),
+       name = Value(name),
+       updatedAt = Value(updatedAt);
+  static Insertable<Venue> custom({
+    Expression<String>? id,
+    Expression<int>? clubId,
+    Expression<String>? name,
+    Expression<String>? address,
+    Expression<double>? lat,
+    Expression<double>? lng,
+    Expression<String>? notes,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (clubId != null) 'club_id': clubId,
+      if (name != null) 'name': name,
+      if (address != null) 'address': address,
+      if (lat != null) 'lat': lat,
+      if (lng != null) 'lng': lng,
+      if (notes != null) 'notes': notes,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  VenuesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? clubId,
+    Value<String>? name,
+    Value<String?>? address,
+    Value<double?>? lat,
+    Value<double?>? lng,
+    Value<String?>? notes,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return VenuesCompanion(
+      id: id ?? this.id,
+      clubId: clubId ?? this.clubId,
+      name: name ?? this.name,
+      address: address ?? this.address,
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+      notes: notes ?? this.notes,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
+    if (lat.present) {
+      map['lat'] = Variable<double>(lat.value);
+    }
+    if (lng.present) {
+      map['lng'] = Variable<double>(lng.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VenuesCompanion(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('name: $name, ')
+          ..write('address: $address, ')
+          ..write('lat: $lat, ')
+          ..write('lng: $lng, ')
+          ..write('notes: $notes, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SessionSeriesTable extends SessionSeries
+    with TableInfo<$SessionSeriesTable, RunSeries> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SessionSeriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _venueIdMeta = const VerificationMeta(
+    'venueId',
+  );
+  @override
+  late final GeneratedColumn<String> venueId = GeneratedColumn<String>(
+    'venue_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _weekdayMeta = const VerificationMeta(
+    'weekday',
+  );
+  @override
+  late final GeneratedColumn<int> weekday = GeneratedColumn<int>(
+    'weekday',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startTimeMeta = const VerificationMeta(
+    'startTime',
+  );
+  @override
+  late final GeneratedColumn<String> startTime = GeneratedColumn<String>(
+    'start_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _durationMinMeta = const VerificationMeta(
+    'durationMin',
+  );
+  @override
+  late final GeneratedColumn<int> durationMin = GeneratedColumn<int>(
+    'duration_min',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _intervalWeeksMeta = const VerificationMeta(
+    'intervalWeeks',
+  );
+  @override
+  late final GeneratedColumn<int> intervalWeeks = GeneratedColumn<int>(
+    'interval_weeks',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _validFromMeta = const VerificationMeta(
+    'validFrom',
+  );
+  @override
+  late final GeneratedColumn<String> validFrom = GeneratedColumn<String>(
+    'valid_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _validUntilMeta = const VerificationMeta(
+    'validUntil',
+  );
+  @override
+  late final GeneratedColumn<String> validUntil = GeneratedColumn<String>(
+    'valid_until',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _groupModeMeta = const VerificationMeta(
+    'groupMode',
+  );
+  @override
+  late final GeneratedColumn<String> groupMode = GeneratedColumn<String>(
+    'group_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cmsSlugMeta = const VerificationMeta(
+    'cmsSlug',
+  );
+  @override
+  late final GeneratedColumn<String> cmsSlug = GeneratedColumn<String>(
+    'cms_slug',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    clubId,
+    title,
+    description,
+    venueId,
+    weekday,
+    startTime,
+    durationMin,
+    intervalWeeks,
+    validFrom,
+    validUntil,
+    groupMode,
+    cmsSlug,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'session_series';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RunSeries> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('venue_id')) {
+      context.handle(
+        _venueIdMeta,
+        venueId.isAcceptableOrUnknown(data['venue_id']!, _venueIdMeta),
+      );
+    }
+    if (data.containsKey('weekday')) {
+      context.handle(
+        _weekdayMeta,
+        weekday.isAcceptableOrUnknown(data['weekday']!, _weekdayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weekdayMeta);
+    }
+    if (data.containsKey('start_time')) {
+      context.handle(
+        _startTimeMeta,
+        startTime.isAcceptableOrUnknown(data['start_time']!, _startTimeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startTimeMeta);
+    }
+    if (data.containsKey('duration_min')) {
+      context.handle(
+        _durationMinMeta,
+        durationMin.isAcceptableOrUnknown(
+          data['duration_min']!,
+          _durationMinMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_durationMinMeta);
+    }
+    if (data.containsKey('interval_weeks')) {
+      context.handle(
+        _intervalWeeksMeta,
+        intervalWeeks.isAcceptableOrUnknown(
+          data['interval_weeks']!,
+          _intervalWeeksMeta,
+        ),
+      );
+    }
+    if (data.containsKey('valid_from')) {
+      context.handle(
+        _validFromMeta,
+        validFrom.isAcceptableOrUnknown(data['valid_from']!, _validFromMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_validFromMeta);
+    }
+    if (data.containsKey('valid_until')) {
+      context.handle(
+        _validUntilMeta,
+        validUntil.isAcceptableOrUnknown(data['valid_until']!, _validUntilMeta),
+      );
+    }
+    if (data.containsKey('group_mode')) {
+      context.handle(
+        _groupModeMeta,
+        groupMode.isAcceptableOrUnknown(data['group_mode']!, _groupModeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupModeMeta);
+    }
+    if (data.containsKey('cms_slug')) {
+      context.handle(
+        _cmsSlugMeta,
+        cmsSlug.isAcceptableOrUnknown(data['cms_slug']!, _cmsSlugMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RunSeries map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RunSeries(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      venueId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}venue_id'],
+      ),
+      weekday: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}weekday'],
+      )!,
+      startTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}start_time'],
+      )!,
+      durationMin: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_min'],
+      )!,
+      intervalWeeks: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}interval_weeks'],
+      )!,
+      validFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}valid_from'],
+      )!,
+      validUntil: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}valid_until'],
+      ),
+      groupMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_mode'],
+      )!,
+      cmsSlug: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cms_slug'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SessionSeriesTable createAlias(String alias) {
+    return $SessionSeriesTable(attachedDatabase, alias);
+  }
+}
+
+class RunSeries extends DataClass implements Insertable<RunSeries> {
+  final String id;
+  final int clubId;
+  final String title;
+  final String? description;
+  final String? venueId;
+
+  /// ISO weekday, 1 = Monday ... 7 = Sunday.
+  final int weekday;
+  final String startTime;
+  final int durationMin;
+  final int intervalWeeks;
+  final String validFrom;
+  final String? validUntil;
+
+  /// `paced` | `single` | `open` | `routes`.
+  final String groupMode;
+  final String? cmsSlug;
+  final DateTime updatedAt;
+  const RunSeries({
+    required this.id,
+    required this.clubId,
+    required this.title,
+    this.description,
+    this.venueId,
+    required this.weekday,
+    required this.startTime,
+    required this.durationMin,
+    required this.intervalWeeks,
+    required this.validFrom,
+    this.validUntil,
+    required this.groupMode,
+    this.cmsSlug,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['club_id'] = Variable<int>(clubId);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || venueId != null) {
+      map['venue_id'] = Variable<String>(venueId);
+    }
+    map['weekday'] = Variable<int>(weekday);
+    map['start_time'] = Variable<String>(startTime);
+    map['duration_min'] = Variable<int>(durationMin);
+    map['interval_weeks'] = Variable<int>(intervalWeeks);
+    map['valid_from'] = Variable<String>(validFrom);
+    if (!nullToAbsent || validUntil != null) {
+      map['valid_until'] = Variable<String>(validUntil);
+    }
+    map['group_mode'] = Variable<String>(groupMode);
+    if (!nullToAbsent || cmsSlug != null) {
+      map['cms_slug'] = Variable<String>(cmsSlug);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  SessionSeriesCompanion toCompanion(bool nullToAbsent) {
+    return SessionSeriesCompanion(
+      id: Value(id),
+      clubId: Value(clubId),
+      title: Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      venueId: venueId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(venueId),
+      weekday: Value(weekday),
+      startTime: Value(startTime),
+      durationMin: Value(durationMin),
+      intervalWeeks: Value(intervalWeeks),
+      validFrom: Value(validFrom),
+      validUntil: validUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(validUntil),
+      groupMode: Value(groupMode),
+      cmsSlug: cmsSlug == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cmsSlug),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory RunSeries.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RunSeries(
+      id: serializer.fromJson<String>(json['id']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
+      venueId: serializer.fromJson<String?>(json['venueId']),
+      weekday: serializer.fromJson<int>(json['weekday']),
+      startTime: serializer.fromJson<String>(json['startTime']),
+      durationMin: serializer.fromJson<int>(json['durationMin']),
+      intervalWeeks: serializer.fromJson<int>(json['intervalWeeks']),
+      validFrom: serializer.fromJson<String>(json['validFrom']),
+      validUntil: serializer.fromJson<String?>(json['validUntil']),
+      groupMode: serializer.fromJson<String>(json['groupMode']),
+      cmsSlug: serializer.fromJson<String?>(json['cmsSlug']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'clubId': serializer.toJson<int>(clubId),
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String?>(description),
+      'venueId': serializer.toJson<String?>(venueId),
+      'weekday': serializer.toJson<int>(weekday),
+      'startTime': serializer.toJson<String>(startTime),
+      'durationMin': serializer.toJson<int>(durationMin),
+      'intervalWeeks': serializer.toJson<int>(intervalWeeks),
+      'validFrom': serializer.toJson<String>(validFrom),
+      'validUntil': serializer.toJson<String?>(validUntil),
+      'groupMode': serializer.toJson<String>(groupMode),
+      'cmsSlug': serializer.toJson<String?>(cmsSlug),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  RunSeries copyWith({
+    String? id,
+    int? clubId,
+    String? title,
+    Value<String?> description = const Value.absent(),
+    Value<String?> venueId = const Value.absent(),
+    int? weekday,
+    String? startTime,
+    int? durationMin,
+    int? intervalWeeks,
+    String? validFrom,
+    Value<String?> validUntil = const Value.absent(),
+    String? groupMode,
+    Value<String?> cmsSlug = const Value.absent(),
+    DateTime? updatedAt,
+  }) => RunSeries(
+    id: id ?? this.id,
+    clubId: clubId ?? this.clubId,
+    title: title ?? this.title,
+    description: description.present ? description.value : this.description,
+    venueId: venueId.present ? venueId.value : this.venueId,
+    weekday: weekday ?? this.weekday,
+    startTime: startTime ?? this.startTime,
+    durationMin: durationMin ?? this.durationMin,
+    intervalWeeks: intervalWeeks ?? this.intervalWeeks,
+    validFrom: validFrom ?? this.validFrom,
+    validUntil: validUntil.present ? validUntil.value : this.validUntil,
+    groupMode: groupMode ?? this.groupMode,
+    cmsSlug: cmsSlug.present ? cmsSlug.value : this.cmsSlug,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  RunSeries copyWithCompanion(SessionSeriesCompanion data) {
+    return RunSeries(
+      id: data.id.present ? data.id.value : this.id,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      title: data.title.present ? data.title.value : this.title,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      venueId: data.venueId.present ? data.venueId.value : this.venueId,
+      weekday: data.weekday.present ? data.weekday.value : this.weekday,
+      startTime: data.startTime.present ? data.startTime.value : this.startTime,
+      durationMin: data.durationMin.present
+          ? data.durationMin.value
+          : this.durationMin,
+      intervalWeeks: data.intervalWeeks.present
+          ? data.intervalWeeks.value
+          : this.intervalWeeks,
+      validFrom: data.validFrom.present ? data.validFrom.value : this.validFrom,
+      validUntil: data.validUntil.present
+          ? data.validUntil.value
+          : this.validUntil,
+      groupMode: data.groupMode.present ? data.groupMode.value : this.groupMode,
+      cmsSlug: data.cmsSlug.present ? data.cmsSlug.value : this.cmsSlug,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RunSeries(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('venueId: $venueId, ')
+          ..write('weekday: $weekday, ')
+          ..write('startTime: $startTime, ')
+          ..write('durationMin: $durationMin, ')
+          ..write('intervalWeeks: $intervalWeeks, ')
+          ..write('validFrom: $validFrom, ')
+          ..write('validUntil: $validUntil, ')
+          ..write('groupMode: $groupMode, ')
+          ..write('cmsSlug: $cmsSlug, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    clubId,
+    title,
+    description,
+    venueId,
+    weekday,
+    startTime,
+    durationMin,
+    intervalWeeks,
+    validFrom,
+    validUntil,
+    groupMode,
+    cmsSlug,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RunSeries &&
+          other.id == this.id &&
+          other.clubId == this.clubId &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.venueId == this.venueId &&
+          other.weekday == this.weekday &&
+          other.startTime == this.startTime &&
+          other.durationMin == this.durationMin &&
+          other.intervalWeeks == this.intervalWeeks &&
+          other.validFrom == this.validFrom &&
+          other.validUntil == this.validUntil &&
+          other.groupMode == this.groupMode &&
+          other.cmsSlug == this.cmsSlug &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
+  final Value<String> id;
+  final Value<int> clubId;
+  final Value<String> title;
+  final Value<String?> description;
+  final Value<String?> venueId;
+  final Value<int> weekday;
+  final Value<String> startTime;
+  final Value<int> durationMin;
+  final Value<int> intervalWeeks;
+  final Value<String> validFrom;
+  final Value<String?> validUntil;
+  final Value<String> groupMode;
+  final Value<String?> cmsSlug;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const SessionSeriesCompanion({
+    this.id = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.venueId = const Value.absent(),
+    this.weekday = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.durationMin = const Value.absent(),
+    this.intervalWeeks = const Value.absent(),
+    this.validFrom = const Value.absent(),
+    this.validUntil = const Value.absent(),
+    this.groupMode = const Value.absent(),
+    this.cmsSlug = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SessionSeriesCompanion.insert({
+    required String id,
+    required int clubId,
+    required String title,
+    this.description = const Value.absent(),
+    this.venueId = const Value.absent(),
+    required int weekday,
+    required String startTime,
+    required int durationMin,
+    this.intervalWeeks = const Value.absent(),
+    required String validFrom,
+    this.validUntil = const Value.absent(),
+    required String groupMode,
+    this.cmsSlug = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       clubId = Value(clubId),
+       title = Value(title),
+       weekday = Value(weekday),
+       startTime = Value(startTime),
+       durationMin = Value(durationMin),
+       validFrom = Value(validFrom),
+       groupMode = Value(groupMode),
+       updatedAt = Value(updatedAt);
+  static Insertable<RunSeries> custom({
+    Expression<String>? id,
+    Expression<int>? clubId,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<String>? venueId,
+    Expression<int>? weekday,
+    Expression<String>? startTime,
+    Expression<int>? durationMin,
+    Expression<int>? intervalWeeks,
+    Expression<String>? validFrom,
+    Expression<String>? validUntil,
+    Expression<String>? groupMode,
+    Expression<String>? cmsSlug,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (clubId != null) 'club_id': clubId,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (venueId != null) 'venue_id': venueId,
+      if (weekday != null) 'weekday': weekday,
+      if (startTime != null) 'start_time': startTime,
+      if (durationMin != null) 'duration_min': durationMin,
+      if (intervalWeeks != null) 'interval_weeks': intervalWeeks,
+      if (validFrom != null) 'valid_from': validFrom,
+      if (validUntil != null) 'valid_until': validUntil,
+      if (groupMode != null) 'group_mode': groupMode,
+      if (cmsSlug != null) 'cms_slug': cmsSlug,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SessionSeriesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? clubId,
+    Value<String>? title,
+    Value<String?>? description,
+    Value<String?>? venueId,
+    Value<int>? weekday,
+    Value<String>? startTime,
+    Value<int>? durationMin,
+    Value<int>? intervalWeeks,
+    Value<String>? validFrom,
+    Value<String?>? validUntil,
+    Value<String>? groupMode,
+    Value<String?>? cmsSlug,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return SessionSeriesCompanion(
+      id: id ?? this.id,
+      clubId: clubId ?? this.clubId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      venueId: venueId ?? this.venueId,
+      weekday: weekday ?? this.weekday,
+      startTime: startTime ?? this.startTime,
+      durationMin: durationMin ?? this.durationMin,
+      intervalWeeks: intervalWeeks ?? this.intervalWeeks,
+      validFrom: validFrom ?? this.validFrom,
+      validUntil: validUntil ?? this.validUntil,
+      groupMode: groupMode ?? this.groupMode,
+      cmsSlug: cmsSlug ?? this.cmsSlug,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (venueId.present) {
+      map['venue_id'] = Variable<String>(venueId.value);
+    }
+    if (weekday.present) {
+      map['weekday'] = Variable<int>(weekday.value);
+    }
+    if (startTime.present) {
+      map['start_time'] = Variable<String>(startTime.value);
+    }
+    if (durationMin.present) {
+      map['duration_min'] = Variable<int>(durationMin.value);
+    }
+    if (intervalWeeks.present) {
+      map['interval_weeks'] = Variable<int>(intervalWeeks.value);
+    }
+    if (validFrom.present) {
+      map['valid_from'] = Variable<String>(validFrom.value);
+    }
+    if (validUntil.present) {
+      map['valid_until'] = Variable<String>(validUntil.value);
+    }
+    if (groupMode.present) {
+      map['group_mode'] = Variable<String>(groupMode.value);
+    }
+    if (cmsSlug.present) {
+      map['cms_slug'] = Variable<String>(cmsSlug.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionSeriesCompanion(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('venueId: $venueId, ')
+          ..write('weekday: $weekday, ')
+          ..write('startTime: $startTime, ')
+          ..write('durationMin: $durationMin, ')
+          ..write('intervalWeeks: $intervalWeeks, ')
+          ..write('validFrom: $validFrom, ')
+          ..write('validUntil: $validUntil, ')
+          ..write('groupMode: $groupMode, ')
+          ..write('cmsSlug: $cmsSlug, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _seriesIdMeta = const VerificationMeta(
+    'seriesId',
+  );
+  @override
+  late final GeneratedColumn<String> seriesId = GeneratedColumn<String>(
+    'series_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _occurrenceDateMeta = const VerificationMeta(
+    'occurrenceDate',
+  );
+  @override
+  late final GeneratedColumn<String> occurrenceDate = GeneratedColumn<String>(
+    'occurrence_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _venueIdMeta = const VerificationMeta(
+    'venueId',
+  );
+  @override
+  late final GeneratedColumn<String> venueId = GeneratedColumn<String>(
+    'venue_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startsAtMeta = const VerificationMeta(
+    'startsAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startsAt = GeneratedColumn<DateTime>(
+    'starts_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endsAtMeta = const VerificationMeta('endsAt');
+  @override
+  late final GeneratedColumn<DateTime> endsAt = GeneratedColumn<DateTime>(
+    'ends_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localDateMeta = const VerificationMeta(
+    'localDate',
+  );
+  @override
+  late final GeneratedColumn<String> localDate = GeneratedColumn<String>(
+    'local_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localStartTimeMeta = const VerificationMeta(
+    'localStartTime',
+  );
+  @override
+  late final GeneratedColumn<String> localStartTime = GeneratedColumn<String>(
+    'local_start_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localEndTimeMeta = const VerificationMeta(
+    'localEndTime',
+  );
+  @override
+  late final GeneratedColumn<String> localEndTime = GeneratedColumn<String>(
+    'local_end_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupModeMeta = const VerificationMeta(
+    'groupMode',
+  );
+  @override
+  late final GeneratedColumn<String> groupMode = GeneratedColumn<String>(
+    'group_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('scheduled'),
+  );
+  static const VerificationMeta _cancelReasonMeta = const VerificationMeta(
+    'cancelReason',
+  );
+  @override
+  late final GeneratedColumn<String> cancelReason = GeneratedColumn<String>(
+    'cancel_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _coordinatorMemberIdMeta =
+      const VerificationMeta('coordinatorMemberId');
+  @override
+  late final GeneratedColumn<String> coordinatorMemberId =
+      GeneratedColumn<String>(
+        'coordinator_member_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _coordinatorNameMeta = const VerificationMeta(
+    'coordinatorName',
+  );
+  @override
+  late final GeneratedColumn<String> coordinatorName = GeneratedColumn<String>(
+    'coordinator_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isDetachedMeta = const VerificationMeta(
+    'isDetached',
+  );
+  @override
+  late final GeneratedColumn<bool> isDetached = GeneratedColumn<bool>(
+    'is_detached',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_detached" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _originalJsonMeta = const VerificationMeta(
+    'originalJson',
+  );
+  @override
+  late final GeneratedColumn<String> originalJson = GeneratedColumn<String>(
+    'original_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _groupsJsonMeta = const VerificationMeta(
+    'groupsJson',
+  );
+  @override
+  late final GeneratedColumn<String> groupsJson = GeneratedColumn<String>(
+    'groups_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _summaryJsonMeta = const VerificationMeta(
+    'summaryJson',
+  );
+  @override
+  late final GeneratedColumn<String> summaryJson = GeneratedColumn<String>(
+    'summary_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    clubId,
+    seriesId,
+    occurrenceDate,
+    title,
+    venueId,
+    notes,
+    startsAt,
+    endsAt,
+    localDate,
+    localStartTime,
+    localEndTime,
+    groupMode,
+    status,
+    cancelReason,
+    coordinatorMemberId,
+    coordinatorName,
+    isDetached,
+    originalJson,
+    groupsJson,
+    summaryJson,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sessions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Session> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('series_id')) {
+      context.handle(
+        _seriesIdMeta,
+        seriesId.isAcceptableOrUnknown(data['series_id']!, _seriesIdMeta),
+      );
+    }
+    if (data.containsKey('occurrence_date')) {
+      context.handle(
+        _occurrenceDateMeta,
+        occurrenceDate.isAcceptableOrUnknown(
+          data['occurrence_date']!,
+          _occurrenceDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('venue_id')) {
+      context.handle(
+        _venueIdMeta,
+        venueId.isAcceptableOrUnknown(data['venue_id']!, _venueIdMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('starts_at')) {
+      context.handle(
+        _startsAtMeta,
+        startsAt.isAcceptableOrUnknown(data['starts_at']!, _startsAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startsAtMeta);
+    }
+    if (data.containsKey('ends_at')) {
+      context.handle(
+        _endsAtMeta,
+        endsAt.isAcceptableOrUnknown(data['ends_at']!, _endsAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endsAtMeta);
+    }
+    if (data.containsKey('local_date')) {
+      context.handle(
+        _localDateMeta,
+        localDate.isAcceptableOrUnknown(data['local_date']!, _localDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localDateMeta);
+    }
+    if (data.containsKey('local_start_time')) {
+      context.handle(
+        _localStartTimeMeta,
+        localStartTime.isAcceptableOrUnknown(
+          data['local_start_time']!,
+          _localStartTimeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_localStartTimeMeta);
+    }
+    if (data.containsKey('local_end_time')) {
+      context.handle(
+        _localEndTimeMeta,
+        localEndTime.isAcceptableOrUnknown(
+          data['local_end_time']!,
+          _localEndTimeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_localEndTimeMeta);
+    }
+    if (data.containsKey('group_mode')) {
+      context.handle(
+        _groupModeMeta,
+        groupMode.isAcceptableOrUnknown(data['group_mode']!, _groupModeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupModeMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('cancel_reason')) {
+      context.handle(
+        _cancelReasonMeta,
+        cancelReason.isAcceptableOrUnknown(
+          data['cancel_reason']!,
+          _cancelReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('coordinator_member_id')) {
+      context.handle(
+        _coordinatorMemberIdMeta,
+        coordinatorMemberId.isAcceptableOrUnknown(
+          data['coordinator_member_id']!,
+          _coordinatorMemberIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('coordinator_name')) {
+      context.handle(
+        _coordinatorNameMeta,
+        coordinatorName.isAcceptableOrUnknown(
+          data['coordinator_name']!,
+          _coordinatorNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_detached')) {
+      context.handle(
+        _isDetachedMeta,
+        isDetached.isAcceptableOrUnknown(data['is_detached']!, _isDetachedMeta),
+      );
+    }
+    if (data.containsKey('original_json')) {
+      context.handle(
+        _originalJsonMeta,
+        originalJson.isAcceptableOrUnknown(
+          data['original_json']!,
+          _originalJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('groups_json')) {
+      context.handle(
+        _groupsJsonMeta,
+        groupsJson.isAcceptableOrUnknown(data['groups_json']!, _groupsJsonMeta),
+      );
+    }
+    if (data.containsKey('summary_json')) {
+      context.handle(
+        _summaryJsonMeta,
+        summaryJson.isAcceptableOrUnknown(
+          data['summary_json']!,
+          _summaryJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Session map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Session(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      seriesId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}series_id'],
+      ),
+      occurrenceDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occurrence_date'],
+      ),
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      venueId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}venue_id'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      startsAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}starts_at'],
+      )!,
+      endsAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ends_at'],
+      )!,
+      localDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_date'],
+      )!,
+      localStartTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_start_time'],
+      )!,
+      localEndTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_end_time'],
+      )!,
+      groupMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_mode'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      cancelReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cancel_reason'],
+      ),
+      coordinatorMemberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}coordinator_member_id'],
+      ),
+      coordinatorName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}coordinator_name'],
+      ),
+      isDetached: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_detached'],
+      )!,
+      originalJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}original_json'],
+      ),
+      groupsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}groups_json'],
+      ),
+      summaryJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}summary_json'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SessionsTable createAlias(String alias) {
+    return $SessionsTable(attachedDatabase, alias);
+  }
+}
+
+class Session extends DataClass implements Insertable<Session> {
+  final String id;
+  final int clubId;
+  final String? seriesId;
+  final String? occurrenceDate;
+  final String title;
+  final String? venueId;
+  final String? notes;
+  final DateTime startsAt;
+  final DateTime endsAt;
+  final String localDate;
+  final String localStartTime;
+  final String localEndTime;
+  final String groupMode;
+
+  /// `scheduled` | `cancelled`.
+  final String status;
+  final String? cancelReason;
+  final String? coordinatorMemberId;
+  final String? coordinatorName;
+  final bool isDetached;
+
+  /// JSON of the contract's `original` block (what the series says), or null.
+  final String? originalJson;
+
+  /// JSON array of the contract's embedded `groups` (Phase 4), or null for an
+  /// older payload that had none.
+  final String? groupsJson;
+
+  /// JSON of the contract's `summary` block for the caller (Phase 4), or null.
+  final String? summaryJson;
+  final DateTime updatedAt;
+  const Session({
+    required this.id,
+    required this.clubId,
+    this.seriesId,
+    this.occurrenceDate,
+    required this.title,
+    this.venueId,
+    this.notes,
+    required this.startsAt,
+    required this.endsAt,
+    required this.localDate,
+    required this.localStartTime,
+    required this.localEndTime,
+    required this.groupMode,
+    required this.status,
+    this.cancelReason,
+    this.coordinatorMemberId,
+    this.coordinatorName,
+    required this.isDetached,
+    this.originalJson,
+    this.groupsJson,
+    this.summaryJson,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['club_id'] = Variable<int>(clubId);
+    if (!nullToAbsent || seriesId != null) {
+      map['series_id'] = Variable<String>(seriesId);
+    }
+    if (!nullToAbsent || occurrenceDate != null) {
+      map['occurrence_date'] = Variable<String>(occurrenceDate);
+    }
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || venueId != null) {
+      map['venue_id'] = Variable<String>(venueId);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['starts_at'] = Variable<DateTime>(startsAt);
+    map['ends_at'] = Variable<DateTime>(endsAt);
+    map['local_date'] = Variable<String>(localDate);
+    map['local_start_time'] = Variable<String>(localStartTime);
+    map['local_end_time'] = Variable<String>(localEndTime);
+    map['group_mode'] = Variable<String>(groupMode);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || cancelReason != null) {
+      map['cancel_reason'] = Variable<String>(cancelReason);
+    }
+    if (!nullToAbsent || coordinatorMemberId != null) {
+      map['coordinator_member_id'] = Variable<String>(coordinatorMemberId);
+    }
+    if (!nullToAbsent || coordinatorName != null) {
+      map['coordinator_name'] = Variable<String>(coordinatorName);
+    }
+    map['is_detached'] = Variable<bool>(isDetached);
+    if (!nullToAbsent || originalJson != null) {
+      map['original_json'] = Variable<String>(originalJson);
+    }
+    if (!nullToAbsent || groupsJson != null) {
+      map['groups_json'] = Variable<String>(groupsJson);
+    }
+    if (!nullToAbsent || summaryJson != null) {
+      map['summary_json'] = Variable<String>(summaryJson);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  SessionsCompanion toCompanion(bool nullToAbsent) {
+    return SessionsCompanion(
+      id: Value(id),
+      clubId: Value(clubId),
+      seriesId: seriesId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(seriesId),
+      occurrenceDate: occurrenceDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(occurrenceDate),
+      title: Value(title),
+      venueId: venueId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(venueId),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      startsAt: Value(startsAt),
+      endsAt: Value(endsAt),
+      localDate: Value(localDate),
+      localStartTime: Value(localStartTime),
+      localEndTime: Value(localEndTime),
+      groupMode: Value(groupMode),
+      status: Value(status),
+      cancelReason: cancelReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cancelReason),
+      coordinatorMemberId: coordinatorMemberId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(coordinatorMemberId),
+      coordinatorName: coordinatorName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(coordinatorName),
+      isDetached: Value(isDetached),
+      originalJson: originalJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(originalJson),
+      groupsJson: groupsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(groupsJson),
+      summaryJson: summaryJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(summaryJson),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Session.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Session(
+      id: serializer.fromJson<String>(json['id']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      seriesId: serializer.fromJson<String?>(json['seriesId']),
+      occurrenceDate: serializer.fromJson<String?>(json['occurrenceDate']),
+      title: serializer.fromJson<String>(json['title']),
+      venueId: serializer.fromJson<String?>(json['venueId']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      startsAt: serializer.fromJson<DateTime>(json['startsAt']),
+      endsAt: serializer.fromJson<DateTime>(json['endsAt']),
+      localDate: serializer.fromJson<String>(json['localDate']),
+      localStartTime: serializer.fromJson<String>(json['localStartTime']),
+      localEndTime: serializer.fromJson<String>(json['localEndTime']),
+      groupMode: serializer.fromJson<String>(json['groupMode']),
+      status: serializer.fromJson<String>(json['status']),
+      cancelReason: serializer.fromJson<String?>(json['cancelReason']),
+      coordinatorMemberId: serializer.fromJson<String?>(
+        json['coordinatorMemberId'],
+      ),
+      coordinatorName: serializer.fromJson<String?>(json['coordinatorName']),
+      isDetached: serializer.fromJson<bool>(json['isDetached']),
+      originalJson: serializer.fromJson<String?>(json['originalJson']),
+      groupsJson: serializer.fromJson<String?>(json['groupsJson']),
+      summaryJson: serializer.fromJson<String?>(json['summaryJson']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'clubId': serializer.toJson<int>(clubId),
+      'seriesId': serializer.toJson<String?>(seriesId),
+      'occurrenceDate': serializer.toJson<String?>(occurrenceDate),
+      'title': serializer.toJson<String>(title),
+      'venueId': serializer.toJson<String?>(venueId),
+      'notes': serializer.toJson<String?>(notes),
+      'startsAt': serializer.toJson<DateTime>(startsAt),
+      'endsAt': serializer.toJson<DateTime>(endsAt),
+      'localDate': serializer.toJson<String>(localDate),
+      'localStartTime': serializer.toJson<String>(localStartTime),
+      'localEndTime': serializer.toJson<String>(localEndTime),
+      'groupMode': serializer.toJson<String>(groupMode),
+      'status': serializer.toJson<String>(status),
+      'cancelReason': serializer.toJson<String?>(cancelReason),
+      'coordinatorMemberId': serializer.toJson<String?>(coordinatorMemberId),
+      'coordinatorName': serializer.toJson<String?>(coordinatorName),
+      'isDetached': serializer.toJson<bool>(isDetached),
+      'originalJson': serializer.toJson<String?>(originalJson),
+      'groupsJson': serializer.toJson<String?>(groupsJson),
+      'summaryJson': serializer.toJson<String?>(summaryJson),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Session copyWith({
+    String? id,
+    int? clubId,
+    Value<String?> seriesId = const Value.absent(),
+    Value<String?> occurrenceDate = const Value.absent(),
+    String? title,
+    Value<String?> venueId = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    DateTime? startsAt,
+    DateTime? endsAt,
+    String? localDate,
+    String? localStartTime,
+    String? localEndTime,
+    String? groupMode,
+    String? status,
+    Value<String?> cancelReason = const Value.absent(),
+    Value<String?> coordinatorMemberId = const Value.absent(),
+    Value<String?> coordinatorName = const Value.absent(),
+    bool? isDetached,
+    Value<String?> originalJson = const Value.absent(),
+    Value<String?> groupsJson = const Value.absent(),
+    Value<String?> summaryJson = const Value.absent(),
+    DateTime? updatedAt,
+  }) => Session(
+    id: id ?? this.id,
+    clubId: clubId ?? this.clubId,
+    seriesId: seriesId.present ? seriesId.value : this.seriesId,
+    occurrenceDate: occurrenceDate.present
+        ? occurrenceDate.value
+        : this.occurrenceDate,
+    title: title ?? this.title,
+    venueId: venueId.present ? venueId.value : this.venueId,
+    notes: notes.present ? notes.value : this.notes,
+    startsAt: startsAt ?? this.startsAt,
+    endsAt: endsAt ?? this.endsAt,
+    localDate: localDate ?? this.localDate,
+    localStartTime: localStartTime ?? this.localStartTime,
+    localEndTime: localEndTime ?? this.localEndTime,
+    groupMode: groupMode ?? this.groupMode,
+    status: status ?? this.status,
+    cancelReason: cancelReason.present ? cancelReason.value : this.cancelReason,
+    coordinatorMemberId: coordinatorMemberId.present
+        ? coordinatorMemberId.value
+        : this.coordinatorMemberId,
+    coordinatorName: coordinatorName.present
+        ? coordinatorName.value
+        : this.coordinatorName,
+    isDetached: isDetached ?? this.isDetached,
+    originalJson: originalJson.present ? originalJson.value : this.originalJson,
+    groupsJson: groupsJson.present ? groupsJson.value : this.groupsJson,
+    summaryJson: summaryJson.present ? summaryJson.value : this.summaryJson,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  Session copyWithCompanion(SessionsCompanion data) {
+    return Session(
+      id: data.id.present ? data.id.value : this.id,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      seriesId: data.seriesId.present ? data.seriesId.value : this.seriesId,
+      occurrenceDate: data.occurrenceDate.present
+          ? data.occurrenceDate.value
+          : this.occurrenceDate,
+      title: data.title.present ? data.title.value : this.title,
+      venueId: data.venueId.present ? data.venueId.value : this.venueId,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      startsAt: data.startsAt.present ? data.startsAt.value : this.startsAt,
+      endsAt: data.endsAt.present ? data.endsAt.value : this.endsAt,
+      localDate: data.localDate.present ? data.localDate.value : this.localDate,
+      localStartTime: data.localStartTime.present
+          ? data.localStartTime.value
+          : this.localStartTime,
+      localEndTime: data.localEndTime.present
+          ? data.localEndTime.value
+          : this.localEndTime,
+      groupMode: data.groupMode.present ? data.groupMode.value : this.groupMode,
+      status: data.status.present ? data.status.value : this.status,
+      cancelReason: data.cancelReason.present
+          ? data.cancelReason.value
+          : this.cancelReason,
+      coordinatorMemberId: data.coordinatorMemberId.present
+          ? data.coordinatorMemberId.value
+          : this.coordinatorMemberId,
+      coordinatorName: data.coordinatorName.present
+          ? data.coordinatorName.value
+          : this.coordinatorName,
+      isDetached: data.isDetached.present
+          ? data.isDetached.value
+          : this.isDetached,
+      originalJson: data.originalJson.present
+          ? data.originalJson.value
+          : this.originalJson,
+      groupsJson: data.groupsJson.present
+          ? data.groupsJson.value
+          : this.groupsJson,
+      summaryJson: data.summaryJson.present
+          ? data.summaryJson.value
+          : this.summaryJson,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Session(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('seriesId: $seriesId, ')
+          ..write('occurrenceDate: $occurrenceDate, ')
+          ..write('title: $title, ')
+          ..write('venueId: $venueId, ')
+          ..write('notes: $notes, ')
+          ..write('startsAt: $startsAt, ')
+          ..write('endsAt: $endsAt, ')
+          ..write('localDate: $localDate, ')
+          ..write('localStartTime: $localStartTime, ')
+          ..write('localEndTime: $localEndTime, ')
+          ..write('groupMode: $groupMode, ')
+          ..write('status: $status, ')
+          ..write('cancelReason: $cancelReason, ')
+          ..write('coordinatorMemberId: $coordinatorMemberId, ')
+          ..write('coordinatorName: $coordinatorName, ')
+          ..write('isDetached: $isDetached, ')
+          ..write('originalJson: $originalJson, ')
+          ..write('groupsJson: $groupsJson, ')
+          ..write('summaryJson: $summaryJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    clubId,
+    seriesId,
+    occurrenceDate,
+    title,
+    venueId,
+    notes,
+    startsAt,
+    endsAt,
+    localDate,
+    localStartTime,
+    localEndTime,
+    groupMode,
+    status,
+    cancelReason,
+    coordinatorMemberId,
+    coordinatorName,
+    isDetached,
+    originalJson,
+    groupsJson,
+    summaryJson,
+    updatedAt,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Session &&
+          other.id == this.id &&
+          other.clubId == this.clubId &&
+          other.seriesId == this.seriesId &&
+          other.occurrenceDate == this.occurrenceDate &&
+          other.title == this.title &&
+          other.venueId == this.venueId &&
+          other.notes == this.notes &&
+          other.startsAt == this.startsAt &&
+          other.endsAt == this.endsAt &&
+          other.localDate == this.localDate &&
+          other.localStartTime == this.localStartTime &&
+          other.localEndTime == this.localEndTime &&
+          other.groupMode == this.groupMode &&
+          other.status == this.status &&
+          other.cancelReason == this.cancelReason &&
+          other.coordinatorMemberId == this.coordinatorMemberId &&
+          other.coordinatorName == this.coordinatorName &&
+          other.isDetached == this.isDetached &&
+          other.originalJson == this.originalJson &&
+          other.groupsJson == this.groupsJson &&
+          other.summaryJson == this.summaryJson &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SessionsCompanion extends UpdateCompanion<Session> {
+  final Value<String> id;
+  final Value<int> clubId;
+  final Value<String?> seriesId;
+  final Value<String?> occurrenceDate;
+  final Value<String> title;
+  final Value<String?> venueId;
+  final Value<String?> notes;
+  final Value<DateTime> startsAt;
+  final Value<DateTime> endsAt;
+  final Value<String> localDate;
+  final Value<String> localStartTime;
+  final Value<String> localEndTime;
+  final Value<String> groupMode;
+  final Value<String> status;
+  final Value<String?> cancelReason;
+  final Value<String?> coordinatorMemberId;
+  final Value<String?> coordinatorName;
+  final Value<bool> isDetached;
+  final Value<String?> originalJson;
+  final Value<String?> groupsJson;
+  final Value<String?> summaryJson;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const SessionsCompanion({
+    this.id = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.seriesId = const Value.absent(),
+    this.occurrenceDate = const Value.absent(),
+    this.title = const Value.absent(),
+    this.venueId = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.startsAt = const Value.absent(),
+    this.endsAt = const Value.absent(),
+    this.localDate = const Value.absent(),
+    this.localStartTime = const Value.absent(),
+    this.localEndTime = const Value.absent(),
+    this.groupMode = const Value.absent(),
+    this.status = const Value.absent(),
+    this.cancelReason = const Value.absent(),
+    this.coordinatorMemberId = const Value.absent(),
+    this.coordinatorName = const Value.absent(),
+    this.isDetached = const Value.absent(),
+    this.originalJson = const Value.absent(),
+    this.groupsJson = const Value.absent(),
+    this.summaryJson = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SessionsCompanion.insert({
+    required String id,
+    required int clubId,
+    this.seriesId = const Value.absent(),
+    this.occurrenceDate = const Value.absent(),
+    required String title,
+    this.venueId = const Value.absent(),
+    this.notes = const Value.absent(),
+    required DateTime startsAt,
+    required DateTime endsAt,
+    required String localDate,
+    required String localStartTime,
+    required String localEndTime,
+    required String groupMode,
+    this.status = const Value.absent(),
+    this.cancelReason = const Value.absent(),
+    this.coordinatorMemberId = const Value.absent(),
+    this.coordinatorName = const Value.absent(),
+    this.isDetached = const Value.absent(),
+    this.originalJson = const Value.absent(),
+    this.groupsJson = const Value.absent(),
+    this.summaryJson = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       clubId = Value(clubId),
+       title = Value(title),
+       startsAt = Value(startsAt),
+       endsAt = Value(endsAt),
+       localDate = Value(localDate),
+       localStartTime = Value(localStartTime),
+       localEndTime = Value(localEndTime),
+       groupMode = Value(groupMode),
+       updatedAt = Value(updatedAt);
+  static Insertable<Session> custom({
+    Expression<String>? id,
+    Expression<int>? clubId,
+    Expression<String>? seriesId,
+    Expression<String>? occurrenceDate,
+    Expression<String>? title,
+    Expression<String>? venueId,
+    Expression<String>? notes,
+    Expression<DateTime>? startsAt,
+    Expression<DateTime>? endsAt,
+    Expression<String>? localDate,
+    Expression<String>? localStartTime,
+    Expression<String>? localEndTime,
+    Expression<String>? groupMode,
+    Expression<String>? status,
+    Expression<String>? cancelReason,
+    Expression<String>? coordinatorMemberId,
+    Expression<String>? coordinatorName,
+    Expression<bool>? isDetached,
+    Expression<String>? originalJson,
+    Expression<String>? groupsJson,
+    Expression<String>? summaryJson,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (clubId != null) 'club_id': clubId,
+      if (seriesId != null) 'series_id': seriesId,
+      if (occurrenceDate != null) 'occurrence_date': occurrenceDate,
+      if (title != null) 'title': title,
+      if (venueId != null) 'venue_id': venueId,
+      if (notes != null) 'notes': notes,
+      if (startsAt != null) 'starts_at': startsAt,
+      if (endsAt != null) 'ends_at': endsAt,
+      if (localDate != null) 'local_date': localDate,
+      if (localStartTime != null) 'local_start_time': localStartTime,
+      if (localEndTime != null) 'local_end_time': localEndTime,
+      if (groupMode != null) 'group_mode': groupMode,
+      if (status != null) 'status': status,
+      if (cancelReason != null) 'cancel_reason': cancelReason,
+      if (coordinatorMemberId != null)
+        'coordinator_member_id': coordinatorMemberId,
+      if (coordinatorName != null) 'coordinator_name': coordinatorName,
+      if (isDetached != null) 'is_detached': isDetached,
+      if (originalJson != null) 'original_json': originalJson,
+      if (groupsJson != null) 'groups_json': groupsJson,
+      if (summaryJson != null) 'summary_json': summaryJson,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SessionsCompanion copyWith({
+    Value<String>? id,
+    Value<int>? clubId,
+    Value<String?>? seriesId,
+    Value<String?>? occurrenceDate,
+    Value<String>? title,
+    Value<String?>? venueId,
+    Value<String?>? notes,
+    Value<DateTime>? startsAt,
+    Value<DateTime>? endsAt,
+    Value<String>? localDate,
+    Value<String>? localStartTime,
+    Value<String>? localEndTime,
+    Value<String>? groupMode,
+    Value<String>? status,
+    Value<String?>? cancelReason,
+    Value<String?>? coordinatorMemberId,
+    Value<String?>? coordinatorName,
+    Value<bool>? isDetached,
+    Value<String?>? originalJson,
+    Value<String?>? groupsJson,
+    Value<String?>? summaryJson,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return SessionsCompanion(
+      id: id ?? this.id,
+      clubId: clubId ?? this.clubId,
+      seriesId: seriesId ?? this.seriesId,
+      occurrenceDate: occurrenceDate ?? this.occurrenceDate,
+      title: title ?? this.title,
+      venueId: venueId ?? this.venueId,
+      notes: notes ?? this.notes,
+      startsAt: startsAt ?? this.startsAt,
+      endsAt: endsAt ?? this.endsAt,
+      localDate: localDate ?? this.localDate,
+      localStartTime: localStartTime ?? this.localStartTime,
+      localEndTime: localEndTime ?? this.localEndTime,
+      groupMode: groupMode ?? this.groupMode,
+      status: status ?? this.status,
+      cancelReason: cancelReason ?? this.cancelReason,
+      coordinatorMemberId: coordinatorMemberId ?? this.coordinatorMemberId,
+      coordinatorName: coordinatorName ?? this.coordinatorName,
+      isDetached: isDetached ?? this.isDetached,
+      originalJson: originalJson ?? this.originalJson,
+      groupsJson: groupsJson ?? this.groupsJson,
+      summaryJson: summaryJson ?? this.summaryJson,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (seriesId.present) {
+      map['series_id'] = Variable<String>(seriesId.value);
+    }
+    if (occurrenceDate.present) {
+      map['occurrence_date'] = Variable<String>(occurrenceDate.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (venueId.present) {
+      map['venue_id'] = Variable<String>(venueId.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (startsAt.present) {
+      map['starts_at'] = Variable<DateTime>(startsAt.value);
+    }
+    if (endsAt.present) {
+      map['ends_at'] = Variable<DateTime>(endsAt.value);
+    }
+    if (localDate.present) {
+      map['local_date'] = Variable<String>(localDate.value);
+    }
+    if (localStartTime.present) {
+      map['local_start_time'] = Variable<String>(localStartTime.value);
+    }
+    if (localEndTime.present) {
+      map['local_end_time'] = Variable<String>(localEndTime.value);
+    }
+    if (groupMode.present) {
+      map['group_mode'] = Variable<String>(groupMode.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (cancelReason.present) {
+      map['cancel_reason'] = Variable<String>(cancelReason.value);
+    }
+    if (coordinatorMemberId.present) {
+      map['coordinator_member_id'] = Variable<String>(
+        coordinatorMemberId.value,
+      );
+    }
+    if (coordinatorName.present) {
+      map['coordinator_name'] = Variable<String>(coordinatorName.value);
+    }
+    if (isDetached.present) {
+      map['is_detached'] = Variable<bool>(isDetached.value);
+    }
+    if (originalJson.present) {
+      map['original_json'] = Variable<String>(originalJson.value);
+    }
+    if (groupsJson.present) {
+      map['groups_json'] = Variable<String>(groupsJson.value);
+    }
+    if (summaryJson.present) {
+      map['summary_json'] = Variable<String>(summaryJson.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('seriesId: $seriesId, ')
+          ..write('occurrenceDate: $occurrenceDate, ')
+          ..write('title: $title, ')
+          ..write('venueId: $venueId, ')
+          ..write('notes: $notes, ')
+          ..write('startsAt: $startsAt, ')
+          ..write('endsAt: $endsAt, ')
+          ..write('localDate: $localDate, ')
+          ..write('localStartTime: $localStartTime, ')
+          ..write('localEndTime: $localEndTime, ')
+          ..write('groupMode: $groupMode, ')
+          ..write('status: $status, ')
+          ..write('cancelReason: $cancelReason, ')
+          ..write('coordinatorMemberId: $coordinatorMemberId, ')
+          ..write('coordinatorName: $coordinatorName, ')
+          ..write('isDetached: $isDetached, ')
+          ..write('originalJson: $originalJson, ')
+          ..write('groupsJson: $groupsJson, ')
+          ..write('summaryJson: $summaryJson, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SessionPlansTable extends SessionPlans
+    with TableInfo<$SessionPlansTable, SessionPlanRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SessionPlansTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<String> sessionId = GeneratedColumn<String>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _jsonMeta = const VerificationMeta('json');
+  @override
+  late final GeneratedColumn<String> json = GeneratedColumn<String>(
+    'json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fetchedAt = GeneratedColumn<DateTime>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [sessionId, clubId, json, fetchedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'session_plans';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SessionPlanRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('json')) {
+      context.handle(
+        _jsonMeta,
+        json.isAcceptableOrUnknown(data['json']!, _jsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jsonMeta);
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {sessionId};
+  @override
+  SessionPlanRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SessionPlanRow(
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      json: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}json'],
+      )!,
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SessionPlansTable createAlias(String alias) {
+    return $SessionPlansTable(attachedDatabase, alias);
+  }
+}
+
+class SessionPlanRow extends DataClass implements Insertable<SessionPlanRow> {
+  final String sessionId;
+  final int clubId;
+  final String json;
+  final DateTime fetchedAt;
+  const SessionPlanRow({
+    required this.sessionId,
+    required this.clubId,
+    required this.json,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['session_id'] = Variable<String>(sessionId);
+    map['club_id'] = Variable<int>(clubId);
+    map['json'] = Variable<String>(json);
+    map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    return map;
+  }
+
+  SessionPlansCompanion toCompanion(bool nullToAbsent) {
+    return SessionPlansCompanion(
+      sessionId: Value(sessionId),
+      clubId: Value(clubId),
+      json: Value(json),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory SessionPlanRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SessionPlanRow(
+      sessionId: serializer.fromJson<String>(json['sessionId']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      json: serializer.fromJson<String>(json['json']),
+      fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'sessionId': serializer.toJson<String>(sessionId),
+      'clubId': serializer.toJson<int>(clubId),
+      'json': serializer.toJson<String>(json),
+      'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+    };
+  }
+
+  SessionPlanRow copyWith({
+    String? sessionId,
+    int? clubId,
+    String? json,
+    DateTime? fetchedAt,
+  }) => SessionPlanRow(
+    sessionId: sessionId ?? this.sessionId,
+    clubId: clubId ?? this.clubId,
+    json: json ?? this.json,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  SessionPlanRow copyWithCompanion(SessionPlansCompanion data) {
+    return SessionPlanRow(
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      json: data.json.present ? data.json.value : this.json,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionPlanRow(')
+          ..write('sessionId: $sessionId, ')
+          ..write('clubId: $clubId, ')
+          ..write('json: $json, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(sessionId, clubId, json, fetchedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SessionPlanRow &&
+          other.sessionId == this.sessionId &&
+          other.clubId == this.clubId &&
+          other.json == this.json &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class SessionPlansCompanion extends UpdateCompanion<SessionPlanRow> {
+  final Value<String> sessionId;
+  final Value<int> clubId;
+  final Value<String> json;
+  final Value<DateTime> fetchedAt;
+  final Value<int> rowid;
+  const SessionPlansCompanion({
+    this.sessionId = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.json = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SessionPlansCompanion.insert({
+    required String sessionId,
+    required int clubId,
+    required String json,
+    required DateTime fetchedAt,
+    this.rowid = const Value.absent(),
+  }) : sessionId = Value(sessionId),
+       clubId = Value(clubId),
+       json = Value(json),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<SessionPlanRow> custom({
+    Expression<String>? sessionId,
+    Expression<int>? clubId,
+    Expression<String>? json,
+    Expression<DateTime>? fetchedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (sessionId != null) 'session_id': sessionId,
+      if (clubId != null) 'club_id': clubId,
+      if (json != null) 'json': json,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SessionPlansCompanion copyWith({
+    Value<String>? sessionId,
+    Value<int>? clubId,
+    Value<String>? json,
+    Value<DateTime>? fetchedAt,
+    Value<int>? rowid,
+  }) {
+    return SessionPlansCompanion(
+      sessionId: sessionId ?? this.sessionId,
+      clubId: clubId ?? this.clubId,
+      json: json ?? this.json,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (sessionId.present) {
+      map['session_id'] = Variable<String>(sessionId.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (json.present) {
+      map['json'] = Variable<String>(json.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionPlansCompanion(')
+          ..write('sessionId: $sessionId, ')
+          ..write('clubId: $clubId, ')
+          ..write('json: $json, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MyAttendanceTable extends MyAttendance
+    with TableInfo<$MyAttendanceTable, MyAttendanceRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MyAttendanceTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<String> sessionId = GeneratedColumn<String>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _paceUnitMeta = const VerificationMeta(
+    'paceUnit',
+  );
+  @override
+  late final GeneratedColumn<String> paceUnit = GeneratedColumn<String>(
+    'pace_unit',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _paceFromSMeta = const VerificationMeta(
+    'paceFromS',
+  );
+  @override
+  late final GeneratedColumn<int> paceFromS = GeneratedColumn<int>(
+    'pace_from_s',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _paceToSMeta = const VerificationMeta(
+    'paceToS',
+  );
+  @override
+  late final GeneratedColumn<int> paceToS = GeneratedColumn<int>(
+    'pace_to_s',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pendingMeta = const VerificationMeta(
+    'pending',
+  );
+  @override
+  late final GeneratedColumn<bool> pending = GeneratedColumn<bool>(
+    'pending',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("pending" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    sessionId,
+    clubId,
+    status,
+    groupId,
+    paceUnit,
+    paceFromS,
+    paceToS,
+    pending,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'my_attendance';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MyAttendanceRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    }
+    if (data.containsKey('pace_unit')) {
+      context.handle(
+        _paceUnitMeta,
+        paceUnit.isAcceptableOrUnknown(data['pace_unit']!, _paceUnitMeta),
+      );
+    }
+    if (data.containsKey('pace_from_s')) {
+      context.handle(
+        _paceFromSMeta,
+        paceFromS.isAcceptableOrUnknown(data['pace_from_s']!, _paceFromSMeta),
+      );
+    }
+    if (data.containsKey('pace_to_s')) {
+      context.handle(
+        _paceToSMeta,
+        paceToS.isAcceptableOrUnknown(data['pace_to_s']!, _paceToSMeta),
+      );
+    }
+    if (data.containsKey('pending')) {
+      context.handle(
+        _pendingMeta,
+        pending.isAcceptableOrUnknown(data['pending']!, _pendingMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {sessionId};
+  @override
+  MyAttendanceRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MyAttendanceRow(
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      ),
+      paceUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pace_unit'],
+      ),
+      paceFromS: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pace_from_s'],
+      ),
+      paceToS: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pace_to_s'],
+      ),
+      pending: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}pending'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $MyAttendanceTable createAlias(String alias) {
+    return $MyAttendanceTable(attachedDatabase, alias);
+  }
+}
+
+class MyAttendanceRow extends DataClass implements Insertable<MyAttendanceRow> {
+  final String sessionId;
+  final int clubId;
+
+  /// `going` | `maybe` | `not_going`.
+  final String status;
+  final String? groupId;
+
+  /// Per-run pace override, stored as entered (`mi`/`km` + seconds).
+  final String? paceUnit;
+  final int? paceFromS;
+  final int? paceToS;
+  final bool pending;
+  final DateTime updatedAt;
+  const MyAttendanceRow({
+    required this.sessionId,
+    required this.clubId,
+    required this.status,
+    this.groupId,
+    this.paceUnit,
+    this.paceFromS,
+    this.paceToS,
+    required this.pending,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['session_id'] = Variable<String>(sessionId);
+    map['club_id'] = Variable<int>(clubId);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || groupId != null) {
+      map['group_id'] = Variable<String>(groupId);
+    }
+    if (!nullToAbsent || paceUnit != null) {
+      map['pace_unit'] = Variable<String>(paceUnit);
+    }
+    if (!nullToAbsent || paceFromS != null) {
+      map['pace_from_s'] = Variable<int>(paceFromS);
+    }
+    if (!nullToAbsent || paceToS != null) {
+      map['pace_to_s'] = Variable<int>(paceToS);
+    }
+    map['pending'] = Variable<bool>(pending);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  MyAttendanceCompanion toCompanion(bool nullToAbsent) {
+    return MyAttendanceCompanion(
+      sessionId: Value(sessionId),
+      clubId: Value(clubId),
+      status: Value(status),
+      groupId: groupId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(groupId),
+      paceUnit: paceUnit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paceUnit),
+      paceFromS: paceFromS == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paceFromS),
+      paceToS: paceToS == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paceToS),
+      pending: Value(pending),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory MyAttendanceRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MyAttendanceRow(
+      sessionId: serializer.fromJson<String>(json['sessionId']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      status: serializer.fromJson<String>(json['status']),
+      groupId: serializer.fromJson<String?>(json['groupId']),
+      paceUnit: serializer.fromJson<String?>(json['paceUnit']),
+      paceFromS: serializer.fromJson<int?>(json['paceFromS']),
+      paceToS: serializer.fromJson<int?>(json['paceToS']),
+      pending: serializer.fromJson<bool>(json['pending']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'sessionId': serializer.toJson<String>(sessionId),
+      'clubId': serializer.toJson<int>(clubId),
+      'status': serializer.toJson<String>(status),
+      'groupId': serializer.toJson<String?>(groupId),
+      'paceUnit': serializer.toJson<String?>(paceUnit),
+      'paceFromS': serializer.toJson<int?>(paceFromS),
+      'paceToS': serializer.toJson<int?>(paceToS),
+      'pending': serializer.toJson<bool>(pending),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  MyAttendanceRow copyWith({
+    String? sessionId,
+    int? clubId,
+    String? status,
+    Value<String?> groupId = const Value.absent(),
+    Value<String?> paceUnit = const Value.absent(),
+    Value<int?> paceFromS = const Value.absent(),
+    Value<int?> paceToS = const Value.absent(),
+    bool? pending,
+    DateTime? updatedAt,
+  }) => MyAttendanceRow(
+    sessionId: sessionId ?? this.sessionId,
+    clubId: clubId ?? this.clubId,
+    status: status ?? this.status,
+    groupId: groupId.present ? groupId.value : this.groupId,
+    paceUnit: paceUnit.present ? paceUnit.value : this.paceUnit,
+    paceFromS: paceFromS.present ? paceFromS.value : this.paceFromS,
+    paceToS: paceToS.present ? paceToS.value : this.paceToS,
+    pending: pending ?? this.pending,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  MyAttendanceRow copyWithCompanion(MyAttendanceCompanion data) {
+    return MyAttendanceRow(
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      status: data.status.present ? data.status.value : this.status,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      paceUnit: data.paceUnit.present ? data.paceUnit.value : this.paceUnit,
+      paceFromS: data.paceFromS.present ? data.paceFromS.value : this.paceFromS,
+      paceToS: data.paceToS.present ? data.paceToS.value : this.paceToS,
+      pending: data.pending.present ? data.pending.value : this.pending,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MyAttendanceRow(')
+          ..write('sessionId: $sessionId, ')
+          ..write('clubId: $clubId, ')
+          ..write('status: $status, ')
+          ..write('groupId: $groupId, ')
+          ..write('paceUnit: $paceUnit, ')
+          ..write('paceFromS: $paceFromS, ')
+          ..write('paceToS: $paceToS, ')
+          ..write('pending: $pending, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    sessionId,
+    clubId,
+    status,
+    groupId,
+    paceUnit,
+    paceFromS,
+    paceToS,
+    pending,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MyAttendanceRow &&
+          other.sessionId == this.sessionId &&
+          other.clubId == this.clubId &&
+          other.status == this.status &&
+          other.groupId == this.groupId &&
+          other.paceUnit == this.paceUnit &&
+          other.paceFromS == this.paceFromS &&
+          other.paceToS == this.paceToS &&
+          other.pending == this.pending &&
+          other.updatedAt == this.updatedAt);
+}
+
+class MyAttendanceCompanion extends UpdateCompanion<MyAttendanceRow> {
+  final Value<String> sessionId;
+  final Value<int> clubId;
+  final Value<String> status;
+  final Value<String?> groupId;
+  final Value<String?> paceUnit;
+  final Value<int?> paceFromS;
+  final Value<int?> paceToS;
+  final Value<bool> pending;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const MyAttendanceCompanion({
+    this.sessionId = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.paceUnit = const Value.absent(),
+    this.paceFromS = const Value.absent(),
+    this.paceToS = const Value.absent(),
+    this.pending = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MyAttendanceCompanion.insert({
+    required String sessionId,
+    required int clubId,
+    required String status,
+    this.groupId = const Value.absent(),
+    this.paceUnit = const Value.absent(),
+    this.paceFromS = const Value.absent(),
+    this.paceToS = const Value.absent(),
+    this.pending = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : sessionId = Value(sessionId),
+       clubId = Value(clubId),
+       status = Value(status),
+       updatedAt = Value(updatedAt);
+  static Insertable<MyAttendanceRow> custom({
+    Expression<String>? sessionId,
+    Expression<int>? clubId,
+    Expression<String>? status,
+    Expression<String>? groupId,
+    Expression<String>? paceUnit,
+    Expression<int>? paceFromS,
+    Expression<int>? paceToS,
+    Expression<bool>? pending,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (sessionId != null) 'session_id': sessionId,
+      if (clubId != null) 'club_id': clubId,
+      if (status != null) 'status': status,
+      if (groupId != null) 'group_id': groupId,
+      if (paceUnit != null) 'pace_unit': paceUnit,
+      if (paceFromS != null) 'pace_from_s': paceFromS,
+      if (paceToS != null) 'pace_to_s': paceToS,
+      if (pending != null) 'pending': pending,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MyAttendanceCompanion copyWith({
+    Value<String>? sessionId,
+    Value<int>? clubId,
+    Value<String>? status,
+    Value<String?>? groupId,
+    Value<String?>? paceUnit,
+    Value<int?>? paceFromS,
+    Value<int?>? paceToS,
+    Value<bool>? pending,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return MyAttendanceCompanion(
+      sessionId: sessionId ?? this.sessionId,
+      clubId: clubId ?? this.clubId,
+      status: status ?? this.status,
+      groupId: groupId ?? this.groupId,
+      paceUnit: paceUnit ?? this.paceUnit,
+      paceFromS: paceFromS ?? this.paceFromS,
+      paceToS: paceToS ?? this.paceToS,
+      pending: pending ?? this.pending,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (sessionId.present) {
+      map['session_id'] = Variable<String>(sessionId.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (paceUnit.present) {
+      map['pace_unit'] = Variable<String>(paceUnit.value);
+    }
+    if (paceFromS.present) {
+      map['pace_from_s'] = Variable<int>(paceFromS.value);
+    }
+    if (paceToS.present) {
+      map['pace_to_s'] = Variable<int>(paceToS.value);
+    }
+    if (pending.present) {
+      map['pending'] = Variable<bool>(pending.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MyAttendanceCompanion(')
+          ..write('sessionId: $sessionId, ')
+          ..write('clubId: $clubId, ')
+          ..write('status: $status, ')
+          ..write('groupId: $groupId, ')
+          ..write('paceUnit: $paceUnit, ')
+          ..write('paceFromS: $paceFromS, ')
+          ..write('paceToS: $paceToS, ')
+          ..write('pending: $pending, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PreferencesTable extends Preferences
+    with TableInfo<$PreferencesTable, RunPreferences> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PreferencesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _paceUnitMeta = const VerificationMeta(
+    'paceUnit',
+  );
+  @override
+  late final GeneratedColumn<String> paceUnit = GeneratedColumn<String>(
+    'pace_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _distanceUnitMeta = const VerificationMeta(
+    'distanceUnit',
+  );
+  @override
+  late final GeneratedColumn<String> distanceUnit = GeneratedColumn<String>(
+    'distance_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _paceFromSMeta = const VerificationMeta(
+    'paceFromS',
+  );
+  @override
+  late final GeneratedColumn<int> paceFromS = GeneratedColumn<int>(
+    'pace_from_s',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _paceToSMeta = const VerificationMeta(
+    'paceToS',
+  );
+  @override
+  late final GeneratedColumn<int> paceToS = GeneratedColumn<int>(
+    'pace_to_s',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    clubId,
+    paceUnit,
+    distanceUnit,
+    paceFromS,
+    paceToS,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'preferences';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RunPreferences> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    }
+    if (data.containsKey('pace_unit')) {
+      context.handle(
+        _paceUnitMeta,
+        paceUnit.isAcceptableOrUnknown(data['pace_unit']!, _paceUnitMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_paceUnitMeta);
+    }
+    if (data.containsKey('distance_unit')) {
+      context.handle(
+        _distanceUnitMeta,
+        distanceUnit.isAcceptableOrUnknown(
+          data['distance_unit']!,
+          _distanceUnitMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_distanceUnitMeta);
+    }
+    if (data.containsKey('pace_from_s')) {
+      context.handle(
+        _paceFromSMeta,
+        paceFromS.isAcceptableOrUnknown(data['pace_from_s']!, _paceFromSMeta),
+      );
+    }
+    if (data.containsKey('pace_to_s')) {
+      context.handle(
+        _paceToSMeta,
+        paceToS.isAcceptableOrUnknown(data['pace_to_s']!, _paceToSMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clubId};
+  @override
+  RunPreferences map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RunPreferences(
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      paceUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pace_unit'],
+      )!,
+      distanceUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}distance_unit'],
+      )!,
+      paceFromS: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pace_from_s'],
+      ),
+      paceToS: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pace_to_s'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
+    );
+  }
+
+  @override
+  $PreferencesTable createAlias(String alias) {
+    return $PreferencesTable(attachedDatabase, alias);
+  }
+}
+
+class RunPreferences extends DataClass implements Insertable<RunPreferences> {
+  final int clubId;
+  final String paceUnit;
+  final String distanceUnit;
+  final int? paceFromS;
+  final int? paceToS;
+
+  /// Null until the server has stored them.
+  final DateTime? updatedAt;
+  const RunPreferences({
+    required this.clubId,
+    required this.paceUnit,
+    required this.distanceUnit,
+    this.paceFromS,
+    this.paceToS,
+    this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['club_id'] = Variable<int>(clubId);
+    map['pace_unit'] = Variable<String>(paceUnit);
+    map['distance_unit'] = Variable<String>(distanceUnit);
+    if (!nullToAbsent || paceFromS != null) {
+      map['pace_from_s'] = Variable<int>(paceFromS);
+    }
+    if (!nullToAbsent || paceToS != null) {
+      map['pace_to_s'] = Variable<int>(paceToS);
+    }
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    return map;
+  }
+
+  PreferencesCompanion toCompanion(bool nullToAbsent) {
+    return PreferencesCompanion(
+      clubId: Value(clubId),
+      paceUnit: Value(paceUnit),
+      distanceUnit: Value(distanceUnit),
+      paceFromS: paceFromS == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paceFromS),
+      paceToS: paceToS == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paceToS),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+    );
+  }
+
+  factory RunPreferences.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RunPreferences(
+      clubId: serializer.fromJson<int>(json['clubId']),
+      paceUnit: serializer.fromJson<String>(json['paceUnit']),
+      distanceUnit: serializer.fromJson<String>(json['distanceUnit']),
+      paceFromS: serializer.fromJson<int?>(json['paceFromS']),
+      paceToS: serializer.fromJson<int?>(json['paceToS']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clubId': serializer.toJson<int>(clubId),
+      'paceUnit': serializer.toJson<String>(paceUnit),
+      'distanceUnit': serializer.toJson<String>(distanceUnit),
+      'paceFromS': serializer.toJson<int?>(paceFromS),
+      'paceToS': serializer.toJson<int?>(paceToS),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+    };
+  }
+
+  RunPreferences copyWith({
+    int? clubId,
+    String? paceUnit,
+    String? distanceUnit,
+    Value<int?> paceFromS = const Value.absent(),
+    Value<int?> paceToS = const Value.absent(),
+    Value<DateTime?> updatedAt = const Value.absent(),
+  }) => RunPreferences(
+    clubId: clubId ?? this.clubId,
+    paceUnit: paceUnit ?? this.paceUnit,
+    distanceUnit: distanceUnit ?? this.distanceUnit,
+    paceFromS: paceFromS.present ? paceFromS.value : this.paceFromS,
+    paceToS: paceToS.present ? paceToS.value : this.paceToS,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
+  RunPreferences copyWithCompanion(PreferencesCompanion data) {
+    return RunPreferences(
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      paceUnit: data.paceUnit.present ? data.paceUnit.value : this.paceUnit,
+      distanceUnit: data.distanceUnit.present
+          ? data.distanceUnit.value
+          : this.distanceUnit,
+      paceFromS: data.paceFromS.present ? data.paceFromS.value : this.paceFromS,
+      paceToS: data.paceToS.present ? data.paceToS.value : this.paceToS,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RunPreferences(')
+          ..write('clubId: $clubId, ')
+          ..write('paceUnit: $paceUnit, ')
+          ..write('distanceUnit: $distanceUnit, ')
+          ..write('paceFromS: $paceFromS, ')
+          ..write('paceToS: $paceToS, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    clubId,
+    paceUnit,
+    distanceUnit,
+    paceFromS,
+    paceToS,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RunPreferences &&
+          other.clubId == this.clubId &&
+          other.paceUnit == this.paceUnit &&
+          other.distanceUnit == this.distanceUnit &&
+          other.paceFromS == this.paceFromS &&
+          other.paceToS == this.paceToS &&
+          other.updatedAt == this.updatedAt);
+}
+
+class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
+  final Value<int> clubId;
+  final Value<String> paceUnit;
+  final Value<String> distanceUnit;
+  final Value<int?> paceFromS;
+  final Value<int?> paceToS;
+  final Value<DateTime?> updatedAt;
+  const PreferencesCompanion({
+    this.clubId = const Value.absent(),
+    this.paceUnit = const Value.absent(),
+    this.distanceUnit = const Value.absent(),
+    this.paceFromS = const Value.absent(),
+    this.paceToS = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  PreferencesCompanion.insert({
+    this.clubId = const Value.absent(),
+    required String paceUnit,
+    required String distanceUnit,
+    this.paceFromS = const Value.absent(),
+    this.paceToS = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : paceUnit = Value(paceUnit),
+       distanceUnit = Value(distanceUnit);
+  static Insertable<RunPreferences> custom({
+    Expression<int>? clubId,
+    Expression<String>? paceUnit,
+    Expression<String>? distanceUnit,
+    Expression<int>? paceFromS,
+    Expression<int>? paceToS,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (clubId != null) 'club_id': clubId,
+      if (paceUnit != null) 'pace_unit': paceUnit,
+      if (distanceUnit != null) 'distance_unit': distanceUnit,
+      if (paceFromS != null) 'pace_from_s': paceFromS,
+      if (paceToS != null) 'pace_to_s': paceToS,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  PreferencesCompanion copyWith({
+    Value<int>? clubId,
+    Value<String>? paceUnit,
+    Value<String>? distanceUnit,
+    Value<int?>? paceFromS,
+    Value<int?>? paceToS,
+    Value<DateTime?>? updatedAt,
+  }) {
+    return PreferencesCompanion(
+      clubId: clubId ?? this.clubId,
+      paceUnit: paceUnit ?? this.paceUnit,
+      distanceUnit: distanceUnit ?? this.distanceUnit,
+      paceFromS: paceFromS ?? this.paceFromS,
+      paceToS: paceToS ?? this.paceToS,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (paceUnit.present) {
+      map['pace_unit'] = Variable<String>(paceUnit.value);
+    }
+    if (distanceUnit.present) {
+      map['distance_unit'] = Variable<String>(distanceUnit.value);
+    }
+    if (paceFromS.present) {
+      map['pace_from_s'] = Variable<int>(paceFromS.value);
+    }
+    if (paceToS.present) {
+      map['pace_to_s'] = Variable<int>(paceToS.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PreferencesCompanion(')
+          ..write('clubId: $clubId, ')
+          ..write('paceUnit: $paceUnit, ')
+          ..write('distanceUnit: $distanceUnit, ')
+          ..write('paceFromS: $paceFromS, ')
+          ..write('paceToS: $paceToS, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+abstract class _$AppDatabase extends GeneratedDatabase {
+  _$AppDatabase(QueryExecutor e) : super(e);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $MembershipsTable memberships = $MembershipsTable(this);
+  late final $ProfilesTable profiles = $ProfilesTable(this);
+  late final $PostsTable posts = $PostsTable(this);
+  late final $InboxItemsTable inboxItems = $InboxItemsTable(this);
+  late final $SyncCursorsTable syncCursors = $SyncCursorsTable(this);
+  late final $VenuesTable venues = $VenuesTable(this);
+  late final $SessionSeriesTable sessionSeries = $SessionSeriesTable(this);
+  late final $SessionsTable sessions = $SessionsTable(this);
+  late final $SessionPlansTable sessionPlans = $SessionPlansTable(this);
+  late final $MyAttendanceTable myAttendance = $MyAttendanceTable(this);
+  late final $PreferencesTable preferences = $PreferencesTable(this);
+  @override
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  @override
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    memberships,
+    profiles,
+    posts,
+    inboxItems,
+    syncCursors,
+    venues,
+    sessionSeries,
+    sessions,
+    sessionPlans,
+    myAttendance,
+    preferences,
+  ];
+}
+
+typedef $$MembershipsTableCreateCompanionBuilder =
+    MembershipsCompanion Function({
+      required String memberId,
+      required int clubId,
+      required String clubName,
+      required String clubSlug,
+      Value<String?> joinUrl,
+      required String status,
+      Value<String> rolesJson,
+      Value<int?> athleteId,
+      Value<String?> firstName,
+      Value<String?> lastName,
+      Value<String?> gender,
+      Value<String?> category,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$MembershipsTableUpdateCompanionBuilder =
+    MembershipsCompanion Function({
+      Value<String> memberId,
+      Value<int> clubId,
+      Value<String> clubName,
+      Value<String> clubSlug,
+      Value<String?> joinUrl,
+      Value<String> status,
+      Value<String> rolesJson,
+      Value<int?> athleteId,
+      Value<String?> firstName,
+      Value<String?> lastName,
+      Value<String?> gender,
+      Value<String?> category,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$MembershipsTableFilterComposer
+    extends Composer<_$AppDatabase, $MembershipsTable> {
+  $$MembershipsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get clubName => $composableBuilder(
+    column: $table.clubName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get clubSlug => $composableBuilder(
+    column: $table.clubSlug,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get joinUrl => $composableBuilder(
+    column: $table.joinUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rolesJson => $composableBuilder(
+    column: $table.rolesJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MembershipsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MembershipsTable> {
+  $$MembershipsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get clubName => $composableBuilder(
+    column: $table.clubName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get clubSlug => $composableBuilder(
+    column: $table.clubSlug,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get joinUrl => $composableBuilder(
+    column: $table.joinUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rolesJson => $composableBuilder(
+    column: $table.rolesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MembershipsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MembershipsTable> {
+  $$MembershipsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get memberId =>
+      $composableBuilder(column: $table.memberId, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get clubName =>
+      $composableBuilder(column: $table.clubName, builder: (column) => column);
+
+  GeneratedColumn<String> get clubSlug =>
+      $composableBuilder(column: $table.clubSlug, builder: (column) => column);
+
+  GeneratedColumn<String> get joinUrl =>
+      $composableBuilder(column: $table.joinUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get rolesJson =>
+      $composableBuilder(column: $table.rolesJson, builder: (column) => column);
+
+  GeneratedColumn<int> get athleteId =>
+      $composableBuilder(column: $table.athleteId, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
+
+  GeneratedColumn<String> get gender =>
+      $composableBuilder(column: $table.gender, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$MembershipsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MembershipsTable,
+          Membership,
+          $$MembershipsTableFilterComposer,
+          $$MembershipsTableOrderingComposer,
+          $$MembershipsTableAnnotationComposer,
+          $$MembershipsTableCreateCompanionBuilder,
+          $$MembershipsTableUpdateCompanionBuilder,
+          (
+            Membership,
+            BaseReferences<_$AppDatabase, $MembershipsTable, Membership>,
+          ),
+          Membership,
+          PrefetchHooks Function()
+        > {
+  $$MembershipsTableTableManager(_$AppDatabase db, $MembershipsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MembershipsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MembershipsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MembershipsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> memberId = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> clubName = const Value.absent(),
+                Value<String> clubSlug = const Value.absent(),
+                Value<String?> joinUrl = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> rolesJson = const Value.absent(),
+                Value<int?> athleteId = const Value.absent(),
+                Value<String?> firstName = const Value.absent(),
+                Value<String?> lastName = const Value.absent(),
+                Value<String?> gender = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MembershipsCompanion(
+                memberId: memberId,
+                clubId: clubId,
+                clubName: clubName,
+                clubSlug: clubSlug,
+                joinUrl: joinUrl,
+                status: status,
+                rolesJson: rolesJson,
+                athleteId: athleteId,
+                firstName: firstName,
+                lastName: lastName,
+                gender: gender,
+                category: category,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String memberId,
+                required int clubId,
+                required String clubName,
+                required String clubSlug,
+                Value<String?> joinUrl = const Value.absent(),
+                required String status,
+                Value<String> rolesJson = const Value.absent(),
+                Value<int?> athleteId = const Value.absent(),
+                Value<String?> firstName = const Value.absent(),
+                Value<String?> lastName = const Value.absent(),
+                Value<String?> gender = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => MembershipsCompanion.insert(
+                memberId: memberId,
+                clubId: clubId,
+                clubName: clubName,
+                clubSlug: clubSlug,
+                joinUrl: joinUrl,
+                status: status,
+                rolesJson: rolesJson,
+                athleteId: athleteId,
+                firstName: firstName,
+                lastName: lastName,
+                gender: gender,
+                category: category,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MembershipsTable, Membership>(table),
+                  BaseReferences<_$AppDatabase, $MembershipsTable, Membership>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MembershipsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MembershipsTable,
+      Membership,
+      $$MembershipsTableFilterComposer,
+      $$MembershipsTableOrderingComposer,
+      $$MembershipsTableAnnotationComposer,
+      $$MembershipsTableCreateCompanionBuilder,
+      $$MembershipsTableUpdateCompanionBuilder,
+      (
+        Membership,
+        BaseReferences<_$AppDatabase, $MembershipsTable, Membership>,
+      ),
+      Membership,
+      PrefetchHooks Function()
+    >;
+typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
+  required String memberId,
+  required int clubId,
+  required String status,
+  Value<String> rolesJson,
+  Value<int?> athleteRowId,
+  Value<int?> athleteId,
+  Value<String?> po10Guid,
+  Value<String?> firstName,
+  Value<String?> lastName,
+  Value<String?> gender,
+  Value<String?> category,
+  Value<bool> active,
+  Value<bool> affiliated,
+  Value<String?> competitiveRegStatus,
+  Value<String?> firstClaimClubName,
+  Value<String?> resultsUrl,
+  Value<String?> powerOf10Url,
+  Value<String?> claimAwardUrl,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
+  Value<String> memberId,
+  Value<int> clubId,
+  Value<String> status,
+  Value<String> rolesJson,
+  Value<int?> athleteRowId,
+  Value<int?> athleteId,
+  Value<String?> po10Guid,
+  Value<String?> firstName,
+  Value<String?> lastName,
+  Value<String?> gender,
+  Value<String?> category,
+  Value<bool> active,
+  Value<bool> affiliated,
+  Value<String?> competitiveRegStatus,
+  Value<String?> firstClaimClubName,
+  Value<String?> resultsUrl,
+  Value<String?> powerOf10Url,
+  Value<String?> claimAwardUrl,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$ProfilesTableFilterComposer
+    extends Composer<_$AppDatabase, $ProfilesTable> {
+  $$ProfilesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rolesJson => $composableBuilder(
+    column: $table.rolesJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get athleteRowId => $composableBuilder(
+    column: $table.athleteRowId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get po10Guid => $composableBuilder(
+    column: $table.po10Guid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get affiliated => $composableBuilder(
+    column: $table.affiliated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get competitiveRegStatus => $composableBuilder(
+    column: $table.competitiveRegStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firstClaimClubName => $composableBuilder(
+    column: $table.firstClaimClubName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get resultsUrl => $composableBuilder(
+    column: $table.resultsUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get powerOf10Url => $composableBuilder(
+    column: $table.powerOf10Url,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get claimAwardUrl => $composableBuilder(
+    column: $table.claimAwardUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ProfilesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProfilesTable> {
+  $$ProfilesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rolesJson => $composableBuilder(
+    column: $table.rolesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get athleteRowId => $composableBuilder(
+    column: $table.athleteRowId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get athleteId => $composableBuilder(
+    column: $table.athleteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get po10Guid => $composableBuilder(
+    column: $table.po10Guid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get firstName => $composableBuilder(
+    column: $table.firstName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastName => $composableBuilder(
+    column: $table.lastName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gender => $composableBuilder(
+    column: $table.gender,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get affiliated => $composableBuilder(
+    column: $table.affiliated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get competitiveRegStatus => $composableBuilder(
+    column: $table.competitiveRegStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get firstClaimClubName => $composableBuilder(
+    column: $table.firstClaimClubName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get resultsUrl => $composableBuilder(
+    column: $table.resultsUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get powerOf10Url => $composableBuilder(
+    column: $table.powerOf10Url,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get claimAwardUrl => $composableBuilder(
+    column: $table.claimAwardUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ProfilesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProfilesTable> {
+  $$ProfilesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get memberId =>
+      $composableBuilder(column: $table.memberId, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get rolesJson =>
+      $composableBuilder(column: $table.rolesJson, builder: (column) => column);
+
+  GeneratedColumn<int> get athleteRowId => $composableBuilder(
+    column: $table.athleteRowId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get athleteId =>
+      $composableBuilder(column: $table.athleteId, builder: (column) => column);
+
+  GeneratedColumn<String> get po10Guid =>
+      $composableBuilder(column: $table.po10Guid, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
+
+  GeneratedColumn<String> get gender =>
+      $composableBuilder(column: $table.gender, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<bool> get active =>
+      $composableBuilder(column: $table.active, builder: (column) => column);
+
+  GeneratedColumn<bool> get affiliated => $composableBuilder(
+    column: $table.affiliated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get competitiveRegStatus => $composableBuilder(
+    column: $table.competitiveRegStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get firstClaimClubName => $composableBuilder(
+    column: $table.firstClaimClubName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get resultsUrl => $composableBuilder(
+    column: $table.resultsUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get powerOf10Url => $composableBuilder(
+    column: $table.powerOf10Url,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get claimAwardUrl => $composableBuilder(
+    column: $table.claimAwardUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ProfilesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ProfilesTable,
+          Profile,
+          $$ProfilesTableFilterComposer,
+          $$ProfilesTableOrderingComposer,
+          $$ProfilesTableAnnotationComposer,
+          $$ProfilesTableCreateCompanionBuilder,
+          $$ProfilesTableUpdateCompanionBuilder,
+          (Profile, BaseReferences<_$AppDatabase, $ProfilesTable, Profile>),
+          Profile,
+          PrefetchHooks Function()
+        > {
+  $$ProfilesTableTableManager(_$AppDatabase db, $ProfilesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProfilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProfilesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProfilesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> memberId = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> rolesJson = const Value.absent(),
+                Value<int?> athleteRowId = const Value.absent(),
+                Value<int?> athleteId = const Value.absent(),
+                Value<String?> po10Guid = const Value.absent(),
+                Value<String?> firstName = const Value.absent(),
+                Value<String?> lastName = const Value.absent(),
+                Value<String?> gender = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<bool> active = const Value.absent(),
+                Value<bool> affiliated = const Value.absent(),
+                Value<String?> competitiveRegStatus = const Value.absent(),
+                Value<String?> firstClaimClubName = const Value.absent(),
+                Value<String?> resultsUrl = const Value.absent(),
+                Value<String?> powerOf10Url = const Value.absent(),
+                Value<String?> claimAwardUrl = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProfilesCompanion(
+                memberId: memberId,
+                clubId: clubId,
+                status: status,
+                rolesJson: rolesJson,
+                athleteRowId: athleteRowId,
+                athleteId: athleteId,
+                po10Guid: po10Guid,
+                firstName: firstName,
+                lastName: lastName,
+                gender: gender,
+                category: category,
+                active: active,
+                affiliated: affiliated,
+                competitiveRegStatus: competitiveRegStatus,
+                firstClaimClubName: firstClaimClubName,
+                resultsUrl: resultsUrl,
+                powerOf10Url: powerOf10Url,
+                claimAwardUrl: claimAwardUrl,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String memberId,
+                required int clubId,
+                required String status,
+                Value<String> rolesJson = const Value.absent(),
+                Value<int?> athleteRowId = const Value.absent(),
+                Value<int?> athleteId = const Value.absent(),
+                Value<String?> po10Guid = const Value.absent(),
+                Value<String?> firstName = const Value.absent(),
+                Value<String?> lastName = const Value.absent(),
+                Value<String?> gender = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<bool> active = const Value.absent(),
+                Value<bool> affiliated = const Value.absent(),
+                Value<String?> competitiveRegStatus = const Value.absent(),
+                Value<String?> firstClaimClubName = const Value.absent(),
+                Value<String?> resultsUrl = const Value.absent(),
+                Value<String?> powerOf10Url = const Value.absent(),
+                Value<String?> claimAwardUrl = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ProfilesCompanion.insert(
+                memberId: memberId,
+                clubId: clubId,
+                status: status,
+                rolesJson: rolesJson,
+                athleteRowId: athleteRowId,
+                athleteId: athleteId,
+                po10Guid: po10Guid,
+                firstName: firstName,
+                lastName: lastName,
+                gender: gender,
+                category: category,
+                active: active,
+                affiliated: affiliated,
+                competitiveRegStatus: competitiveRegStatus,
+                firstClaimClubName: firstClaimClubName,
+                resultsUrl: resultsUrl,
+                powerOf10Url: powerOf10Url,
+                claimAwardUrl: claimAwardUrl,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ProfilesTable, Profile>(table),
+                  BaseReferences<_$AppDatabase, $ProfilesTable, Profile>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ProfilesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ProfilesTable,
+      Profile,
+      $$ProfilesTableFilterComposer,
+      $$ProfilesTableOrderingComposer,
+      $$ProfilesTableAnnotationComposer,
+      $$ProfilesTableCreateCompanionBuilder,
+      $$ProfilesTableUpdateCompanionBuilder,
+      (Profile, BaseReferences<_$AppDatabase, $ProfilesTable, Profile>),
+      Profile,
+      PrefetchHooks Function()
+    >;
+typedef $$PostsTableCreateCompanionBuilder = PostsCompanion Function({
+  required String id,
+  required int clubId,
+  required String title,
+  required String bodyMd,
+  Value<String> priority,
+  Value<String> audience,
+  required DateTime publishedAt,
+  Value<DateTime?> pinnedUntil,
+  required String authorMemberId,
+  required String authorName,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$PostsTableUpdateCompanionBuilder = PostsCompanion Function({
+  Value<String> id,
+  Value<int> clubId,
+  Value<String> title,
+  Value<String> bodyMd,
+  Value<String> priority,
+  Value<String> audience,
+  Value<DateTime> publishedAt,
+  Value<DateTime?> pinnedUntil,
+  Value<String> authorMemberId,
+  Value<String> authorName,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$PostsTableFilterComposer extends Composer<_$AppDatabase, $PostsTable> {
+  $$PostsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bodyMd => $composableBuilder(
+    column: $table.bodyMd,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get audience => $composableBuilder(
+    column: $table.audience,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get pinnedUntil => $composableBuilder(
+    column: $table.pinnedUntil,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get authorMemberId => $composableBuilder(
+    column: $table.authorMemberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get authorName => $composableBuilder(
+    column: $table.authorName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PostsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PostsTable> {
+  $$PostsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bodyMd => $composableBuilder(
+    column: $table.bodyMd,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get audience => $composableBuilder(
+    column: $table.audience,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get pinnedUntil => $composableBuilder(
+    column: $table.pinnedUntil,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get authorMemberId => $composableBuilder(
+    column: $table.authorMemberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get authorName => $composableBuilder(
+    column: $table.authorName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PostsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PostsTable> {
+  $$PostsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get bodyMd =>
+      $composableBuilder(column: $table.bodyMd, builder: (column) => column);
+
+  GeneratedColumn<String> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  GeneratedColumn<String> get audience =>
+      $composableBuilder(column: $table.audience, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get pinnedUntil => $composableBuilder(
+    column: $table.pinnedUntil,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get authorMemberId => $composableBuilder(
+    column: $table.authorMemberId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get authorName => $composableBuilder(
+    column: $table.authorName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$PostsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PostsTable,
+          Post,
+          $$PostsTableFilterComposer,
+          $$PostsTableOrderingComposer,
+          $$PostsTableAnnotationComposer,
+          $$PostsTableCreateCompanionBuilder,
+          $$PostsTableUpdateCompanionBuilder,
+          (Post, BaseReferences<_$AppDatabase, $PostsTable, Post>),
+          Post,
+          PrefetchHooks Function()
+        > {
+  $$PostsTableTableManager(_$AppDatabase db, $PostsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PostsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PostsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PostsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> bodyMd = const Value.absent(),
+                Value<String> priority = const Value.absent(),
+                Value<String> audience = const Value.absent(),
+                Value<DateTime> publishedAt = const Value.absent(),
+                Value<DateTime?> pinnedUntil = const Value.absent(),
+                Value<String> authorMemberId = const Value.absent(),
+                Value<String> authorName = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PostsCompanion(
+                id: id,
+                clubId: clubId,
+                title: title,
+                bodyMd: bodyMd,
+                priority: priority,
+                audience: audience,
+                publishedAt: publishedAt,
+                pinnedUntil: pinnedUntil,
+                authorMemberId: authorMemberId,
+                authorName: authorName,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int clubId,
+                required String title,
+                required String bodyMd,
+                Value<String> priority = const Value.absent(),
+                Value<String> audience = const Value.absent(),
+                required DateTime publishedAt,
+                Value<DateTime?> pinnedUntil = const Value.absent(),
+                required String authorMemberId,
+                required String authorName,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PostsCompanion.insert(
+                id: id,
+                clubId: clubId,
+                title: title,
+                bodyMd: bodyMd,
+                priority: priority,
+                audience: audience,
+                publishedAt: publishedAt,
+                pinnedUntil: pinnedUntil,
+                authorMemberId: authorMemberId,
+                authorName: authorName,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PostsTable, Post>(table),
+                  BaseReferences<_$AppDatabase, $PostsTable, Post>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PostsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PostsTable,
+      Post,
+      $$PostsTableFilterComposer,
+      $$PostsTableOrderingComposer,
+      $$PostsTableAnnotationComposer,
+      $$PostsTableCreateCompanionBuilder,
+      $$PostsTableUpdateCompanionBuilder,
+      (Post, BaseReferences<_$AppDatabase, $PostsTable, Post>),
+      Post,
+      PrefetchHooks Function()
+    >;
+typedef $$InboxItemsTableCreateCompanionBuilder = InboxItemsCompanion Function({
+  required String id,
+  required int clubId,
+  required String category,
+  required String title,
+  required String body,
+  Value<String> dataJson,
+  required DateTime createdAt,
+  Value<DateTime?> readAt,
+  Value<bool> readPending,
+  Value<int> rowid,
+});
+typedef $$InboxItemsTableUpdateCompanionBuilder = InboxItemsCompanion Function({
+  Value<String> id,
+  Value<int> clubId,
+  Value<String> category,
+  Value<String> title,
+  Value<String> body,
+  Value<String> dataJson,
+  Value<DateTime> createdAt,
+  Value<DateTime?> readAt,
+  Value<bool> readPending,
+  Value<int> rowid,
+});
+
+class $$InboxItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $InboxItemsTable> {
+  $$InboxItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dataJson => $composableBuilder(
+    column: $table.dataJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get readAt => $composableBuilder(
+    column: $table.readAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get readPending => $composableBuilder(
+    column: $table.readPending,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InboxItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $InboxItemsTable> {
+  $$InboxItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dataJson => $composableBuilder(
+    column: $table.dataJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get readAt => $composableBuilder(
+    column: $table.readAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get readPending => $composableBuilder(
+    column: $table.readPending,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InboxItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $InboxItemsTable> {
+  $$InboxItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<String> get dataJson =>
+      $composableBuilder(column: $table.dataJson, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get readAt =>
+      $composableBuilder(column: $table.readAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get readPending => $composableBuilder(
+    column: $table.readPending,
+    builder: (column) => column,
+  );
+}
+
+class $$InboxItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $InboxItemsTable,
+          InboxItem,
+          $$InboxItemsTableFilterComposer,
+          $$InboxItemsTableOrderingComposer,
+          $$InboxItemsTableAnnotationComposer,
+          $$InboxItemsTableCreateCompanionBuilder,
+          $$InboxItemsTableUpdateCompanionBuilder,
+          (
+            InboxItem,
+            BaseReferences<_$AppDatabase, $InboxItemsTable, InboxItem>,
+          ),
+          InboxItem,
+          PrefetchHooks Function()
+        > {
+  $$InboxItemsTableTableManager(_$AppDatabase db, $InboxItemsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InboxItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InboxItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InboxItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<String> dataJson = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> readAt = const Value.absent(),
+                Value<bool> readPending = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InboxItemsCompanion(
+                id: id,
+                clubId: clubId,
+                category: category,
+                title: title,
+                body: body,
+                dataJson: dataJson,
+                createdAt: createdAt,
+                readAt: readAt,
+                readPending: readPending,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int clubId,
+                required String category,
+                required String title,
+                required String body,
+                Value<String> dataJson = const Value.absent(),
+                required DateTime createdAt,
+                Value<DateTime?> readAt = const Value.absent(),
+                Value<bool> readPending = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InboxItemsCompanion.insert(
+                id: id,
+                clubId: clubId,
+                category: category,
+                title: title,
+                body: body,
+                dataJson: dataJson,
+                createdAt: createdAt,
+                readAt: readAt,
+                readPending: readPending,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$InboxItemsTable, InboxItem>(table),
+                  BaseReferences<_$AppDatabase, $InboxItemsTable, InboxItem>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InboxItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $InboxItemsTable,
+      InboxItem,
+      $$InboxItemsTableFilterComposer,
+      $$InboxItemsTableOrderingComposer,
+      $$InboxItemsTableAnnotationComposer,
+      $$InboxItemsTableCreateCompanionBuilder,
+      $$InboxItemsTableUpdateCompanionBuilder,
+      (InboxItem, BaseReferences<_$AppDatabase, $InboxItemsTable, InboxItem>),
+      InboxItem,
+      PrefetchHooks Function()
+    >;
+typedef $$SyncCursorsTableCreateCompanionBuilder =
+    SyncCursorsCompanion Function({
+      required String key,
+      required String serverTime,
+      Value<int> rowid,
+    });
+typedef $$SyncCursorsTableUpdateCompanionBuilder =
+    SyncCursorsCompanion Function({
+      Value<String> key,
+      Value<String> serverTime,
+      Value<int> rowid,
+    });
+
+class $$SyncCursorsTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncCursorsTable> {
+  $$SyncCursorsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get serverTime => $composableBuilder(
+    column: $table.serverTime,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncCursorsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncCursorsTable> {
+  $$SyncCursorsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get serverTime => $composableBuilder(
+    column: $table.serverTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncCursorsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncCursorsTable> {
+  $$SyncCursorsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get serverTime => $composableBuilder(
+    column: $table.serverTime,
+    builder: (column) => column,
+  );
+}
+
+class $$SyncCursorsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncCursorsTable,
+          SyncCursor,
+          $$SyncCursorsTableFilterComposer,
+          $$SyncCursorsTableOrderingComposer,
+          $$SyncCursorsTableAnnotationComposer,
+          $$SyncCursorsTableCreateCompanionBuilder,
+          $$SyncCursorsTableUpdateCompanionBuilder,
+          (
+            SyncCursor,
+            BaseReferences<_$AppDatabase, $SyncCursorsTable, SyncCursor>,
+          ),
+          SyncCursor,
+          PrefetchHooks Function()
+        > {
+  $$SyncCursorsTableTableManager(_$AppDatabase db, $SyncCursorsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncCursorsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncCursorsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncCursorsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> key = const Value.absent(),
+                Value<String> serverTime = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncCursorsCompanion(
+                key: key,
+                serverTime: serverTime,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String key,
+                required String serverTime,
+                Value<int> rowid = const Value.absent(),
+              }) => SyncCursorsCompanion.insert(
+                key: key,
+                serverTime: serverTime,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SyncCursorsTable, SyncCursor>(table),
+                  BaseReferences<_$AppDatabase, $SyncCursorsTable, SyncCursor>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncCursorsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncCursorsTable,
+      SyncCursor,
+      $$SyncCursorsTableFilterComposer,
+      $$SyncCursorsTableOrderingComposer,
+      $$SyncCursorsTableAnnotationComposer,
+      $$SyncCursorsTableCreateCompanionBuilder,
+      $$SyncCursorsTableUpdateCompanionBuilder,
+      (
+        SyncCursor,
+        BaseReferences<_$AppDatabase, $SyncCursorsTable, SyncCursor>,
+      ),
+      SyncCursor,
+      PrefetchHooks Function()
+    >;
+typedef $$VenuesTableCreateCompanionBuilder = VenuesCompanion Function({
+  required String id,
+  required int clubId,
+  required String name,
+  Value<String?> address,
+  Value<double?> lat,
+  Value<double?> lng,
+  Value<String?> notes,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$VenuesTableUpdateCompanionBuilder = VenuesCompanion Function({
+  Value<String> id,
+  Value<int> clubId,
+  Value<String> name,
+  Value<String?> address,
+  Value<double?> lat,
+  Value<double?> lng,
+  Value<String?> notes,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$VenuesTableFilterComposer
+    extends Composer<_$AppDatabase, $VenuesTable> {
+  $$VenuesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$VenuesTableOrderingComposer
+    extends Composer<_$AppDatabase, $VenuesTable> {
+  $$VenuesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lat => $composableBuilder(
+    column: $table.lat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get lng => $composableBuilder(
+    column: $table.lng,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$VenuesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $VenuesTable> {
+  $$VenuesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<double> get lat =>
+      $composableBuilder(column: $table.lat, builder: (column) => column);
+
+  GeneratedColumn<double> get lng =>
+      $composableBuilder(column: $table.lng, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$VenuesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $VenuesTable,
+          Venue,
+          $$VenuesTableFilterComposer,
+          $$VenuesTableOrderingComposer,
+          $$VenuesTableAnnotationComposer,
+          $$VenuesTableCreateCompanionBuilder,
+          $$VenuesTableUpdateCompanionBuilder,
+          (Venue, BaseReferences<_$AppDatabase, $VenuesTable, Venue>),
+          Venue,
+          PrefetchHooks Function()
+        > {
+  $$VenuesTableTableManager(_$AppDatabase db, $VenuesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$VenuesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$VenuesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$VenuesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> address = const Value.absent(),
+                Value<double?> lat = const Value.absent(),
+                Value<double?> lng = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => VenuesCompanion(
+                id: id,
+                clubId: clubId,
+                name: name,
+                address: address,
+                lat: lat,
+                lng: lng,
+                notes: notes,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int clubId,
+                required String name,
+                Value<String?> address = const Value.absent(),
+                Value<double?> lat = const Value.absent(),
+                Value<double?> lng = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => VenuesCompanion.insert(
+                id: id,
+                clubId: clubId,
+                name: name,
+                address: address,
+                lat: lat,
+                lng: lng,
+                notes: notes,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$VenuesTable, Venue>(table),
+                  BaseReferences<_$AppDatabase, $VenuesTable, Venue>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$VenuesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $VenuesTable,
+      Venue,
+      $$VenuesTableFilterComposer,
+      $$VenuesTableOrderingComposer,
+      $$VenuesTableAnnotationComposer,
+      $$VenuesTableCreateCompanionBuilder,
+      $$VenuesTableUpdateCompanionBuilder,
+      (Venue, BaseReferences<_$AppDatabase, $VenuesTable, Venue>),
+      Venue,
+      PrefetchHooks Function()
+    >;
+typedef $$SessionSeriesTableCreateCompanionBuilder =
+    SessionSeriesCompanion Function({
+      required String id,
+      required int clubId,
+      required String title,
+      Value<String?> description,
+      Value<String?> venueId,
+      required int weekday,
+      required String startTime,
+      required int durationMin,
+      Value<int> intervalWeeks,
+      required String validFrom,
+      Value<String?> validUntil,
+      required String groupMode,
+      Value<String?> cmsSlug,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$SessionSeriesTableUpdateCompanionBuilder =
+    SessionSeriesCompanion Function({
+      Value<String> id,
+      Value<int> clubId,
+      Value<String> title,
+      Value<String?> description,
+      Value<String?> venueId,
+      Value<int> weekday,
+      Value<String> startTime,
+      Value<int> durationMin,
+      Value<int> intervalWeeks,
+      Value<String> validFrom,
+      Value<String?> validUntil,
+      Value<String> groupMode,
+      Value<String?> cmsSlug,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$SessionSeriesTableFilterComposer
+    extends Composer<_$AppDatabase, $SessionSeriesTable> {
+  $$SessionSeriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get venueId => $composableBuilder(
+    column: $table.venueId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get weekday => $composableBuilder(
+    column: $table.weekday,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMin => $composableBuilder(
+    column: $table.durationMin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get intervalWeeks => $composableBuilder(
+    column: $table.intervalWeeks,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get validFrom => $composableBuilder(
+    column: $table.validFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get validUntil => $composableBuilder(
+    column: $table.validUntil,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupMode => $composableBuilder(
+    column: $table.groupMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cmsSlug => $composableBuilder(
+    column: $table.cmsSlug,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SessionSeriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SessionSeriesTable> {
+  $$SessionSeriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get venueId => $composableBuilder(
+    column: $table.venueId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get weekday => $composableBuilder(
+    column: $table.weekday,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMin => $composableBuilder(
+    column: $table.durationMin,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get intervalWeeks => $composableBuilder(
+    column: $table.intervalWeeks,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get validFrom => $composableBuilder(
+    column: $table.validFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get validUntil => $composableBuilder(
+    column: $table.validUntil,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupMode => $composableBuilder(
+    column: $table.groupMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cmsSlug => $composableBuilder(
+    column: $table.cmsSlug,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SessionSeriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SessionSeriesTable> {
+  $$SessionSeriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get venueId =>
+      $composableBuilder(column: $table.venueId, builder: (column) => column);
+
+  GeneratedColumn<int> get weekday =>
+      $composableBuilder(column: $table.weekday, builder: (column) => column);
+
+  GeneratedColumn<String> get startTime =>
+      $composableBuilder(column: $table.startTime, builder: (column) => column);
+
+  GeneratedColumn<int> get durationMin => $composableBuilder(
+    column: $table.durationMin,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get intervalWeeks => $composableBuilder(
+    column: $table.intervalWeeks,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get validFrom =>
+      $composableBuilder(column: $table.validFrom, builder: (column) => column);
+
+  GeneratedColumn<String> get validUntil => $composableBuilder(
+    column: $table.validUntil,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get groupMode =>
+      $composableBuilder(column: $table.groupMode, builder: (column) => column);
+
+  GeneratedColumn<String> get cmsSlug =>
+      $composableBuilder(column: $table.cmsSlug, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$SessionSeriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SessionSeriesTable,
+          RunSeries,
+          $$SessionSeriesTableFilterComposer,
+          $$SessionSeriesTableOrderingComposer,
+          $$SessionSeriesTableAnnotationComposer,
+          $$SessionSeriesTableCreateCompanionBuilder,
+          $$SessionSeriesTableUpdateCompanionBuilder,
+          (
+            RunSeries,
+            BaseReferences<_$AppDatabase, $SessionSeriesTable, RunSeries>,
+          ),
+          RunSeries,
+          PrefetchHooks Function()
+        > {
+  $$SessionSeriesTableTableManager(_$AppDatabase db, $SessionSeriesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SessionSeriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SessionSeriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SessionSeriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String?> venueId = const Value.absent(),
+                Value<int> weekday = const Value.absent(),
+                Value<String> startTime = const Value.absent(),
+                Value<int> durationMin = const Value.absent(),
+                Value<int> intervalWeeks = const Value.absent(),
+                Value<String> validFrom = const Value.absent(),
+                Value<String?> validUntil = const Value.absent(),
+                Value<String> groupMode = const Value.absent(),
+                Value<String?> cmsSlug = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SessionSeriesCompanion(
+                id: id,
+                clubId: clubId,
+                title: title,
+                description: description,
+                venueId: venueId,
+                weekday: weekday,
+                startTime: startTime,
+                durationMin: durationMin,
+                intervalWeeks: intervalWeeks,
+                validFrom: validFrom,
+                validUntil: validUntil,
+                groupMode: groupMode,
+                cmsSlug: cmsSlug,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int clubId,
+                required String title,
+                Value<String?> description = const Value.absent(),
+                Value<String?> venueId = const Value.absent(),
+                required int weekday,
+                required String startTime,
+                required int durationMin,
+                Value<int> intervalWeeks = const Value.absent(),
+                required String validFrom,
+                Value<String?> validUntil = const Value.absent(),
+                required String groupMode,
+                Value<String?> cmsSlug = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SessionSeriesCompanion.insert(
+                id: id,
+                clubId: clubId,
+                title: title,
+                description: description,
+                venueId: venueId,
+                weekday: weekday,
+                startTime: startTime,
+                durationMin: durationMin,
+                intervalWeeks: intervalWeeks,
+                validFrom: validFrom,
+                validUntil: validUntil,
+                groupMode: groupMode,
+                cmsSlug: cmsSlug,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SessionSeriesTable, RunSeries>(table),
+                  BaseReferences<_$AppDatabase, $SessionSeriesTable, RunSeries>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SessionSeriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SessionSeriesTable,
+      RunSeries,
+      $$SessionSeriesTableFilterComposer,
+      $$SessionSeriesTableOrderingComposer,
+      $$SessionSeriesTableAnnotationComposer,
+      $$SessionSeriesTableCreateCompanionBuilder,
+      $$SessionSeriesTableUpdateCompanionBuilder,
+      (
+        RunSeries,
+        BaseReferences<_$AppDatabase, $SessionSeriesTable, RunSeries>,
+      ),
+      RunSeries,
+      PrefetchHooks Function()
+    >;
+typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
+  required String id,
+  required int clubId,
+  Value<String?> seriesId,
+  Value<String?> occurrenceDate,
+  required String title,
+  Value<String?> venueId,
+  Value<String?> notes,
+  required DateTime startsAt,
+  required DateTime endsAt,
+  required String localDate,
+  required String localStartTime,
+  required String localEndTime,
+  required String groupMode,
+  Value<String> status,
+  Value<String?> cancelReason,
+  Value<String?> coordinatorMemberId,
+  Value<String?> coordinatorName,
+  Value<bool> isDetached,
+  Value<String?> originalJson,
+  Value<String?> groupsJson,
+  Value<String?> summaryJson,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
+  Value<String> id,
+  Value<int> clubId,
+  Value<String?> seriesId,
+  Value<String?> occurrenceDate,
+  Value<String> title,
+  Value<String?> venueId,
+  Value<String?> notes,
+  Value<DateTime> startsAt,
+  Value<DateTime> endsAt,
+  Value<String> localDate,
+  Value<String> localStartTime,
+  Value<String> localEndTime,
+  Value<String> groupMode,
+  Value<String> status,
+  Value<String?> cancelReason,
+  Value<String?> coordinatorMemberId,
+  Value<String?> coordinatorName,
+  Value<bool> isDetached,
+  Value<String?> originalJson,
+  Value<String?> groupsJson,
+  Value<String?> summaryJson,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$SessionsTableFilterComposer
+    extends Composer<_$AppDatabase, $SessionsTable> {
+  $$SessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get seriesId => $composableBuilder(
+    column: $table.seriesId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occurrenceDate => $composableBuilder(
+    column: $table.occurrenceDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get venueId => $composableBuilder(
+    column: $table.venueId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startsAt => $composableBuilder(
+    column: $table.startsAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endsAt => $composableBuilder(
+    column: $table.endsAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localDate => $composableBuilder(
+    column: $table.localDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localStartTime => $composableBuilder(
+    column: $table.localStartTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localEndTime => $composableBuilder(
+    column: $table.localEndTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupMode => $composableBuilder(
+    column: $table.groupMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cancelReason => $composableBuilder(
+    column: $table.cancelReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get coordinatorMemberId => $composableBuilder(
+    column: $table.coordinatorMemberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get coordinatorName => $composableBuilder(
+    column: $table.coordinatorName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDetached => $composableBuilder(
+    column: $table.isDetached,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get originalJson => $composableBuilder(
+    column: $table.originalJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupsJson => $composableBuilder(
+    column: $table.groupsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get summaryJson => $composableBuilder(
+    column: $table.summaryJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SessionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SessionsTable> {
+  $$SessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get seriesId => $composableBuilder(
+    column: $table.seriesId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occurrenceDate => $composableBuilder(
+    column: $table.occurrenceDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get venueId => $composableBuilder(
+    column: $table.venueId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startsAt => $composableBuilder(
+    column: $table.startsAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endsAt => $composableBuilder(
+    column: $table.endsAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localDate => $composableBuilder(
+    column: $table.localDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localStartTime => $composableBuilder(
+    column: $table.localStartTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localEndTime => $composableBuilder(
+    column: $table.localEndTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupMode => $composableBuilder(
+    column: $table.groupMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cancelReason => $composableBuilder(
+    column: $table.cancelReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get coordinatorMemberId => $composableBuilder(
+    column: $table.coordinatorMemberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get coordinatorName => $composableBuilder(
+    column: $table.coordinatorName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDetached => $composableBuilder(
+    column: $table.isDetached,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get originalJson => $composableBuilder(
+    column: $table.originalJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupsJson => $composableBuilder(
+    column: $table.groupsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get summaryJson => $composableBuilder(
+    column: $table.summaryJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SessionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SessionsTable> {
+  $$SessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get seriesId =>
+      $composableBuilder(column: $table.seriesId, builder: (column) => column);
+
+  GeneratedColumn<String> get occurrenceDate => $composableBuilder(
+    column: $table.occurrenceDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get venueId =>
+      $composableBuilder(column: $table.venueId, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startsAt =>
+      $composableBuilder(column: $table.startsAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endsAt =>
+      $composableBuilder(column: $table.endsAt, builder: (column) => column);
+
+  GeneratedColumn<String> get localDate =>
+      $composableBuilder(column: $table.localDate, builder: (column) => column);
+
+  GeneratedColumn<String> get localStartTime => $composableBuilder(
+    column: $table.localStartTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get localEndTime => $composableBuilder(
+    column: $table.localEndTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get groupMode =>
+      $composableBuilder(column: $table.groupMode, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get cancelReason => $composableBuilder(
+    column: $table.cancelReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get coordinatorMemberId => $composableBuilder(
+    column: $table.coordinatorMemberId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get coordinatorName => $composableBuilder(
+    column: $table.coordinatorName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDetached => $composableBuilder(
+    column: $table.isDetached,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get originalJson => $composableBuilder(
+    column: $table.originalJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get groupsJson => $composableBuilder(
+    column: $table.groupsJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get summaryJson => $composableBuilder(
+    column: $table.summaryJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$SessionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SessionsTable,
+          Session,
+          $$SessionsTableFilterComposer,
+          $$SessionsTableOrderingComposer,
+          $$SessionsTableAnnotationComposer,
+          $$SessionsTableCreateCompanionBuilder,
+          $$SessionsTableUpdateCompanionBuilder,
+          (Session, BaseReferences<_$AppDatabase, $SessionsTable, Session>),
+          Session,
+          PrefetchHooks Function()
+        > {
+  $$SessionsTableTableManager(_$AppDatabase db, $SessionsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SessionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SessionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SessionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String?> seriesId = const Value.absent(),
+                Value<String?> occurrenceDate = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> venueId = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<DateTime> startsAt = const Value.absent(),
+                Value<DateTime> endsAt = const Value.absent(),
+                Value<String> localDate = const Value.absent(),
+                Value<String> localStartTime = const Value.absent(),
+                Value<String> localEndTime = const Value.absent(),
+                Value<String> groupMode = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> cancelReason = const Value.absent(),
+                Value<String?> coordinatorMemberId = const Value.absent(),
+                Value<String?> coordinatorName = const Value.absent(),
+                Value<bool> isDetached = const Value.absent(),
+                Value<String?> originalJson = const Value.absent(),
+                Value<String?> groupsJson = const Value.absent(),
+                Value<String?> summaryJson = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SessionsCompanion(
+                id: id,
+                clubId: clubId,
+                seriesId: seriesId,
+                occurrenceDate: occurrenceDate,
+                title: title,
+                venueId: venueId,
+                notes: notes,
+                startsAt: startsAt,
+                endsAt: endsAt,
+                localDate: localDate,
+                localStartTime: localStartTime,
+                localEndTime: localEndTime,
+                groupMode: groupMode,
+                status: status,
+                cancelReason: cancelReason,
+                coordinatorMemberId: coordinatorMemberId,
+                coordinatorName: coordinatorName,
+                isDetached: isDetached,
+                originalJson: originalJson,
+                groupsJson: groupsJson,
+                summaryJson: summaryJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int clubId,
+                Value<String?> seriesId = const Value.absent(),
+                Value<String?> occurrenceDate = const Value.absent(),
+                required String title,
+                Value<String?> venueId = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                required DateTime startsAt,
+                required DateTime endsAt,
+                required String localDate,
+                required String localStartTime,
+                required String localEndTime,
+                required String groupMode,
+                Value<String> status = const Value.absent(),
+                Value<String?> cancelReason = const Value.absent(),
+                Value<String?> coordinatorMemberId = const Value.absent(),
+                Value<String?> coordinatorName = const Value.absent(),
+                Value<bool> isDetached = const Value.absent(),
+                Value<String?> originalJson = const Value.absent(),
+                Value<String?> groupsJson = const Value.absent(),
+                Value<String?> summaryJson = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SessionsCompanion.insert(
+                id: id,
+                clubId: clubId,
+                seriesId: seriesId,
+                occurrenceDate: occurrenceDate,
+                title: title,
+                venueId: venueId,
+                notes: notes,
+                startsAt: startsAt,
+                endsAt: endsAt,
+                localDate: localDate,
+                localStartTime: localStartTime,
+                localEndTime: localEndTime,
+                groupMode: groupMode,
+                status: status,
+                cancelReason: cancelReason,
+                coordinatorMemberId: coordinatorMemberId,
+                coordinatorName: coordinatorName,
+                isDetached: isDetached,
+                originalJson: originalJson,
+                groupsJson: groupsJson,
+                summaryJson: summaryJson,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SessionsTable, Session>(table),
+                  BaseReferences<_$AppDatabase, $SessionsTable, Session>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SessionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SessionsTable,
+      Session,
+      $$SessionsTableFilterComposer,
+      $$SessionsTableOrderingComposer,
+      $$SessionsTableAnnotationComposer,
+      $$SessionsTableCreateCompanionBuilder,
+      $$SessionsTableUpdateCompanionBuilder,
+      (Session, BaseReferences<_$AppDatabase, $SessionsTable, Session>),
+      Session,
+      PrefetchHooks Function()
+    >;
+typedef $$SessionPlansTableCreateCompanionBuilder =
+    SessionPlansCompanion Function({
+      required String sessionId,
+      required int clubId,
+      required String json,
+      required DateTime fetchedAt,
+      Value<int> rowid,
+    });
+typedef $$SessionPlansTableUpdateCompanionBuilder =
+    SessionPlansCompanion Function({
+      Value<String> sessionId,
+      Value<int> clubId,
+      Value<String> json,
+      Value<DateTime> fetchedAt,
+      Value<int> rowid,
+    });
+
+class $$SessionPlansTableFilterComposer
+    extends Composer<_$AppDatabase, $SessionPlansTable> {
+  $$SessionPlansTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get json => $composableBuilder(
+    column: $table.json,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SessionPlansTableOrderingComposer
+    extends Composer<_$AppDatabase, $SessionPlansTable> {
+  $$SessionPlansTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get json => $composableBuilder(
+    column: $table.json,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SessionPlansTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SessionPlansTable> {
+  $$SessionPlansTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get json =>
+      $composableBuilder(column: $table.json, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$SessionPlansTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SessionPlansTable,
+          SessionPlanRow,
+          $$SessionPlansTableFilterComposer,
+          $$SessionPlansTableOrderingComposer,
+          $$SessionPlansTableAnnotationComposer,
+          $$SessionPlansTableCreateCompanionBuilder,
+          $$SessionPlansTableUpdateCompanionBuilder,
+          (
+            SessionPlanRow,
+            BaseReferences<_$AppDatabase, $SessionPlansTable, SessionPlanRow>,
+          ),
+          SessionPlanRow,
+          PrefetchHooks Function()
+        > {
+  $$SessionPlansTableTableManager(_$AppDatabase db, $SessionPlansTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SessionPlansTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SessionPlansTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SessionPlansTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> sessionId = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> json = const Value.absent(),
+                Value<DateTime> fetchedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SessionPlansCompanion(
+                sessionId: sessionId,
+                clubId: clubId,
+                json: json,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String sessionId,
+                required int clubId,
+                required String json,
+                required DateTime fetchedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SessionPlansCompanion.insert(
+                sessionId: sessionId,
+                clubId: clubId,
+                json: json,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SessionPlansTable, SessionPlanRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $SessionPlansTable,
+                    SessionPlanRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SessionPlansTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SessionPlansTable,
+      SessionPlanRow,
+      $$SessionPlansTableFilterComposer,
+      $$SessionPlansTableOrderingComposer,
+      $$SessionPlansTableAnnotationComposer,
+      $$SessionPlansTableCreateCompanionBuilder,
+      $$SessionPlansTableUpdateCompanionBuilder,
+      (
+        SessionPlanRow,
+        BaseReferences<_$AppDatabase, $SessionPlansTable, SessionPlanRow>,
+      ),
+      SessionPlanRow,
+      PrefetchHooks Function()
+    >;
+typedef $$MyAttendanceTableCreateCompanionBuilder =
+    MyAttendanceCompanion Function({
+      required String sessionId,
+      required int clubId,
+      required String status,
+      Value<String?> groupId,
+      Value<String?> paceUnit,
+      Value<int?> paceFromS,
+      Value<int?> paceToS,
+      Value<bool> pending,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$MyAttendanceTableUpdateCompanionBuilder =
+    MyAttendanceCompanion Function({
+      Value<String> sessionId,
+      Value<int> clubId,
+      Value<String> status,
+      Value<String?> groupId,
+      Value<String?> paceUnit,
+      Value<int?> paceFromS,
+      Value<int?> paceToS,
+      Value<bool> pending,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$MyAttendanceTableFilterComposer
+    extends Composer<_$AppDatabase, $MyAttendanceTable> {
+  $$MyAttendanceTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupId => $composableBuilder(
+    column: $table.groupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paceUnit => $composableBuilder(
+    column: $table.paceUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get paceFromS => $composableBuilder(
+    column: $table.paceFromS,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get paceToS => $composableBuilder(
+    column: $table.paceToS,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get pending => $composableBuilder(
+    column: $table.pending,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MyAttendanceTableOrderingComposer
+    extends Composer<_$AppDatabase, $MyAttendanceTable> {
+  $$MyAttendanceTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupId => $composableBuilder(
+    column: $table.groupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paceUnit => $composableBuilder(
+    column: $table.paceUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get paceFromS => $composableBuilder(
+    column: $table.paceFromS,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get paceToS => $composableBuilder(
+    column: $table.paceToS,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get pending => $composableBuilder(
+    column: $table.pending,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MyAttendanceTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MyAttendanceTable> {
+  $$MyAttendanceTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get groupId =>
+      $composableBuilder(column: $table.groupId, builder: (column) => column);
+
+  GeneratedColumn<String> get paceUnit =>
+      $composableBuilder(column: $table.paceUnit, builder: (column) => column);
+
+  GeneratedColumn<int> get paceFromS =>
+      $composableBuilder(column: $table.paceFromS, builder: (column) => column);
+
+  GeneratedColumn<int> get paceToS =>
+      $composableBuilder(column: $table.paceToS, builder: (column) => column);
+
+  GeneratedColumn<bool> get pending =>
+      $composableBuilder(column: $table.pending, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$MyAttendanceTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MyAttendanceTable,
+          MyAttendanceRow,
+          $$MyAttendanceTableFilterComposer,
+          $$MyAttendanceTableOrderingComposer,
+          $$MyAttendanceTableAnnotationComposer,
+          $$MyAttendanceTableCreateCompanionBuilder,
+          $$MyAttendanceTableUpdateCompanionBuilder,
+          (
+            MyAttendanceRow,
+            BaseReferences<_$AppDatabase, $MyAttendanceTable, MyAttendanceRow>,
+          ),
+          MyAttendanceRow,
+          PrefetchHooks Function()
+        > {
+  $$MyAttendanceTableTableManager(_$AppDatabase db, $MyAttendanceTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MyAttendanceTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MyAttendanceTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MyAttendanceTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> sessionId = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> groupId = const Value.absent(),
+                Value<String?> paceUnit = const Value.absent(),
+                Value<int?> paceFromS = const Value.absent(),
+                Value<int?> paceToS = const Value.absent(),
+                Value<bool> pending = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MyAttendanceCompanion(
+                sessionId: sessionId,
+                clubId: clubId,
+                status: status,
+                groupId: groupId,
+                paceUnit: paceUnit,
+                paceFromS: paceFromS,
+                paceToS: paceToS,
+                pending: pending,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String sessionId,
+                required int clubId,
+                required String status,
+                Value<String?> groupId = const Value.absent(),
+                Value<String?> paceUnit = const Value.absent(),
+                Value<int?> paceFromS = const Value.absent(),
+                Value<int?> paceToS = const Value.absent(),
+                Value<bool> pending = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => MyAttendanceCompanion.insert(
+                sessionId: sessionId,
+                clubId: clubId,
+                status: status,
+                groupId: groupId,
+                paceUnit: paceUnit,
+                paceFromS: paceFromS,
+                paceToS: paceToS,
+                pending: pending,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MyAttendanceTable, MyAttendanceRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $MyAttendanceTable,
+                    MyAttendanceRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MyAttendanceTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MyAttendanceTable,
+      MyAttendanceRow,
+      $$MyAttendanceTableFilterComposer,
+      $$MyAttendanceTableOrderingComposer,
+      $$MyAttendanceTableAnnotationComposer,
+      $$MyAttendanceTableCreateCompanionBuilder,
+      $$MyAttendanceTableUpdateCompanionBuilder,
+      (
+        MyAttendanceRow,
+        BaseReferences<_$AppDatabase, $MyAttendanceTable, MyAttendanceRow>,
+      ),
+      MyAttendanceRow,
+      PrefetchHooks Function()
+    >;
+typedef $$PreferencesTableCreateCompanionBuilder =
+    PreferencesCompanion Function({
+      Value<int> clubId,
+      required String paceUnit,
+      required String distanceUnit,
+      Value<int?> paceFromS,
+      Value<int?> paceToS,
+      Value<DateTime?> updatedAt,
+    });
+typedef $$PreferencesTableUpdateCompanionBuilder =
+    PreferencesCompanion Function({
+      Value<int> clubId,
+      Value<String> paceUnit,
+      Value<String> distanceUnit,
+      Value<int?> paceFromS,
+      Value<int?> paceToS,
+      Value<DateTime?> updatedAt,
+    });
+
+class $$PreferencesTableFilterComposer
+    extends Composer<_$AppDatabase, $PreferencesTable> {
+  $$PreferencesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paceUnit => $composableBuilder(
+    column: $table.paceUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get distanceUnit => $composableBuilder(
+    column: $table.distanceUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get paceFromS => $composableBuilder(
+    column: $table.paceFromS,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get paceToS => $composableBuilder(
+    column: $table.paceToS,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PreferencesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PreferencesTable> {
+  $$PreferencesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paceUnit => $composableBuilder(
+    column: $table.paceUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get distanceUnit => $composableBuilder(
+    column: $table.distanceUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get paceFromS => $composableBuilder(
+    column: $table.paceFromS,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get paceToS => $composableBuilder(
+    column: $table.paceToS,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PreferencesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PreferencesTable> {
+  $$PreferencesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get paceUnit =>
+      $composableBuilder(column: $table.paceUnit, builder: (column) => column);
+
+  GeneratedColumn<String> get distanceUnit => $composableBuilder(
+    column: $table.distanceUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get paceFromS =>
+      $composableBuilder(column: $table.paceFromS, builder: (column) => column);
+
+  GeneratedColumn<int> get paceToS =>
+      $composableBuilder(column: $table.paceToS, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$PreferencesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PreferencesTable,
+          RunPreferences,
+          $$PreferencesTableFilterComposer,
+          $$PreferencesTableOrderingComposer,
+          $$PreferencesTableAnnotationComposer,
+          $$PreferencesTableCreateCompanionBuilder,
+          $$PreferencesTableUpdateCompanionBuilder,
+          (
+            RunPreferences,
+            BaseReferences<_$AppDatabase, $PreferencesTable, RunPreferences>,
+          ),
+          RunPreferences,
+          PrefetchHooks Function()
+        > {
+  $$PreferencesTableTableManager(_$AppDatabase db, $PreferencesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PreferencesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PreferencesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PreferencesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> clubId = const Value.absent(),
+                Value<String> paceUnit = const Value.absent(),
+                Value<String> distanceUnit = const Value.absent(),
+                Value<int?> paceFromS = const Value.absent(),
+                Value<int?> paceToS = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+              }) => PreferencesCompanion(
+                clubId: clubId,
+                paceUnit: paceUnit,
+                distanceUnit: distanceUnit,
+                paceFromS: paceFromS,
+                paceToS: paceToS,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> clubId = const Value.absent(),
+                required String paceUnit,
+                required String distanceUnit,
+                Value<int?> paceFromS = const Value.absent(),
+                Value<int?> paceToS = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+              }) => PreferencesCompanion.insert(
+                clubId: clubId,
+                paceUnit: paceUnit,
+                distanceUnit: distanceUnit,
+                paceFromS: paceFromS,
+                paceToS: paceToS,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PreferencesTable, RunPreferences>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $PreferencesTable,
+                    RunPreferences
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PreferencesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PreferencesTable,
+      RunPreferences,
+      $$PreferencesTableFilterComposer,
+      $$PreferencesTableOrderingComposer,
+      $$PreferencesTableAnnotationComposer,
+      $$PreferencesTableCreateCompanionBuilder,
+      $$PreferencesTableUpdateCompanionBuilder,
+      (
+        RunPreferences,
+        BaseReferences<_$AppDatabase, $PreferencesTable, RunPreferences>,
+      ),
+      RunPreferences,
+      PrefetchHooks Function()
+    >;
+
+class $AppDatabaseManager {
+  final _$AppDatabase _db;
+  $AppDatabaseManager(this._db);
+  $$MembershipsTableTableManager get memberships =>
+      $$MembershipsTableTableManager(_db, _db.memberships);
+  $$ProfilesTableTableManager get profiles =>
+      $$ProfilesTableTableManager(_db, _db.profiles);
+  $$PostsTableTableManager get posts =>
+      $$PostsTableTableManager(_db, _db.posts);
+  $$InboxItemsTableTableManager get inboxItems =>
+      $$InboxItemsTableTableManager(_db, _db.inboxItems);
+  $$SyncCursorsTableTableManager get syncCursors =>
+      $$SyncCursorsTableTableManager(_db, _db.syncCursors);
+  $$VenuesTableTableManager get venues =>
+      $$VenuesTableTableManager(_db, _db.venues);
+  $$SessionSeriesTableTableManager get sessionSeries =>
+      $$SessionSeriesTableTableManager(_db, _db.sessionSeries);
+  $$SessionsTableTableManager get sessions =>
+      $$SessionsTableTableManager(_db, _db.sessions);
+  $$SessionPlansTableTableManager get sessionPlans =>
+      $$SessionPlansTableTableManager(_db, _db.sessionPlans);
+  $$MyAttendanceTableTableManager get myAttendance =>
+      $$MyAttendanceTableTableManager(_db, _db.myAttendance);
+  $$PreferencesTableTableManager get preferences =>
+      $$PreferencesTableTableManager(_db, _db.preferences);
+}
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// The database for the active account. Watching [activeSubProvider] means switching
+/// account disposes (closes) this database and opens the other account's file, and
+/// every provider that watches this one rebuilds, so users' data never mix.
+///
+/// Only read this while signed in; the router guarantees that for app screens.
+
+@ProviderFor(appDatabase)
+final appDatabaseProvider = AppDatabaseProvider._();
+
+/// The database for the active account. Watching [activeSubProvider] means switching
+/// account disposes (closes) this database and opens the other account's file, and
+/// every provider that watches this one rebuilds, so users' data never mix.
+///
+/// Only read this while signed in; the router guarantees that for app screens.
+
+final class AppDatabaseProvider
+    extends $FunctionalProvider<AppDatabase, AppDatabase, AppDatabase>
+    with $Provider<AppDatabase> {
+  /// The database for the active account. Watching [activeSubProvider] means switching
+  /// account disposes (closes) this database and opens the other account's file, and
+  /// every provider that watches this one rebuilds, so users' data never mix.
+  ///
+  /// Only read this while signed in; the router guarantees that for app screens.
+  AppDatabaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'appDatabaseProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$appDatabaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<AppDatabase> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AppDatabase create(Ref ref) {
+    return appDatabase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AppDatabase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AppDatabase>(value),
+    );
+  }
+}
+
+String _$appDatabaseHash() => r'c53f99994ee018e22e8a8b76414168e87ed384fb';
