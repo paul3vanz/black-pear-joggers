@@ -11,6 +11,7 @@ import '../groups/data/attendance_repository.dart';
 import '../inbox/data/inbox_repository.dart';
 import '../inbox/ui/inbox_providers.dart';
 import '../membership/ui/membership_providers.dart';
+import '../members/data/member_profile_repository.dart';
 import '../messages/data/messages_repository.dart';
 
 /// Bottom navigation around the four tabs (Runs, Updates, Inbox, Profile). It's only
@@ -34,6 +35,7 @@ class _AppShellState extends ConsumerState<AppShell>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       unawaited(_refreshInbox());
+      unawaited(_refreshMemberCards());
       unawaited(
         ref.read(pushServiceProvider).requestPermissionWithExplainer(context),
       );
@@ -49,7 +51,10 @@ class _AppShellState extends ConsumerState<AppShell>
   /// Back in the foreground: re-send any run responses that couldn't be sent.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) unawaited(_retryPending());
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_retryPending());
+      unawaited(_refreshMemberCards());
+    }
   }
 
   /// Re-sends unsent run responses and chat messages, and refreshes the chat
@@ -83,10 +88,29 @@ class _AppShellState extends ConsumerState<AppShell>
     }
   }
 
+  /// Keeps member photos and names (D61) fresh: at start, on resume and after
+  /// an account switch. Failures other than an expired session are ignored (the
+  /// cached cards keep working offline).
+  Future<void> _refreshMemberCards() async {
+    final clubId = ref.read(activeClubIdProvider);
+    final sub = ref.read(activeSubProvider);
+    final repo = ref.read(memberProfileRepositoryProvider);
+    final handleExpiry = ref.read(sessionExpiryHandlerProvider);
+    try {
+      await repo.refreshCardsQuietly(clubId);
+    } on Object catch (e) {
+      if (sub != null) await handleExpiry(sub, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Refresh again whenever the account changes (the repository rebuilds).
     ref.listen(inboxRepositoryProvider, (_, _) => unawaited(_refreshInbox()));
+    ref.listen(
+      memberProfileRepositoryProvider,
+      (_, _) => unawaited(_refreshMemberCards()),
+    );
     final clubId = ref.watch(activeClubIdProvider);
     final unread = ref.watch(unreadCountProvider(clubId)).value ?? 0;
     return Scaffold(

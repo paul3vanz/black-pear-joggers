@@ -1,6 +1,7 @@
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/features/groups/ui/members_roles_screen.dart';
 import 'package:bpj/features/groups/ui/roles_sheet.dart';
+import 'package:bpj/features/members/ui/member_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -71,6 +72,19 @@ void main() {
       'q': '',
       'limit': 50,
     });
+    await unmount(tester);
+  });
+
+  testWidgets('member rows and the roles sheet show avatars', (tester) async {
+    await pump(tester);
+    // Initials: no card photos in this test (D65).
+    expect(find.text('SL'), findsOneWidget);
+    expect(find.text('PL'), findsOneWidget);
+    expect(find.byType(MemberAvatar), findsNWidgets(2));
+    await openSam(tester);
+    // The sheet header repeats Sam's avatar at a larger size.
+    expect(find.byType(MemberAvatar), findsNWidgets(3));
+    expect(find.text('SL'), findsNWidgets(2));
     await unmount(tester);
   });
 

@@ -120,11 +120,11 @@ void main() {
     expect(find.text('Jog and walk'), findsOneWidget);
     // The generic kind name is no longer a heading of its own.
     expect(find.text('Pace group'), findsNothing);
-    expect(find.text('Led by Jo Bloggs'), findsOneWidget);
-    expect(
-      find.text('Led by Sam Lapsed, Pat Back (backmarker)'),
-      findsOneWidget,
-    );
+    expect(find.text('Led by'), findsNWidgets(2));
+    expect(find.text('Jo Bloggs'), findsOneWidget);
+    expect(find.text('Sam Lapsed'), findsOneWidget);
+    expect(find.text('Pat Back'), findsOneWidget);
+    expect(find.text('(backmarker)'), findsOneWidget);
     expect(find.text('5 going, 1 maybe'), findsOneWidget);
     expect(find.text('Needs a leader'), findsOneWidget);
     expect(find.text('No leader yet'), findsOneWidget);

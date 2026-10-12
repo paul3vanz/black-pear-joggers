@@ -11,6 +11,8 @@ import '../features/inbox/ui/inbox_screen.dart';
 import '../features/membership/ui/link_screen.dart';
 import '../features/membership/ui/membership_providers.dart';
 import '../features/membership/ui/unavailable_screen.dart';
+import '../features/members/ui/member_profile_screen.dart';
+import '../features/members/ui/my_profile_card_screen.dart';
 import '../features/messages/ui/chat_screen.dart';
 import '../features/profile/ui/profile_screen.dart';
 import '../features/runs/ui/runs_screen.dart';
@@ -223,6 +225,11 @@ GoRouter router(Ref ref) {
                 builder: (_, _) => const ProfileScreen(),
                 routes: [
                   GoRoute(
+                    path: 'card',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (_, _) => const MyProfileCardScreen(),
+                  ),
+                  GoRoute(
                     path: 'notifications',
                     parentNavigatorKey: rootNavigatorKey,
                     builder: (_, _) => const NotificationSettingsScreen(),
@@ -237,6 +244,13 @@ GoRouter router(Ref ref) {
             ],
           ),
         ],
+      ),
+      // A member's profile, pushed above whatever screen opened it (D62).
+      GoRoute(
+        path: '/members/:memberId',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (_, state) =>
+            MemberProfileScreen(memberId: state.pathParameters['memberId']!),
       ),
       GoRoute(path: '/link', builder: (_, _) => const LinkScreen()),
       GoRoute(path: '/sign-in', builder: (_, _) => const SignInScreen()),

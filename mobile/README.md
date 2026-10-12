@@ -180,3 +180,33 @@ For pushes you also need Firebase configured (see Push notifications above).
    database, or cancel the run as committee.
 10. **Leave the group:** B taps **Leave group** (or "Not coming") then opens the chat from the Inbox list: it shows
     "You're no longer in this group" and goes back.
+
+## Phase 6.5 testing guide (profile cards: photo, bio, goals)
+
+Needs the Phase 6.5 API (`api/database/manual/2026_10_member_profiles.sql` applied) and two accounts that are both
+linked to a club member: **A** and **B** (two devices/emulators, or one device with the account switcher). Use a real
+phone for the camera. One account should be **committee** (call it **C**; it can be A).
+
+1. **Open the editor (A):** Profile tab → **My profile card** (the row shows "Add a photo and a few words about you"
+   until something is saved).
+2. **Photo from the gallery:** **Choose photo** → pick a landscape and a portrait picture in turn. A round preview
+   appears (centre-cropped square, upright even for phone photos taken sideways) → **Use photo**. The row's thumbnail
+   changes. Pick something tiny (under 64 px) or a non-image file: a message explains and nothing is uploaded.
+3. **Photo from the camera:** **Take photo**, accept the permission prompt, take a sideways shot: it comes out upright.
+   Deny the permission once and check the message that points to Settings.
+4. **Bio and goals:** type a bio (counter stops at 300) and goals (stops at 1000). **Save** is disabled until you
+   change something. Save, then leave and reopen: the text is still there.
+5. **Sharing (two accounts):** on B open A's profile by tapping A's name or thumbnail where it appears (a group's
+   "Led by", the run page coordinator, a leader's "Who's in this group" list, a chat message author, an update author) or
+   by **See how others see me** on A's own screen. Back returns to where you were. B sees A's photo and bio but **not**
+   the goals. On A tick **Share my goals with other members** → Save; B pulls to refresh the page and now sees a
+   **Goals** section. Untick and save: it disappears again.
+6. **How others see me:** on A tap **See how others see me**: the page shows "This is how you appear to other members"
+   and **Edit my profile card**. Back returns to the editor.
+7. **Remove the photo:** **Remove photo** on A; thumbnail goes back to initials.
+8. **Offline:** airplane mode on A, open **My profile card**: the saved card shows with an offline banner; **Save**
+   says you need a connection and keeps your text. Open B's profile page offline: the last copy shows with a banner.
+9. **Committee clear (C):** on A's profile page choose ⋮ → **Remove photo and bio** → **Remove**. A's photo, bio and
+   goals are gone for everyone; A can add new ones. Plain members have no ⋮ menu, and nobody has it on their own page.
+10. **Not available:** make a member inactive (or use a random id in a deep link): the page says "This member isn't
+    available".

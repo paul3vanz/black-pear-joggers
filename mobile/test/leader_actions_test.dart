@@ -84,10 +84,7 @@ void main() {
       expect(sent(adapter, 'POST', _leaders).single.data, {
         'role': 'co_leader',
       });
-      expect(
-        find.text('Led by Jo Bloggs, Jo Bloggs (co-leader)'),
-        findsOneWidget,
-      );
+      expect(find.text('Jo Bloggs'), findsNWidgets(2));
       expect(find.text('Step down'), findsOneWidget);
       expect(find.text("I'll lead this group too"), findsNothing);
       expect(find.text("You're leading this group"), findsWidgets);
@@ -157,7 +154,8 @@ void main() {
           ),
         },
       );
-      expect(find.text('Led by Jo Bloggs (co-leader)'), findsOneWidget);
+      expect(find.text('Jo Bloggs'), findsOneWidget);
+      expect(find.text('(co-leader)'), findsOneWidget);
 
       await tester.tap(find.text('Step down'));
       await tester.pumpAndSettle();

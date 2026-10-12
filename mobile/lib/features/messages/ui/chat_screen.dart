@@ -453,6 +453,7 @@ class _MessageList extends StatelessWidget {
         MessageItem(:final message) => MessageBubble(
           message: message,
           isMine: isMine(message),
+          showAvatar: !isMine(message) && endsAuthorRun(items, i),
           onTap: message.isFailed ? () => onFailedTap(message) : null,
           onLongPress: message.isFailed
               ? () => onFailedTap(message)

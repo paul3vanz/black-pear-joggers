@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/db/app_database.dart';
+import '../../members/ui/member_avatar.dart';
 import '../../runs/data/runs_repository.dart';
 import '../data/message_dtos.dart';
 
@@ -50,6 +51,20 @@ List<ChatItem> chatItems(List<GroupMessage> messages, DateTime now) {
   return items.reversed.toList();
 }
 
+/// Whether the message at [i] of [items] (newest first) ends a run by its
+/// author, i.e. the next newer row is not another message from the same
+/// member (a day heading also ends a run). Only the last bubble of a run shows
+/// the avatar (D70).
+bool endsAuthorRun(List<ChatItem> items, int i) {
+  final item = items[i];
+  if (item is! MessageItem) return false;
+  if (i == 0) return true;
+  final newer = items[i - 1];
+  return newer is! MessageItem ||
+      item.message.memberId.isEmpty ||
+      newer.message.memberId != item.message.memberId;
+}
+
 /// Badge text for an author's role in the thread; null for a plain member.
 String? roleBadge(String role) => switch (role) {
   'leader' => 'Leader',
@@ -80,20 +95,32 @@ class DayHeading extends StatelessWidget {
   }
 }
 
+const _avatarSize = 28.0;
+
+/// Width reserved left of another member's bubble: avatar plus a gap.
+const _avatarSlot = _avatarSize + 6;
+
 /// A chat bubble. Own messages sit on the right; others show the author's
-/// name and role badge. A tombstone reads "Message deleted"; an unsent one says
-/// "Sending..." and a refused one says to tap for Retry / Delete.
+/// tappable name, role badge and (last of a run) avatar. A tombstone reads
+/// "Message deleted"; an unsent one says "Sending..." and a refused one says to
+/// tap for Retry / Delete.
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
     super.key,
     required this.message,
     required this.isMine,
+    this.showAvatar = false,
     this.onTap,
     this.onLongPress,
   });
 
   final GroupMessage message;
   final bool isMine;
+
+  /// Show the author's avatar beside this bubble (others' messages only). The
+  /// list shows it on the LAST bubble of a run by the same author and leaves
+  /// an empty gap of the same width on the earlier ones so the bubbles line up.
+  final bool showAvatar;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
@@ -119,67 +146,92 @@ class MessageBubble extends StatelessWidget {
         : m.isPending
         ? 'Sending...'
         : DateFormat('HH:mm').format(m.createdAt);
-    return Align(
-      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.sizeOf(context).width * 0.78,
-        ),
-        child: Card(
-          key: ValueKey('message-${m.id}'),
-          margin: const EdgeInsets.symmetric(vertical: 2),
-          color: background,
-          elevation: 0,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            onLongPress: onLongPress,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (!isMine)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 2),
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 6,
-                        children: [
-                          Text(
-                            m.authorName,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: scheme.primary,
-                            ),
+    final bubble = ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.sizeOf(context).width * 0.78,
+      ),
+      child: Card(
+        key: ValueKey('message-${m.id}'),
+        margin: const EdgeInsets.symmetric(vertical: 2),
+        color: background,
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!isMine)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 6,
+                      children: [
+                        MemberNameLink(
+                          memberId: m.memberId,
+                          name: m.authorName,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: scheme.primary,
                           ),
-                          if (badge != null) _RoleBadge(badge),
-                        ],
-                      ),
-                    ),
-                  Text(
-                    deleted ? 'Message deleted' : m.body,
-                    style: TextStyle(
-                      color: foreground,
-                      fontStyle: deleted ? FontStyle.italic : null,
+                        ),
+                        if (badge != null) _RoleBadge(badge),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    status,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: m.isFailed
-                          ? scheme.error
-                          : foreground.withValues(alpha: 0.7),
-                      fontWeight: m.isFailed ? FontWeight.w700 : null,
-                    ),
+                Text(
+                  deleted ? 'Message deleted' : m.body,
+                  style: TextStyle(
+                    color: foreground,
+                    fontStyle: deleted ? FontStyle.italic : null,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  status,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: m.isFailed
+                        ? scheme.error
+                        : foreground.withValues(alpha: 0.7),
+                    fontWeight: m.isFailed ? FontWeight.w700 : null,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
+    );
+    if (isMine) return Align(alignment: Alignment.centerRight, child: bubble);
+    // Others: an avatar slot (filled on the last bubble of a run, empty on the
+    // rest so bubbles line up) then the bubble, like WhatsApp or Messenger.
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          SizedBox(
+            width: _avatarSlot,
+            child: showAvatar
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 2, right: 6),
+                    child: MemberAvatar(
+                      key: ValueKey('message-avatar-${m.id}'),
+                      memberId: m.memberId,
+                      name: m.authorName,
+                      size: _avatarSize,
+                    ),
+                  )
+                : null,
+          ),
+          Flexible(child: bubble),
+        ],
       ),
     );
   }

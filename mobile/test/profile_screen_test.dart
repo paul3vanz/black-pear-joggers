@@ -4,6 +4,7 @@ import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/units/dist_unit.dart';
 import 'package:bpj/core/util/open_link.dart';
 import 'package:bpj/features/groups/data/run_preferences_repository.dart';
+import 'package:bpj/features/members/data/member_profile_repository.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
 import 'package:bpj/features/profile/data/profile_repository.dart';
@@ -61,6 +62,9 @@ void main() {
           membershipRepositoryProvider.overrideWithValue(
             MembershipRepository(db, dio),
           ),
+          memberProfileRepositoryProvider.overrideWithValue(
+            MemberProfileRepository(db, dio),
+          ),
           profileRepositoryProvider.overrideWithValue(
             ProfileRepository(db, dio),
           ),
@@ -104,6 +108,16 @@ void main() {
     expect(find.text('Power of 10'), findsNothing);
     expect(find.text('Signed in as jo@example.com'), findsOneWidget);
     expect(find.textContaining('Offline'), findsNothing);
+    await unmount(tester);
+  });
+
+  testWidgets('has a My profile card row that prompts for a photo and bio', (
+    tester,
+  ) async {
+    await pumpProfile(tester, online: true);
+
+    expect(find.text('My profile card'), findsOneWidget);
+    expect(find.text('Add a photo and a few words about you'), findsOneWidget);
     await unmount(tester);
   });
 

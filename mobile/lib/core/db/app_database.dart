@@ -30,6 +30,8 @@ part 'app_database.g.dart';
     Preferences,
     GroupMessages,
     ThreadStates,
+    MemberCards,
+    MemberProfiles,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -40,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
     : super(driftDatabase(name: databaseNameFor(sub)));
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -85,6 +87,12 @@ class AppDatabase extends _$AppDatabase {
         await m.alterTable(
           TableMigration(sessions, newColumns: [sessions.imageUrl]),
         );
+      }
+      // v7 (Phase 6.5): member photo/bio cards. New tables only, existing rows
+      // are untouched.
+      if (from < 7) {
+        await m.createTable(memberCards);
+        await m.createTable(memberProfiles);
       }
     },
   );

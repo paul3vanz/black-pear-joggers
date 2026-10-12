@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/util/open_link.dart';
 import '../../../core/util/relative_time.dart';
+import '../../members/ui/member_avatar.dart';
 import 'updates_providers.dart';
 
 /// `/updates/:id`: one post, with its Markdown body rendered. Links open in the
@@ -70,14 +71,31 @@ class PostDetailScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  [
-                    if (post.authorName.isNotEmpty) post.authorName,
-                    relativeTime(post.publishedAt),
-                  ].join(' · '),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                // Author avatar + tappable name (D69) then the time; the list
+                // card keeps plain text because the whole card is a tap target.
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 6,
+                  children: [
+                    if (post.authorName.isNotEmpty)
+                      MemberLink(
+                        memberId: post.authorMemberId.isEmpty
+                            ? null
+                            : post.authorMemberId,
+                        name: post.authorName,
+                        avatarSize: 24,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    Text(
+                      '${post.authorName.isNotEmpty ? '· ' : ''}'
+                      '${relativeTime(post.publishedAt)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 MarkdownBody(

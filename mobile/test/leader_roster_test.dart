@@ -126,7 +126,8 @@ void main() {
       tester,
     ) async {
       await pumpRoster(tester);
-      expect(inCard('b', find.text('Led by Sam Lead')), findsOneWidget);
+      expect(inCard('b', find.text('Sam Lead')), findsOneWidget);
+      expect(inCard('b', find.text('Led by')), findsOneWidget);
       expect(inCard('b', find.text('Needs a leader')), findsOneWidget);
       expect(inCard('b', find.text('9:00/mi')), findsOneWidget);
       expect(inCard('b', find.text('Offer to lead')), findsOneWidget);

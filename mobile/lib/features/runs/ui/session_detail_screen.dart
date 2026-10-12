@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/config/club_config.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/util/open_link.dart';
+import '../../members/ui/member_avatar.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../data/session_changes.dart';
 import '../../groups/ui/groups_providers.dart';
@@ -141,7 +142,22 @@ class _Body extends ConsumerWidget {
           if (session.coordinatorName != null)
             _InfoRow(
               icon: Icons.person_outline,
-              text: 'Coordinator: ${session.coordinatorName}',
+              content: Align(
+                alignment: Alignment.centerLeft,
+                // "Coordinator:" label, then the coordinator's avatar + name.
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  children: [
+                    Text('Coordinator:', style: theme.textTheme.bodyLarge),
+                    MemberLink(
+                      memberId: session.coordinatorMemberId,
+                      name: session.coordinatorName!,
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                  ],
+                ),
+              ),
             ),
           GroupsSection(session: session),
           WhosComingSection(session: session),
@@ -189,10 +205,18 @@ class _Body extends ConsumerWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.icon, required this.text, this.detail});
+  const _InfoRow({
+    required this.icon,
+    this.text = '',
+    this.detail,
+    this.content,
+  });
 
   final IconData icon;
   final String text;
+
+  /// Replaces [text] (e.g. a tappable member name).
+  final Widget? content;
 
   /// Smaller, muted second line (e.g. a venue address).
   final String? detail;
@@ -211,7 +235,7 @@ class _InfoRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(text, style: theme.textTheme.bodyLarge),
+                content ?? Text(text, style: theme.textTheme.bodyLarge),
                 if (detail != null)
                   Text(
                     detail!,

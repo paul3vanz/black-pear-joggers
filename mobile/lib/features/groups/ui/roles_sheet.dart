@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../members/ui/member_avatar.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../../runs/ui/session_actions.dart';
@@ -114,7 +115,22 @@ class _RolesSheetState extends ConsumerState<RolesSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(widget.member.displayName, style: theme.textTheme.titleLarge),
+            Row(
+              children: [
+                MemberAvatar(
+                  memberId: widget.member.memberId,
+                  name: widget.member.displayName,
+                  size: 36,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    widget.member.displayName,
+                    style: theme.textTheme.titleLarge,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,

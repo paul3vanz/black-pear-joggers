@@ -8548,6 +8548,742 @@ class ThreadStatesCompanion extends UpdateCompanion<ThreadState> {
   }
 }
 
+class $MemberCardsTable extends MemberCards
+    with TableInfo<$MemberCardsTable, MemberCard> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MemberCardsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _displayNameMeta = const VerificationMeta(
+    'displayName',
+  );
+  @override
+  late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
+    'display_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rolesCsvMeta = const VerificationMeta(
+    'rolesCsv',
+  );
+  @override
+  late final GeneratedColumn<String> rolesCsv = GeneratedColumn<String>(
+    'roles_csv',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _hasBioMeta = const VerificationMeta('hasBio');
+  @override
+  late final GeneratedColumn<bool> hasBio = GeneratedColumn<bool>(
+    'has_bio',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_bio" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    memberId,
+    clubId,
+    displayName,
+    photoPath,
+    rolesCsv,
+    hasBio,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'member_cards';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MemberCard> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('display_name')) {
+      context.handle(
+        _displayNameMeta,
+        displayName.isAcceptableOrUnknown(
+          data['display_name']!,
+          _displayNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_displayNameMeta);
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
+    if (data.containsKey('roles_csv')) {
+      context.handle(
+        _rolesCsvMeta,
+        rolesCsv.isAcceptableOrUnknown(data['roles_csv']!, _rolesCsvMeta),
+      );
+    }
+    if (data.containsKey('has_bio')) {
+      context.handle(
+        _hasBioMeta,
+        hasBio.isAcceptableOrUnknown(data['has_bio']!, _hasBioMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {memberId};
+  @override
+  MemberCard map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MemberCard(
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      displayName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}display_name'],
+      )!,
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      ),
+      rolesCsv: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}roles_csv'],
+      )!,
+      hasBio: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_bio'],
+      )!,
+    );
+  }
+
+  @override
+  $MemberCardsTable createAlias(String alias) {
+    return $MemberCardsTable(attachedDatabase, alias);
+  }
+}
+
+class MemberCard extends DataClass implements Insertable<MemberCard> {
+  final String memberId;
+  final int clubId;
+
+  /// First name + surname initial (`Sam B.`).
+  final String displayName;
+
+  /// Relative signed link (`/app/clubs/1/members/<id>/photo?v=…&sig=…`) or null.
+  final String? photoPath;
+
+  /// Comma-separated subset of `leader,committee,admin` (empty for none).
+  final String rolesCsv;
+  final bool hasBio;
+  const MemberCard({
+    required this.memberId,
+    required this.clubId,
+    required this.displayName,
+    this.photoPath,
+    required this.rolesCsv,
+    required this.hasBio,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['member_id'] = Variable<String>(memberId);
+    map['club_id'] = Variable<int>(clubId);
+    map['display_name'] = Variable<String>(displayName);
+    if (!nullToAbsent || photoPath != null) {
+      map['photo_path'] = Variable<String>(photoPath);
+    }
+    map['roles_csv'] = Variable<String>(rolesCsv);
+    map['has_bio'] = Variable<bool>(hasBio);
+    return map;
+  }
+
+  MemberCardsCompanion toCompanion(bool nullToAbsent) {
+    return MemberCardsCompanion(
+      memberId: Value(memberId),
+      clubId: Value(clubId),
+      displayName: Value(displayName),
+      photoPath: photoPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photoPath),
+      rolesCsv: Value(rolesCsv),
+      hasBio: Value(hasBio),
+    );
+  }
+
+  factory MemberCard.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MemberCard(
+      memberId: serializer.fromJson<String>(json['memberId']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      displayName: serializer.fromJson<String>(json['displayName']),
+      photoPath: serializer.fromJson<String?>(json['photoPath']),
+      rolesCsv: serializer.fromJson<String>(json['rolesCsv']),
+      hasBio: serializer.fromJson<bool>(json['hasBio']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'memberId': serializer.toJson<String>(memberId),
+      'clubId': serializer.toJson<int>(clubId),
+      'displayName': serializer.toJson<String>(displayName),
+      'photoPath': serializer.toJson<String?>(photoPath),
+      'rolesCsv': serializer.toJson<String>(rolesCsv),
+      'hasBio': serializer.toJson<bool>(hasBio),
+    };
+  }
+
+  MemberCard copyWith({
+    String? memberId,
+    int? clubId,
+    String? displayName,
+    Value<String?> photoPath = const Value.absent(),
+    String? rolesCsv,
+    bool? hasBio,
+  }) => MemberCard(
+    memberId: memberId ?? this.memberId,
+    clubId: clubId ?? this.clubId,
+    displayName: displayName ?? this.displayName,
+    photoPath: photoPath.present ? photoPath.value : this.photoPath,
+    rolesCsv: rolesCsv ?? this.rolesCsv,
+    hasBio: hasBio ?? this.hasBio,
+  );
+  MemberCard copyWithCompanion(MemberCardsCompanion data) {
+    return MemberCard(
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      displayName: data.displayName.present
+          ? data.displayName.value
+          : this.displayName,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      rolesCsv: data.rolesCsv.present ? data.rolesCsv.value : this.rolesCsv,
+      hasBio: data.hasBio.present ? data.hasBio.value : this.hasBio,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemberCard(')
+          ..write('memberId: $memberId, ')
+          ..write('clubId: $clubId, ')
+          ..write('displayName: $displayName, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('rolesCsv: $rolesCsv, ')
+          ..write('hasBio: $hasBio')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(memberId, clubId, displayName, photoPath, rolesCsv, hasBio);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MemberCard &&
+          other.memberId == this.memberId &&
+          other.clubId == this.clubId &&
+          other.displayName == this.displayName &&
+          other.photoPath == this.photoPath &&
+          other.rolesCsv == this.rolesCsv &&
+          other.hasBio == this.hasBio);
+}
+
+class MemberCardsCompanion extends UpdateCompanion<MemberCard> {
+  final Value<String> memberId;
+  final Value<int> clubId;
+  final Value<String> displayName;
+  final Value<String?> photoPath;
+  final Value<String> rolesCsv;
+  final Value<bool> hasBio;
+  final Value<int> rowid;
+  const MemberCardsCompanion({
+    this.memberId = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.displayName = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.rolesCsv = const Value.absent(),
+    this.hasBio = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MemberCardsCompanion.insert({
+    required String memberId,
+    required int clubId,
+    required String displayName,
+    this.photoPath = const Value.absent(),
+    this.rolesCsv = const Value.absent(),
+    this.hasBio = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : memberId = Value(memberId),
+       clubId = Value(clubId),
+       displayName = Value(displayName);
+  static Insertable<MemberCard> custom({
+    Expression<String>? memberId,
+    Expression<int>? clubId,
+    Expression<String>? displayName,
+    Expression<String>? photoPath,
+    Expression<String>? rolesCsv,
+    Expression<bool>? hasBio,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (memberId != null) 'member_id': memberId,
+      if (clubId != null) 'club_id': clubId,
+      if (displayName != null) 'display_name': displayName,
+      if (photoPath != null) 'photo_path': photoPath,
+      if (rolesCsv != null) 'roles_csv': rolesCsv,
+      if (hasBio != null) 'has_bio': hasBio,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MemberCardsCompanion copyWith({
+    Value<String>? memberId,
+    Value<int>? clubId,
+    Value<String>? displayName,
+    Value<String?>? photoPath,
+    Value<String>? rolesCsv,
+    Value<bool>? hasBio,
+    Value<int>? rowid,
+  }) {
+    return MemberCardsCompanion(
+      memberId: memberId ?? this.memberId,
+      clubId: clubId ?? this.clubId,
+      displayName: displayName ?? this.displayName,
+      photoPath: photoPath ?? this.photoPath,
+      rolesCsv: rolesCsv ?? this.rolesCsv,
+      hasBio: hasBio ?? this.hasBio,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (displayName.present) {
+      map['display_name'] = Variable<String>(displayName.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    if (rolesCsv.present) {
+      map['roles_csv'] = Variable<String>(rolesCsv.value);
+    }
+    if (hasBio.present) {
+      map['has_bio'] = Variable<bool>(hasBio.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemberCardsCompanion(')
+          ..write('memberId: $memberId, ')
+          ..write('clubId: $clubId, ')
+          ..write('displayName: $displayName, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('rolesCsv: $rolesCsv, ')
+          ..write('hasBio: $hasBio, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MemberProfilesTable extends MemberProfiles
+    with TableInfo<$MemberProfilesTable, MemberProfileRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MemberProfilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _jsonMeta = const VerificationMeta('json');
+  @override
+  late final GeneratedColumn<String> json = GeneratedColumn<String>(
+    'json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fetchedAt = GeneratedColumn<DateTime>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [memberId, clubId, json, fetchedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'member_profiles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MemberProfileRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('json')) {
+      context.handle(
+        _jsonMeta,
+        json.isAcceptableOrUnknown(data['json']!, _jsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jsonMeta);
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {memberId, clubId};
+  @override
+  MemberProfileRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MemberProfileRow(
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      json: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}json'],
+      )!,
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $MemberProfilesTable createAlias(String alias) {
+    return $MemberProfilesTable(attachedDatabase, alias);
+  }
+}
+
+class MemberProfileRow extends DataClass
+    implements Insertable<MemberProfileRow> {
+  final String memberId;
+  final int clubId;
+
+  /// The response body, as sent.
+  final String json;
+  final DateTime fetchedAt;
+  const MemberProfileRow({
+    required this.memberId,
+    required this.clubId,
+    required this.json,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['member_id'] = Variable<String>(memberId);
+    map['club_id'] = Variable<int>(clubId);
+    map['json'] = Variable<String>(json);
+    map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    return map;
+  }
+
+  MemberProfilesCompanion toCompanion(bool nullToAbsent) {
+    return MemberProfilesCompanion(
+      memberId: Value(memberId),
+      clubId: Value(clubId),
+      json: Value(json),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory MemberProfileRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MemberProfileRow(
+      memberId: serializer.fromJson<String>(json['memberId']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      json: serializer.fromJson<String>(json['json']),
+      fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'memberId': serializer.toJson<String>(memberId),
+      'clubId': serializer.toJson<int>(clubId),
+      'json': serializer.toJson<String>(json),
+      'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+    };
+  }
+
+  MemberProfileRow copyWith({
+    String? memberId,
+    int? clubId,
+    String? json,
+    DateTime? fetchedAt,
+  }) => MemberProfileRow(
+    memberId: memberId ?? this.memberId,
+    clubId: clubId ?? this.clubId,
+    json: json ?? this.json,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  MemberProfileRow copyWithCompanion(MemberProfilesCompanion data) {
+    return MemberProfileRow(
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      json: data.json.present ? data.json.value : this.json,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemberProfileRow(')
+          ..write('memberId: $memberId, ')
+          ..write('clubId: $clubId, ')
+          ..write('json: $json, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(memberId, clubId, json, fetchedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MemberProfileRow &&
+          other.memberId == this.memberId &&
+          other.clubId == this.clubId &&
+          other.json == this.json &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class MemberProfilesCompanion extends UpdateCompanion<MemberProfileRow> {
+  final Value<String> memberId;
+  final Value<int> clubId;
+  final Value<String> json;
+  final Value<DateTime> fetchedAt;
+  final Value<int> rowid;
+  const MemberProfilesCompanion({
+    this.memberId = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.json = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MemberProfilesCompanion.insert({
+    required String memberId,
+    required int clubId,
+    required String json,
+    required DateTime fetchedAt,
+    this.rowid = const Value.absent(),
+  }) : memberId = Value(memberId),
+       clubId = Value(clubId),
+       json = Value(json),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<MemberProfileRow> custom({
+    Expression<String>? memberId,
+    Expression<int>? clubId,
+    Expression<String>? json,
+    Expression<DateTime>? fetchedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (memberId != null) 'member_id': memberId,
+      if (clubId != null) 'club_id': clubId,
+      if (json != null) 'json': json,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MemberProfilesCompanion copyWith({
+    Value<String>? memberId,
+    Value<int>? clubId,
+    Value<String>? json,
+    Value<DateTime>? fetchedAt,
+    Value<int>? rowid,
+  }) {
+    return MemberProfilesCompanion(
+      memberId: memberId ?? this.memberId,
+      clubId: clubId ?? this.clubId,
+      json: json ?? this.json,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (json.present) {
+      map['json'] = Variable<String>(json.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemberProfilesCompanion(')
+          ..write('memberId: $memberId, ')
+          ..write('clubId: $clubId, ')
+          ..write('json: $json, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -8564,6 +9300,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PreferencesTable preferences = $PreferencesTable(this);
   late final $GroupMessagesTable groupMessages = $GroupMessagesTable(this);
   late final $ThreadStatesTable threadStates = $ThreadStatesTable(this);
+  late final $MemberCardsTable memberCards = $MemberCardsTable(this);
+  late final $MemberProfilesTable memberProfiles = $MemberProfilesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8582,6 +9320,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     preferences,
     groupMessages,
     threadStates,
+    memberCards,
+    memberProfiles,
   ];
 }
 
@@ -12749,6 +13489,432 @@ typedef $$ThreadStatesTableProcessedTableManager =
       ThreadState,
       PrefetchHooks Function()
     >;
+typedef $$MemberCardsTableCreateCompanionBuilder =
+    MemberCardsCompanion Function({
+      required String memberId,
+      required int clubId,
+      required String displayName,
+      Value<String?> photoPath,
+      Value<String> rolesCsv,
+      Value<bool> hasBio,
+      Value<int> rowid,
+    });
+typedef $$MemberCardsTableUpdateCompanionBuilder =
+    MemberCardsCompanion Function({
+      Value<String> memberId,
+      Value<int> clubId,
+      Value<String> displayName,
+      Value<String?> photoPath,
+      Value<String> rolesCsv,
+      Value<bool> hasBio,
+      Value<int> rowid,
+    });
+
+class $$MemberCardsTableFilterComposer
+    extends Composer<_$AppDatabase, $MemberCardsTable> {
+  $$MemberCardsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rolesCsv => $composableBuilder(
+    column: $table.rolesCsv,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasBio => $composableBuilder(
+    column: $table.hasBio,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MemberCardsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MemberCardsTable> {
+  $$MemberCardsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rolesCsv => $composableBuilder(
+    column: $table.rolesCsv,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasBio => $composableBuilder(
+    column: $table.hasBio,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MemberCardsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MemberCardsTable> {
+  $$MemberCardsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get memberId =>
+      $composableBuilder(column: $table.memberId, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<String> get rolesCsv =>
+      $composableBuilder(column: $table.rolesCsv, builder: (column) => column);
+
+  GeneratedColumn<bool> get hasBio =>
+      $composableBuilder(column: $table.hasBio, builder: (column) => column);
+}
+
+class $$MemberCardsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MemberCardsTable,
+          MemberCard,
+          $$MemberCardsTableFilterComposer,
+          $$MemberCardsTableOrderingComposer,
+          $$MemberCardsTableAnnotationComposer,
+          $$MemberCardsTableCreateCompanionBuilder,
+          $$MemberCardsTableUpdateCompanionBuilder,
+          (
+            MemberCard,
+            BaseReferences<_$AppDatabase, $MemberCardsTable, MemberCard>,
+          ),
+          MemberCard,
+          PrefetchHooks Function()
+        > {
+  $$MemberCardsTableTableManager(_$AppDatabase db, $MemberCardsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MemberCardsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MemberCardsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MemberCardsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> memberId = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> displayName = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
+                Value<String> rolesCsv = const Value.absent(),
+                Value<bool> hasBio = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MemberCardsCompanion(
+                memberId: memberId,
+                clubId: clubId,
+                displayName: displayName,
+                photoPath: photoPath,
+                rolesCsv: rolesCsv,
+                hasBio: hasBio,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String memberId,
+                required int clubId,
+                required String displayName,
+                Value<String?> photoPath = const Value.absent(),
+                Value<String> rolesCsv = const Value.absent(),
+                Value<bool> hasBio = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MemberCardsCompanion.insert(
+                memberId: memberId,
+                clubId: clubId,
+                displayName: displayName,
+                photoPath: photoPath,
+                rolesCsv: rolesCsv,
+                hasBio: hasBio,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MemberCardsTable, MemberCard>(table),
+                  BaseReferences<_$AppDatabase, $MemberCardsTable, MemberCard>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MemberCardsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MemberCardsTable,
+      MemberCard,
+      $$MemberCardsTableFilterComposer,
+      $$MemberCardsTableOrderingComposer,
+      $$MemberCardsTableAnnotationComposer,
+      $$MemberCardsTableCreateCompanionBuilder,
+      $$MemberCardsTableUpdateCompanionBuilder,
+      (
+        MemberCard,
+        BaseReferences<_$AppDatabase, $MemberCardsTable, MemberCard>,
+      ),
+      MemberCard,
+      PrefetchHooks Function()
+    >;
+typedef $$MemberProfilesTableCreateCompanionBuilder =
+    MemberProfilesCompanion Function({
+      required String memberId,
+      required int clubId,
+      required String json,
+      required DateTime fetchedAt,
+      Value<int> rowid,
+    });
+typedef $$MemberProfilesTableUpdateCompanionBuilder =
+    MemberProfilesCompanion Function({
+      Value<String> memberId,
+      Value<int> clubId,
+      Value<String> json,
+      Value<DateTime> fetchedAt,
+      Value<int> rowid,
+    });
+
+class $$MemberProfilesTableFilterComposer
+    extends Composer<_$AppDatabase, $MemberProfilesTable> {
+  $$MemberProfilesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get json => $composableBuilder(
+    column: $table.json,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MemberProfilesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MemberProfilesTable> {
+  $$MemberProfilesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get json => $composableBuilder(
+    column: $table.json,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MemberProfilesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MemberProfilesTable> {
+  $$MemberProfilesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get memberId =>
+      $composableBuilder(column: $table.memberId, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get json =>
+      $composableBuilder(column: $table.json, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$MemberProfilesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MemberProfilesTable,
+          MemberProfileRow,
+          $$MemberProfilesTableFilterComposer,
+          $$MemberProfilesTableOrderingComposer,
+          $$MemberProfilesTableAnnotationComposer,
+          $$MemberProfilesTableCreateCompanionBuilder,
+          $$MemberProfilesTableUpdateCompanionBuilder,
+          (
+            MemberProfileRow,
+            BaseReferences<
+              _$AppDatabase,
+              $MemberProfilesTable,
+              MemberProfileRow
+            >,
+          ),
+          MemberProfileRow,
+          PrefetchHooks Function()
+        > {
+  $$MemberProfilesTableTableManager(
+    _$AppDatabase db,
+    $MemberProfilesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MemberProfilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MemberProfilesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MemberProfilesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> memberId = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> json = const Value.absent(),
+                Value<DateTime> fetchedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MemberProfilesCompanion(
+                memberId: memberId,
+                clubId: clubId,
+                json: json,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String memberId,
+                required int clubId,
+                required String json,
+                required DateTime fetchedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => MemberProfilesCompanion.insert(
+                memberId: memberId,
+                clubId: clubId,
+                json: json,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MemberProfilesTable, MemberProfileRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $MemberProfilesTable,
+                    MemberProfileRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MemberProfilesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MemberProfilesTable,
+      MemberProfileRow,
+      $$MemberProfilesTableFilterComposer,
+      $$MemberProfilesTableOrderingComposer,
+      $$MemberProfilesTableAnnotationComposer,
+      $$MemberProfilesTableCreateCompanionBuilder,
+      $$MemberProfilesTableUpdateCompanionBuilder,
+      (
+        MemberProfileRow,
+        BaseReferences<_$AppDatabase, $MemberProfilesTable, MemberProfileRow>,
+      ),
+      MemberProfileRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -12779,6 +13945,10 @@ class $AppDatabaseManager {
       $$GroupMessagesTableTableManager(_db, _db.groupMessages);
   $$ThreadStatesTableTableManager get threadStates =>
       $$ThreadStatesTableTableManager(_db, _db.threadStates);
+  $$MemberCardsTableTableManager get memberCards =>
+      $$MemberCardsTableTableManager(_db, _db.memberCards);
+  $$MemberProfilesTableTableManager get memberProfiles =>
+      $$MemberProfilesTableTableManager(_db, _db.memberProfiles);
 }
 
 // **************************************************************************

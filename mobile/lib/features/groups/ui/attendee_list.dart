@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../members/ui/member_avatar.dart';
 import '../data/plan_dtos.dart';
 import 'group_format.dart';
 import 'groups_providers.dart';
@@ -25,7 +26,15 @@ class AttendeeList extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(a.displayName, style: theme.textTheme.bodyLarge),
+                  // Align keeps the tap target to the name, not the whole row.
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: MemberLink(
+                      memberId: a.memberId.isEmpty ? null : a.memberId,
+                      name: a.displayName,
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                  ),
                 ),
                 if (a.status == 'maybe')
                   Padding(

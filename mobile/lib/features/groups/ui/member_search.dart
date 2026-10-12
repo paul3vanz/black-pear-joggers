@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/runs_providers.dart';
+import '../../members/ui/member_avatar.dart';
 import '../data/member_dtos.dart';
 import '../data/members_repository.dart';
 
@@ -125,6 +126,8 @@ class MemberSearchListState extends ConsumerState<MemberSearchList> {
       for (final m in _items)
         ListTile(
           key: ValueKey(m.memberId),
+          // Avatar only: the row's own tap action selects the member (D69).
+          leading: MemberAvatar(memberId: m.memberId, name: m.displayName),
           title: Text(m.displayName),
           subtitle: _Chips(member: m),
           onTap: () => widget.onSelect(m),

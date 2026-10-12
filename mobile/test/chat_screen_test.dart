@@ -148,6 +148,54 @@ void main() {
       expect(mine, greaterThan(theirs));
     });
 
+    chatTest('avatar only on the last bubble of a run by one author', (
+      tester,
+    ) async {
+      await pumpChat(
+        tester,
+        routes: {
+          listKey: FakeResponse(
+            200,
+            messagesBody([
+              messageJson(
+                'a1',
+                memberId: 'sam',
+                authorName: 'Sam B.',
+                createdAt: '2026-10-07T10:00:00Z',
+              ),
+              messageJson(
+                'a2',
+                memberId: 'sam',
+                authorName: 'Sam B.',
+                createdAt: '2026-10-07T10:01:00Z',
+              ),
+              messageJson(
+                'b1',
+                memberId: 'pat',
+                authorName: 'Pat C.',
+                createdAt: '2026-10-07T10:02:00Z',
+              ),
+              messageJson(
+                'me1',
+                memberId: 'me',
+                authorName: 'Jo B.',
+                createdAt: '2026-10-07T10:03:00Z',
+              ),
+            ]),
+          ),
+        },
+      );
+      Finder avatar(String id) => find.byKey(ValueKey('message-avatar-$id'));
+      expect(avatar('a1'), findsNothing);
+      expect(avatar('a2'), findsOneWidget);
+      expect(avatar('b1'), findsOneWidget);
+      expect(avatar('me1'), findsNothing); // own messages: no avatar
+      expect(find.text('SB'), findsOneWidget);
+      expect(find.text('PC'), findsOneWidget);
+      // Names stay on every bubble of someone else.
+      expect(find.text('Sam B.'), findsNWidgets(2));
+    });
+
     chatTest('shows a deleted message as a tombstone', (tester) async {
       await pumpChat(
         tester,

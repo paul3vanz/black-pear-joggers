@@ -286,10 +286,73 @@ void main() {
     expect(updated.imageUrl, 'https://bpj.org.uk/a.jpg');
   });
 
-  test('a fresh database is created at schema v6', () async {
+  test(
+    'v6 -> v7 adds the member card tables and keeps existing data',
+    () async {
+      // A v6 database: a chat message and a membership, as Phase 6 left them.
+      final db = AppDatabase(
+        NativeDatabase.memory(
+          setup: (raw) {
+            raw
+              ..execute(
+                'CREATE TABLE group_messages (id TEXT NOT NULL PRIMARY KEY, '
+                'club_id INTEGER NOT NULL, group_id TEXT NOT NULL, '
+                'member_id TEXT NOT NULL, author_name TEXT NOT NULL, '
+                "author_role TEXT NOT NULL DEFAULT 'member', "
+                'body TEXT NOT NULL, created_at INTEGER NOT NULL, '
+                'deleted_at INTEGER, '
+                "send_state TEXT NOT NULL DEFAULT 'sent')",
+              )
+              ..execute(
+                'INSERT INTO group_messages (id, club_id, group_id, member_id, '
+                "author_name, body, created_at) VALUES ('m1', 1, 'g1', 'sam', "
+                "'Sam B.', 'Hello', 1)",
+              )
+              ..execute('PRAGMA user_version = 6');
+          },
+        ),
+      );
+      addTearDown(db.close);
+
+      await db.customSelect('SELECT 1').get();
+
+      // Existing data survives.
+      expect((await db.select(db.groupMessages).getSingle()).body, 'Hello');
+
+      // The new tables exist and work.
+      expect(await db.select(db.memberCards).get(), isEmpty);
+      expect(await db.select(db.memberProfiles).get(), isEmpty);
+      await db
+          .into(db.memberCards)
+          .insert(
+            MemberCardsCompanion.insert(
+              memberId: 'sam',
+              clubId: 1,
+              displayName: 'Sam B.',
+            ),
+          );
+      await db
+          .into(db.memberProfiles)
+          .insert(
+            MemberProfilesCompanion.insert(
+              memberId: 'sam',
+              clubId: 1,
+              json: '{}',
+              fetchedAt: DateTime.utc(2026, 10, 12),
+            ),
+          );
+      final card = await db.select(db.memberCards).getSingle();
+      expect(card.rolesCsv, '');
+      expect(card.hasBio, isFalse);
+      expect(card.photoPath, isNull);
+      expect(await db.select(db.memberProfiles).get(), hasLength(1));
+    },
+  );
+
+  test('a fresh database is created at schema v7', () async {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 6);
+    expect(db.schemaVersion, 7);
     await db.customSelect('SELECT 1').get();
     expect(await db.select(db.sessions).get(), isEmpty);
   });

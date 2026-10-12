@@ -309,3 +309,41 @@ class ThreadStates extends Table {
   @override
   Set<Column<Object>> get primaryKey => {groupId};
 }
+
+/// One row per member in `GET …/member-cards` (D61): who is shown by name or has a
+/// photo/bio. The whole list for a club is replaced on every refresh. Avatars and
+/// names across the app are drawn from this table, so cached runs and chat never
+/// go stale when someone changes their photo.
+class MemberCards extends Table {
+  TextColumn get memberId => text()();
+  IntColumn get clubId => integer()();
+
+  /// First name + surname initial (`Sam B.`).
+  TextColumn get displayName => text()();
+
+  /// Relative signed link (`/app/clubs/1/members/<id>/photo?v=…&sig=…`) or null.
+  TextColumn get photoPath => text().nullable()();
+
+  /// Comma-separated subset of `leader,committee,admin` (empty for none).
+  TextColumn get rolesCsv => text().withDefault(const Constant(''))();
+  BoolColumn get hasBio => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {memberId};
+}
+
+/// The last fetched profile JSON per member (the profile page works offline from
+/// this). The caller's own editable card (`GET …/member-profile`) is kept in the
+/// same table under the fixed key `me` (it can't clash with a member uuid).
+@DataClassName('MemberProfileRow')
+class MemberProfiles extends Table {
+  TextColumn get memberId => text()();
+  IntColumn get clubId => integer()();
+
+  /// The response body, as sent.
+  TextColumn get json => text()();
+  DateTimeColumn get fetchedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {memberId, clubId};
+}

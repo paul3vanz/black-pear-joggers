@@ -12,6 +12,7 @@ import '../../../core/util/open_link.dart';
 import '../../../core/util/relative_time.dart';
 import '../../auth/ui/account_switcher.dart';
 import '../../groups/data/run_preferences_repository.dart';
+import '../../members/ui/my_card_tile.dart';
 import '../../membership/data/membership_dtos.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/runs_providers.dart';
@@ -145,6 +146,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(height: 16),
           _LapsedCard(onTap: () => openLink(context, ref, joinUrl)),
         ],
+        const SizedBox(height: 16),
+        const MyProfileCardTile(),
         if (view.regStatus != null) ...[
           const SizedBox(height: 24),
           const _SectionTitle('England Athletics'),

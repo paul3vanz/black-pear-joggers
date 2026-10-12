@@ -16,6 +16,7 @@ import 'group_access.dart';
 import 'group_actions.dart';
 import 'group_format.dart';
 import 'groups_providers.dart';
+import 'leaders_line.dart';
 
 /// One run in the leader roster: when and where, the groups already offered
 /// with their leaders, and the ways to lead: "Offer to lead", "Same as last
@@ -277,14 +278,7 @@ class _GroupLine extends StatelessWidget {
                 ),
             ],
           ),
-          Text(
-            group.leaders.isEmpty
-                ? 'No leader yet'
-                : 'Led by ${leadersText(group.leaders)}',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
+          LeadersLine(leaders: group.leaders),
           Wrap(
             spacing: 8,
             children: [

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/group_dtos.dart';
 import 'group_format.dart';
 import 'groups_providers.dart';
+import 'leaders_line.dart';
 
 /// One group of a session: kind, pace and distance in the viewer's units,
 /// label, description, leaders, a "Needs a leader" badge, the going count and
@@ -144,13 +145,9 @@ class _GroupCardState extends State<GroupCard> {
             const SizedBox(height: 4),
             Wrap(
               spacing: 12,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text(
-                  g.leaders.isEmpty
-                      ? 'No leader yet'
-                      : 'Led by ${leadersText(g.leaders)}',
-                  style: muted,
-                ),
+                LeadersLine(leaders: g.leaders, style: muted),
                 Text(goingText(g.goingCount, g.maybeCount), style: muted),
               ],
             ),

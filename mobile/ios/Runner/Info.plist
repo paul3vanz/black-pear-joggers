@@ -37,6 +37,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>BPJ uses the camera so you can take a profile photo that other club members will see in the app.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>BPJ uses your photos so you can choose a profile photo that other club members will see in the app.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

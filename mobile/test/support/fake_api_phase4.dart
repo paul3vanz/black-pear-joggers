@@ -111,6 +111,7 @@ Future<void> seedSession(
   String groupMode = 'paced',
   String status = 'scheduled',
   String? coordinatorMemberId,
+  String? coordinatorName,
 }) async {
   final dto = sessionWithGroups(
     id,
@@ -133,6 +134,7 @@ Future<void> seedSession(
           groupMode: groupMode,
           status: Value(status),
           coordinatorMemberId: Value(coordinatorMemberId),
+          coordinatorName: Value(coordinatorName),
           updatedAt: DateTime.utc(2026, 10, 5),
         ),
       );
