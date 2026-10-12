@@ -2,6 +2,7 @@ import 'package:bpj/core/auth/account.dart';
 import 'package:bpj/core/auth/accounts_controller.dart';
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/units/dist_unit.dart';
+import 'package:bpj/core/util/open_link.dart';
 import 'package:bpj/features/groups/data/run_preferences_repository.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
@@ -17,8 +18,10 @@ import 'support/fake_api.dart';
 void main() {
   late AppDatabase db;
   late FakeAdapter adapter;
+  final opened = <Uri>[];
 
   setUp(() {
+    opened.clear();
     db = memoryDb();
     adapter = FakeAdapter({
       'POST /app/clubs/1/link': FakeResponse(200, membershipJson()),
@@ -70,6 +73,10 @@ void main() {
             const Account(sub: 'test|sub', email: 'jo@example.com'),
           ),
           appVersionProvider.overrideWith((ref) async => '1.2.3 (4)'),
+          urlOpenerProvider.overrideWithValue((url) async {
+            opened.add(url);
+            return true;
+          }),
         ],
         child: const MaterialApp(home: ProfileScreen()),
       ),
@@ -100,6 +107,20 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('lists the club website first, above the member links', (
+    tester,
+  ) async {
+    await pumpProfile(tester, online: true);
+
+    final website = tester.getTopLeft(find.text('Club website')).dy;
+    expect(website, lessThan(tester.getTopLeft(find.text('Race results')).dy));
+    expect(website, greaterThan(tester.getTopLeft(find.text('Links')).dy));
+
+    await tester.tap(find.text('Club website'));
+    await tester.pump();
+    expect(opened, [Uri.parse('https://bpj.org.uk')]);
+    await unmount(tester);
+  });
   testWidgets(
     'shows the cached profile and an offline banner when refresh fails',
     (tester) async {

@@ -14,6 +14,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../app/router.dart';
 import '../../features/inbox/data/inbox_repository.dart';
 import '../../features/membership/ui/membership_providers.dart';
+import '../../features/messages/data/messages_repository.dart';
+import '../../features/messages/ui/messages_providers.dart';
 import '../../features/runs/data/runs_repository.dart';
 import '../../features/updates/data/posts_repository.dart';
 import '../api/api_client.dart';
@@ -152,6 +154,15 @@ class PushService {
 
   Future<void> _onForegroundMessage(RemoteMessage message) async {
     final data = _dataOf(message);
+    // A message for the chat that is on screen: no notification, refresh it now.
+    if (isForOpenChat(
+      data,
+      _ref.read(openChatGroupIdProvider),
+      activeSub: _ref.read(activeSubProvider),
+    )) {
+      await _refreshOpenChat(data);
+      return;
+    }
     final notification = message.notification;
     final action = parseActionNotification(
       data,
@@ -195,8 +206,29 @@ class PushService {
     try {
       await _ref.read(inboxRepositoryProvider).refresh(clubId);
       await _ref.read(postsRepositoryProvider).refresh(clubId);
+      // New chat message: update the unread dots and the Inbox chats list.
+      if (isGroupMessagePush(data)) {
+        await _ref
+            .read(messagesRepositoryProvider)
+            .refreshThreadsQuietly(clubId);
+      }
     } on Object catch (e) {
       debugPrint('Push-triggered refresh failed: $e');
+    }
+  }
+
+  /// Pulls the new messages straight into the chat that is open (the push is
+  /// for it), if it is for the active account.
+  Future<void> _refreshOpenChat(Map<String, Object?> data) async {
+    final clubId = int.tryParse('${data['clubId'] ?? ''}');
+    final groupId = data['groupId'] as String?;
+    final userId = data['userId'] as String?;
+    if (clubId == null || groupId == null) return;
+    if (userId != null && userId != _ref.read(activeSubProvider)) return;
+    try {
+      await _ref.read(messagesRepositoryProvider).refresh(clubId, groupId);
+    } on Object catch (e) {
+      debugPrint('Push-triggered chat refresh failed: $e');
     }
   }
 

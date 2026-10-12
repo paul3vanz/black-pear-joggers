@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../../../core/util/clock_time.dart';
+
 import '../../../core/db/app_database.dart';
 import '../data/runs_repository.dart';
 
@@ -26,8 +28,8 @@ String dayHeader(String localDate, DateTime now) {
 String longDate(String localDate) =>
     DateFormat('EEEE d MMMM').format(parseLocalDate(localDate));
 
-/// "19:00–20:30".
-String timeRange(String start, String end) => '$start–$end';
+/// "7-8:30pm", or just "7pm" when the run has no end time (D48).
+String timeRange(String start, String? end) => formatClockRange(start, end);
 
 /// Upcoming sessions grouped by `localDate` (input already ordered), limited to
 /// the next [listHorizonDays] days.
@@ -60,6 +62,14 @@ String formatHm(int minutes) {
   final m = minutes % (24 * 60);
   return '${(m ~/ 60).toString().padLeft(2, '0')}:'
       '${(m % 60).toString().padLeft(2, '0')}';
+}
+
+/// The end `HH:mm` for a start plus [durationMin], or null when the run has no
+/// duration (D47).
+String? endTimeFor(String start, int? durationMin) {
+  final s = parseHm(start);
+  if (s == null || durationMin == null) return null;
+  return formatHm(s + durationMin);
 }
 
 /// Duration in minutes between two "HH:mm" strings (wraps past midnight);

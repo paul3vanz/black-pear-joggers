@@ -55,4 +55,57 @@ void main() {
       const TapDecision(route: '/inbox'),
     );
   });
+
+  group('group chat pushes', () {
+    const chatRoute = '/runs/s1/groups/g1/chat';
+    final chatPush = <String, Object?>{
+      'userId': 'user|a',
+      'clubId': '1',
+      'route': chatRoute,
+      'sessionId': 's1',
+      'groupId': 'g1',
+      'category': 'group_messages',
+    };
+
+    test('a tap goes straight to the chat route', () {
+      expect(decide(chatPush), const TapDecision(route: chatRoute));
+    });
+
+    test('a tap for another account switches first, then opens the chat', () {
+      expect(
+        decide({...chatPush, 'userId': 'user|b'}),
+        const TapDecision(
+          switchToSub: 'user|b',
+          setClubId: 1,
+          route: chatRoute,
+        ),
+      );
+    });
+
+    test('a push for the open chat is not shown', () {
+      expect(isForOpenChat(chatPush, 'g1', activeSub: 'user|a'), isTrue);
+    });
+
+    test('a push for another chat, or with no chat open, is shown', () {
+      expect(isForOpenChat(chatPush, 'g2', activeSub: 'user|a'), isFalse);
+      expect(isForOpenChat(chatPush, null, activeSub: 'user|a'), isFalse);
+    });
+
+    test('a push for another account is shown even for the open group', () {
+      expect(
+        isForOpenChat(
+          {...chatPush, 'userId': 'user|b'},
+          'g1',
+          activeSub: 'user|a',
+        ),
+        isFalse,
+      );
+    });
+
+    test('recognises group message pushes', () {
+      expect(isGroupMessagePush(chatPush), isTrue);
+      expect(isGroupMessagePush({'category': 'group_messages'}), isTrue);
+      expect(isGroupMessagePush({'route': '/updates/p1'}), isFalse);
+    });
+  });
 }

@@ -12,6 +12,7 @@ class ApiException implements Exception {
     this.code,
     required this.message,
     this.isNetworkError = false,
+    this.fieldErrors = const {},
   });
 
   /// HTTP status, or null when the request never got a response.
@@ -24,6 +25,10 @@ class ApiException implements Exception {
   /// True for connection failures and timeouts (show "you're offline", don't treat
   /// as a rejected request).
   final bool isNetworkError;
+
+  /// A 422's `errors` map reduced to the first message per field, e.g.
+  /// `{label: 'The label field is required.'}`. Empty for other errors.
+  final Map<String, String> fieldErrors;
 
   bool get isSessionExpired => code == 'session_expired';
 
@@ -55,9 +60,18 @@ class ApiException implements Exception {
     final data = e.response?.data;
     String? code;
     String? message;
+    final fieldErrors = <String, String>{};
     if (data is Map) {
       code = data['error'] is String ? data['error'] as String : null;
       message = data['message'] is String ? data['message'] as String : null;
+      final errors = data['errors'];
+      if (errors is Map) {
+        for (final entry in errors.entries) {
+          final v = entry.value;
+          final first = v is List && v.isNotEmpty ? v.first : v;
+          if (first is String) fieldErrors['${entry.key}'] = first;
+        }
+      }
     }
     return ApiException(
       statusCode: status,
@@ -66,6 +80,7 @@ class ApiException implements Exception {
           message ?? 'Request failed${status == null ? '' : ' ($status)'}.',
       // An unknown low-level failure (e.g. socket closed) is also treated as offline.
       isNetworkError: status == null && e.type == DioExceptionType.unknown,
+      fieldErrors: fieldErrors,
     );
   }
 

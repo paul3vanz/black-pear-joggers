@@ -22,6 +22,8 @@ class GroupCard extends StatefulWidget {
     this.onStepDown,
     this.onEdit,
     this.onDelete,
+    this.onChat,
+    this.chatUnread = false,
     this.footer,
   });
 
@@ -41,6 +43,11 @@ class GroupCard extends StatefulWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
+  /// Opens the group chat; null (the caller is not a participant) hides the
+  /// button. [chatUnread] adds a dot for unread messages.
+  final VoidCallback? onChat;
+  final bool chatUnread;
+
   /// Extra content under the going count (the pace spread on route cards).
   final Widget? footer;
 
@@ -59,11 +66,13 @@ class _GroupCardState extends State<GroupCard> {
     final g = widget.group;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final pace = paceText(g.pace, widget.units);
-    final distance = distanceText(g.distance, widget.units);
+    final heading = groupHeading(g, widget.units);
     final description = g.description;
     final long =
         description != null && description.length > GroupCard.collapseAfter;
+    final muted = theme.textTheme.bodyMedium?.copyWith(
+      color: scheme.onSurfaceVariant,
+    );
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       shape: widget.isMine
@@ -73,20 +82,33 @@ class _GroupCardState extends State<GroupCard> {
             )
           : null,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // One heading: pace · distance (or the label when there is no
+            // pace), with the label under it as a subtitle.
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(groupKindIcon(g.kind), color: scheme.primary),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Icon(groupKindIcon(g.kind), color: scheme.primary),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    groupKindLabel(g.kind),
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: scheme.primary,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        heading.title,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      if (heading.subtitle != null)
+                        Text(heading.subtitle!, style: muted),
+                    ],
                   ),
                 ),
                 if (g.needsLeader)
@@ -102,22 +124,6 @@ class _GroupCardState extends State<GroupCard> {
                   _Menu(onEdit: widget.onEdit, onDelete: widget.onDelete),
               ],
             ),
-            if (g.label != null)
-              Text(
-                g.label!,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            if (pace.isNotEmpty)
-              Text(
-                pace,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            if (distance != null)
-              Text(distance, style: theme.textTheme.bodyLarge),
             if (description != null) ...[
               const SizedBox(height: 4),
               Text(
@@ -127,69 +133,120 @@ class _GroupCardState extends State<GroupCard> {
               ),
               if (long)
                 TextButton(
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(0, 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
                   onPressed: () => setState(() => _expanded = !_expanded),
                   child: Text(_expanded ? 'Show less' : 'Show more'),
                 ),
             ],
-            const SizedBox(height: 8),
-            Text(
-              g.leaders.isEmpty
-                  ? 'No leader yet'
-                  : 'Led by ${leadersText(g.leaders)}',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
-            ),
-            Text(
-              goingText(g.goingCount, g.maybeCount),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 12,
+              children: [
+                Text(
+                  g.leaders.isEmpty
+                      ? 'No leader yet'
+                      : 'Led by ${leadersText(g.leaders)}',
+                  style: muted,
+                ),
+                Text(goingText(g.goingCount, g.maybeCount), style: muted),
+              ],
             ),
             ?widget.footer,
-            if (widget.isMine || widget.isLeading)
+            if (widget.isLeading)
+              // The leader's note and "Step down" share a row; the button is
+              // outlined in the error colour so it reads as a different kind
+              // of control from the info text and from Join.
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  widget.isLeading
-                      ? "You're leading this group"
-                      : "You're in this group",
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: scheme.primary,
-                  ),
+                child: Row(
+                  children: [
+                    Icon(Icons.flag_outlined, size: 20, color: scheme.primary),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "You're leading this group",
+                        style: theme.textTheme.labelLarge,
+                      ),
+                    ),
+                    if (widget.onStepDown != null)
+                      OutlinedButton.icon(
+                        onPressed: widget.onStepDown,
+                        icon: const Icon(
+                          Icons.person_remove_outlined,
+                          size: 18,
+                        ),
+                        label: const Text('Step down'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: scheme.error,
+                          side: BorderSide(color: scheme.error),
+                          minimumSize: const Size(0, 40),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ),
+                  ],
+                ),
+              )
+            else if (widget.isMine)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 20,
+                      color: scheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "You're in this group",
+                      style: theme.textTheme.labelLarge,
+                    ),
+                  ],
                 ),
               ),
             if (widget.onJoin != null ||
                 widget.onLeave != null ||
                 widget.onLeadToo != null ||
-                widget.onStepDown != null)
-              const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 4,
-              children: [
-                if (widget.onJoin != null)
-                  FilledButton.tonal(
-                    onPressed: widget.onJoin,
-                    child: Text(widget.joinLabel),
-                  ),
-                if (widget.onLeave != null)
-                  OutlinedButton(
-                    onPressed: widget.onLeave,
-                    child: const Text('Leave group'),
-                  ),
-                if (widget.onLeadToo != null)
-                  TextButton(
-                    onPressed: widget.onLeadToo,
-                    child: const Text("I'll lead this group too"),
-                  ),
-                if (widget.onStepDown != null)
-                  TextButton(
-                    onPressed: widget.onStepDown,
-                    child: const Text('Step down'),
-                  ),
-              ],
-            ),
+                widget.onChat != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    if (widget.onJoin != null)
+                      FilledButton.tonal(
+                        onPressed: widget.onJoin,
+                        child: Text(widget.joinLabel),
+                      ),
+                    if (widget.onLeave != null)
+                      OutlinedButton(
+                        onPressed: widget.onLeave,
+                        child: const Text('Leave group'),
+                      ),
+                    if (widget.onLeadToo != null)
+                      TextButton(
+                        onPressed: widget.onLeadToo,
+                        child: const Text("I'll lead this group too"),
+                      ),
+                    if (widget.onChat != null)
+                      FilledButton.tonalIcon(
+                        onPressed: widget.onChat,
+                        icon: Badge(
+                          key: const ValueKey('chat-unread'),
+                          smallSize: 9,
+                          isLabelVisible: widget.chatUnread,
+                          child: const Icon(Icons.chat_bubble_outline),
+                        ),
+                        label: const Text('Group chat'),
+                      ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),

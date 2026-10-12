@@ -11,9 +11,11 @@ import '../../../core/ui/offline_banner.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../groups/data/summary_dtos.dart';
 import '../../groups/ui/group_format.dart';
+import '../../messages/data/messages_repository.dart';
 import '../data/runs_repository.dart';
 import '../data/session_changes.dart';
 import 'run_format.dart';
+import 'series_image.dart';
 import 'runs_providers.dart';
 
 /// The Runs tab (`/runs`): upcoming club runs grouped by day. Same offline
@@ -45,6 +47,8 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
     var failed = false;
     try {
       await repo.refresh(clubId);
+      // Unread dots on the group cards.
+      await ref.read(messagesRepositoryProvider).refreshThreadsQuietly(clubId);
     } on Object catch (e) {
       if (sub != null && await handleExpiry(sub, e)) return;
       failed = true;
@@ -263,80 +267,92 @@ class _RunCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () => context.push('/runs/${session.id}'),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (cancelled || changes.isNotEmpty || isToday)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
-                    children: [
-                      if (cancelled)
-                        Chip(
-                          visualDensity: VisualDensity.compact,
-                          label: Text(
-                            'Cancelled',
-                            style: TextStyle(color: scheme.onErrorContainer),
-                          ),
-                          backgroundColor: scheme.errorContainer,
-                        ),
-                      if (!cancelled && changes.isNotEmpty)
-                        Chip(
-                          visualDensity: VisualDensity.compact,
-                          label: Text(
-                            'Changed',
-                            style: TextStyle(color: scheme.onTertiaryContainer),
-                          ),
-                          backgroundColor: scheme.tertiaryContainer,
-                        ),
-                      if (isToday)
-                        const Chip(
-                          visualDensity: VisualDensity.compact,
-                          label: Text('Today'),
-                        ),
-                    ],
+        // The series banner sits flush at the top of the card (nothing when absent).
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SeriesImage(url: session.imageUrl),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (cancelled || changes.isNotEmpty || isToday)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          if (cancelled)
+                            Chip(
+                              visualDensity: VisualDensity.compact,
+                              label: Text(
+                                'Cancelled',
+                                style: TextStyle(
+                                  color: scheme.onErrorContainer,
+                                ),
+                              ),
+                              backgroundColor: scheme.errorContainer,
+                            ),
+                          if (!cancelled && changes.isNotEmpty)
+                            Chip(
+                              visualDensity: VisualDensity.compact,
+                              label: Text(
+                                'Changed',
+                                style: TextStyle(
+                                  color: scheme.onTertiaryContainer,
+                                ),
+                              ),
+                              backgroundColor: scheme.tertiaryContainer,
+                            ),
+                          if (isToday)
+                            const Chip(
+                              visualDensity: VisualDensity.compact,
+                              label: Text('Today'),
+                            ),
+                        ],
+                      ),
+                    ),
+                  Text(
+                    timeRange(session.localStartTime, session.localEndTime),
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: scheme.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              Text(
-                timeRange(session.localStartTime, session.localEndTime),
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: scheme.primary,
-                  fontWeight: FontWeight.w700,
-                ),
+                  const SizedBox(height: 2),
+                  Text(
+                    session.title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      decoration: cancelled ? TextDecoration.lineThrough : null,
+                    ),
+                  ),
+                  if (cancelled && session.cancelReason != null)
+                    Text(
+                      session.cancelReason!,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: scheme.error,
+                      ),
+                    ),
+                  for (final change in changes)
+                    Text(
+                      change,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: scheme.tertiary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  const SizedBox(height: 4),
+                  if (venueName != null) Text(venueName!, style: muted),
+                  Text(groupModeLabel(session.groupMode), style: muted),
+                  if (!cancelled && summary != null)
+                    _SummaryRow(summary: summary),
+                ],
               ),
-              const SizedBox(height: 2),
-              Text(
-                session.title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  decoration: cancelled ? TextDecoration.lineThrough : null,
-                ),
-              ),
-              if (cancelled && session.cancelReason != null)
-                Text(
-                  session.cancelReason!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: scheme.error,
-                  ),
-                ),
-              for (final change in changes)
-                Text(
-                  change,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: scheme.tertiary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              const SizedBox(height: 4),
-              if (venueName != null) Text(venueName!, style: muted),
-              Text(groupModeLabel(session.groupMode), style: muted),
-              if (!cancelled && summary != null) _SummaryRow(summary: summary),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -359,7 +375,11 @@ class _SummaryRow extends StatelessWidget {
         countLabel(summary.groupCount, 'group', 'groups'),
       if (summary.goingCount > 0) '${summary.goingCount} going',
     ].join(' · ');
+    // Leaders are marked going automatically (D30), so "You're going" beside
+    // "You're leading" is noise; other statuses still show. (`when` is a Dart 3
+    // guard on a switch case.)
     final response = switch (summary.myStatus) {
+      'going' when summary.myLeading => null,
       'going' => "You're going",
       'maybe' => 'Maybe',
       'not_going' => "Can't come",

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/db/app_database.dart';
+import '../../messages/ui/messages_providers.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../../runs/ui/session_actions.dart';
 import '../data/group_dtos.dart';
@@ -84,6 +85,15 @@ class GroupsSection extends ConsumerWidget {
         ),
         const SizedBox(height: 4),
         Text(groupsIntro(session.groupMode), style: theme.textTheme.bodyMedium),
+        if (open && showsPaceGroupsNote(session.groupMode)) ...[
+          const SizedBox(height: 4),
+          Text(
+            paceGroupsNote,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
         if (routes && open) MyPaceTile(session: session),
         const SizedBox(height: 8),
         if (groups.isEmpty)
@@ -165,6 +175,18 @@ class GroupsSection extends ConsumerWidget {
           ? () => unawaited(context.push('$_base/${g.id}/edit'))
           : null,
       onDelete: canEdit ? () => unawaited(_delete(context, ref, g)) : null,
+      onChat:
+          canChatIn(
+            group: g,
+            session: session,
+            myMemberId: myId,
+            inGroup: mine,
+            isCommittee: isCommittee,
+          )
+          ? () => unawaited(context.push('$_base/${g.id}/chat'))
+          : null,
+      chatUnread:
+          (ref.watch(threadStateProvider(g.id)).value?.unreadCount ?? 0) > 0,
       footer: session.groupMode == 'routes'
           ? GroupPlanBlock(
               sessionId: session.id,

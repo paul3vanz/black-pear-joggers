@@ -15,6 +15,7 @@ import '../data/plan_repository.dart';
 import '../data/run_preferences_repository.dart';
 import '../data/summary_dtos.dart';
 import '../data/session_local.dart';
+import '../data/small_kv_store.dart';
 
 // Hand-written (not @riverpod): riverpod_generator can't see Drift's row types.
 
@@ -144,4 +145,9 @@ Future<void> rememberLastGroup(
   session.clubId,
   session.seriesId,
   LastGroupSpec.fromGroup(group),
+);
+
+/// Small remembered settings (D55): "already asked" flags and day filters.
+final smallKvStoreProvider = Provider<SmallKvStore>(
+  (ref) => SmallKvStore(ref.watch(appDatabaseProvider)),
 );

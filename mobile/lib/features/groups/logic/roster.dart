@@ -63,3 +63,54 @@ List<RosterWeek> buildRoster(
   }
   return result;
 }
+
+/// Short names for the weekday filter chips, indexed by `DateTime.weekday - 1`
+/// (Dart numbers Monday 1 to Sunday 7).
+const weekdayShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+/// The weekdays (1 = Monday ... 7 = Sunday) that occur in [weeks], so the
+/// filter only offers days that exist.
+Set<int> rosterWeekdays(List<RosterWeek> weeks) => {
+  for (final w in weeks)
+    for (final s in w.sessions) parseLocalDate(s.localDate).weekday,
+};
+
+/// The roster after the day filter: [weeks] is what to show and [hidden] how
+/// many runs the filter removed.
+typedef RosterFilterResult = ({List<RosterWeek> weeks, int hidden});
+
+/// Keeps the runs on one of [days] (empty = all days) plus every run for which
+/// [isLeading] is true, so a run you lead never disappears (D56). Weeks that
+/// end up empty are dropped.
+RosterFilterResult filterRosterByDays(
+  List<RosterWeek> weeks,
+  Set<int> days,
+  bool Function(Session session) isLeading,
+) {
+  if (days.isEmpty) return (weeks: weeks, hidden: 0);
+  var hidden = 0;
+  final kept = <RosterWeek>[];
+  for (final w in weeks) {
+    final shown = <Session>[];
+    for (final s in w.sessions) {
+      if (days.contains(parseLocalDate(s.localDate).weekday) || isLeading(s)) {
+        shown.add(s);
+      } else {
+        hidden++;
+      }
+    }
+    if (shown.isNotEmpty) {
+      kept.add(RosterWeek(monday: w.monday, label: w.label, sessions: shown));
+    }
+  }
+  return (weeks: kept, hidden: hidden);
+}
+
+/// `1,3` -> {1, 3}; ignores anything that is not a weekday number.
+Set<int> decodeWeekdays(String? stored) => {
+  for (final part in (stored ?? '').split(','))
+    if (int.tryParse(part.trim()) case final d? when d >= 1 && d <= 7) d,
+};
+
+/// {3, 1} -> `1,3`.
+String encodeWeekdays(Set<int> days) => (days.toList()..sort()).join(',');

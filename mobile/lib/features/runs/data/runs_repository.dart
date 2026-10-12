@@ -253,7 +253,7 @@ class RunsRepository {
     required String title,
     required String localDate,
     required String startTime,
-    required int durationMin,
+    required int? durationMin, // null = no end time (D47)
     required String groupMode,
     String? venueId,
     String? notes,
@@ -285,7 +285,7 @@ class RunsRepository {
     String id, {
     required String title,
     required String startTime,
-    required int durationMin,
+    required int? durationMin, // null = no end time (D47)
     String? venueId,
     String? notes,
     String? localDate,
@@ -446,12 +446,13 @@ class RunsRepository {
     String? venueId,
     required int weekday,
     required String startTime,
-    required int durationMin,
+    required int? durationMin, // null = no end time (D47)
     required int intervalWeeks,
     required String validFrom,
     String? validUntil,
     required String groupMode,
     String? cmsSlug,
+    String? imageUrl, // null clears the series image (D49)
   }) => {
     'title': title,
     'description': description,
@@ -464,6 +465,7 @@ class RunsRepository {
     'validUntil': validUntil,
     'groupMode': groupMode,
     'cmsSlug': cmsSlug,
+    'imageUrl': imageUrl,
   };
 
   Future<RunSeries> createSeries(
@@ -473,12 +475,13 @@ class RunsRepository {
     String? venueId,
     required int weekday,
     required String startTime,
-    required int durationMin,
+    required int? durationMin, // null = no end time (D47)
     required int intervalWeeks,
     required String validFrom,
     String? validUntil,
     required String groupMode,
     String? cmsSlug,
+    String? imageUrl, // null clears the series image (D49)
     String? id,
   }) async => _upsertSeries(
     clubId,
@@ -499,6 +502,7 @@ class RunsRepository {
             validUntil: validUntil,
             groupMode: groupMode,
             cmsSlug: cmsSlug,
+            imageUrl: imageUrl,
           ),
         },
       ),
@@ -513,12 +517,13 @@ class RunsRepository {
     String? venueId,
     required int weekday,
     required String startTime,
-    required int durationMin,
+    required int? durationMin, // null = no end time (D47)
     required int intervalWeeks,
     required String validFrom,
     String? validUntil,
     required String groupMode,
     String? cmsSlug,
+    String? imageUrl, // null clears the series image (D49)
   }) async => _upsertSeries(
     clubId,
     await guardApi(
@@ -536,6 +541,7 @@ class RunsRepository {
           validUntil: validUntil,
           groupMode: groupMode,
           cmsSlug: cmsSlug,
+          imageUrl: imageUrl,
         ),
       ),
     ),

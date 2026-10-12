@@ -11,6 +11,8 @@ import '../../../core/notifications/notification_categories.dart';
 import '../../../core/ui/offline_banner.dart';
 import '../../../core/util/relative_time.dart';
 import '../../membership/ui/membership_providers.dart';
+import '../../messages/data/messages_repository.dart';
+import '../../messages/ui/threads_section.dart';
 import '../data/inbox_repository.dart';
 import 'inbox_providers.dart';
 
@@ -53,6 +55,10 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
     final repo = ref.read(inboxRepositoryProvider);
     if (!_refreshing && mounted) setState(() => _refreshing = true);
     final ok = await _guard(() => repo.refresh(clubId));
+    // The group chats list above the notifications (best effort).
+    await _guard(
+      () => ref.read(messagesRepositoryProvider).refreshThreadsQuietly(clubId),
+    );
     if (!mounted) return;
     setState(() {
       _refreshing = false;
@@ -102,6 +108,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
             children: [
               if (_refreshing && (items?.isEmpty ?? true))
                 const LinearProgressIndicator(),
+              const GroupChatsSection(),
               if (showBanner)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 8),

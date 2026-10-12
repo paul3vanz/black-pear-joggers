@@ -154,9 +154,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             subtitle: Text(view.regStatus!),
           ),
         ],
+        // The club website is always first; member-specific links follow when known.
+        const SizedBox(height: 24),
+        const _SectionTitle('Links'),
+        _LinkTile(
+          icon: Icons.language,
+          label: 'Club website',
+          url: club.website,
+        ),
         if (view.hasLinks) ...[
-          const SizedBox(height: 24),
-          const _SectionTitle('Links'),
           if (view.resultsUrl != null)
             _LinkTile(
               icon: Icons.emoji_events_outlined,

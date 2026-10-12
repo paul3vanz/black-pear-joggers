@@ -3871,9 +3871,9 @@ class $SessionSeriesTable extends SessionSeries
   late final GeneratedColumn<int> durationMin = GeneratedColumn<int>(
     'duration_min',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _intervalWeeksMeta = const VerificationMeta(
     'intervalWeeks',
@@ -3931,6 +3931,17 @@ class $SessionSeriesTable extends SessionSeries
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _imageUrlMeta = const VerificationMeta(
+    'imageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> imageUrl = GeneratedColumn<String>(
+    'image_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -3957,6 +3968,7 @@ class $SessionSeriesTable extends SessionSeries
     validUntil,
     groupMode,
     cmsSlug,
+    imageUrl,
     updatedAt,
   ];
   @override
@@ -4031,8 +4043,6 @@ class $SessionSeriesTable extends SessionSeries
           _durationMinMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_durationMinMeta);
     }
     if (data.containsKey('interval_weeks')) {
       context.handle(
@@ -4069,6 +4079,12 @@ class $SessionSeriesTable extends SessionSeries
       context.handle(
         _cmsSlugMeta,
         cmsSlug.isAcceptableOrUnknown(data['cms_slug']!, _cmsSlugMeta),
+      );
+    }
+    if (data.containsKey('image_url')) {
+      context.handle(
+        _imageUrlMeta,
+        imageUrl.isAcceptableOrUnknown(data['image_url']!, _imageUrlMeta),
       );
     }
     if (data.containsKey('updated_at')) {
@@ -4119,7 +4135,7 @@ class $SessionSeriesTable extends SessionSeries
       durationMin: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}duration_min'],
-      )!,
+      ),
       intervalWeeks: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}interval_weeks'],
@@ -4139,6 +4155,10 @@ class $SessionSeriesTable extends SessionSeries
       cmsSlug: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}cms_slug'],
+      ),
+      imageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_url'],
       ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -4163,7 +4183,9 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
   /// ISO weekday, 1 = Monday ... 7 = Sunday.
   final int weekday;
   final String startTime;
-  final int durationMin;
+
+  /// Null = the run has no fixed end time (D47).
+  final int? durationMin;
   final int intervalWeeks;
   final String validFrom;
   final String? validUntil;
@@ -4171,6 +4193,9 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
   /// `paced` | `single` | `open` | `routes`.
   final String groupMode;
   final String? cmsSlug;
+
+  /// Optional banner image URL (D49).
+  final String? imageUrl;
   final DateTime updatedAt;
   const RunSeries({
     required this.id,
@@ -4180,12 +4205,13 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     this.venueId,
     required this.weekday,
     required this.startTime,
-    required this.durationMin,
+    this.durationMin,
     required this.intervalWeeks,
     required this.validFrom,
     this.validUntil,
     required this.groupMode,
     this.cmsSlug,
+    this.imageUrl,
     required this.updatedAt,
   });
   @override
@@ -4202,7 +4228,9 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     }
     map['weekday'] = Variable<int>(weekday);
     map['start_time'] = Variable<String>(startTime);
-    map['duration_min'] = Variable<int>(durationMin);
+    if (!nullToAbsent || durationMin != null) {
+      map['duration_min'] = Variable<int>(durationMin);
+    }
     map['interval_weeks'] = Variable<int>(intervalWeeks);
     map['valid_from'] = Variable<String>(validFrom);
     if (!nullToAbsent || validUntil != null) {
@@ -4211,6 +4239,9 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     map['group_mode'] = Variable<String>(groupMode);
     if (!nullToAbsent || cmsSlug != null) {
       map['cms_slug'] = Variable<String>(cmsSlug);
+    }
+    if (!nullToAbsent || imageUrl != null) {
+      map['image_url'] = Variable<String>(imageUrl);
     }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -4229,7 +4260,9 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
           : Value(venueId),
       weekday: Value(weekday),
       startTime: Value(startTime),
-      durationMin: Value(durationMin),
+      durationMin: durationMin == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationMin),
       intervalWeeks: Value(intervalWeeks),
       validFrom: Value(validFrom),
       validUntil: validUntil == null && nullToAbsent
@@ -4239,6 +4272,9 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
       cmsSlug: cmsSlug == null && nullToAbsent
           ? const Value.absent()
           : Value(cmsSlug),
+      imageUrl: imageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imageUrl),
       updatedAt: Value(updatedAt),
     );
   }
@@ -4256,12 +4292,13 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
       venueId: serializer.fromJson<String?>(json['venueId']),
       weekday: serializer.fromJson<int>(json['weekday']),
       startTime: serializer.fromJson<String>(json['startTime']),
-      durationMin: serializer.fromJson<int>(json['durationMin']),
+      durationMin: serializer.fromJson<int?>(json['durationMin']),
       intervalWeeks: serializer.fromJson<int>(json['intervalWeeks']),
       validFrom: serializer.fromJson<String>(json['validFrom']),
       validUntil: serializer.fromJson<String?>(json['validUntil']),
       groupMode: serializer.fromJson<String>(json['groupMode']),
       cmsSlug: serializer.fromJson<String?>(json['cmsSlug']),
+      imageUrl: serializer.fromJson<String?>(json['imageUrl']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -4276,12 +4313,13 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
       'venueId': serializer.toJson<String?>(venueId),
       'weekday': serializer.toJson<int>(weekday),
       'startTime': serializer.toJson<String>(startTime),
-      'durationMin': serializer.toJson<int>(durationMin),
+      'durationMin': serializer.toJson<int?>(durationMin),
       'intervalWeeks': serializer.toJson<int>(intervalWeeks),
       'validFrom': serializer.toJson<String>(validFrom),
       'validUntil': serializer.toJson<String?>(validUntil),
       'groupMode': serializer.toJson<String>(groupMode),
       'cmsSlug': serializer.toJson<String?>(cmsSlug),
+      'imageUrl': serializer.toJson<String?>(imageUrl),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -4294,12 +4332,13 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     Value<String?> venueId = const Value.absent(),
     int? weekday,
     String? startTime,
-    int? durationMin,
+    Value<int?> durationMin = const Value.absent(),
     int? intervalWeeks,
     String? validFrom,
     Value<String?> validUntil = const Value.absent(),
     String? groupMode,
     Value<String?> cmsSlug = const Value.absent(),
+    Value<String?> imageUrl = const Value.absent(),
     DateTime? updatedAt,
   }) => RunSeries(
     id: id ?? this.id,
@@ -4309,12 +4348,13 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     venueId: venueId.present ? venueId.value : this.venueId,
     weekday: weekday ?? this.weekday,
     startTime: startTime ?? this.startTime,
-    durationMin: durationMin ?? this.durationMin,
+    durationMin: durationMin.present ? durationMin.value : this.durationMin,
     intervalWeeks: intervalWeeks ?? this.intervalWeeks,
     validFrom: validFrom ?? this.validFrom,
     validUntil: validUntil.present ? validUntil.value : this.validUntil,
     groupMode: groupMode ?? this.groupMode,
     cmsSlug: cmsSlug.present ? cmsSlug.value : this.cmsSlug,
+    imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   RunSeries copyWithCompanion(SessionSeriesCompanion data) {
@@ -4340,6 +4380,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
           : this.validUntil,
       groupMode: data.groupMode.present ? data.groupMode.value : this.groupMode,
       cmsSlug: data.cmsSlug.present ? data.cmsSlug.value : this.cmsSlug,
+      imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -4360,6 +4401,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
           ..write('validUntil: $validUntil, ')
           ..write('groupMode: $groupMode, ')
           ..write('cmsSlug: $cmsSlug, ')
+          ..write('imageUrl: $imageUrl, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -4380,6 +4422,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     validUntil,
     groupMode,
     cmsSlug,
+    imageUrl,
     updatedAt,
   );
   @override
@@ -4399,6 +4442,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
           other.validUntil == this.validUntil &&
           other.groupMode == this.groupMode &&
           other.cmsSlug == this.cmsSlug &&
+          other.imageUrl == this.imageUrl &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -4410,12 +4454,13 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
   final Value<String?> venueId;
   final Value<int> weekday;
   final Value<String> startTime;
-  final Value<int> durationMin;
+  final Value<int?> durationMin;
   final Value<int> intervalWeeks;
   final Value<String> validFrom;
   final Value<String?> validUntil;
   final Value<String> groupMode;
   final Value<String?> cmsSlug;
+  final Value<String?> imageUrl;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const SessionSeriesCompanion({
@@ -4432,6 +4477,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     this.validUntil = const Value.absent(),
     this.groupMode = const Value.absent(),
     this.cmsSlug = const Value.absent(),
+    this.imageUrl = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -4443,12 +4489,13 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     this.venueId = const Value.absent(),
     required int weekday,
     required String startTime,
-    required int durationMin,
+    this.durationMin = const Value.absent(),
     this.intervalWeeks = const Value.absent(),
     required String validFrom,
     this.validUntil = const Value.absent(),
     required String groupMode,
     this.cmsSlug = const Value.absent(),
+    this.imageUrl = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -4456,7 +4503,6 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
        title = Value(title),
        weekday = Value(weekday),
        startTime = Value(startTime),
-       durationMin = Value(durationMin),
        validFrom = Value(validFrom),
        groupMode = Value(groupMode),
        updatedAt = Value(updatedAt);
@@ -4474,6 +4520,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     Expression<String>? validUntil,
     Expression<String>? groupMode,
     Expression<String>? cmsSlug,
+    Expression<String>? imageUrl,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -4491,6 +4538,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
       if (validUntil != null) 'valid_until': validUntil,
       if (groupMode != null) 'group_mode': groupMode,
       if (cmsSlug != null) 'cms_slug': cmsSlug,
+      if (imageUrl != null) 'image_url': imageUrl,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -4504,12 +4552,13 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     Value<String?>? venueId,
     Value<int>? weekday,
     Value<String>? startTime,
-    Value<int>? durationMin,
+    Value<int?>? durationMin,
     Value<int>? intervalWeeks,
     Value<String>? validFrom,
     Value<String?>? validUntil,
     Value<String>? groupMode,
     Value<String?>? cmsSlug,
+    Value<String?>? imageUrl,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -4527,6 +4576,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
       validUntil: validUntil ?? this.validUntil,
       groupMode: groupMode ?? this.groupMode,
       cmsSlug: cmsSlug ?? this.cmsSlug,
+      imageUrl: imageUrl ?? this.imageUrl,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -4574,6 +4624,9 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     if (cmsSlug.present) {
       map['cms_slug'] = Variable<String>(cmsSlug.value);
     }
+    if (imageUrl.present) {
+      map['image_url'] = Variable<String>(imageUrl.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -4599,6 +4652,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
           ..write('validUntil: $validUntil, ')
           ..write('groupMode: $groupMode, ')
           ..write('cmsSlug: $cmsSlug, ')
+          ..write('imageUrl: $imageUrl, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -4729,9 +4783,9 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
   late final GeneratedColumn<String> localEndTime = GeneratedColumn<String>(
     'local_end_time',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _groupModeMeta = const VerificationMeta(
     'groupMode',
@@ -4760,6 +4814,17 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
   @override
   late final GeneratedColumn<String> cancelReason = GeneratedColumn<String>(
     'cancel_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _imageUrlMeta = const VerificationMeta(
+    'imageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> imageUrl = GeneratedColumn<String>(
+    'image_url',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -4863,6 +4928,7 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     groupMode,
     status,
     cancelReason,
+    imageUrl,
     coordinatorMemberId,
     coordinatorName,
     isDetached,
@@ -4974,8 +5040,6 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
           _localEndTimeMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_localEndTimeMeta);
     }
     if (data.containsKey('group_mode')) {
       context.handle(
@@ -4998,6 +5062,12 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
           data['cancel_reason']!,
           _cancelReasonMeta,
         ),
+      );
+    }
+    if (data.containsKey('image_url')) {
+      context.handle(
+        _imageUrlMeta,
+        imageUrl.isAcceptableOrUnknown(data['image_url']!, _imageUrlMeta),
       );
     }
     if (data.containsKey('coordinator_member_id')) {
@@ -5112,7 +5182,7 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
       localEndTime: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}local_end_time'],
-      )!,
+      ),
       groupMode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}group_mode'],
@@ -5124,6 +5194,10 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
       cancelReason: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}cancel_reason'],
+      ),
+      imageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_url'],
       ),
       coordinatorMemberId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -5174,12 +5248,18 @@ class Session extends DataClass implements Insertable<Session> {
   final DateTime endsAt;
   final String localDate;
   final String localStartTime;
-  final String localEndTime;
+
+  /// Null when the run has no end time (D47). `endsAt` stays filled (start + 3 h)
+  /// so "is it over" checks keep working; see D52.
+  final String? localEndTime;
   final String groupMode;
 
   /// `scheduled` | `cancelled`.
   final String status;
   final String? cancelReason;
+
+  /// The series' banner image URL, copied onto the run by the server (D49).
+  final String? imageUrl;
   final String? coordinatorMemberId;
   final String? coordinatorName;
   final bool isDetached;
@@ -5206,10 +5286,11 @@ class Session extends DataClass implements Insertable<Session> {
     required this.endsAt,
     required this.localDate,
     required this.localStartTime,
-    required this.localEndTime,
+    this.localEndTime,
     required this.groupMode,
     required this.status,
     this.cancelReason,
+    this.imageUrl,
     this.coordinatorMemberId,
     this.coordinatorName,
     required this.isDetached,
@@ -5240,11 +5321,16 @@ class Session extends DataClass implements Insertable<Session> {
     map['ends_at'] = Variable<DateTime>(endsAt);
     map['local_date'] = Variable<String>(localDate);
     map['local_start_time'] = Variable<String>(localStartTime);
-    map['local_end_time'] = Variable<String>(localEndTime);
+    if (!nullToAbsent || localEndTime != null) {
+      map['local_end_time'] = Variable<String>(localEndTime);
+    }
     map['group_mode'] = Variable<String>(groupMode);
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || cancelReason != null) {
       map['cancel_reason'] = Variable<String>(cancelReason);
+    }
+    if (!nullToAbsent || imageUrl != null) {
+      map['image_url'] = Variable<String>(imageUrl);
     }
     if (!nullToAbsent || coordinatorMemberId != null) {
       map['coordinator_member_id'] = Variable<String>(coordinatorMemberId);
@@ -5287,12 +5373,17 @@ class Session extends DataClass implements Insertable<Session> {
       endsAt: Value(endsAt),
       localDate: Value(localDate),
       localStartTime: Value(localStartTime),
-      localEndTime: Value(localEndTime),
+      localEndTime: localEndTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(localEndTime),
       groupMode: Value(groupMode),
       status: Value(status),
       cancelReason: cancelReason == null && nullToAbsent
           ? const Value.absent()
           : Value(cancelReason),
+      imageUrl: imageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imageUrl),
       coordinatorMemberId: coordinatorMemberId == null && nullToAbsent
           ? const Value.absent()
           : Value(coordinatorMemberId),
@@ -5330,10 +5421,11 @@ class Session extends DataClass implements Insertable<Session> {
       endsAt: serializer.fromJson<DateTime>(json['endsAt']),
       localDate: serializer.fromJson<String>(json['localDate']),
       localStartTime: serializer.fromJson<String>(json['localStartTime']),
-      localEndTime: serializer.fromJson<String>(json['localEndTime']),
+      localEndTime: serializer.fromJson<String?>(json['localEndTime']),
       groupMode: serializer.fromJson<String>(json['groupMode']),
       status: serializer.fromJson<String>(json['status']),
       cancelReason: serializer.fromJson<String?>(json['cancelReason']),
+      imageUrl: serializer.fromJson<String?>(json['imageUrl']),
       coordinatorMemberId: serializer.fromJson<String?>(
         json['coordinatorMemberId'],
       ),
@@ -5360,10 +5452,11 @@ class Session extends DataClass implements Insertable<Session> {
       'endsAt': serializer.toJson<DateTime>(endsAt),
       'localDate': serializer.toJson<String>(localDate),
       'localStartTime': serializer.toJson<String>(localStartTime),
-      'localEndTime': serializer.toJson<String>(localEndTime),
+      'localEndTime': serializer.toJson<String?>(localEndTime),
       'groupMode': serializer.toJson<String>(groupMode),
       'status': serializer.toJson<String>(status),
       'cancelReason': serializer.toJson<String?>(cancelReason),
+      'imageUrl': serializer.toJson<String?>(imageUrl),
       'coordinatorMemberId': serializer.toJson<String?>(coordinatorMemberId),
       'coordinatorName': serializer.toJson<String?>(coordinatorName),
       'isDetached': serializer.toJson<bool>(isDetached),
@@ -5386,10 +5479,11 @@ class Session extends DataClass implements Insertable<Session> {
     DateTime? endsAt,
     String? localDate,
     String? localStartTime,
-    String? localEndTime,
+    Value<String?> localEndTime = const Value.absent(),
     String? groupMode,
     String? status,
     Value<String?> cancelReason = const Value.absent(),
+    Value<String?> imageUrl = const Value.absent(),
     Value<String?> coordinatorMemberId = const Value.absent(),
     Value<String?> coordinatorName = const Value.absent(),
     bool? isDetached,
@@ -5411,10 +5505,11 @@ class Session extends DataClass implements Insertable<Session> {
     endsAt: endsAt ?? this.endsAt,
     localDate: localDate ?? this.localDate,
     localStartTime: localStartTime ?? this.localStartTime,
-    localEndTime: localEndTime ?? this.localEndTime,
+    localEndTime: localEndTime.present ? localEndTime.value : this.localEndTime,
     groupMode: groupMode ?? this.groupMode,
     status: status ?? this.status,
     cancelReason: cancelReason.present ? cancelReason.value : this.cancelReason,
+    imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
     coordinatorMemberId: coordinatorMemberId.present
         ? coordinatorMemberId.value
         : this.coordinatorMemberId,
@@ -5452,6 +5547,7 @@ class Session extends DataClass implements Insertable<Session> {
       cancelReason: data.cancelReason.present
           ? data.cancelReason.value
           : this.cancelReason,
+      imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
       coordinatorMemberId: data.coordinatorMemberId.present
           ? data.coordinatorMemberId.value
           : this.coordinatorMemberId,
@@ -5492,6 +5588,7 @@ class Session extends DataClass implements Insertable<Session> {
           ..write('groupMode: $groupMode, ')
           ..write('status: $status, ')
           ..write('cancelReason: $cancelReason, ')
+          ..write('imageUrl: $imageUrl, ')
           ..write('coordinatorMemberId: $coordinatorMemberId, ')
           ..write('coordinatorName: $coordinatorName, ')
           ..write('isDetached: $isDetached, ')
@@ -5520,6 +5617,7 @@ class Session extends DataClass implements Insertable<Session> {
     groupMode,
     status,
     cancelReason,
+    imageUrl,
     coordinatorMemberId,
     coordinatorName,
     isDetached,
@@ -5547,6 +5645,7 @@ class Session extends DataClass implements Insertable<Session> {
           other.groupMode == this.groupMode &&
           other.status == this.status &&
           other.cancelReason == this.cancelReason &&
+          other.imageUrl == this.imageUrl &&
           other.coordinatorMemberId == this.coordinatorMemberId &&
           other.coordinatorName == this.coordinatorName &&
           other.isDetached == this.isDetached &&
@@ -5568,10 +5667,11 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   final Value<DateTime> endsAt;
   final Value<String> localDate;
   final Value<String> localStartTime;
-  final Value<String> localEndTime;
+  final Value<String?> localEndTime;
   final Value<String> groupMode;
   final Value<String> status;
   final Value<String?> cancelReason;
+  final Value<String?> imageUrl;
   final Value<String?> coordinatorMemberId;
   final Value<String?> coordinatorName;
   final Value<bool> isDetached;
@@ -5596,6 +5696,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.groupMode = const Value.absent(),
     this.status = const Value.absent(),
     this.cancelReason = const Value.absent(),
+    this.imageUrl = const Value.absent(),
     this.coordinatorMemberId = const Value.absent(),
     this.coordinatorName = const Value.absent(),
     this.isDetached = const Value.absent(),
@@ -5617,10 +5718,11 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     required DateTime endsAt,
     required String localDate,
     required String localStartTime,
-    required String localEndTime,
+    this.localEndTime = const Value.absent(),
     required String groupMode,
     this.status = const Value.absent(),
     this.cancelReason = const Value.absent(),
+    this.imageUrl = const Value.absent(),
     this.coordinatorMemberId = const Value.absent(),
     this.coordinatorName = const Value.absent(),
     this.isDetached = const Value.absent(),
@@ -5636,7 +5738,6 @@ class SessionsCompanion extends UpdateCompanion<Session> {
        endsAt = Value(endsAt),
        localDate = Value(localDate),
        localStartTime = Value(localStartTime),
-       localEndTime = Value(localEndTime),
        groupMode = Value(groupMode),
        updatedAt = Value(updatedAt);
   static Insertable<Session> custom({
@@ -5655,6 +5756,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Expression<String>? groupMode,
     Expression<String>? status,
     Expression<String>? cancelReason,
+    Expression<String>? imageUrl,
     Expression<String>? coordinatorMemberId,
     Expression<String>? coordinatorName,
     Expression<bool>? isDetached,
@@ -5680,6 +5782,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       if (groupMode != null) 'group_mode': groupMode,
       if (status != null) 'status': status,
       if (cancelReason != null) 'cancel_reason': cancelReason,
+      if (imageUrl != null) 'image_url': imageUrl,
       if (coordinatorMemberId != null)
         'coordinator_member_id': coordinatorMemberId,
       if (coordinatorName != null) 'coordinator_name': coordinatorName,
@@ -5704,10 +5807,11 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Value<DateTime>? endsAt,
     Value<String>? localDate,
     Value<String>? localStartTime,
-    Value<String>? localEndTime,
+    Value<String?>? localEndTime,
     Value<String>? groupMode,
     Value<String>? status,
     Value<String?>? cancelReason,
+    Value<String?>? imageUrl,
     Value<String?>? coordinatorMemberId,
     Value<String?>? coordinatorName,
     Value<bool>? isDetached,
@@ -5733,6 +5837,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       groupMode: groupMode ?? this.groupMode,
       status: status ?? this.status,
       cancelReason: cancelReason ?? this.cancelReason,
+      imageUrl: imageUrl ?? this.imageUrl,
       coordinatorMemberId: coordinatorMemberId ?? this.coordinatorMemberId,
       coordinatorName: coordinatorName ?? this.coordinatorName,
       isDetached: isDetached ?? this.isDetached,
@@ -5792,6 +5897,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     if (cancelReason.present) {
       map['cancel_reason'] = Variable<String>(cancelReason.value);
     }
+    if (imageUrl.present) {
+      map['image_url'] = Variable<String>(imageUrl.value);
+    }
     if (coordinatorMemberId.present) {
       map['coordinator_member_id'] = Variable<String>(
         coordinatorMemberId.value,
@@ -5839,6 +5947,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
           ..write('groupMode: $groupMode, ')
           ..write('status: $status, ')
           ..write('cancelReason: $cancelReason, ')
+          ..write('imageUrl: $imageUrl, ')
           ..write('coordinatorMemberId: $coordinatorMemberId, ')
           ..write('coordinatorName: $coordinatorName, ')
           ..write('isDetached: $isDetached, ')
@@ -7148,6 +7257,1297 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
   }
 }
 
+class $GroupMessagesTable extends GroupMessages
+    with TableInfo<$GroupMessagesTable, GroupMessage> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GroupMessagesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _memberIdMeta = const VerificationMeta(
+    'memberId',
+  );
+  @override
+  late final GeneratedColumn<String> memberId = GeneratedColumn<String>(
+    'member_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _authorNameMeta = const VerificationMeta(
+    'authorName',
+  );
+  @override
+  late final GeneratedColumn<String> authorName = GeneratedColumn<String>(
+    'author_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _authorRoleMeta = const VerificationMeta(
+    'authorRole',
+  );
+  @override
+  late final GeneratedColumn<String> authorRole = GeneratedColumn<String>(
+    'author_role',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('member'),
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sendStateMeta = const VerificationMeta(
+    'sendState',
+  );
+  @override
+  late final GeneratedColumn<String> sendState = GeneratedColumn<String>(
+    'send_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('sent'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    clubId,
+    groupId,
+    memberId,
+    authorName,
+    authorRole,
+    body,
+    createdAt,
+    deletedAt,
+    sendState,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'group_messages';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GroupMessage> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('member_id')) {
+      context.handle(
+        _memberIdMeta,
+        memberId.isAcceptableOrUnknown(data['member_id']!, _memberIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memberIdMeta);
+    }
+    if (data.containsKey('author_name')) {
+      context.handle(
+        _authorNameMeta,
+        authorName.isAcceptableOrUnknown(data['author_name']!, _authorNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_authorNameMeta);
+    }
+    if (data.containsKey('author_role')) {
+      context.handle(
+        _authorRoleMeta,
+        authorRole.isAcceptableOrUnknown(data['author_role']!, _authorRoleMeta),
+      );
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('send_state')) {
+      context.handle(
+        _sendStateMeta,
+        sendState.isAcceptableOrUnknown(data['send_state']!, _sendStateMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GroupMessage map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GroupMessage(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+      memberId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_id'],
+      )!,
+      authorName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}author_name'],
+      )!,
+      authorRole: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}author_role'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      sendState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}send_state'],
+      )!,
+    );
+  }
+
+  @override
+  $GroupMessagesTable createAlias(String alias) {
+    return $GroupMessagesTable(attachedDatabase, alias);
+  }
+}
+
+class GroupMessage extends DataClass implements Insertable<GroupMessage> {
+  final String id;
+  final int clubId;
+  final String groupId;
+  final String memberId;
+
+  /// First name + surname initial, as sent by the server (`Sam B.`).
+  final String authorName;
+
+  /// The author's role in this thread: `leader` | `coordinator` | `committee` | `member`.
+  final String authorRole;
+  final String body;
+  final DateTime createdAt;
+  final DateTime? deletedAt;
+
+  /// `sent` | `pending` (outbox, retried) | `failed` (refused, Retry/Delete).
+  final String sendState;
+  const GroupMessage({
+    required this.id,
+    required this.clubId,
+    required this.groupId,
+    required this.memberId,
+    required this.authorName,
+    required this.authorRole,
+    required this.body,
+    required this.createdAt,
+    this.deletedAt,
+    required this.sendState,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['club_id'] = Variable<int>(clubId);
+    map['group_id'] = Variable<String>(groupId);
+    map['member_id'] = Variable<String>(memberId);
+    map['author_name'] = Variable<String>(authorName);
+    map['author_role'] = Variable<String>(authorRole);
+    map['body'] = Variable<String>(body);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['send_state'] = Variable<String>(sendState);
+    return map;
+  }
+
+  GroupMessagesCompanion toCompanion(bool nullToAbsent) {
+    return GroupMessagesCompanion(
+      id: Value(id),
+      clubId: Value(clubId),
+      groupId: Value(groupId),
+      memberId: Value(memberId),
+      authorName: Value(authorName),
+      authorRole: Value(authorRole),
+      body: Value(body),
+      createdAt: Value(createdAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      sendState: Value(sendState),
+    );
+  }
+
+  factory GroupMessage.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GroupMessage(
+      id: serializer.fromJson<String>(json['id']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+      memberId: serializer.fromJson<String>(json['memberId']),
+      authorName: serializer.fromJson<String>(json['authorName']),
+      authorRole: serializer.fromJson<String>(json['authorRole']),
+      body: serializer.fromJson<String>(json['body']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      sendState: serializer.fromJson<String>(json['sendState']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'clubId': serializer.toJson<int>(clubId),
+      'groupId': serializer.toJson<String>(groupId),
+      'memberId': serializer.toJson<String>(memberId),
+      'authorName': serializer.toJson<String>(authorName),
+      'authorRole': serializer.toJson<String>(authorRole),
+      'body': serializer.toJson<String>(body),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'sendState': serializer.toJson<String>(sendState),
+    };
+  }
+
+  GroupMessage copyWith({
+    String? id,
+    int? clubId,
+    String? groupId,
+    String? memberId,
+    String? authorName,
+    String? authorRole,
+    String? body,
+    DateTime? createdAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? sendState,
+  }) => GroupMessage(
+    id: id ?? this.id,
+    clubId: clubId ?? this.clubId,
+    groupId: groupId ?? this.groupId,
+    memberId: memberId ?? this.memberId,
+    authorName: authorName ?? this.authorName,
+    authorRole: authorRole ?? this.authorRole,
+    body: body ?? this.body,
+    createdAt: createdAt ?? this.createdAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    sendState: sendState ?? this.sendState,
+  );
+  GroupMessage copyWithCompanion(GroupMessagesCompanion data) {
+    return GroupMessage(
+      id: data.id.present ? data.id.value : this.id,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      memberId: data.memberId.present ? data.memberId.value : this.memberId,
+      authorName: data.authorName.present
+          ? data.authorName.value
+          : this.authorName,
+      authorRole: data.authorRole.present
+          ? data.authorRole.value
+          : this.authorRole,
+      body: data.body.present ? data.body.value : this.body,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      sendState: data.sendState.present ? data.sendState.value : this.sendState,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GroupMessage(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('groupId: $groupId, ')
+          ..write('memberId: $memberId, ')
+          ..write('authorName: $authorName, ')
+          ..write('authorRole: $authorRole, ')
+          ..write('body: $body, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('sendState: $sendState')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    clubId,
+    groupId,
+    memberId,
+    authorName,
+    authorRole,
+    body,
+    createdAt,
+    deletedAt,
+    sendState,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GroupMessage &&
+          other.id == this.id &&
+          other.clubId == this.clubId &&
+          other.groupId == this.groupId &&
+          other.memberId == this.memberId &&
+          other.authorName == this.authorName &&
+          other.authorRole == this.authorRole &&
+          other.body == this.body &&
+          other.createdAt == this.createdAt &&
+          other.deletedAt == this.deletedAt &&
+          other.sendState == this.sendState);
+}
+
+class GroupMessagesCompanion extends UpdateCompanion<GroupMessage> {
+  final Value<String> id;
+  final Value<int> clubId;
+  final Value<String> groupId;
+  final Value<String> memberId;
+  final Value<String> authorName;
+  final Value<String> authorRole;
+  final Value<String> body;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> deletedAt;
+  final Value<String> sendState;
+  final Value<int> rowid;
+  const GroupMessagesCompanion({
+    this.id = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.memberId = const Value.absent(),
+    this.authorName = const Value.absent(),
+    this.authorRole = const Value.absent(),
+    this.body = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.sendState = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GroupMessagesCompanion.insert({
+    required String id,
+    required int clubId,
+    required String groupId,
+    required String memberId,
+    required String authorName,
+    this.authorRole = const Value.absent(),
+    required String body,
+    required DateTime createdAt,
+    this.deletedAt = const Value.absent(),
+    this.sendState = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       clubId = Value(clubId),
+       groupId = Value(groupId),
+       memberId = Value(memberId),
+       authorName = Value(authorName),
+       body = Value(body),
+       createdAt = Value(createdAt);
+  static Insertable<GroupMessage> custom({
+    Expression<String>? id,
+    Expression<int>? clubId,
+    Expression<String>? groupId,
+    Expression<String>? memberId,
+    Expression<String>? authorName,
+    Expression<String>? authorRole,
+    Expression<String>? body,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? sendState,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (clubId != null) 'club_id': clubId,
+      if (groupId != null) 'group_id': groupId,
+      if (memberId != null) 'member_id': memberId,
+      if (authorName != null) 'author_name': authorName,
+      if (authorRole != null) 'author_role': authorRole,
+      if (body != null) 'body': body,
+      if (createdAt != null) 'created_at': createdAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (sendState != null) 'send_state': sendState,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GroupMessagesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? clubId,
+    Value<String>? groupId,
+    Value<String>? memberId,
+    Value<String>? authorName,
+    Value<String>? authorRole,
+    Value<String>? body,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? deletedAt,
+    Value<String>? sendState,
+    Value<int>? rowid,
+  }) {
+    return GroupMessagesCompanion(
+      id: id ?? this.id,
+      clubId: clubId ?? this.clubId,
+      groupId: groupId ?? this.groupId,
+      memberId: memberId ?? this.memberId,
+      authorName: authorName ?? this.authorName,
+      authorRole: authorRole ?? this.authorRole,
+      body: body ?? this.body,
+      createdAt: createdAt ?? this.createdAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      sendState: sendState ?? this.sendState,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (memberId.present) {
+      map['member_id'] = Variable<String>(memberId.value);
+    }
+    if (authorName.present) {
+      map['author_name'] = Variable<String>(authorName.value);
+    }
+    if (authorRole.present) {
+      map['author_role'] = Variable<String>(authorRole.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (sendState.present) {
+      map['send_state'] = Variable<String>(sendState.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GroupMessagesCompanion(')
+          ..write('id: $id, ')
+          ..write('clubId: $clubId, ')
+          ..write('groupId: $groupId, ')
+          ..write('memberId: $memberId, ')
+          ..write('authorName: $authorName, ')
+          ..write('authorRole: $authorRole, ')
+          ..write('body: $body, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('sendState: $sendState, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ThreadStatesTable extends ThreadStates
+    with TableInfo<$ThreadStatesTable, ThreadState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ThreadStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<String> sessionId = GeneratedColumn<String>(
+    'session_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _localDateMeta = const VerificationMeta(
+    'localDate',
+  );
+  @override
+  late final GeneratedColumn<String> localDate = GeneratedColumn<String>(
+    'local_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastMessageAtMeta = const VerificationMeta(
+    'lastMessageAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastMessageAt =
+      GeneratedColumn<DateTime>(
+        'last_message_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastBodyMeta = const VerificationMeta(
+    'lastBody',
+  );
+  @override
+  late final GeneratedColumn<String> lastBody = GeneratedColumn<String>(
+    'last_body',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastAuthorMeta = const VerificationMeta(
+    'lastAuthor',
+  );
+  @override
+  late final GeneratedColumn<String> lastAuthor = GeneratedColumn<String>(
+    'last_author',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _unreadCountMeta = const VerificationMeta(
+    'unreadCount',
+  );
+  @override
+  late final GeneratedColumn<int> unreadCount = GeneratedColumn<int>(
+    'unread_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _mutedMeta = const VerificationMeta('muted');
+  @override
+  late final GeneratedColumn<bool> muted = GeneratedColumn<bool>(
+    'muted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("muted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _closedMeta = const VerificationMeta('closed');
+  @override
+  late final GeneratedColumn<bool> closed = GeneratedColumn<bool>(
+    'closed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("closed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    groupId,
+    clubId,
+    sessionId,
+    label,
+    localDate,
+    lastMessageAt,
+    lastBody,
+    lastAuthor,
+    unreadCount,
+    muted,
+    closed,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'thread_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ThreadState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
+    if (data.containsKey('local_date')) {
+      context.handle(
+        _localDateMeta,
+        localDate.isAcceptableOrUnknown(data['local_date']!, _localDateMeta),
+      );
+    }
+    if (data.containsKey('last_message_at')) {
+      context.handle(
+        _lastMessageAtMeta,
+        lastMessageAt.isAcceptableOrUnknown(
+          data['last_message_at']!,
+          _lastMessageAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_body')) {
+      context.handle(
+        _lastBodyMeta,
+        lastBody.isAcceptableOrUnknown(data['last_body']!, _lastBodyMeta),
+      );
+    }
+    if (data.containsKey('last_author')) {
+      context.handle(
+        _lastAuthorMeta,
+        lastAuthor.isAcceptableOrUnknown(data['last_author']!, _lastAuthorMeta),
+      );
+    }
+    if (data.containsKey('unread_count')) {
+      context.handle(
+        _unreadCountMeta,
+        unreadCount.isAcceptableOrUnknown(
+          data['unread_count']!,
+          _unreadCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('muted')) {
+      context.handle(
+        _mutedMeta,
+        muted.isAcceptableOrUnknown(data['muted']!, _mutedMeta),
+      );
+    }
+    if (data.containsKey('closed')) {
+      context.handle(
+        _closedMeta,
+        closed.isAcceptableOrUnknown(data['closed']!, _closedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {groupId};
+  @override
+  ThreadState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ThreadState(
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_id'],
+      ),
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
+      localDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_date'],
+      ),
+      lastMessageAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_message_at'],
+      ),
+      lastBody: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_body'],
+      ),
+      lastAuthor: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_author'],
+      ),
+      unreadCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}unread_count'],
+      )!,
+      muted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}muted'],
+      )!,
+      closed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}closed'],
+      )!,
+    );
+  }
+
+  @override
+  $ThreadStatesTable createAlias(String alias) {
+    return $ThreadStatesTable(attachedDatabase, alias);
+  }
+}
+
+class ThreadState extends DataClass implements Insertable<ThreadState> {
+  final String groupId;
+  final int clubId;
+
+  /// Null until the thread has been listed by `GET …/threads`.
+  final String? sessionId;
+
+  /// The group's pace/label text in the caller's units.
+  final String? label;
+
+  /// Club-local `yyyy-MM-dd` of the run.
+  final String? localDate;
+  final DateTime? lastMessageAt;
+  final String? lastBody;
+  final String? lastAuthor;
+  final int unreadCount;
+  final bool muted;
+  final bool closed;
+  const ThreadState({
+    required this.groupId,
+    required this.clubId,
+    this.sessionId,
+    this.label,
+    this.localDate,
+    this.lastMessageAt,
+    this.lastBody,
+    this.lastAuthor,
+    required this.unreadCount,
+    required this.muted,
+    required this.closed,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['group_id'] = Variable<String>(groupId);
+    map['club_id'] = Variable<int>(clubId);
+    if (!nullToAbsent || sessionId != null) {
+      map['session_id'] = Variable<String>(sessionId);
+    }
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    if (!nullToAbsent || localDate != null) {
+      map['local_date'] = Variable<String>(localDate);
+    }
+    if (!nullToAbsent || lastMessageAt != null) {
+      map['last_message_at'] = Variable<DateTime>(lastMessageAt);
+    }
+    if (!nullToAbsent || lastBody != null) {
+      map['last_body'] = Variable<String>(lastBody);
+    }
+    if (!nullToAbsent || lastAuthor != null) {
+      map['last_author'] = Variable<String>(lastAuthor);
+    }
+    map['unread_count'] = Variable<int>(unreadCount);
+    map['muted'] = Variable<bool>(muted);
+    map['closed'] = Variable<bool>(closed);
+    return map;
+  }
+
+  ThreadStatesCompanion toCompanion(bool nullToAbsent) {
+    return ThreadStatesCompanion(
+      groupId: Value(groupId),
+      clubId: Value(clubId),
+      sessionId: sessionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sessionId),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
+      localDate: localDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(localDate),
+      lastMessageAt: lastMessageAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastMessageAt),
+      lastBody: lastBody == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastBody),
+      lastAuthor: lastAuthor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastAuthor),
+      unreadCount: Value(unreadCount),
+      muted: Value(muted),
+      closed: Value(closed),
+    );
+  }
+
+  factory ThreadState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ThreadState(
+      groupId: serializer.fromJson<String>(json['groupId']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      sessionId: serializer.fromJson<String?>(json['sessionId']),
+      label: serializer.fromJson<String?>(json['label']),
+      localDate: serializer.fromJson<String?>(json['localDate']),
+      lastMessageAt: serializer.fromJson<DateTime?>(json['lastMessageAt']),
+      lastBody: serializer.fromJson<String?>(json['lastBody']),
+      lastAuthor: serializer.fromJson<String?>(json['lastAuthor']),
+      unreadCount: serializer.fromJson<int>(json['unreadCount']),
+      muted: serializer.fromJson<bool>(json['muted']),
+      closed: serializer.fromJson<bool>(json['closed']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'groupId': serializer.toJson<String>(groupId),
+      'clubId': serializer.toJson<int>(clubId),
+      'sessionId': serializer.toJson<String?>(sessionId),
+      'label': serializer.toJson<String?>(label),
+      'localDate': serializer.toJson<String?>(localDate),
+      'lastMessageAt': serializer.toJson<DateTime?>(lastMessageAt),
+      'lastBody': serializer.toJson<String?>(lastBody),
+      'lastAuthor': serializer.toJson<String?>(lastAuthor),
+      'unreadCount': serializer.toJson<int>(unreadCount),
+      'muted': serializer.toJson<bool>(muted),
+      'closed': serializer.toJson<bool>(closed),
+    };
+  }
+
+  ThreadState copyWith({
+    String? groupId,
+    int? clubId,
+    Value<String?> sessionId = const Value.absent(),
+    Value<String?> label = const Value.absent(),
+    Value<String?> localDate = const Value.absent(),
+    Value<DateTime?> lastMessageAt = const Value.absent(),
+    Value<String?> lastBody = const Value.absent(),
+    Value<String?> lastAuthor = const Value.absent(),
+    int? unreadCount,
+    bool? muted,
+    bool? closed,
+  }) => ThreadState(
+    groupId: groupId ?? this.groupId,
+    clubId: clubId ?? this.clubId,
+    sessionId: sessionId.present ? sessionId.value : this.sessionId,
+    label: label.present ? label.value : this.label,
+    localDate: localDate.present ? localDate.value : this.localDate,
+    lastMessageAt: lastMessageAt.present
+        ? lastMessageAt.value
+        : this.lastMessageAt,
+    lastBody: lastBody.present ? lastBody.value : this.lastBody,
+    lastAuthor: lastAuthor.present ? lastAuthor.value : this.lastAuthor,
+    unreadCount: unreadCount ?? this.unreadCount,
+    muted: muted ?? this.muted,
+    closed: closed ?? this.closed,
+  );
+  ThreadState copyWithCompanion(ThreadStatesCompanion data) {
+    return ThreadState(
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      label: data.label.present ? data.label.value : this.label,
+      localDate: data.localDate.present ? data.localDate.value : this.localDate,
+      lastMessageAt: data.lastMessageAt.present
+          ? data.lastMessageAt.value
+          : this.lastMessageAt,
+      lastBody: data.lastBody.present ? data.lastBody.value : this.lastBody,
+      lastAuthor: data.lastAuthor.present
+          ? data.lastAuthor.value
+          : this.lastAuthor,
+      unreadCount: data.unreadCount.present
+          ? data.unreadCount.value
+          : this.unreadCount,
+      muted: data.muted.present ? data.muted.value : this.muted,
+      closed: data.closed.present ? data.closed.value : this.closed,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ThreadState(')
+          ..write('groupId: $groupId, ')
+          ..write('clubId: $clubId, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('label: $label, ')
+          ..write('localDate: $localDate, ')
+          ..write('lastMessageAt: $lastMessageAt, ')
+          ..write('lastBody: $lastBody, ')
+          ..write('lastAuthor: $lastAuthor, ')
+          ..write('unreadCount: $unreadCount, ')
+          ..write('muted: $muted, ')
+          ..write('closed: $closed')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    groupId,
+    clubId,
+    sessionId,
+    label,
+    localDate,
+    lastMessageAt,
+    lastBody,
+    lastAuthor,
+    unreadCount,
+    muted,
+    closed,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ThreadState &&
+          other.groupId == this.groupId &&
+          other.clubId == this.clubId &&
+          other.sessionId == this.sessionId &&
+          other.label == this.label &&
+          other.localDate == this.localDate &&
+          other.lastMessageAt == this.lastMessageAt &&
+          other.lastBody == this.lastBody &&
+          other.lastAuthor == this.lastAuthor &&
+          other.unreadCount == this.unreadCount &&
+          other.muted == this.muted &&
+          other.closed == this.closed);
+}
+
+class ThreadStatesCompanion extends UpdateCompanion<ThreadState> {
+  final Value<String> groupId;
+  final Value<int> clubId;
+  final Value<String?> sessionId;
+  final Value<String?> label;
+  final Value<String?> localDate;
+  final Value<DateTime?> lastMessageAt;
+  final Value<String?> lastBody;
+  final Value<String?> lastAuthor;
+  final Value<int> unreadCount;
+  final Value<bool> muted;
+  final Value<bool> closed;
+  final Value<int> rowid;
+  const ThreadStatesCompanion({
+    this.groupId = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.localDate = const Value.absent(),
+    this.lastMessageAt = const Value.absent(),
+    this.lastBody = const Value.absent(),
+    this.lastAuthor = const Value.absent(),
+    this.unreadCount = const Value.absent(),
+    this.muted = const Value.absent(),
+    this.closed = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ThreadStatesCompanion.insert({
+    required String groupId,
+    required int clubId,
+    this.sessionId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.localDate = const Value.absent(),
+    this.lastMessageAt = const Value.absent(),
+    this.lastBody = const Value.absent(),
+    this.lastAuthor = const Value.absent(),
+    this.unreadCount = const Value.absent(),
+    this.muted = const Value.absent(),
+    this.closed = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : groupId = Value(groupId),
+       clubId = Value(clubId);
+  static Insertable<ThreadState> custom({
+    Expression<String>? groupId,
+    Expression<int>? clubId,
+    Expression<String>? sessionId,
+    Expression<String>? label,
+    Expression<String>? localDate,
+    Expression<DateTime>? lastMessageAt,
+    Expression<String>? lastBody,
+    Expression<String>? lastAuthor,
+    Expression<int>? unreadCount,
+    Expression<bool>? muted,
+    Expression<bool>? closed,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (groupId != null) 'group_id': groupId,
+      if (clubId != null) 'club_id': clubId,
+      if (sessionId != null) 'session_id': sessionId,
+      if (label != null) 'label': label,
+      if (localDate != null) 'local_date': localDate,
+      if (lastMessageAt != null) 'last_message_at': lastMessageAt,
+      if (lastBody != null) 'last_body': lastBody,
+      if (lastAuthor != null) 'last_author': lastAuthor,
+      if (unreadCount != null) 'unread_count': unreadCount,
+      if (muted != null) 'muted': muted,
+      if (closed != null) 'closed': closed,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ThreadStatesCompanion copyWith({
+    Value<String>? groupId,
+    Value<int>? clubId,
+    Value<String?>? sessionId,
+    Value<String?>? label,
+    Value<String?>? localDate,
+    Value<DateTime?>? lastMessageAt,
+    Value<String?>? lastBody,
+    Value<String?>? lastAuthor,
+    Value<int>? unreadCount,
+    Value<bool>? muted,
+    Value<bool>? closed,
+    Value<int>? rowid,
+  }) {
+    return ThreadStatesCompanion(
+      groupId: groupId ?? this.groupId,
+      clubId: clubId ?? this.clubId,
+      sessionId: sessionId ?? this.sessionId,
+      label: label ?? this.label,
+      localDate: localDate ?? this.localDate,
+      lastMessageAt: lastMessageAt ?? this.lastMessageAt,
+      lastBody: lastBody ?? this.lastBody,
+      lastAuthor: lastAuthor ?? this.lastAuthor,
+      unreadCount: unreadCount ?? this.unreadCount,
+      muted: muted ?? this.muted,
+      closed: closed ?? this.closed,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<String>(sessionId.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (localDate.present) {
+      map['local_date'] = Variable<String>(localDate.value);
+    }
+    if (lastMessageAt.present) {
+      map['last_message_at'] = Variable<DateTime>(lastMessageAt.value);
+    }
+    if (lastBody.present) {
+      map['last_body'] = Variable<String>(lastBody.value);
+    }
+    if (lastAuthor.present) {
+      map['last_author'] = Variable<String>(lastAuthor.value);
+    }
+    if (unreadCount.present) {
+      map['unread_count'] = Variable<int>(unreadCount.value);
+    }
+    if (muted.present) {
+      map['muted'] = Variable<bool>(muted.value);
+    }
+    if (closed.present) {
+      map['closed'] = Variable<bool>(closed.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ThreadStatesCompanion(')
+          ..write('groupId: $groupId, ')
+          ..write('clubId: $clubId, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('label: $label, ')
+          ..write('localDate: $localDate, ')
+          ..write('lastMessageAt: $lastMessageAt, ')
+          ..write('lastBody: $lastBody, ')
+          ..write('lastAuthor: $lastAuthor, ')
+          ..write('unreadCount: $unreadCount, ')
+          ..write('muted: $muted, ')
+          ..write('closed: $closed, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7162,6 +8562,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SessionPlansTable sessionPlans = $SessionPlansTable(this);
   late final $MyAttendanceTable myAttendance = $MyAttendanceTable(this);
   late final $PreferencesTable preferences = $PreferencesTable(this);
+  late final $GroupMessagesTable groupMessages = $GroupMessagesTable(this);
+  late final $ThreadStatesTable threadStates = $ThreadStatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7178,6 +8580,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     sessionPlans,
     myAttendance,
     preferences,
+    groupMessages,
+    threadStates,
   ];
 }
 
@@ -9048,12 +10452,13 @@ typedef $$SessionSeriesTableCreateCompanionBuilder =
       Value<String?> venueId,
       required int weekday,
       required String startTime,
-      required int durationMin,
+      Value<int?> durationMin,
       Value<int> intervalWeeks,
       required String validFrom,
       Value<String?> validUntil,
       required String groupMode,
       Value<String?> cmsSlug,
+      Value<String?> imageUrl,
       required DateTime updatedAt,
       Value<int> rowid,
     });
@@ -9066,12 +10471,13 @@ typedef $$SessionSeriesTableUpdateCompanionBuilder =
       Value<String?> venueId,
       Value<int> weekday,
       Value<String> startTime,
-      Value<int> durationMin,
+      Value<int?> durationMin,
       Value<int> intervalWeeks,
       Value<String> validFrom,
       Value<String?> validUntil,
       Value<String> groupMode,
       Value<String?> cmsSlug,
+      Value<String?> imageUrl,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -9147,6 +10553,11 @@ class $$SessionSeriesTableFilterComposer
 
   ColumnFilters<String> get cmsSlug => $composableBuilder(
     column: $table.cmsSlug,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9230,6 +10641,11 @@ class $$SessionSeriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -9292,6 +10708,9 @@ class $$SessionSeriesTableAnnotationComposer
   GeneratedColumn<String> get cmsSlug =>
       $composableBuilder(column: $table.cmsSlug, builder: (column) => column);
 
+  GeneratedColumn<String> get imageUrl =>
+      $composableBuilder(column: $table.imageUrl, builder: (column) => column);
+
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
@@ -9334,12 +10753,13 @@ class $$SessionSeriesTableTableManager
                 Value<String?> venueId = const Value.absent(),
                 Value<int> weekday = const Value.absent(),
                 Value<String> startTime = const Value.absent(),
-                Value<int> durationMin = const Value.absent(),
+                Value<int?> durationMin = const Value.absent(),
                 Value<int> intervalWeeks = const Value.absent(),
                 Value<String> validFrom = const Value.absent(),
                 Value<String?> validUntil = const Value.absent(),
                 Value<String> groupMode = const Value.absent(),
                 Value<String?> cmsSlug = const Value.absent(),
+                Value<String?> imageUrl = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionSeriesCompanion(
@@ -9356,6 +10776,7 @@ class $$SessionSeriesTableTableManager
                 validUntil: validUntil,
                 groupMode: groupMode,
                 cmsSlug: cmsSlug,
+                imageUrl: imageUrl,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -9368,12 +10789,13 @@ class $$SessionSeriesTableTableManager
                 Value<String?> venueId = const Value.absent(),
                 required int weekday,
                 required String startTime,
-                required int durationMin,
+                Value<int?> durationMin = const Value.absent(),
                 Value<int> intervalWeeks = const Value.absent(),
                 required String validFrom,
                 Value<String?> validUntil = const Value.absent(),
                 required String groupMode,
                 Value<String?> cmsSlug = const Value.absent(),
+                Value<String?> imageUrl = const Value.absent(),
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => SessionSeriesCompanion.insert(
@@ -9390,6 +10812,7 @@ class $$SessionSeriesTableTableManager
                 validUntil: validUntil,
                 groupMode: groupMode,
                 cmsSlug: cmsSlug,
+                imageUrl: imageUrl,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -9439,10 +10862,11 @@ typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
   required DateTime endsAt,
   required String localDate,
   required String localStartTime,
-  required String localEndTime,
+  Value<String?> localEndTime,
   required String groupMode,
   Value<String> status,
   Value<String?> cancelReason,
+  Value<String?> imageUrl,
   Value<String?> coordinatorMemberId,
   Value<String?> coordinatorName,
   Value<bool> isDetached,
@@ -9464,10 +10888,11 @@ typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
   Value<DateTime> endsAt,
   Value<String> localDate,
   Value<String> localStartTime,
-  Value<String> localEndTime,
+  Value<String?> localEndTime,
   Value<String> groupMode,
   Value<String> status,
   Value<String?> cancelReason,
+  Value<String?> imageUrl,
   Value<String?> coordinatorMemberId,
   Value<String?> coordinatorName,
   Value<bool> isDetached,
@@ -9559,6 +10984,11 @@ class $$SessionsTableFilterComposer
 
   ColumnFilters<String> get cancelReason => $composableBuilder(
     column: $table.cancelReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9682,6 +11112,11 @@ class $$SessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get imageUrl => $composableBuilder(
+    column: $table.imageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get coordinatorMemberId => $composableBuilder(
     column: $table.coordinatorMemberId,
     builder: (column) => ColumnOrderings(column),
@@ -9780,6 +11215,9 @@ class $$SessionsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get imageUrl =>
+      $composableBuilder(column: $table.imageUrl, builder: (column) => column);
+
   GeneratedColumn<String> get coordinatorMemberId => $composableBuilder(
     column: $table.coordinatorMemberId,
     builder: (column) => column,
@@ -9853,10 +11291,11 @@ class $$SessionsTableTableManager
                 Value<DateTime> endsAt = const Value.absent(),
                 Value<String> localDate = const Value.absent(),
                 Value<String> localStartTime = const Value.absent(),
-                Value<String> localEndTime = const Value.absent(),
+                Value<String?> localEndTime = const Value.absent(),
                 Value<String> groupMode = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> cancelReason = const Value.absent(),
+                Value<String?> imageUrl = const Value.absent(),
                 Value<String?> coordinatorMemberId = const Value.absent(),
                 Value<String?> coordinatorName = const Value.absent(),
                 Value<bool> isDetached = const Value.absent(),
@@ -9881,6 +11320,7 @@ class $$SessionsTableTableManager
                 groupMode: groupMode,
                 status: status,
                 cancelReason: cancelReason,
+                imageUrl: imageUrl,
                 coordinatorMemberId: coordinatorMemberId,
                 coordinatorName: coordinatorName,
                 isDetached: isDetached,
@@ -9903,10 +11343,11 @@ class $$SessionsTableTableManager
                 required DateTime endsAt,
                 required String localDate,
                 required String localStartTime,
-                required String localEndTime,
+                Value<String?> localEndTime = const Value.absent(),
                 required String groupMode,
                 Value<String> status = const Value.absent(),
                 Value<String?> cancelReason = const Value.absent(),
+                Value<String?> imageUrl = const Value.absent(),
                 Value<String?> coordinatorMemberId = const Value.absent(),
                 Value<String?> coordinatorName = const Value.absent(),
                 Value<bool> isDetached = const Value.absent(),
@@ -9931,6 +11372,7 @@ class $$SessionsTableTableManager
                 groupMode: groupMode,
                 status: status,
                 cancelReason: cancelReason,
+                imageUrl: imageUrl,
                 coordinatorMemberId: coordinatorMemberId,
                 coordinatorName: coordinatorName,
                 isDetached: isDetached,
@@ -10670,6 +12112,643 @@ typedef $$PreferencesTableProcessedTableManager =
       RunPreferences,
       PrefetchHooks Function()
     >;
+typedef $$GroupMessagesTableCreateCompanionBuilder =
+    GroupMessagesCompanion Function({
+      required String id,
+      required int clubId,
+      required String groupId,
+      required String memberId,
+      required String authorName,
+      Value<String> authorRole,
+      required String body,
+      required DateTime createdAt,
+      Value<DateTime?> deletedAt,
+      Value<String> sendState,
+      Value<int> rowid,
+    });
+typedef $$GroupMessagesTableUpdateCompanionBuilder =
+    GroupMessagesCompanion Function({
+      Value<String> id,
+      Value<int> clubId,
+      Value<String> groupId,
+      Value<String> memberId,
+      Value<String> authorName,
+      Value<String> authorRole,
+      Value<String> body,
+      Value<DateTime> createdAt,
+      Value<DateTime?> deletedAt,
+      Value<String> sendState,
+      Value<int> rowid,
+    });
+
+class $$GroupMessagesTableFilterComposer
+    extends Composer<_$AppDatabase, $GroupMessagesTable> {
+  $$GroupMessagesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupId => $composableBuilder(
+    column: $table.groupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get authorName => $composableBuilder(
+    column: $table.authorName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get authorRole => $composableBuilder(
+    column: $table.authorRole,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sendState => $composableBuilder(
+    column: $table.sendState,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GroupMessagesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GroupMessagesTable> {
+  $$GroupMessagesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupId => $composableBuilder(
+    column: $table.groupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get memberId => $composableBuilder(
+    column: $table.memberId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get authorName => $composableBuilder(
+    column: $table.authorName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get authorRole => $composableBuilder(
+    column: $table.authorRole,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sendState => $composableBuilder(
+    column: $table.sendState,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GroupMessagesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GroupMessagesTable> {
+  $$GroupMessagesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get groupId =>
+      $composableBuilder(column: $table.groupId, builder: (column) => column);
+
+  GeneratedColumn<String> get memberId =>
+      $composableBuilder(column: $table.memberId, builder: (column) => column);
+
+  GeneratedColumn<String> get authorName => $composableBuilder(
+    column: $table.authorName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get authorRole => $composableBuilder(
+    column: $table.authorRole,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get sendState =>
+      $composableBuilder(column: $table.sendState, builder: (column) => column);
+}
+
+class $$GroupMessagesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GroupMessagesTable,
+          GroupMessage,
+          $$GroupMessagesTableFilterComposer,
+          $$GroupMessagesTableOrderingComposer,
+          $$GroupMessagesTableAnnotationComposer,
+          $$GroupMessagesTableCreateCompanionBuilder,
+          $$GroupMessagesTableUpdateCompanionBuilder,
+          (
+            GroupMessage,
+            BaseReferences<_$AppDatabase, $GroupMessagesTable, GroupMessage>,
+          ),
+          GroupMessage,
+          PrefetchHooks Function()
+        > {
+  $$GroupMessagesTableTableManager(_$AppDatabase db, $GroupMessagesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GroupMessagesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GroupMessagesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GroupMessagesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> groupId = const Value.absent(),
+                Value<String> memberId = const Value.absent(),
+                Value<String> authorName = const Value.absent(),
+                Value<String> authorRole = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> sendState = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GroupMessagesCompanion(
+                id: id,
+                clubId: clubId,
+                groupId: groupId,
+                memberId: memberId,
+                authorName: authorName,
+                authorRole: authorRole,
+                body: body,
+                createdAt: createdAt,
+                deletedAt: deletedAt,
+                sendState: sendState,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required int clubId,
+                required String groupId,
+                required String memberId,
+                required String authorName,
+                Value<String> authorRole = const Value.absent(),
+                required String body,
+                required DateTime createdAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> sendState = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GroupMessagesCompanion.insert(
+                id: id,
+                clubId: clubId,
+                groupId: groupId,
+                memberId: memberId,
+                authorName: authorName,
+                authorRole: authorRole,
+                body: body,
+                createdAt: createdAt,
+                deletedAt: deletedAt,
+                sendState: sendState,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$GroupMessagesTable, GroupMessage>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $GroupMessagesTable,
+                    GroupMessage
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GroupMessagesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GroupMessagesTable,
+      GroupMessage,
+      $$GroupMessagesTableFilterComposer,
+      $$GroupMessagesTableOrderingComposer,
+      $$GroupMessagesTableAnnotationComposer,
+      $$GroupMessagesTableCreateCompanionBuilder,
+      $$GroupMessagesTableUpdateCompanionBuilder,
+      (
+        GroupMessage,
+        BaseReferences<_$AppDatabase, $GroupMessagesTable, GroupMessage>,
+      ),
+      GroupMessage,
+      PrefetchHooks Function()
+    >;
+typedef $$ThreadStatesTableCreateCompanionBuilder =
+    ThreadStatesCompanion Function({
+      required String groupId,
+      required int clubId,
+      Value<String?> sessionId,
+      Value<String?> label,
+      Value<String?> localDate,
+      Value<DateTime?> lastMessageAt,
+      Value<String?> lastBody,
+      Value<String?> lastAuthor,
+      Value<int> unreadCount,
+      Value<bool> muted,
+      Value<bool> closed,
+      Value<int> rowid,
+    });
+typedef $$ThreadStatesTableUpdateCompanionBuilder =
+    ThreadStatesCompanion Function({
+      Value<String> groupId,
+      Value<int> clubId,
+      Value<String?> sessionId,
+      Value<String?> label,
+      Value<String?> localDate,
+      Value<DateTime?> lastMessageAt,
+      Value<String?> lastBody,
+      Value<String?> lastAuthor,
+      Value<int> unreadCount,
+      Value<bool> muted,
+      Value<bool> closed,
+      Value<int> rowid,
+    });
+
+class $$ThreadStatesTableFilterComposer
+    extends Composer<_$AppDatabase, $ThreadStatesTable> {
+  $$ThreadStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get groupId => $composableBuilder(
+    column: $table.groupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localDate => $composableBuilder(
+    column: $table.localDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastMessageAt => $composableBuilder(
+    column: $table.lastMessageAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastBody => $composableBuilder(
+    column: $table.lastBody,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastAuthor => $composableBuilder(
+    column: $table.lastAuthor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get unreadCount => $composableBuilder(
+    column: $table.unreadCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get muted => $composableBuilder(
+    column: $table.muted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get closed => $composableBuilder(
+    column: $table.closed,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ThreadStatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ThreadStatesTable> {
+  $$ThreadStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get groupId => $composableBuilder(
+    column: $table.groupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localDate => $composableBuilder(
+    column: $table.localDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastMessageAt => $composableBuilder(
+    column: $table.lastMessageAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastBody => $composableBuilder(
+    column: $table.lastBody,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastAuthor => $composableBuilder(
+    column: $table.lastAuthor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get unreadCount => $composableBuilder(
+    column: $table.unreadCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get muted => $composableBuilder(
+    column: $table.muted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get closed => $composableBuilder(
+    column: $table.closed,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ThreadStatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ThreadStatesTable> {
+  $$ThreadStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get groupId =>
+      $composableBuilder(column: $table.groupId, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get localDate =>
+      $composableBuilder(column: $table.localDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastMessageAt => $composableBuilder(
+    column: $table.lastMessageAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastBody =>
+      $composableBuilder(column: $table.lastBody, builder: (column) => column);
+
+  GeneratedColumn<String> get lastAuthor => $composableBuilder(
+    column: $table.lastAuthor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get unreadCount => $composableBuilder(
+    column: $table.unreadCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get muted =>
+      $composableBuilder(column: $table.muted, builder: (column) => column);
+
+  GeneratedColumn<bool> get closed =>
+      $composableBuilder(column: $table.closed, builder: (column) => column);
+}
+
+class $$ThreadStatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ThreadStatesTable,
+          ThreadState,
+          $$ThreadStatesTableFilterComposer,
+          $$ThreadStatesTableOrderingComposer,
+          $$ThreadStatesTableAnnotationComposer,
+          $$ThreadStatesTableCreateCompanionBuilder,
+          $$ThreadStatesTableUpdateCompanionBuilder,
+          (
+            ThreadState,
+            BaseReferences<_$AppDatabase, $ThreadStatesTable, ThreadState>,
+          ),
+          ThreadState,
+          PrefetchHooks Function()
+        > {
+  $$ThreadStatesTableTableManager(_$AppDatabase db, $ThreadStatesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ThreadStatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ThreadStatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ThreadStatesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> groupId = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String?> sessionId = const Value.absent(),
+                Value<String?> label = const Value.absent(),
+                Value<String?> localDate = const Value.absent(),
+                Value<DateTime?> lastMessageAt = const Value.absent(),
+                Value<String?> lastBody = const Value.absent(),
+                Value<String?> lastAuthor = const Value.absent(),
+                Value<int> unreadCount = const Value.absent(),
+                Value<bool> muted = const Value.absent(),
+                Value<bool> closed = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ThreadStatesCompanion(
+                groupId: groupId,
+                clubId: clubId,
+                sessionId: sessionId,
+                label: label,
+                localDate: localDate,
+                lastMessageAt: lastMessageAt,
+                lastBody: lastBody,
+                lastAuthor: lastAuthor,
+                unreadCount: unreadCount,
+                muted: muted,
+                closed: closed,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String groupId,
+                required int clubId,
+                Value<String?> sessionId = const Value.absent(),
+                Value<String?> label = const Value.absent(),
+                Value<String?> localDate = const Value.absent(),
+                Value<DateTime?> lastMessageAt = const Value.absent(),
+                Value<String?> lastBody = const Value.absent(),
+                Value<String?> lastAuthor = const Value.absent(),
+                Value<int> unreadCount = const Value.absent(),
+                Value<bool> muted = const Value.absent(),
+                Value<bool> closed = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ThreadStatesCompanion.insert(
+                groupId: groupId,
+                clubId: clubId,
+                sessionId: sessionId,
+                label: label,
+                localDate: localDate,
+                lastMessageAt: lastMessageAt,
+                lastBody: lastBody,
+                lastAuthor: lastAuthor,
+                unreadCount: unreadCount,
+                muted: muted,
+                closed: closed,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ThreadStatesTable, ThreadState>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ThreadStatesTable,
+                    ThreadState
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ThreadStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ThreadStatesTable,
+      ThreadState,
+      $$ThreadStatesTableFilterComposer,
+      $$ThreadStatesTableOrderingComposer,
+      $$ThreadStatesTableAnnotationComposer,
+      $$ThreadStatesTableCreateCompanionBuilder,
+      $$ThreadStatesTableUpdateCompanionBuilder,
+      (
+        ThreadState,
+        BaseReferences<_$AppDatabase, $ThreadStatesTable, ThreadState>,
+      ),
+      ThreadState,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -10696,6 +12775,10 @@ class $AppDatabaseManager {
       $$MyAttendanceTableTableManager(_db, _db.myAttendance);
   $$PreferencesTableTableManager get preferences =>
       $$PreferencesTableTableManager(_db, _db.preferences);
+  $$GroupMessagesTableTableManager get groupMessages =>
+      $$GroupMessagesTableTableManager(_db, _db.groupMessages);
+  $$ThreadStatesTableTableManager get threadStates =>
+      $$ThreadStatesTableTableManager(_db, _db.threadStates);
 }
 
 // **************************************************************************

@@ -61,3 +61,22 @@ TapDecision decideTapRoute({
       : null;
   return TapDecision(switchToSub: switchTo, setClubId: setClub, route: route);
 }
+
+/// True when a foreground push is for the group chat that is open right now
+/// ([openGroupId], null when no chat is open) of the active account
+/// ([activeSub]): such a push is not shown as a notification, the open screen
+/// just refreshes (api-contract.md, Phase 6). A push meant for another account
+/// on the device is still shown.
+bool isForOpenChat(
+  Map<String, Object?> data,
+  String? openGroupId, {
+  required String? activeSub,
+}) {
+  if (openGroupId == null || data['groupId'] != openGroupId) return false;
+  final userId = data['userId'] as String?;
+  return userId == null || userId == activeSub;
+}
+
+/// True for a `group_messages` push (it carries a `groupId`).
+bool isGroupMessagePush(Map<String, Object?> data) =>
+    data['groupId'] is String || data['category'] == 'group_messages';

@@ -28,6 +28,8 @@ part 'app_database.g.dart';
     SessionPlans,
     MyAttendance,
     Preferences,
+    GroupMessages,
+    ThreadStates,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -38,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
     : super(driftDatabase(name: databaseNameFor(sub)));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -66,6 +68,23 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(sessionPlans);
         await m.createTable(myAttendance);
         await m.createTable(preferences);
+      }
+      // v5 (Phase 6): group chat messages and per-thread state.
+      if (from < 5) {
+        await m.createTable(groupMessages);
+        await m.createTable(threadStates);
+      }
+      // v6 (D47/D49): runs may have no end time, series/runs get an image URL. SQLite
+      // can't relax NOT NULL in place, so `alterTable` rebuilds the table and copies
+      // the rows across (like a SQL migration that renames, recreates and INSERT…SELECTs).
+      // A database older than v3 just created these tables in their v6 shape above.
+      if (from >= 3 && from < 6) {
+        await m.alterTable(
+          TableMigration(sessionSeries, newColumns: [sessionSeries.imageUrl]),
+        );
+        await m.alterTable(
+          TableMigration(sessions, newColumns: [sessions.imageUrl]),
+        );
       }
     },
   );

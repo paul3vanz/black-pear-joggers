@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/db/app_database.dart';
 import '../../../core/units/pace_spec.dart';
+import '../data/attendance_repository.dart';
 import 'attendance_actions.dart';
 import 'group_access.dart';
 import 'groups_providers.dart';
 import 'pace_override_sheet.dart';
+import 'pick_group_sheet.dart';
 
 /// "Are you coming?" at the top of the run: I'm coming / Maybe / Can't come,
 /// written optimistically. For a cancelled or finished run it explains why
@@ -21,6 +23,30 @@ class RespondCard extends ConsumerWidget {
   /// Whether to include the "My pace for this run" row (routes sessions show
   /// it next to the route list instead).
   final bool showPace;
+
+  /// Sends the answer; after "I'm coming" it may offer the pace group sheet
+  /// (D50). A rejected answer (run cancelled or finished) offers nothing.
+  Future<void> _answer(
+    BuildContext context,
+    WidgetRef ref,
+    String status,
+    String? groupId,
+  ) async {
+    final outcome = await respondToRun(
+      context,
+      ref,
+      session: session,
+      status: status,
+      groupId: status == 'not_going' ? null : groupId,
+    );
+    if (status != 'going' ||
+        outcome == null ||
+        outcome == AttendanceOutcome.rejected ||
+        !context.mounted) {
+      return;
+    }
+    await maybePromptPickGroup(context, ref, session);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,15 +91,7 @@ class RespondCard extends ConsumerWidget {
                 selected: {?resp.status},
                 onSelectionChanged: (s) {
                   if (s.isEmpty || s.first == resp.status) return;
-                  unawaited(
-                    respondToRun(
-                      context,
-                      ref,
-                      session: session,
-                      status: s.first,
-                      groupId: s.first == 'not_going' ? null : resp.groupId,
-                    ),
-                  );
+                  unawaited(_answer(context, ref, s.first, resp.groupId));
                 },
               ),
               if (resp.pending)

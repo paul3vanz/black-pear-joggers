@@ -129,7 +129,7 @@ Future<void> seedSession(
           endsAt: DateTime.utc(2026, 10, 12, 19, 30),
           localDate: localDate,
           localStartTime: '19:00',
-          localEndTime: '20:30',
+          localEndTime: const Value('20:30'),
           groupMode: groupMode,
           status: Value(status),
           coordinatorMemberId: Value(coordinatorMemberId),

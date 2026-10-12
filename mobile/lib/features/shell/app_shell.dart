@@ -11,6 +11,7 @@ import '../groups/data/attendance_repository.dart';
 import '../inbox/data/inbox_repository.dart';
 import '../inbox/ui/inbox_providers.dart';
 import '../membership/ui/membership_providers.dart';
+import '../messages/data/messages_repository.dart';
 
 /// Bottom navigation around the four tabs (Runs, Updates, Inbox, Profile). It's only
 /// built once the user is signed in and linked, so it's also where we ask for
@@ -48,16 +49,21 @@ class _AppShellState extends ConsumerState<AppShell>
   /// Back in the foreground: re-send any run responses that couldn't be sent.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) unawaited(_retryAttendance());
+    if (state == AppLifecycleState.resumed) unawaited(_retryPending());
   }
 
-  Future<void> _retryAttendance() async {
+  /// Re-sends unsent run responses and chat messages, and refreshes the chat
+  /// unread dots.
+  Future<void> _retryPending() async {
     final clubId = ref.read(activeClubIdProvider);
     final sub = ref.read(activeSubProvider);
     final repo = ref.read(attendanceRepositoryProvider);
+    final messages = ref.read(messagesRepositoryProvider);
     final handleExpiry = ref.read(sessionExpiryHandlerProvider);
     try {
       await repo.retryPending(clubId);
+      await messages.retryPending(clubId);
+      await messages.refreshThreadsQuietly(clubId);
     } on Object catch (e) {
       if (sub != null) await handleExpiry(sub, e);
     }

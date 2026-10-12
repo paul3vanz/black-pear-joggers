@@ -10,6 +10,7 @@ import '../data/runs_repository.dart';
 import '../data/session_changes.dart';
 import 'form_fields.dart';
 import 'run_format.dart';
+import 'series_image.dart';
 import 'runs_providers.dart';
 import 'session_actions.dart';
 
@@ -45,7 +46,7 @@ class SeriesListScreen extends ConsumerWidget {
                       subtitle: Text(
                         [
                           '${weekdayNames[(s.weekday - 1).clamp(0, 6)]} '
-                              '${s.startTime}',
+                              '${timeRange(s.startTime, endTimeFor(s.startTime, s.durationMin))}',
                           ?venueNames[s.venueId],
                           groupModeLabel(s.groupMode),
                         ].join(' · '),
@@ -59,6 +60,21 @@ class SeriesListScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Validates the optional series image URL: empty is fine; otherwise http(s) and
+/// at most 500 characters (the server's rule, D49).
+String? validateImageUrl(String? v) {
+  final text = (v ?? '').trim();
+  if (text.isEmpty) return null;
+  if (text.length > 500) return 'At most 500 characters';
+  final uri = Uri.tryParse(text);
+  if (uri == null ||
+      !(uri.isScheme('http') || uri.isScheme('https')) ||
+      uri.host.isEmpty) {
+    return 'Enter a link starting with http:// or https://';
+  }
+  return null;
 }
 
 /// `/runs/series/new` and `/runs/series/:id`.
@@ -107,9 +123,18 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
     text: widget.series?.description ?? '',
   );
   late final _duration = TextEditingController(
-    text: (widget.series?.durationMin ?? 90).toString(),
+    // New series default to 90 min; an existing series with no end stays empty.
+    text: widget.series == null
+        ? '90'
+        : (widget.series!.durationMin?.toString() ?? ''),
   );
   late final _slug = TextEditingController(text: widget.series?.cmsSlug ?? '');
+  late final _imageUrl = TextEditingController(
+    text: widget.series?.imageUrl ?? '',
+  );
+  // The preview only follows the field when it loses focus, so half-typed URLs
+  // don't trigger downloads.
+  late String? _previewUrl = widget.series?.imageUrl;
   late int _weekday = widget.series?.weekday ?? 1;
   late int _interval = widget.series?.intervalWeeks ?? 1;
   late String? _start = widget.series?.startTime ?? '19:00';
@@ -125,6 +150,7 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
     _description.dispose();
     _duration.dispose();
     _slug.dispose();
+    _imageUrl.dispose();
     super.dispose();
   }
 
@@ -138,7 +164,7 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
     final repo = ref.read(runsRepositoryProvider);
     final router = GoRouter.of(context);
     final existing = widget.series;
-    final duration = int.parse(_duration.text.trim());
+    final duration = DurationField.parse(_duration); // null = no end time
     setState(() => _saving = true);
     final ok = await runWrite(
       context,
@@ -157,6 +183,7 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
               validUntil: _validUntil,
               groupMode: _groupMode,
               cmsSlug: _nullIfEmpty(_slug),
+              imageUrl: _nullIfEmpty(_imageUrl),
             )
           : repo.updateSeries(
               clubId,
@@ -172,6 +199,7 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
               validUntil: _validUntil,
               groupMode: _groupMode,
               cmsSlug: _nullIfEmpty(_slug),
+              imageUrl: _nullIfEmpty(_imageUrl),
             ),
       success: existing == null ? 'Series added' : 'Series updated',
     );
@@ -332,6 +360,38 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
                     ? 'Lowercase letters, numbers and hyphens only'
                     : null,
               ),
+              formGap,
+              Focus(
+                onFocusChange: (hasFocus) {
+                  if (!hasFocus) {
+                    final v = _imageUrl.text.trim();
+                    setState(
+                      () => _previewUrl =
+                          validateImageUrl(v) == null && v.isNotEmpty
+                          ? v
+                          : null,
+                    );
+                  }
+                },
+                child: TextFormField(
+                  key: const ValueKey('series-image-url'),
+                  controller: _imageUrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Image URL (optional)',
+                    helperText:
+                        'Shown above each run. Leave empty for no image.',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.url,
+                  autocorrect: false,
+                  validator: validateImageUrl,
+                ),
+              ),
+              if (_previewUrl != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: SeriesImage(url: _previewUrl, roundBottom: true),
+                ),
               if (editing) ...[
                 const SizedBox(height: 24),
                 TextButton.icon(

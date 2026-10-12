@@ -102,15 +102,20 @@ Needs the Phase 4 API tables applied (`api/database/manual/2026_10_groups_tables
 API. Use two accounts that are both linked to a club member: **A** (plain member, also the leader
 below) and **B** (committee). Give B the `committee` role (or admin) in the database.
 
-1. **Member (A):** Runs tab → open an upcoming run. Under *Are you coming?* tap **I'm coming**,
-   then join a group (or **My pace for this run** to override your pace). Under *Who's coming* you
-   see counts and the anonymous pace spread, no names.
+1. **Member (A):** Runs tab → open an upcoming run. Under *Are you coming?* tap **I'm coming**; a
+   *Pick your pace group?* sheet offers the groups once per run (**Join**, or **I'll decide on the
+   day**); with no groups a short note says they are confirmed at the start. You can also join from the
+   cards below, or use **My pace for this run**. Under *Who's coming* you see counts and the anonymous
+   pace spread, no names.
 2. **Leader (A):** Runs tab → **Lead a run** (top right) shows the next six weeks. Tap **Offer to
    lead**, fill the editor and save. Next time **Same as last time** creates the group in one tap
    (Undo in the snackbar). Edit or **Step down** from the same card. As leader of the group you now
    see *Who's in this group* with names and paces.
    Creating or joining a group as leader also marks you as going in it, so you see *You're leading
-   this group* with only **Step down** (no Join/Leave); after stepping down you stay in it as a member.
+   this group* with a **Step down** button on the same row (no Join/Leave); after stepping down you stay in it
+   as a member. A group with no pace needs a label (the editor says so). On *Lead a run*, day chips (only
+   the weekdays that exist, remembered) filter the list, **Can't attend** folds a run to one line, and
+   *Tips on leading a group* opens the website.
    Pace fields are two boxes, **min** and optional **sec** (the Android number pad has no colon).
 3. **Committee (B):** at the end of *Who's coming* on the run detail, a **Group coverage** card
    shows the groups that have a leader on a pace strip, the fastest and slowest led group, and gaps
@@ -145,3 +150,33 @@ device or emulator with Google Play services and Firebase configured (see Push n
 5. No buttons? Check `FCM_ACTION_BUTTONS` isn't `false` in the API `.env`, and that the push has no
    `notification` block (use `adb logcat -s flutter` to see "Background push"). Some phone makers
    kill background delivery for apps that were force-stopped.
+
+## Phase 6 testing guide (group chat)
+
+Needs the Phase 6 API (`api/database/manual/2026_10_messages_tables.sql` applied) and two accounts that are both
+linked to a club member: **A** and **B**, on two devices or emulators (or one device with the account switcher).
+For pushes you also need Firebase configured (see Push notifications above).
+
+1. **Make a group (A):** Runs tab → open an upcoming run → **Lead a group** and save. A now leads the group and
+   its card has a **Group chat** button.
+2. **Join it (B):** open the same run (pull to refresh on the Runs tab), tap **I'm coming**, then **Join this
+   group**. B's card for that group now has **Group chat** too. A member who isn't in the group has no button.
+3. **Chat:** open the chat on both. Messages from the other person appear within about 8 seconds (or at once when
+   a push arrives and the chat is open; no notification is shown for the chat you are looking at). Others show
+   their name (first name + initial) and a *Leader* / *Coordinator* / *Committee* badge; your own are on the right.
+   Day headings separate the days. The line under the title can be dismissed and stays dismissed.
+4. **Unread and Inbox:** leave the chat on B and send from A: B's group card gets an unread dot and the Inbox tab's
+   **Group chats** section lists the thread with the last message and an unread badge. Opening the chat clears both.
+5. **Delete:** long-press your own message → **Delete** (shown as "Message deleted" for both). The leader of the
+   group, the run coordinator and committee/admin can delete anyone's message; a plain member can't delete others.
+6. **Mute:** in the chat's ⋮ menu choose **Mute notifications** (bell-off icon appears; needs a connection). While
+   muted B gets no push or inbox row for the thread, but still sees messages when the chat is open.
+7. **Offline send:** turn on airplane mode on B, send a message: it shows **Sending...** and an offline banner.
+   Turn the network back on: it goes out on the next poll (or resume) and the clock text becomes the time.
+8. **Failed message:** a message refused for good (for example after the chat closed) shows **Failed - tap to retry
+   or delete**; tapping it offers Retry or Delete.
+9. **Closed chat:** posting stops 12 hours after the run ends (and while it is cancelled). The input is replaced by
+   **Chat closed**; the messages stay readable. To try it without waiting, edit the run's date to the past in the
+   database, or cancel the run as committee.
+10. **Leave the group:** B taps **Leave group** (or "Not coming") then opens the chat from the Inbox list: it shows
+    "You're no longer in this group" and goes back.

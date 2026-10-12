@@ -126,7 +126,7 @@ void main() {
     });
     await pumpSettings(tester);
     await tester.scrollUntilVisible(
-      find.text('Tuesday 19:00 · Tuesday run'),
+      find.text('Tuesday 7pm · Tuesday run'),
       200,
       scrollable: find.byType(Scrollable).first,
     );
@@ -144,8 +144,8 @@ void main() {
       find.textContaining('reminds you about runs you usually'),
       findsOneWidget,
     );
-    expect(find.text('Tuesday 19:00 · Tuesday run'), findsOneWidget);
-    expect(find.text('Thursday 18:30 · Thursday run'), findsOneWidget);
+    expect(find.text('Tuesday 7pm · Tuesday run'), findsOneWidget);
+    expect(find.text('Thursday 6:30pm · Thursday run'), findsOneWidget);
     expect(
       tester
           .widget<SegmentedButton<ReminderMode>>(

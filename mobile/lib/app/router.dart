@@ -11,6 +11,7 @@ import '../features/inbox/ui/inbox_screen.dart';
 import '../features/membership/ui/link_screen.dart';
 import '../features/membership/ui/membership_providers.dart';
 import '../features/membership/ui/unavailable_screen.dart';
+import '../features/messages/ui/chat_screen.dart';
 import '../features/profile/ui/profile_screen.dart';
 import '../features/runs/ui/runs_screen.dart';
 import '../features/runs/ui/series_screens.dart';
@@ -169,6 +170,15 @@ GoRouter router(Ref ref) {
                         builder: (_, state) => GroupEditorScreen(
                           sessionId: state.pathParameters['id']!,
                           groupId: state.pathParameters['groupId'],
+                        ),
+                      ),
+                      // Also the target of a group-message push (D42).
+                      GoRoute(
+                        path: 'groups/:groupId/chat',
+                        parentNavigatorKey: rootNavigatorKey,
+                        builder: (_, state) => ChatScreen(
+                          sessionId: state.pathParameters['id']!,
+                          groupId: state.pathParameters['groupId']!,
                         ),
                       ),
                     ],

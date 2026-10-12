@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/api/api_exception.dart';
 import '../../../core/db/app_database.dart';
 import '../../runs/ui/form_fields.dart';
 import '../../runs/ui/runs_providers.dart';
@@ -108,6 +109,10 @@ class _GroupFormState extends ConsumerState<GroupForm> {
   late bool _lead;
   bool _saving = false;
 
+  /// The server's 422 message for `label`, shown on the field until it is
+  /// edited (the client rule should catch it first; this is the safety net).
+  String? _serverLabelError;
+
   bool get _editing => widget.existing != null;
 
   @override
@@ -157,6 +162,21 @@ class _GroupFormState extends ConsumerState<GroupForm> {
         : ref.read(canManageRunsProvider),
   );
 
+  /// Awaits [write]; if the server answers 422 on `label`, shows that message
+  /// on the label field, then rethrows so the usual SnackBar still appears.
+  Future<Object?> _surfaceLabelError(Future<Object?> write) async {
+    try {
+      return await write;
+    } on Object catch (e) {
+      final message = ApiException.from(e).fieldErrors['label'];
+      if (message != null && mounted) {
+        setState(() => _serverLabelError = message);
+        _formKey.currentState?.validate();
+      }
+      rethrow;
+    }
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     final router = GoRouter.of(context);
@@ -173,29 +193,31 @@ class _GroupFormState extends ConsumerState<GroupForm> {
     final done = await runWrite(
       context,
       ref,
-      () => _editing
-          ? repo.updateGroup(
-              widget.session.id,
-              widget.existing!.id,
-              kind: _kind,
-              label: label.isEmpty ? null : label,
-              description: description.isEmpty ? null : description,
-              pace: pace,
-              distance: distance,
-            )
-          : () async {
-              final g = await repo.createGroup(
+      () => _surfaceLabelError(
+        _editing
+            ? repo.updateGroup(
                 widget.session.id,
+                widget.existing!.id,
                 kind: _kind,
                 label: label.isEmpty ? null : label,
                 description: description.isEmpty ? null : description,
                 pace: pace,
                 distance: distance,
-                lead: lead,
-              );
-              if (lead) await rememberLastGroup(store, widget.session, g);
-              return g;
-            }(),
+              )
+            : () async {
+                final g = await repo.createGroup(
+                  widget.session.id,
+                  kind: _kind,
+                  label: label.isEmpty ? null : label,
+                  description: description.isEmpty ? null : description,
+                  pace: pace,
+                  distance: distance,
+                  lead: lead,
+                );
+                if (lead) await rememberLastGroup(store, widget.session, g);
+                return g;
+              }(),
+      ),
       errorMessage: groupErrorMessage,
     );
     if (!mounted) return;
@@ -253,15 +275,30 @@ class _GroupFormState extends ConsumerState<GroupForm> {
             distanceField,
           ],
           formGap,
-          TextFormField(
-            controller: _label,
-            maxLength: 80,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
-              labelText: 'Label (optional)',
-              hintText: 'e.g. Easy 5k',
-              border: OutlineInputBorder(),
-            ),
+          // The label is required while the pace is None, so this rebuilds
+          // when the pace mode changes (like a `useEffect` on `mode`).
+          ListenableBuilder(
+            listenable: _pace,
+            builder: (context, _) {
+              final required = _pace.mode == PaceMode.none;
+              return TextFormField(
+                controller: _label,
+                maxLength: 80,
+                textCapitalization: TextCapitalization.sentences,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onChanged: (_) => _serverLabelError = null,
+                decoration: InputDecoration(
+                  labelText: required ? 'Label (required)' : 'Label (optional)',
+                  hintText: required
+                      ? 'e.g. Jog/walk or Efforts'
+                      : 'e.g. Easy 5k',
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (v) =>
+                    checkGroupLabel(mode: _pace.mode, label: v ?? '') ??
+                    _serverLabelError,
+              );
+            },
           ),
           formGap,
           TextFormField(
@@ -365,8 +402,14 @@ class _Preview extends ConsumerWidget {
     return ListenableBuilder(
       listenable: listenable,
       builder: (context, _) {
-        final spec = specLine(pace(), distance(), units);
-        final lab = label();
+        // The same heading the card will show.
+        final heading = headingFor(
+          kind: kind,
+          label: label(),
+          pace: pace(),
+          distance: distance(),
+          units: units,
+        );
         final desc = description();
         return Card(
           color: theme.colorScheme.surfaceContainerHighest,
@@ -381,17 +424,21 @@ class _Preview extends ConsumerWidget {
                   children: [
                     Icon(groupKindIcon(kind), color: theme.colorScheme.primary),
                     const SizedBox(width: 8),
-                    Text(groupKindLabel(kind)),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            heading.title,
+                            key: const ValueKey('group-preview-spec'),
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          if (heading.subtitle != null) Text(heading.subtitle!),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-                if (lab.isNotEmpty)
-                  Text(lab, style: theme.textTheme.titleMedium),
-                if (spec.isNotEmpty)
-                  Text(
-                    spec,
-                    key: const ValueKey('group-preview-spec'),
-                    style: theme.textTheme.titleMedium,
-                  ),
                 if (desc.isNotEmpty) Text(desc),
               ],
             ),

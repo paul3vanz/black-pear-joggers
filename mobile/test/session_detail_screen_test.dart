@@ -90,7 +90,7 @@ void main() {
     tester,
   ) async {
     await pumpDetail(tester, roles: []);
-    expect(find.text('Monday 12 October, 19:00–20:30'), findsOneWidget);
+    expect(find.text('Monday 12 October, 7-8:30pm'), findsOneWidget);
     expect(find.textContaining('OECC'), findsOneWidget);
     expect(find.text('Cancel run'), findsNothing);
 

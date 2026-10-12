@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../../core/db/app_database.dart';
+import '../../../core/util/clock_time.dart';
 
 /// What the series says about a session that was edited away from it
 /// (the contract's `original` block).
@@ -50,7 +51,10 @@ List<String> sessionChanges(
   }
   final usual = original.localStartTime;
   if (usual != null && usual != session.localStartTime) {
-    labels.add('Starts at ${session.localStartTime} (usually $usual)');
+    labels.add(
+      'Starts at ${formatClock(session.localStartTime)} '
+      '(usually ${formatClock(usual)})',
+    );
   }
   final usualTitle = original.title;
   if (usualTitle != null && usualTitle != session.title) {

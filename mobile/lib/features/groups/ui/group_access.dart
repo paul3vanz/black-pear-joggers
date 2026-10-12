@@ -74,3 +74,18 @@ final myRolesProvider = Provider<List<String>>((ref) {
 final isAdminProvider = Provider<bool>(
   (ref) => ref.watch(myRolesProvider).contains('admin'),
 );
+
+/// Who may read and post in [group]'s chat (api-contract.md, Phase 6): its
+/// leaders, the session coordinator, members who chose the group ([inGroup])
+/// and the committee or admin. The server enforces it too (403 `not_in_group`).
+bool canChatIn({
+  required Group group,
+  required Session session,
+  required String? myMemberId,
+  required bool inGroup,
+  required bool isCommittee,
+}) {
+  if (isCommittee || inGroup) return true;
+  if (myMemberId == null) return false;
+  return group.isLedBy(myMemberId) || session.coordinatorMemberId == myMemberId;
+}

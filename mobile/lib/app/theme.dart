@@ -1,51 +1,125 @@
 import 'package:flutter/material.dart';
 
-/// BPJ brand palette, copied from `primary` in `next/tailwind.config.js`
-/// (the website's Tailwind theme) so the app matches bpj.org.uk.
+/// BPJ brand palette. Club colours are white, black and orange (D51): the orange is the
+/// club website's `#f89829`, everything else is a neutral black-to-grey scale (no browns).
 abstract final class BpjColors {
-  static const primary50 = Color(0xFFFEEEDB);
-  static const primary100 = Color(0xFFFDE4C7);
-  static const primary200 = Color(0xFFFCD1A0);
-  static const primary300 = Color(0xFFFBBE78);
-  static const primary400 = Color(0xFFF9AB51);
-  static const primary500 = Color(0xFFF89829); // the brand orange
-  static const primary600 = Color(0xFFE67F08);
-  static const primary700 = Color(0xFFB56406);
-  static const primary800 = Color(0xFF844904);
-  static const primary900 = Color(0xFF522D03);
+  /// The brand orange (bpj.org.uk).
+  static const orange = Color(0xFFF89829);
+
+  /// Darker orange for orange *text* on white, where [orange] itself is too light
+  /// (4.9:1 contrast instead of 2.2:1).
+  static const orangeText = Color(0xFFB56406);
+
+  /// Pale orange tint for containers / selected chips in the light theme.
+  static const orangeTint = Color(0xFFFDE4C7);
+
+  /// Deep orange-tinted container for the dark theme.
+  static const orangeDeep = Color(0xFF5C3407);
+
+  // Neutral scale, black to white.
+  static const black = Color(0xFF000000);
+  static const neutral950 = Color(0xFF0A0A0A);
+  static const neutral900 = Color(0xFF171717);
+  static const neutral850 = Color(0xFF1F1F1F);
+  static const neutral800 = Color(0xFF262626);
+  static const neutral700 = Color(0xFF404040);
+  static const neutral600 = Color(0xFF525252);
+  static const neutral500 = Color(0xFF737373);
+  static const neutral400 = Color(0xFFA3A3A3);
+  static const neutral300 = Color(0xFFD4D4D4);
+  static const neutral200 = Color(0xFFE5E5E5);
+  static const neutral100 = Color(0xFFF5F5F5);
+  static const neutral50 = Color(0xFFFAFAFA);
+  static const white = Color(0xFFFFFFFF);
 }
 
 /// Material 3 themes. React/TS equivalent: a Tailwind/MUI theme object, passed once to
 /// `MaterialApp` and read anywhere with `Theme.of(context)` (like `useTheme()`).
+///
+/// The `ColorScheme`s are spelled out in full instead of `ColorScheme.fromSeed`, because
+/// seeding from orange tints every surface brown/cream. Orange backgrounds carry black text.
 abstract final class BpjTheme {
-  // The raw brand orange (#F89829) is too light for white text, so the light scheme
-  // uses the darker 700 shade for `primary` and keeps the pale shades for containers.
-  // `fromSeed` derives the neutral/secondary/tertiary tones; we then pin the primaries.
   static final light = _build(
-    ColorScheme.fromSeed(
-      seedColor: BpjColors.primary500,
+    const ColorScheme(
       brightness: Brightness.light,
-    ).copyWith(
-      primary: BpjColors.primary700,
-      onPrimary: Colors.white,
-      primaryContainer: BpjColors.primary100,
-      onPrimaryContainer: BpjColors.primary900,
+      primary: BpjColors.orange,
+      onPrimary: BpjColors.black,
+      primaryContainer: BpjColors.orangeTint,
+      onPrimaryContainer: BpjColors.neutral900,
+      secondary: BpjColors.neutral800,
+      onSecondary: BpjColors.white,
+      secondaryContainer: BpjColors.neutral200,
+      onSecondaryContainer: BpjColors.neutral900,
+      tertiary: BpjColors.neutral600,
+      onTertiary: BpjColors.white,
+      tertiaryContainer: BpjColors.neutral100,
+      onTertiaryContainer: BpjColors.neutral900,
+      error: Color(0xFFB3261E),
+      onError: BpjColors.white,
+      surface: BpjColors.white,
+      onSurface: BpjColors.neutral900,
+      onSurfaceVariant: BpjColors.neutral600,
+      surfaceDim: BpjColors.neutral200,
+      surfaceBright: BpjColors.white,
+      surfaceContainerLowest: BpjColors.white,
+      surfaceContainerLow: BpjColors.neutral50,
+      surfaceContainer: BpjColors.neutral100,
+      surfaceContainerHigh: BpjColors.neutral200,
+      surfaceContainerHighest: BpjColors.neutral300,
+      outline: BpjColors.neutral500,
+      outlineVariant: BpjColors.neutral300,
+      shadow: BpjColors.black,
+      scrim: BpjColors.black,
+      inverseSurface: BpjColors.neutral800,
+      onInverseSurface: BpjColors.neutral100,
+      inversePrimary: BpjColors.orange,
+      surfaceTint: BpjColors
+          .white, // no tint: M3 would otherwise colour elevated surfaces
     ),
+    // Orange text/links on white need the darker shade.
+    linkColor: BpjColors.orangeText,
   );
 
   static final dark = _build(
-    ColorScheme.fromSeed(
-      seedColor: BpjColors.primary500,
+    const ColorScheme(
       brightness: Brightness.dark,
-    ).copyWith(
-      primary: BpjColors.primary400,
-      onPrimary: BpjColors.primary900,
-      primaryContainer: BpjColors.primary800,
-      onPrimaryContainer: BpjColors.primary100,
+      primary: BpjColors.orange,
+      onPrimary: BpjColors.black,
+      primaryContainer: BpjColors.orangeDeep,
+      onPrimaryContainer: BpjColors.orangeTint,
+      secondary: BpjColors.neutral200,
+      onSecondary: BpjColors.neutral900,
+      secondaryContainer: BpjColors.neutral700,
+      onSecondaryContainer: BpjColors.neutral100,
+      tertiary: BpjColors.neutral400,
+      onTertiary: BpjColors.neutral900,
+      tertiaryContainer: BpjColors.neutral800,
+      onTertiaryContainer: BpjColors.neutral100,
+      error: Color(0xFFF2B8B5),
+      onError: Color(0xFF601410),
+      surface: BpjColors.neutral950,
+      onSurface: BpjColors.neutral100,
+      onSurfaceVariant: BpjColors.neutral400,
+      surfaceDim: BpjColors.black,
+      surfaceBright: BpjColors.neutral700,
+      surfaceContainerLowest: BpjColors.black,
+      surfaceContainerLow: BpjColors.neutral900,
+      surfaceContainer: BpjColors.neutral850,
+      surfaceContainerHigh: BpjColors.neutral800,
+      surfaceContainerHighest: BpjColors.neutral700,
+      outline: BpjColors.neutral500,
+      outlineVariant: BpjColors.neutral700,
+      shadow: BpjColors.black,
+      scrim: BpjColors.black,
+      inverseSurface: BpjColors.neutral100,
+      onInverseSurface: BpjColors.neutral900,
+      inversePrimary: BpjColors.orangeText,
+      surfaceTint: BpjColors.neutral950,
     ),
+    linkColor: BpjColors.orange,
   );
 
-  static ThemeData _build(ColorScheme scheme) {
+  static ThemeData _build(ColorScheme scheme, {required Color linkColor}) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
@@ -53,7 +127,12 @@ abstract final class BpjTheme {
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,
+        surfaceTintColor: Colors.transparent,
         centerTitle: false,
+      ),
+      cardTheme: CardThemeData(
+        color: scheme.surfaceContainerLow,
+        surfaceTintColor: Colors.transparent,
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -61,8 +140,48 @@ abstract final class BpjTheme {
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(),
+      // Text buttons are orange *text*, so use the shade that reads on the surface.
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(foregroundColor: linkColor),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: const OutlineInputBorder(),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: linkColor, width: 2),
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: scheme.surfaceContainer,
+        indicatorColor: BpjColors.orange,
+        iconTheme: WidgetStateProperty.resolveWith(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? BpjColors.black
+                : scheme.onSurfaceVariant,
+          ),
+        ),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: SegmentedButton.styleFrom(
+          selectedBackgroundColor: BpjColors.orange,
+          selectedForegroundColor: BpjColors.black,
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        selectedColor: scheme.primaryContainer,
+        checkmarkColor: scheme.onPrimaryContainer,
+      ),
+      badgeTheme: const BadgeThemeData(
+        backgroundColor: BpjColors.orange,
+        textColor: BpjColors.black,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? BpjColors.black : null,
+        ),
+        trackColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? BpjColors.orange : null,
+        ),
       ),
     );
   }

@@ -97,3 +97,53 @@ String groupErrorMessage(Object error) {
     _ => api.statusCode == 403 ? "You can't do that." : api.message,
   };
 }
+
+/// The note under the pace group list (paced and single runs only; routes are
+/// not pace groups). Shown while the run is still open (D50).
+const paceGroupsNote =
+    "Other pace groups will be confirmed at the start of the session, so don't "
+    "worry if you don't see a suitable group below.";
+
+/// Whether [mode] runs show [paceGroupsNote].
+bool showsPaceGroupsNote(String mode) => mode == 'paced' || mode == 'single';
+
+/// What a group card (and the pick-a-group sheet) shows as its heading.
+///
+/// - With a pace: the heading is `9:00-9:30/mi · 3 mi` (pace, then distance)
+///   and the label (when set) is the subtitle. A non-`run` kind with no label
+///   falls back to the kind name ("Efforts") as the subtitle.
+/// - With no pace (jog/walk, efforts...): the label IS the heading (then the
+///   distance, if any), or the kind name when there is no label (old groups).
+///
+/// A Dart "record" `({String title, String? subtitle})` is like returning a
+/// `{ title, subtitle }` object literal in TS.
+({String title, String? subtitle}) groupHeading(Group g, UnitPrefs units) =>
+    headingFor(
+      kind: g.kind,
+      label: g.label,
+      pace: g.pace,
+      distance: g.distance,
+      units: units,
+    );
+
+/// [groupHeading] from loose parts (the editor preview has no [Group] yet).
+({String title, String? subtitle}) headingFor({
+  required String kind,
+  required String? label,
+  required PaceSpec pace,
+  required Distance? distance,
+  required UnitPrefs units,
+}) {
+  final paceStr = paceText(pace, units);
+  final distanceStr = distanceText(distance, units);
+  final name = label?.trim();
+  final hasLabel = name != null && name.isNotEmpty;
+  if (paceStr.isEmpty) {
+    final head = hasLabel ? name : groupKindLabel(kind);
+    return (title: [head, ?distanceStr].join(' · '), subtitle: null);
+  }
+  return (
+    title: [paceStr, ?distanceStr].join(' · '),
+    subtitle: hasLabel ? name : (kind == 'run' ? null : groupKindLabel(kind)),
+  );
+}

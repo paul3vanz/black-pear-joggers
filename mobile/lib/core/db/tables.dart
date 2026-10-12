@@ -143,7 +143,9 @@ class SessionSeries extends Table {
   /// ISO weekday, 1 = Monday ... 7 = Sunday.
   IntColumn get weekday => integer()();
   TextColumn get startTime => text()();
-  IntColumn get durationMin => integer()();
+
+  /// Null = the run has no fixed end time (D47).
+  IntColumn get durationMin => integer().nullable()();
   IntColumn get intervalWeeks => integer().withDefault(const Constant(1))();
   TextColumn get validFrom => text()();
   TextColumn get validUntil => text().nullable()();
@@ -151,6 +153,9 @@ class SessionSeries extends Table {
   /// `paced` | `single` | `open` | `routes`.
   TextColumn get groupMode => text()();
   TextColumn get cmsSlug => text().nullable()();
+
+  /// Optional banner image URL (D49).
+  TextColumn get imageUrl => text().nullable()();
   DateTimeColumn get updatedAt => dateTime()();
 
   @override
@@ -172,12 +177,19 @@ class Sessions extends Table {
   DateTimeColumn get endsAt => dateTime()();
   TextColumn get localDate => text()();
   TextColumn get localStartTime => text()();
-  TextColumn get localEndTime => text()();
+
+  /// Null when the run has no end time (D47). `endsAt` stays filled (start + 3 h)
+  /// so "is it over" checks keep working; see D52.
+  TextColumn get localEndTime => text().nullable()();
   TextColumn get groupMode => text()();
 
   /// `scheduled` | `cancelled`.
   TextColumn get status => text().withDefault(const Constant('scheduled'))();
   TextColumn get cancelReason => text().nullable()();
+
+  /// The series' banner image URL, copied onto the run by the server (D49).
+  TextColumn get imageUrl => text().nullable()();
+
   TextColumn get coordinatorMemberId => text().nullable()();
   TextColumn get coordinatorName => text().nullable()();
   BoolColumn get isDetached => boolean().withDefault(const Constant(false))();
@@ -245,4 +257,55 @@ class Preferences extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {clubId};
+}
+
+/// Cached group chat messages (`GET …/groups/{groupId}/messages`), including
+/// the caller's own unsent ones (D43). A deleted message stays as a tombstone
+/// (`deletedAt` set, empty body) so it can show "Message deleted".
+class GroupMessages extends Table {
+  TextColumn get id => text()();
+  IntColumn get clubId => integer()();
+  TextColumn get groupId => text()();
+  TextColumn get memberId => text()();
+
+  /// First name + surname initial, as sent by the server (`Sam B.`).
+  TextColumn get authorName => text()();
+
+  /// The author's role in this thread: `leader` | `coordinator` | `committee` | `member`.
+  TextColumn get authorRole => text().withDefault(const Constant('member'))();
+  TextColumn get body => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  /// `sent` | `pending` (outbox, retried) | `failed` (refused, Retry/Delete).
+  TextColumn get sendState => text().withDefault(const Constant('sent'))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Per-thread state for the caller: what `GET …/threads` says (unread count,
+/// mute, closed, last message and the run it belongs to) plus the
+/// `closed`/`muted` flags the messages endpoint reports. One row per group.
+class ThreadStates extends Table {
+  TextColumn get groupId => text()();
+  IntColumn get clubId => integer()();
+
+  /// Null until the thread has been listed by `GET …/threads`.
+  TextColumn get sessionId => text().nullable()();
+
+  /// The group's pace/label text in the caller's units.
+  TextColumn get label => text().nullable()();
+
+  /// Club-local `yyyy-MM-dd` of the run.
+  TextColumn get localDate => text().nullable()();
+  DateTimeColumn get lastMessageAt => dateTime().nullable()();
+  TextColumn get lastBody => text().nullable()();
+  TextColumn get lastAuthor => text().nullable()();
+  IntColumn get unreadCount => integer().withDefault(const Constant(0))();
+  BoolColumn get muted => boolean().withDefault(const Constant(false))();
+  BoolColumn get closed => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {groupId};
 }

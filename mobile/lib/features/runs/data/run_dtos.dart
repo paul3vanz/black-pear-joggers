@@ -76,6 +76,7 @@ class SeriesDto {
     required this.validUntil,
     required this.groupMode,
     required this.cmsSlug,
+    this.imageUrl,
     required this.updatedAt,
     required this.deletedAt,
   });
@@ -86,12 +87,17 @@ class SeriesDto {
   final String? venueId;
   final int weekday;
   final String startTime;
-  final int durationMin;
+
+  /// Null = no end time (D47).
+  final int? durationMin;
   final int intervalWeeks;
   final String validFrom;
   final String? validUntil;
   final String groupMode;
   final String? cmsSlug;
+
+  /// Optional banner image URL (D49).
+  final String? imageUrl;
   final DateTime updatedAt;
   final DateTime? deletedAt;
 
@@ -104,12 +110,13 @@ class SeriesDto {
     venueId: _str(json['venueId']),
     weekday: (json['weekday'] as num?)?.toInt() ?? 1,
     startTime: json['startTime'] as String? ?? '00:00',
-    durationMin: (json['durationMin'] as num?)?.toInt() ?? 60,
+    durationMin: (json['durationMin'] as num?)?.toInt(),
     intervalWeeks: (json['intervalWeeks'] as num?)?.toInt() ?? 1,
     validFrom: json['validFrom'] as String? ?? '',
     validUntil: _str(json['validUntil']),
     groupMode: json['groupMode'] as String? ?? 'open',
     cmsSlug: _str(json['cmsSlug']),
+    imageUrl: _str(json['imageUrl']),
     updatedAt: _date(json['updatedAt']) ?? DateTime.now(),
     deletedAt: _date(json['deletedAt']),
   );
@@ -123,12 +130,14 @@ class SeriesDto {
         venueId: Value(venueId),
         weekday: weekday,
         startTime: startTime,
-        durationMin: durationMin,
+        durationMin: Value(durationMin),
         intervalWeeks: Value(intervalWeeks),
         validFrom: validFrom,
         validUntil: Value(validUntil),
         groupMode: groupMode,
         cmsSlug: Value(cmsSlug),
+        imageUrl: Value(imageUrl),
+
         updatedAt: updatedAt,
       );
 }
@@ -147,6 +156,7 @@ class SessionDto {
     required this.localDate,
     required this.localStartTime,
     required this.localEndTime,
+    this.imageUrl,
     required this.groupMode,
     required this.status,
     required this.cancelReason,
@@ -170,7 +180,12 @@ class SessionDto {
   final DateTime endsAt;
   final String localDate;
   final String localStartTime;
-  final String localEndTime;
+
+  /// Null when the run has no end time (D47).
+  final String? localEndTime;
+
+  /// The series banner image URL (D49), null for ad-hoc runs.
+  final String? imageUrl;
   final String groupMode;
   final String status;
   final String? cancelReason;
@@ -201,10 +216,12 @@ class SessionDto {
       venueId: _str(json['venueId']),
       notes: _str(json['notes']),
       startsAt: startsAt,
-      endsAt: _date(json['endsAt']) ?? startsAt,
+      // No end time: keep a start + 3 h instant so "is it over" checks work (D52).
+      endsAt: _date(json['endsAt']) ?? startsAt.add(const Duration(hours: 3)),
       localDate: json['localDate'] as String? ?? '',
       localStartTime: json['localStartTime'] as String? ?? '',
-      localEndTime: json['localEndTime'] as String? ?? '',
+      localEndTime: _str(json['localEndTime']),
+      imageUrl: _str(json['imageUrl']),
       groupMode: json['groupMode'] as String? ?? 'open',
       status: json['status'] as String? ?? 'scheduled',
       cancelReason: _str(json['cancelReason']),
@@ -233,7 +250,8 @@ class SessionDto {
     endsAt: endsAt,
     localDate: localDate,
     localStartTime: localStartTime,
-    localEndTime: localEndTime,
+    localEndTime: Value(localEndTime),
+    imageUrl: Value(imageUrl),
     groupMode: groupMode,
     status: Value(status),
     cancelReason: Value(cancelReason),

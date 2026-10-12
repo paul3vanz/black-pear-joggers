@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/db/app_database.dart';
+import '../../../core/util/clock_time.dart';
 import '../data/runs_repository.dart';
 import '../data/session_changes.dart';
 import 'run_format.dart';
@@ -28,10 +29,6 @@ class TimeField extends FormField<String> {
                  hour: current ~/ 60,
                  minute: current % 60,
                ),
-               builder: (ctx, child) => MediaQuery(
-                 data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
-                 child: child!,
-               ),
              );
              if (picked == null) return;
              final value = formatHm(picked.hour * 60 + picked.minute);
@@ -48,7 +45,9 @@ class TimeField extends FormField<String> {
                  errorText: state.errorText,
                  suffixIcon: const Icon(Icons.schedule),
                ),
-               child: Text(state.value ?? 'Not set'),
+               child: Text(
+                 state.value == null ? 'Not set' : formatClock(state.value!),
+               ),
              ),
            );
          },
@@ -186,27 +185,53 @@ class GroupModeDropdown extends StatelessWidget {
   );
 }
 
-/// Duration in minutes (the server accepts 15-600).
+/// Optional duration in minutes (the server accepts 15-600). An empty field means
+/// "no end time" (D47): the run shows only its start time. The clear button makes
+/// that explicit.
 class DurationField extends StatelessWidget {
   const DurationField({super.key, required this.controller});
 
   final TextEditingController controller;
 
+  /// Empty is valid (no end time); otherwise 15 to 600.
   static String? validate(String? v) {
-    final n = int.tryParse((v ?? '').trim());
-    if (n == null || n < 15 || n > 600) return 'Enter 15 to 600 minutes';
+    final text = (v ?? '').trim();
+    if (text.isEmpty) return null;
+    final n = int.tryParse(text);
+    if (n == null || n < 15 || n > 600) {
+      return 'Enter 15 to 600 minutes, or clear for no end time';
+    }
     return null;
   }
 
+  /// The parsed value, or null for "no end time". Call after [validate] passed.
+  static int? parse(TextEditingController c) => int.tryParse(c.text.trim());
+
   @override
-  Widget build(BuildContext context) => TextFormField(
-    controller: controller,
-    keyboardType: TextInputType.number,
-    decoration: const InputDecoration(
-      labelText: 'Duration (minutes)',
-      border: OutlineInputBorder(),
+  // ValueListenableBuilder ~ re-render when the controller's text changes
+  // (a TextEditingController is a ValueNotifier<TextEditingValue>).
+  Widget build(BuildContext context) => ValueListenableBuilder(
+    valueListenable: controller,
+    builder: (context, value, _) => TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: 'Duration (minutes)',
+        hintText: 'No end time',
+        helperText: value.text.trim().isEmpty
+            ? 'No end time: only the start time is shown'
+            : null,
+        border: const OutlineInputBorder(),
+        suffixIcon: value.text.isEmpty
+            ? null
+            : IconButton(
+                tooltip: 'No end time',
+                icon: const Icon(Icons.clear),
+                onPressed: controller.clear,
+              ),
+      ),
+      validator: validate,
     ),
-    validator: validate,
   );
 }
 

@@ -2,6 +2,7 @@ import 'package:bpj/core/auth/accounts_controller.dart';
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
+import 'package:bpj/features/messages/data/messages_repository.dart';
 import 'package:bpj/features/runs/data/runs_repository.dart';
 import 'package:bpj/features/runs/ui/runs_screen.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,9 @@ void main() {
             MembershipRepository(db, dio),
           ),
           runsRepositoryProvider.overrideWithValue(RunsRepository(db, dio)),
+          messagesRepositoryProvider.overrideWithValue(
+            MessagesRepository(db, dio),
+          ),
           activeClubIdProvider.overrideWithValue(1),
           activeSubProvider.overrideWithValue('test|sub'),
         ],
@@ -115,7 +119,7 @@ void main() {
     expect(find.text('Track closed'), findsOneWidget);
     expect(find.text('Changed'), findsOneWidget);
     expect(find.text('Moved from OECC'), findsOneWidget);
-    expect(find.text('Starts at 18:30 (usually 19:00)'), findsOneWidget);
+    expect(find.text('Starts at 6:30pm (usually 7pm)'), findsOneWidget);
     expect(find.text('Perdiswell'), findsOneWidget);
     expect(find.text('Coached session'), findsOneWidget);
 
@@ -170,10 +174,17 @@ void main() {
           summaryJson(groupCount: 2, goingCount: 4, myStatus: 'going'),
           status: 'cancelled',
         ),
+        run(
+          'f',
+          6,
+          summaryJson(groupCount: 1, goingCount: 2, myStatus: 'going'),
+        ),
       ],
     );
 
     expect(find.text('3 groups · 12 going'), findsOneWidget);
+    // Only the member's run (f) shows "You're going": on run a the viewer is
+    // leading, which implies going, so the chip is hidden.
     expect(find.text("You're going"), findsOneWidget);
     expect(find.text("You're leading"), findsOneWidget);
     expect(find.text('1 group'), findsOneWidget);

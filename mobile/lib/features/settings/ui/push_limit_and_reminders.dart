@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
+import '../../../core/util/clock_time.dart';
 import '../data/notification_settings_repository.dart';
 import 'settings_providers.dart';
 
@@ -19,10 +20,12 @@ const _weekdays = [
   'Sunday',
 ];
 
-/// "Tuesday 19:00 · Tuesday run" (weekday is ISO, 1 = Monday).
+/// "Tuesday 7pm · Tuesday run" (weekday is ISO, 1 = Monday).
 String seriesLabel(SeriesReminder s) {
   final day = _weekdays[(s.weekday - 1).clamp(0, 6)];
-  final time = s.localStartTime.isEmpty ? '' : ' ${s.localStartTime}';
+  final time = s.localStartTime.isEmpty
+      ? ''
+      : ' ${formatClock(s.localStartTime)}';
   return '$day$time · ${s.title}';
 }
 

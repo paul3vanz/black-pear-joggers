@@ -10,6 +10,8 @@ import '../../runs/data/session_changes.dart';
 import '../data/group_dtos.dart';
 import '../data/last_group_store.dart';
 import '../data/groups_repository.dart';
+import '../../../core/util/clock_time.dart';
+import 'attendance_actions.dart';
 import 'group_access.dart';
 import 'group_actions.dart';
 import 'group_format.dart';
@@ -78,6 +80,9 @@ class RosterRunCard extends ConsumerWidget {
     ];
     final single = session.groupMode == 'single';
     final canOffer = leading.isEmpty && !(single && groups.isNotEmpty);
+    final declined =
+        leading.isEmpty && myResponse(ref, session.id).status == 'not_going';
+    if (declined) return _declinedCard(context, theme, ref);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -153,6 +158,64 @@ class RosterRunCard extends ConsumerWidget {
                     ],
                   ),
                 ),
+              // Not leading here: let the viewer say they can't, so the list
+              // is only the runs still to decide. Same optimistic answer as
+              // "Can't come" on the run page (D23).
+              if (leading.isEmpty)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    style: TextButton.styleFrom(minimumSize: const Size(0, 40)),
+                    onPressed: () => unawaited(
+                      respondToRun(
+                        context,
+                        ref,
+                        session: session,
+                        status: 'not_going',
+                      ),
+                    ),
+                    child: const Text("Can't attend"),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// The one-line card for a run the viewer can't attend. It keeps its place
+  /// in the date order. The API has no way to clear an answer, so there is no
+  /// "Undo"; "Change" opens the run, where the answer can be changed (D57).
+  Widget _declinedCard(BuildContext context, ThemeData theme, WidgetRef ref) {
+    final muted = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    final when =
+        '${dayHeader(session.localDate, ref.watch(groupsClockProvider)())}, '
+        '${formatClock(session.localStartTime)}';
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: () => unawaited(context.push('/runs/${session.id}')),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 2, 8, 2),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  when,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: muted,
+                ),
+              ),
+              Text("Can't attend", style: muted),
+              TextButton(
+                style: TextButton.styleFrom(minimumSize: const Size(0, 40)),
+                onPressed: () => unawaited(context.push('/runs/${session.id}')),
+                child: const Text('Change'),
+              ),
             ],
           ),
         ),

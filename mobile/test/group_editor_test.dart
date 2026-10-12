@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/units/dist_unit.dart';
 import 'package:bpj/features/groups/ui/group_editor_screen.dart';
+import 'package:bpj/features/groups/ui/pace_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -142,6 +143,7 @@ void main() {
 
   testWidgets('a distance-only group sends no pace', (tester) async {
     await pumpEditor(tester, routes: {'POST $_create': created});
+    await tester.enterText(field('Label (required)'), 'Social jog');
     await tester.enterText(field('Distance (optional)'), '10');
     await tester.enterText(
       field('Description (optional)'),
@@ -151,7 +153,7 @@ void main() {
 
     expect(posted(), {
       'kind': 'run',
-      'label': null,
+      'label': 'Social jog',
       'description': 'Muster at the bridge',
       'paceUnit': null,
       'paceFromS': null,
@@ -220,6 +222,7 @@ void main() {
       expect(lead(tester).value, isTrue);
       expect(lead(tester).onChanged, isNull);
       expect(find.text('You lead the groups you create.'), findsOneWidget);
+      await tester.enterText(field('Label (required)'), 'Jog/walk');
       await tapSave(tester);
       expect(posted()['lead'], isTrue);
       await unmount(tester);
@@ -235,6 +238,7 @@ void main() {
       expect(lead(tester).onChanged, isNotNull);
       await tester.tap(find.byType(SwitchListTile));
       await tester.pumpAndSettle();
+      await tester.enterText(field('Label (required)'), 'Jog/walk');
       await tapSave(tester);
       expect(posted()['lead'], isFalse);
       await unmount(tester);
@@ -255,6 +259,7 @@ void main() {
       expect(find.text('Route'), findsWidgets);
       expect(find.widgetWithText(TextFormField, 'Distance'), findsOneWidget);
       await tester.enterText(field('Distance'), '16');
+      await tester.enterText(field('Label (required)'), 'Canal loop');
       await tapSave(tester);
       final body = posted();
       expect(body['kind'], 'route');
@@ -272,6 +277,7 @@ void main() {
         'POST $_create': const FakeResponse(403, {'error': 'forbidden'}),
       },
     );
+    await tester.enterText(field('Label (required)'), 'Jog/walk');
     await tapSave(tester);
     expect(find.text("You can't do that."), findsOneWidget);
     expect(find.text('Save group'), findsOneWidget);
@@ -280,6 +286,81 @@ void main() {
     await unmount(tester);
   });
 
+  group('label rule (no pace needs a label)', () {
+    testWidgets('None pace: the label is required and blocks saving', (
+      tester,
+    ) async {
+      await pumpEditor(tester, routes: {'POST $_create': created});
+      expect(field('Label (required)'), findsOneWidget);
+      expect(field('Label (optional)'), findsNothing);
+      await tapSave(tester);
+      expect(
+        find.text('Add a label, e.g. Jog/walk or Efforts'),
+        findsOneWidget,
+      );
+      expect(sent(adapter, 'POST', _create), isEmpty);
+      await unmount(tester);
+    });
+
+    testWidgets('a pace makes the label optional again', (tester) async {
+      await pumpEditor(tester, routes: {'POST $_create': created});
+      await tester.tap(find.text('Single'));
+      await tester.pumpAndSettle();
+      expect(field('Label (optional)'), findsOneWidget);
+      await typePace(tester, 'pace-fast', '9', '30');
+      await tapSave(tester);
+      expect(posted()['label'], isNull);
+      expect(posted()['paceFromS'], 570);
+      await unmount(tester);
+    });
+
+    testWidgets("the server's 422 on label shows on the field", (tester) async {
+      await pumpEditor(
+        tester,
+        routes: {
+          'POST $_create': const FakeResponse(422, {
+            'error': 'validation_failed',
+            'message': 'Give this group a label.',
+            'errors': {
+              'label': ['A group with no pace needs a label.'],
+            },
+          }),
+        },
+      );
+      // A pace so the client rule passes, then the server refuses anyway.
+      await tester.tap(find.text('Single'));
+      await tester.pumpAndSettle();
+      await typePace(tester, 'pace-fast', '9', '30');
+      await tapSave(tester);
+      expect(find.text('A group with no pace needs a label.'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 6));
+      await unmount(tester);
+    });
+
+    testWidgets('the preview heads a no-pace group with its label', (
+      tester,
+    ) async {
+      await pumpEditor(tester);
+      await tester.enterText(field('Label (required)'), 'Efforts');
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<Text>(find.byKey(const ValueKey('group-preview-spec')))
+            .data,
+        'Efforts',
+      );
+      await unmount(tester);
+    });
+  });
+
+  group('checkGroupLabel', () {
+    test('only None pace with an empty label is an error', () {
+      expect(checkGroupLabel(mode: PaceMode.none, label: '  '), isNotNull);
+      expect(checkGroupLabel(mode: PaceMode.none, label: 'Jog'), isNull);
+      expect(checkGroupLabel(mode: PaceMode.single, label: ''), isNull);
+      expect(checkGroupLabel(mode: PaceMode.range, label: ''), isNull);
+    });
+  });
   testWidgets('previews the group in the viewer units', (tester) async {
     await pumpEditor(tester);
     await tester.tap(find.text('Single'));
@@ -334,14 +415,22 @@ void main() {
       await tester.tap(find.text('None'));
       await tester.pumpAndSettle();
       await tester.enterText(field('Distance (optional)'), '');
-      await tester.enterText(field('Label (optional)'), '');
+      await tester.enterText(field('Label (required)'), '');
+      await tapSave(tester, 'Save changes');
+      // No pace now, so an empty label is refused before anything is sent.
+      expect(
+        find.text('Add a label, e.g. Jog/walk or Efforts'),
+        findsOneWidget,
+      );
+      expect(sent(adapter, 'PATCH', '/app/clubs/1/groups/g'), isEmpty);
+      await tester.enterText(field('Label (required)'), 'Jog/walk');
       await tapSave(tester, 'Save changes');
 
       final body =
           sent(adapter, 'PATCH', '/app/clubs/1/groups/g').single.data as Map;
       expect(body, {
         'kind': 'run',
-        'label': null,
+        'label': 'Jog/walk',
         'description': 'Old text',
         'paceUnit': null,
         'paceFromS': null,

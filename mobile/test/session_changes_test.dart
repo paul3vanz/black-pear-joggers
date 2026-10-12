@@ -58,7 +58,7 @@ void main() {
 
     test('different start time', () {
       final s = session(start: '18:30', original: usual);
-      expect(sessionChanges(s), ['Starts at 18:30 (usually 19:00)']);
+      expect(sessionChanges(s), ['Starts at 6:30pm (usually 7pm)']);
     });
 
     test('renamed', () {

@@ -82,7 +82,9 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
     _duration = TextEditingController(
       text: s == null
           ? '90'
-          : durationBetween(s.localStartTime, s.localEndTime).toString(),
+          : s.localEndTime == null
+          ? ''
+          : durationBetween(s.localStartTime, s.localEndTime!).toString(),
     );
     _notes = TextEditingController(text: s?.notes ?? '');
     _date = s?.localDate ?? todayString();
@@ -122,7 +124,7 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
     final repo = ref.read(runsRepositoryProvider);
     final router = GoRouter.of(context);
     final notes = _notes.text.trim().isEmpty ? null : _notes.text.trim();
-    final duration = int.parse(_duration.text.trim());
+    final duration = DurationField.parse(_duration); // null = no end time
     setState(() => _saving = true);
     final existing = _existing;
     final ok = await runWrite(

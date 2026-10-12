@@ -208,3 +208,12 @@ class PaceInput extends StatelessWidget {
     },
   );
 }
+
+/// Shown when a group with no pace has no label (the server refuses it too:
+/// 422 on `label`).
+const labelRequiredMessage = 'Add a label, e.g. Jog/walk or Efforts';
+
+/// A group with no pace must have a label (D50 update); with a pace the label
+/// is optional. Returns the error text, or null when the label is fine.
+String? checkGroupLabel({required PaceMode mode, required String label}) =>
+    mode == PaceMode.none && label.trim().isEmpty ? labelRequiredMessage : null;

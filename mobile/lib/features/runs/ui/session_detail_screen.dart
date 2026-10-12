@@ -12,6 +12,7 @@ import '../../groups/ui/respond_card.dart';
 import '../../groups/ui/whos_coming_section.dart';
 import '../data/runs_repository.dart';
 import 'run_format.dart';
+import 'series_image.dart';
 import 'runs_providers.dart';
 import 'session_actions.dart';
 
@@ -79,6 +80,8 @@ class _Body extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16),
         children: [
+          // Series banner (D49): only takes space once the image has loaded.
+          SeriesImage(url: session.imageUrl, roundBottom: true, gapBelow: 12),
           if (cancelled)
             _Banner(
               icon: Icons.event_busy,

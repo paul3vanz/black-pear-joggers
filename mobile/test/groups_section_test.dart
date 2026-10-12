@@ -88,9 +88,9 @@ void main() {
   ) async {
     await pumpDetail(tester, groups: [noPace, slow, fast]);
 
-    expect(find.text('9:00/mi'), findsOneWidget);
+    // Pace and distance share one heading line; the label is the subtitle.
+    expect(find.text('9:00/mi · 3 mi'), findsOneWidget);
     expect(find.text('9:30-10:00/mi'), findsOneWidget);
-    expect(find.text('3 mi'), findsOneWidget);
     expect(top(tester, 'Tempo'), lessThan(top(tester, 'Steady')));
     expect(top(tester, 'Steady'), lessThan(top(tester, 'Jog and walk')));
     await unmount(tester);
@@ -106,9 +106,8 @@ void main() {
       distanceUnit: DistUnit.km,
     );
 
-    expect(find.text('5:36/km (9:00/mi)'), findsOneWidget);
+    expect(find.text('5:36/km (9:00/mi) · 4.8 km (3 mi)'), findsOneWidget);
     expect(find.text('5:54-6:13/km (9:30-10:00/mi)'), findsOneWidget);
-    expect(find.text('4.8 km (3 mi)'), findsOneWidget);
     await unmount(tester);
   });
 
@@ -117,8 +116,10 @@ void main() {
   ) async {
     await pumpDetail(tester, groups: [fast, slow, noPace]);
 
-    expect(find.text('Jog/walk'), findsOneWidget);
-    expect(find.text('Pace group'), findsNWidgets(2));
+    // A jog/walk group with no pace is headed by its label.
+    expect(find.text('Jog and walk'), findsOneWidget);
+    // The generic kind name is no longer a heading of its own.
+    expect(find.text('Pace group'), findsNothing);
     expect(find.text('Led by Jo Bloggs'), findsOneWidget);
     expect(
       find.text('Led by Sam Lapsed, Pat Back (backmarker)'),
@@ -194,6 +195,46 @@ void main() {
     await pumpDetail(tester, groupMode: 'routes');
     expect(find.text('Routes'), findsOneWidget);
     await unmount(tester);
+  });
+
+  group('pace groups note', () {
+    const note =
+        'Other pace groups will be confirmed at the start of the session, so '
+        "don't worry if you don't see a suitable group below.";
+
+    testWidgets('shows for paced and coached runs, with or without groups', (
+      tester,
+    ) async {
+      await pumpDetail(tester, groups: [fast]);
+      expect(find.text(note), findsOneWidget);
+      await unmount(tester);
+
+      // Empty list: the note still shows, next to the empty state.
+      await db.clearAll();
+      await pumpDetail(tester);
+      expect(find.text(note), findsOneWidget);
+      expect(
+        find.text('No groups yet. Leaders can offer to lead one.'),
+        findsOneWidget,
+      );
+      await unmount(tester);
+
+      await db.clearAll();
+      await pumpDetail(tester, groups: [fast], groupMode: 'single');
+      expect(find.text(note), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('is hidden for routes runs and closed runs', (tester) async {
+      await pumpDetail(tester, groupMode: 'routes');
+      expect(find.text(note), findsNothing);
+      await unmount(tester);
+
+      await db.clearAll();
+      await pumpDetail(tester, groups: [fast], status: 'cancelled');
+      expect(find.text(note), findsNothing);
+      await unmount(tester);
+    });
   });
 
   group('edit and delete visibility', () {
@@ -273,7 +314,8 @@ void main() {
       await pumpDetail(tester, groupMode: 'routes', groups: [route]);
       expect(find.text('Add route'), findsNothing);
       expect(find.text("I'm doing this route"), findsOneWidget);
-      expect(find.text('10 mi'), findsOneWidget);
+      // No pace: the label is the heading, with the distance after it.
+      expect(find.text('10 mile loop · 10 mi'), findsOneWidget);
       expect(find.text('Meet at the bridge'), findsOneWidget);
       expect(find.text('3 going'), findsOneWidget);
       expect(find.text('Lead a group'), findsOneWidget);
