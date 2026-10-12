@@ -111,6 +111,13 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('has an About & privacy row', (tester) async {
+    await pumpProfile(tester, online: true);
+
+    expect(find.text('About & privacy'), findsOneWidget);
+    await unmount(tester);
+  });
+
   testWidgets('has a My profile card row that prompts for a photo and bio', (
     tester,
   ) async {

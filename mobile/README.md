@@ -50,6 +50,22 @@ This option is compiled out of release builds.
 The profile screen works offline from the cache. Switch the emulator to airplane mode
 to see the "Offline — showing saved details" banner.
 
+## Delete account testing note
+
+Profile → **About & privacy** shows the version, the privacy policy, club website and contact
+links, and a red **Delete my account** under "Danger zone". It opens a full-screen explanation;
+the red button only enables when `DELETE` is typed exactly (capitals).
+
+- **Use a throwaway Auth0 account** (a spare Google login or an email sign-up), linked to a test
+  member. Deletion is permanent on the server and needs the API from Phase 7b deployed
+  (`DELETE /app/account`, see docs/api-contract.md).
+- After deleting you land on the sign-in screen. The website login and the club membership are
+  untouched, so signing in again goes through the link flow (URN and date of birth) and starts
+  with an empty profile card, chat history and sign-ups.
+- A club's only admin gets "Make someone else an admin first." and nothing is deleted.
+- Airplane mode: "You need a connection to delete your account."
+- With two accounts on the device, only the deleted one is removed; the app switches to the other.
+
 ## Signed release APK
 
 `flutter build apk --release --dart-define-from-file=config/prod.json` signs with the
@@ -210,3 +226,9 @@ phone for the camera. One account should be **committee** (call it **C**; it can
    goals are gone for everyone; A can add new ones. Plain members have no ⋮ menu, and nobody has it on their own page.
 10. **Not available:** make a member inactive (or use a random id in a deep link): the page says "This member isn't
     available".
+
+## Releasing
+
+Beta builds (Firebase App Distribution), the Google Play steps, version numbers and the pre-release checklist are in
+[docs/store/release-checklist.md](docs/store/release-checklist.md). Store text, the privacy policy draft and the Play
+Data safety answers live next to it in [docs/store/](docs/store/README.md). Quick beta: `scripts/distribute-android.sh`.

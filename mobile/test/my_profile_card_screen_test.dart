@@ -170,6 +170,22 @@ void main() {
     },
   );
 
+  testWidgets('an unexpected response body shows an error, not a spinner', (
+    tester,
+  ) async {
+    // e.g. a host that answers an unknown route with a bare "0".
+    adapter.routes[mineKey] = FakeResponse(200, '0');
+    adapter.routes['GET /app/clubs/1/member-cards'] = FakeResponse(
+      200,
+      memberCardsBody([]),
+    );
+    await pump(tester);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byIcon(Icons.error_outline), findsOneWidget);
+    expect(find.text('Try again'), findsOneWidget);
+    await unmount(tester);
+  });
+
   testWidgets('editing the bio enables Save and sends only the bio', (
     tester,
   ) async {

@@ -73,6 +73,7 @@ class _MyProfileCardScreenState extends ConsumerState<MyProfileCardScreen> {
   DateTime? _staleSince;
   String? _bioError;
   String? _goalsError;
+  String? _loadError;
 
   @override
   void initState() {
@@ -115,6 +116,7 @@ class _MyProfileCardScreenState extends ConsumerState<MyProfileCardScreen> {
     if (mounted) setState(() => _fetching = true);
     DateTime? staleSince;
     MyCard? card;
+    String? loadError;
     try {
       final result = await repo.fetchMine(clubId);
       card = result.value;
@@ -124,9 +126,15 @@ class _MyProfileCardScreenState extends ConsumerState<MyProfileCardScreen> {
     } on ApiException catch (e) {
       if (sub != null && await handleExpiry(sub, e)) return;
       if (mounted) _snack(memberErrorMessage(e));
+      loadError = memberErrorMessage(e);
+    } on Object catch (e) {
+      // Anything unexpected (bad response body, local database error): show it
+      // instead of spinning forever.
+      loadError = '$e';
     }
     if (!mounted) return;
     setState(() {
+      _loadError = loadError;
       if (card != null) _applyCard(card);
       _fetching = false;
       _staleSince = staleSince;
@@ -286,7 +294,7 @@ class _MyProfileCardScreenState extends ConsumerState<MyProfileCardScreen> {
         child: !_ready
             ? _fetching
                   ? const Center(child: CircularProgressIndicator())
-                  : _OfflineEmpty(onRetry: _load)
+                  : _OfflineEmpty(onRetry: _load, error: _loadError)
             : ListView(
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
@@ -421,9 +429,12 @@ class _MyProfileCardScreenState extends ConsumerState<MyProfileCardScreen> {
 }
 
 class _OfflineEmpty extends StatelessWidget {
-  const _OfflineEmpty({required this.onRetry});
+  const _OfflineEmpty({required this.onRetry, this.error});
 
   final Future<void> Function() onRetry;
+
+  /// Set when the load failed for a reason other than being offline.
+  final String? error;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -432,11 +443,12 @@ class _OfflineEmpty extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.cloud_off, size: 48),
+          Icon(error == null ? Icons.cloud_off : Icons.error_outline, size: 48),
           const SizedBox(height: 16),
-          const Text(
-            "You're offline. Connect to the internet to set up your profile "
-            'card.',
+          Text(
+            error ??
+                "You're offline. Connect to the internet to set up your profile "
+                    'card.',
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),

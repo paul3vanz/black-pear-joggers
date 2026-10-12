@@ -214,6 +214,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           onTap: () => showAccountSwitcher(context),
         ),
         ListTile(
+          leading: const Icon(Icons.info_outline),
+          title: const Text('About & privacy'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => context.push('/profile/about'),
+        ),
+        ListTile(
           leading: const Icon(Icons.logout),
           title: const Text('Sign out'),
           onTap: account == null

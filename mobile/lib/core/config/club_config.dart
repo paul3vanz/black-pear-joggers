@@ -12,6 +12,7 @@ class ClubConfig {
     required this.website,
     required this.joinUrl,
     required this.contactUrl,
+    required this.privacyPolicyUrl,
     required this.logoAsset,
     required this.primary,
     required this.seed,
@@ -22,6 +23,7 @@ class ClubConfig {
   final Uri website;
   final Uri joinUrl;
   final Uri contactUrl;
+  final Uri privacyPolicyUrl;
   final String logoAsset;
 
   /// Brand orange (Tailwind `primary.DEFAULT` on the website).
@@ -36,6 +38,7 @@ class ClubConfig {
     website: Uri.parse('https://bpj.org.uk'),
     joinUrl: Uri.parse('https://bpj.org.uk/membership'),
     contactUrl: Uri.parse('https://bpj.org.uk/contact?reason=website'),
+    privacyPolicyUrl: Uri.parse('https://bpj.org.uk/privacy-policy'),
     logoAsset: 'assets/images/logo.png',
     primary: const Color(0xFFF89829),
     seed: const Color(0xFFF89829),

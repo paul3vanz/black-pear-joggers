@@ -14,6 +14,8 @@ import '../features/membership/ui/unavailable_screen.dart';
 import '../features/members/ui/member_profile_screen.dart';
 import '../features/members/ui/my_profile_card_screen.dart';
 import '../features/messages/ui/chat_screen.dart';
+import '../features/profile/ui/about_screen.dart';
+import '../features/profile/ui/delete_account_screen.dart';
 import '../features/profile/ui/profile_screen.dart';
 import '../features/runs/ui/runs_screen.dart';
 import '../features/runs/ui/series_screens.dart';
@@ -238,6 +240,20 @@ GoRouter router(Ref ref) {
                     path: 'members',
                     parentNavigatorKey: rootNavigatorKey,
                     builder: (_, _) => const MembersRolesScreen(),
+                  ),
+                  GoRoute(
+                    path: 'about',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (_, _) => const AboutScreen(),
+                    routes: [
+                      // A real route (not Navigator.push) so signing out replaces
+                      // it along with everything else.
+                      GoRoute(
+                        path: 'delete',
+                        parentNavigatorKey: rootNavigatorKey,
+                        builder: (_, _) => const DeleteAccountScreen(),
+                      ),
+                    ],
                   ),
                 ],
               ),

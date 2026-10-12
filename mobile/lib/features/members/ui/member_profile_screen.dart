@@ -62,6 +62,11 @@ class _MemberProfileScreenState extends ConsumerState<MemberProfileScreen> {
       if (sub != null && await handleExpiry(sub, e)) return;
       next = e.statusCode == 404 ? _Load.notFound : _Load.failed;
       error = e.message;
+    } on Object catch (e) {
+      // Anything unexpected (bad response body, local database error): show it
+      // instead of spinning forever.
+      next = _Load.failed;
+      error = '$e';
     }
     if (!mounted) return;
     setState(() {
