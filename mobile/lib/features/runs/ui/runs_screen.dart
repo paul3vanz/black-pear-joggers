@@ -9,11 +9,14 @@ import '../../../core/auth/session_expiry.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/ui/offline_banner.dart';
 import '../../membership/ui/membership_providers.dart';
+import '../../events/logic/event_summary.dart';
+import '../../groups/data/group_dtos.dart';
 import '../../groups/data/summary_dtos.dart';
 import '../../groups/ui/group_format.dart';
 import '../../messages/data/messages_repository.dart';
 import '../data/runs_repository.dart';
 import '../data/session_changes.dart';
+import '../logic/run_modes.dart';
 import 'run_format.dart';
 import 'series_image.dart';
 import 'runs_providers.dart';
@@ -348,7 +351,11 @@ class _RunCard extends StatelessWidget {
                   if (venueName != null) Text(venueName!, style: muted),
                   Text(groupModeLabel(session.groupMode), style: muted),
                   if (!cancelled && summary != null)
-                    _SummaryRow(summary: summary),
+                    _SummaryRow(
+                      summary: summary,
+                      mode: session.groupMode,
+                      groups: decodeGroups(session.groupsJson),
+                    ),
                 ],
               ),
             ),
@@ -360,32 +367,46 @@ class _RunCard extends StatelessWidget {
 }
 
 /// "3 groups · 12 going" with chips for your own response and "You're leading",
-/// from the session `summary` (works offline, it is in the cache).
+/// from the session `summary` (works offline, it is in the cache). Events and
+/// races get their own wording instead (D84): "3 going to 2 events", never a
+/// group count, and "You're going to Worcester parkrun" for your own answer.
 class _SummaryRow extends StatelessWidget {
-  const _SummaryRow({required this.summary});
+  const _SummaryRow({
+    required this.summary,
+    required this.mode,
+    required this.groups,
+  });
 
   final SessionSummary summary;
+  final String mode;
+  final List<Group> groups;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final counts = [
-      if (summary.groupCount > 0)
-        countLabel(summary.groupCount, 'group', 'groups'),
-      if (summary.goingCount > 0) '${summary.goingCount} going',
-    ].join(' · ');
+    final eventLike = isEventLikeMode(mode);
+    final counts = eventLike
+        ? eventSummaryText(mode: mode, summary: summary, groups: groups)
+        : [
+            if (summary.groupCount > 0)
+              countLabel(summary.groupCount, 'group', 'groups'),
+            if (summary.goingCount > 0) '${summary.goingCount} going',
+          ].join(' · ');
+    final eventName = myEventName(mode: mode, summary: summary, groups: groups);
     // Leaders are marked going automatically (D30), so "You're going" beside
     // "You're leading" is noise; other statuses still show. (`when` is a Dart 3
     // guard on a switch case.)
     final response = switch (summary.myStatus) {
-      'going' when summary.myLeading => null,
+      'going' when summary.myLeading && !eventLike => null,
+      'going' when eventName != null => "You're going to $eventName",
       'going' => "You're going",
       'maybe' => 'Maybe',
       'not_going' => "Can't come",
       _ => null,
     };
-    if (counts.isEmpty && response == null && !summary.myLeading) {
+    final leading = summary.myLeading && !eventLike;
+    if (counts.isEmpty && response == null && !leading) {
       return const SizedBox.shrink();
     }
     return Padding(
@@ -410,7 +431,7 @@ class _SummaryRow extends StatelessWidget {
                   ? scheme.primaryContainer
                   : null,
             ),
-          if (summary.myLeading)
+          if (leading)
             Chip(
               visualDensity: VisualDensity.compact,
               label: Text(

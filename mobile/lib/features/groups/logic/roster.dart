@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/db/app_database.dart';
 import '../../runs/data/runs_repository.dart';
+import '../../runs/logic/run_modes.dart';
 import '../../runs/ui/run_format.dart';
 
 /// The leader roster looks this many weeks ahead.
@@ -51,6 +52,7 @@ List<RosterWeek> buildRoster(
   final result = <RosterWeek>[];
   for (final s in sessions) {
     if (s.status == 'cancelled' || s.endsAt.isBefore(now)) continue;
+    if (isEventLikeMode(s.groupMode)) continue; // nothing to lead (D79)
     if (s.localDate.compareTo(last) > 0) continue;
     final monday = mondayOf(s.localDate);
     if (result.isNotEmpty && result.last.monday == monday) {

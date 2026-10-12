@@ -142,6 +142,35 @@ class GroupsRepository {
     return group;
   }
 
+  /// Adds an event (kind `event`) to an `events` run, by any linked member
+  /// (Phase 8): a club event location ([locationId]) or a free-text [label].
+  /// The server marks the caller going in it and de-duplicates by location:
+  /// a 200 (not 201) means that event already existed, so [existed] is true
+  /// and the caller simply joined it (D78). No pace and no `lead` are sent
+  /// (events have none). Online-only like other group writes.
+  Future<({Group group, bool existed})> addEventGroup(
+    String sessionId, {
+    String? locationId,
+    String? label,
+    String? id,
+  }) async {
+    final clubId = await _clubOf(sessionId);
+    final response = await guardApi(
+      () => _dio.post<Object?>(
+        '/app/clubs/$clubId/sessions/$sessionId/groups',
+        data: {
+          'id': id ?? _newId(),
+          'kind': 'event',
+          'locationId': ?locationId, // `?x` in a map literal: only if not null
+          'label': ?label,
+        },
+      ),
+    );
+    final group = await _merge(clubId, response);
+    await _markLeaderGoing(clubId, group); // same effect: going in [group]
+    return (group: group, existed: response.statusCode == 200);
+  }
+
   /// Edits a group (its leaders, the coordinator or the committee). Every
   /// field is sent, so a pace or distance left out is cleared.
   Future<Group> updateGroup(

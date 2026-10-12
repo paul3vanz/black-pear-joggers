@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/db/app_database.dart';
+import '../../runs/logic/run_modes.dart';
 import '../../runs/ui/session_actions.dart';
 import '../data/group_dtos.dart';
 import '../data/groups_repository.dart';
@@ -28,6 +29,8 @@ Future<void> joinAsLeaderWithRole(
   Session session,
   Group group,
 ) async {
+  // Event groups have no leaders (D79).
+  if (isEventLikeMode(session.groupMode)) return;
   final role = await showDialog<String>(
     context: context,
     builder: (ctx) => SimpleDialog(
@@ -61,6 +64,7 @@ Future<void> stepDownFrom(
   Session session,
   Group group,
 ) async {
+  if (isEventLikeMode(session.groupMode)) return;
   final expects = session.groupMode == 'paced' || session.groupMode == 'single';
   final ok = await confirm(
     context,

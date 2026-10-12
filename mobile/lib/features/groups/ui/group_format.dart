@@ -13,6 +13,7 @@ String groupKindLabel(String kind) => switch (kind) {
   'route' => 'Route',
   'social' => 'Social',
   'other' => 'Other',
+  'event' => 'Event',
   _ => 'Pace group',
 };
 
@@ -26,6 +27,7 @@ IconData groupKindIcon(String kind) => switch (kind) {
   'route' => Icons.route,
   'social' => Icons.people_outline,
   'other' => Icons.more_horiz,
+  'event' => Icons.flag_outlined,
   _ => Icons.directions_run,
 };
 
@@ -73,6 +75,8 @@ String groupsHeading(String mode) => switch (mode) {
   'paced' => 'Pace groups',
   'single' => 'Coached session',
   'routes' => 'Routes',
+  'events' => 'Where are you running?',
+  'race' => "Who's going?",
   _ => 'Groups',
 };
 
@@ -84,6 +88,9 @@ String groupsIntro(String mode) => switch (mode) {
     'Everyone starts together; you can say what pace you will run and '
         'others can join you.',
   'routes' => 'The coordinator sets the routes. Pick the one you will do.',
+  'events' =>
+    "Pick the parkrun you're going to, or add one. Each has its own chat "
+        'for sharing lifts.',
   _ => '',
 };
 

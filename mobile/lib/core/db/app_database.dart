@@ -32,6 +32,7 @@ part 'app_database.g.dart';
     ThreadStates,
     MemberCards,
     MemberProfiles,
+    EventLocations,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -42,7 +43,7 @@ class AppDatabase extends _$AppDatabase {
     : super(driftDatabase(name: databaseNameFor(sub)));
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -93,6 +94,11 @@ class AppDatabase extends _$AppDatabase {
       if (from < 7) {
         await m.createTable(memberCards);
         await m.createTable(memberProfiles);
+      }
+      // v8 (Phase 8b): club event locations (parkruns, races). A new table
+      // only: existing rows are untouched, the first refresh fills it.
+      if (from < 8) {
+        await m.createTable(eventLocations);
       }
     },
   );

@@ -7,6 +7,7 @@ import '../../../core/util/relative_time.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../data/group_dtos.dart';
 import '../data/plan_dtos.dart';
+import '../../runs/logic/run_modes.dart';
 import '../logic/pace_spread.dart';
 import 'coverage_card.dart';
 import 'group_access.dart';
@@ -35,7 +36,8 @@ class WhosComingSection extends ConsumerWidget {
       myMemberId: ref.watch(myMemberIdProvider),
       isCommittee: ref.watch(canManageRunsProvider),
     );
-    final routes = session.groupMode == 'routes';
+    // Routes, events and races have no pace spread or coverage (D79).
+    final routes = !usesPaceGroups(session.groupMode);
     final shown = [
       if (!routes)
         for (final g in groups)

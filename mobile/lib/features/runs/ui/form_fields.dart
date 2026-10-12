@@ -5,6 +5,7 @@ import '../../../core/db/app_database.dart';
 import '../../../core/util/clock_time.dart';
 import '../data/runs_repository.dart';
 import '../data/session_changes.dart';
+import '../logic/run_modes.dart';
 import 'run_format.dart';
 import 'runs_providers.dart';
 
@@ -156,15 +157,18 @@ class VenueDropdown extends ConsumerWidget {
   }
 }
 
-/// Group mode dropdown (paced / single / open / routes).
+/// Group mode dropdown. [modes] is what to offer: [seriesGroupModes] for a
+/// series (no `race`), [adHocGroupModes] for a one-off run.
 class GroupModeDropdown extends StatelessWidget {
   const GroupModeDropdown({
     super.key,
     required this.value,
     required this.onChanged,
+    this.modes = adHocGroupModes,
   });
 
   final String value;
+  final List<String> modes;
   final ValueChanged<String> onChanged;
 
   @override
@@ -178,7 +182,8 @@ class GroupModeDropdown extends StatelessWidget {
       border: const OutlineInputBorder(),
     ),
     items: [
-      for (final m in groupModes)
+      // A current value outside [modes] is kept so the dropdown never asserts.
+      for (final m in modes.contains(value) ? modes : [...modes, value])
         DropdownMenuItem(value: m, child: Text(groupModeLabel(m))),
     ],
     onChanged: (v) => onChanged(v ?? value),

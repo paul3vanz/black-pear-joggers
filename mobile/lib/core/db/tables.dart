@@ -347,3 +347,31 @@ class MemberProfiles extends Table {
   @override
   Set<Column<Object>> get primaryKey => {memberId, clubId};
 }
+
+/// Cached club event locations (`GET /app/clubs/{clubId}/event-locations`,
+/// Phase 8): the parkrun list (imported on the server), races and others. Unlike
+/// venues, tombstones are kept (with [deletedAt]) and filtered out by queries.
+class EventLocations extends Table {
+  TextColumn get id => text()();
+  IntColumn get clubId => integer()();
+
+  /// `parkrun` | `race` | `other`.
+  TextColumn get kind => text()();
+  TextColumn get name => text()();
+
+  /// parkrun site code, e.g. `worcester`.
+  TextColumn get slug => text().nullable()();
+  TextColumn get country => text().nullable()();
+  TextColumn get region => text().nullable()();
+  RealColumn get lat => real().nullable()();
+  RealColumn get lng => real().nullable()();
+  TextColumn get url => text().nullable()();
+
+  /// `import` | `manual`.
+  TextColumn get source => text().withDefault(const Constant('manual'))();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}

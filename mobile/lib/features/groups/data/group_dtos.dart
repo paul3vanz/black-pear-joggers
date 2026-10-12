@@ -8,7 +8,8 @@ DateTime? _date(Object? v) => v is String ? DateTime.tryParse(v) : null;
 
 String? _str(Object? v) => v is String && v.isNotEmpty ? v : null;
 
-/// The values of a group's `kind`.
+/// The kinds the group editor offers. The server also has `event` (a parkrun or
+/// race entry, Phase 8), created through the event picker, not this list.
 const groupKinds = ['run', 'jog_walk', 'efforts', 'route', 'social', 'other'];
 
 /// A confirmed leader of a group.
@@ -59,6 +60,8 @@ class Group {
     this.status = 'active',
     this.sortOrder = 0,
     this.leaders = const [],
+    this.locationId,
+    this.createdByMemberId,
     this.goingCount = 0,
     this.maybeCount = 0,
     this.updatedAt,
@@ -83,6 +86,12 @@ class Group {
   final String status;
   final int sortOrder;
   final List<GroupLeader> leaders;
+
+  /// The `event_locations` row of an event group (kind `event`), if any.
+  final String? locationId;
+
+  /// Who created an event group (they may edit or delete it).
+  final String? createdByMemberId;
   final int goingCount;
   final int maybeCount;
   final DateTime? updatedAt;
@@ -111,6 +120,8 @@ class Group {
           for (final l in rawLeaders)
             if (l is Map) GroupLeader.fromJson(Map<String, Object?>.from(l)),
       ],
+      locationId: _str(json['locationId']),
+      createdByMemberId: _str(json['createdByMemberId']),
       goingCount: (json['goingCount'] as num?)?.toInt() ?? 0,
       maybeCount: (json['maybeCount'] as num?)?.toInt() ?? 0,
       updatedAt: _date(json['updatedAt']),
@@ -135,6 +146,8 @@ class Group {
     'status': status,
     'sortOrder': sortOrder,
     'leaders': [for (final l in leaders) l.toJson()],
+    'locationId': locationId,
+    'createdByMemberId': createdByMemberId,
     'goingCount': goingCount,
     'maybeCount': maybeCount,
     'updatedAt': updatedAt?.toUtc().toIso8601String(),
@@ -184,6 +197,8 @@ class Group {
     status: status ?? this.status,
     sortOrder: sortOrder,
     leaders: leaders ?? this.leaders,
+    locationId: locationId,
+    createdByMemberId: createdByMemberId,
     goingCount: goingCount ?? this.goingCount,
     maybeCount: maybeCount ?? this.maybeCount,
     updatedAt: updatedAt,

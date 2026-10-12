@@ -208,6 +208,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/profile/members'),
           ),
+        if (ref.watch(canManageRunsProvider))
+          ListTile(
+            leading: const Icon(Icons.flag_outlined),
+            title: const Text('Event locations'),
+            subtitle: const Text('parkruns, races and other events'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/profile/event-locations'),
+          ),
         ListTile(
           leading: const Icon(Icons.switch_account_outlined),
           title: const Text('Switch or add account'),

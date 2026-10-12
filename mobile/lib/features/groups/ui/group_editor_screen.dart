@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/db/app_database.dart';
+import '../../runs/logic/run_modes.dart';
 import '../../runs/ui/form_fields.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../../runs/ui/session_actions.dart';
@@ -53,6 +54,19 @@ class GroupEditorScreen extends ConsumerWidget {
       body = session.isLoading || groups.isLoading || (last?.isLoading ?? false)
           ? const Center(child: CircularProgressIndicator())
           : const Center(child: Text("This run isn't available."));
+    } else if (isEventLikeMode(s.groupMode)) {
+      // Events and races have no pace or leaders (D79): an event's note is
+      // edited from its card on the run page, so this screen never applies.
+      body = const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'Events have no pace groups. Change an event from its card on '
+            'the run page.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
     } else {
       final existing = editing
           ? (groups.value ?? const <Group>[])

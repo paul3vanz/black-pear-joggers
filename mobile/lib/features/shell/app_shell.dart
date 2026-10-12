@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/auth/accounts_controller.dart';
 import '../../core/auth/session_expiry.dart';
 import '../../core/notifications/push_service.dart';
+import '../events/data/event_locations_repository.dart';
 import '../groups/data/attendance_repository.dart';
 import '../inbox/data/inbox_repository.dart';
 import '../inbox/ui/inbox_providers.dart';
@@ -36,6 +37,7 @@ class _AppShellState extends ConsumerState<AppShell>
       if (!mounted) return;
       unawaited(_refreshInbox());
       unawaited(_refreshMemberCards());
+      unawaited(_refreshEventLocations());
       unawaited(
         ref.read(pushServiceProvider).requestPermissionWithExplainer(context),
       );
@@ -54,6 +56,7 @@ class _AppShellState extends ConsumerState<AppShell>
     if (state == AppLifecycleState.resumed) {
       unawaited(_retryPending());
       unawaited(_refreshMemberCards());
+      unawaited(_refreshEventLocations());
     }
   }
 
@@ -103,6 +106,21 @@ class _AppShellState extends ConsumerState<AppShell>
     }
   }
 
+  /// Keeps the club's event locations (parkruns, races) fresh for the event
+  /// picker: at start, on resume and after an account or club switch. Only an
+  /// expired session is reported; offline, the cached list is used.
+  Future<void> _refreshEventLocations() async {
+    final clubId = ref.read(activeClubIdProvider);
+    final sub = ref.read(activeSubProvider);
+    final repo = ref.read(eventLocationsRepositoryProvider);
+    final handleExpiry = ref.read(sessionExpiryHandlerProvider);
+    try {
+      await repo.refresh(clubId);
+    } on Object catch (e) {
+      if (sub != null) await handleExpiry(sub, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Refresh again whenever the account changes (the repository rebuilds).
@@ -110,6 +128,14 @@ class _AppShellState extends ConsumerState<AppShell>
     ref.listen(
       memberProfileRepositoryProvider,
       (_, _) => unawaited(_refreshMemberCards()),
+    );
+    ref.listen(
+      eventLocationsRepositoryProvider,
+      (_, _) => unawaited(_refreshEventLocations()),
+    );
+    ref.listen(
+      activeClubIdProvider,
+      (_, _) => unawaited(_refreshEventLocations()),
     );
     final clubId = ref.watch(activeClubIdProvider);
     final unread = ref.watch(unreadCountProvider(clubId)).value ?? 0;

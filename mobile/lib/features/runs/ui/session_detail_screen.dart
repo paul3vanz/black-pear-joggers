@@ -4,7 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/config/club_config.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/util/open_link.dart';
+import '../../events/ui/events_section.dart';
+import '../../events/ui/race_section.dart';
+import '../../groups/ui/group_access.dart';
 import '../../members/ui/member_avatar.dart';
+import '../logic/run_modes.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../data/session_changes.dart';
 import '../../groups/ui/groups_providers.dart';
@@ -113,10 +117,18 @@ class _Body extends ConsumerWidget {
                 '${longDate(session.localDate)}, '
                 '${timeRange(session.localStartTime, session.localEndTime)}',
           ),
-          RespondCard(
-            session: session,
-            showPace: session.groupMode != 'routes',
-          ),
+          // A race's own card is the answer (I'm going / Can't go) while the
+          // run is open, so the run-level card only shows for the closed
+          // explanation. Events keep it: it is where you say you can't come.
+          if (!isRaceMode(session.groupMode) ||
+              runClosedReason(session, ref.watch(groupsClockProvider)()) !=
+                  null)
+            RespondCard(
+              session: session,
+              // No pace override on routes (shown with the routes), events or
+              // races.
+              showPace: usesPaceGroups(session.groupMode),
+            ),
           if (venue != null) ...[
             _InfoRow(
               icon: Icons.place_outlined,
@@ -159,8 +171,16 @@ class _Body extends ConsumerWidget {
                 ),
               ),
             ),
-          GroupsSection(session: session),
-          WhosComingSection(session: session),
+          // Events and races have their own cards, no pace groups (D79), and
+          // the event cards show the counts and names themselves.
+          if (isEventsMode(session.groupMode))
+            EventsSection(session: session)
+          else if (isRaceMode(session.groupMode))
+            RaceSection(session: session)
+          else ...[
+            GroupsSection(session: session),
+            WhosComingSection(session: session),
+          ],
           if (session.notes != null) ...[
             const SizedBox(height: 8),
             Text('Notes', style: theme.textTheme.titleSmall),

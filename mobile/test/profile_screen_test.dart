@@ -111,6 +111,22 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('committee see an Event locations row, members do not', (
+    tester,
+  ) async {
+    await pumpProfile(tester, online: true);
+    expect(find.text('Event locations'), findsNothing);
+    await unmount(tester);
+
+    adapter.routes['GET /app/clubs/1/profile'] = FakeResponse(200, {
+      ...profileJson(),
+      'roles': ['committee'],
+    });
+    await pumpProfile(tester, online: true);
+    expect(find.text('Event locations'), findsOneWidget);
+    await unmount(tester);
+  });
+
   testWidgets('has an About & privacy row', (tester) async {
     await pumpProfile(tester, online: true);
 

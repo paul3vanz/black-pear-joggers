@@ -69,6 +69,10 @@ String groupModeExplainer(String mode) => switch (mode) {
   'single' => 'A coached session for everyone together.',
   'open' => 'Open run: everyone runs together.',
   'routes' => 'Routes: the coordinator sets the routes on the day.',
+  'events' =>
+    'Events: everyone picks the event they are running that day, '
+        'such as a parkrun.',
+  'race' => 'One race: people say they are going.',
   _ => '',
 };
 
@@ -78,7 +82,7 @@ String groupModeLabel(String mode) => switch (mode) {
   'single' => 'Coached session',
   'open' => 'Open run',
   'routes' => 'Routes',
+  'events' => 'Events (e.g. parkrun)',
+  'race' => 'Race (one event)',
   _ => mode,
 };
-
-const groupModes = ['paced', 'single', 'open', 'routes'];

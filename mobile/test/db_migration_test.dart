@@ -349,10 +349,60 @@ void main() {
     },
   );
 
-  test('a fresh database is created at schema v7', () async {
+  test('v7 -> v8 adds event locations and keeps existing data', () async {
+    // A v7 database: a cached venue and a sync cursor, as Phase 6.5 left them.
+    final db = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE venues (id TEXT NOT NULL PRIMARY KEY, '
+              'club_id INTEGER NOT NULL, name TEXT NOT NULL, address TEXT, '
+              'lat REAL, lng REAL, notes TEXT, updated_at INTEGER NOT NULL)',
+            )
+            ..execute(
+              "INSERT INTO venues VALUES ('v1', 1, 'OECC', NULL, NULL, NULL, NULL, 1)",
+            )
+            ..execute(
+              'CREATE TABLE sync_cursors (key TEXT NOT NULL PRIMARY KEY, '
+              'server_time TEXT NOT NULL)',
+            )
+            ..execute("INSERT INTO sync_cursors VALUES ('venues:1', 'x')")
+            ..execute('PRAGMA user_version = 7');
+        },
+      ),
+    );
+    addTearDown(db.close);
+
+    await db.customSelect('SELECT 1').get();
+
+    // Existing data survives.
+    expect((await db.select(db.venues).getSingle()).name, 'OECC');
+    expect(await db.select(db.syncCursors).get(), hasLength(1));
+
+    // The new table exists, accepts a row and applies its defaults.
+    expect(await db.select(db.eventLocations).get(), isEmpty);
+    await db
+        .into(db.eventLocations)
+        .insert(
+          EventLocationsCompanion.insert(
+            id: 'e1',
+            clubId: 1,
+            kind: 'parkrun',
+            name: 'Worcester parkrun',
+            updatedAt: DateTime.utc(2026, 10, 13),
+          ),
+        );
+    final row = await db.select(db.eventLocations).getSingle();
+    expect(row.source, 'manual');
+    expect(row.slug, isNull);
+    expect(row.deletedAt, isNull);
+  });
+
+  test('a fresh database is created at schema v8', () async {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 7);
+    expect(db.schemaVersion, 8);
     await db.customSelect('SELECT 1').get();
     expect(await db.select(db.sessions).get(), isEmpty);
   });

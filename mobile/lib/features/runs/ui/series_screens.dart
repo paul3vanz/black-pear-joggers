@@ -8,6 +8,7 @@ import '../../membership/ui/membership_providers.dart';
 import '../../../core/db/app_database.dart';
 import '../data/runs_repository.dart';
 import '../data/session_changes.dart';
+import '../logic/run_modes.dart';
 import 'form_fields.dart';
 import 'run_format.dart';
 import 'series_image.dart';
@@ -342,6 +343,7 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
               formGap,
               GroupModeDropdown(
                 value: _groupMode,
+                modes: seriesGroupModes,
                 onChanged: (v) => setState(() => _groupMode = v),
               ),
               formGap,

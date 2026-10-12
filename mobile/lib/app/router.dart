@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../core/auth/accounts_controller.dart';
 import '../features/auth/ui/sign_in_screen.dart';
+import '../features/events/ui/event_locations_screen.dart';
 import '../features/groups/ui/group_editor_screen.dart';
 import '../features/groups/ui/leader_roster_screen.dart';
 import '../features/groups/ui/members_roles_screen.dart';
@@ -240,6 +241,11 @@ GoRouter router(Ref ref) {
                     path: 'members',
                     parentNavigatorKey: rootNavigatorKey,
                     builder: (_, _) => const MembersRolesScreen(),
+                  ),
+                  GoRoute(
+                    path: 'event-locations',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (_, _) => const EventLocationsScreen(),
                   ),
                   GoRoute(
                     path: 'about',

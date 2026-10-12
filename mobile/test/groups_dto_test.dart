@@ -15,6 +15,35 @@ import 'support/fake_api_phase4.dart';
 
 void main() {
   group('Group.fromJson', () {
+    test('event groups carry locationId and createdByMemberId', () {
+      final g = Group.fromJson(
+        groupJson(
+          'e1',
+          kind: 'event',
+          label: 'Worcester parkrun',
+          paceUnit: null,
+          paceFromS: null,
+          paceToS: null,
+          locationId: 'loc-1',
+          createdByMemberId: 'm9',
+        ),
+      );
+      expect(g.kind, 'event');
+      expect(g.locationId, 'loc-1');
+      expect(g.createdByMemberId, 'm9');
+      expect(g.pace, isA<NoPace>());
+      // They survive the stored-JSON round trip and copyWith.
+      final back = decodeGroups(encodeGroups([g.copyWith(goingCount: 2)]))
+          .single;
+      expect(back.locationId, 'loc-1');
+      expect(back.createdByMemberId, 'm9');
+      expect(back.goingCount, 2);
+      // Older payloads have neither.
+      final old = Group.fromJson(groupJson('g2'));
+      expect(old.locationId, isNull);
+      expect(old.createdByMemberId, isNull);
+    });
+
     test('parses the full contract shape', () {
       final g = Group.fromJson(
         groupJson(

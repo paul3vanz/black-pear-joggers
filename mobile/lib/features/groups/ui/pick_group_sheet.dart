@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/db/app_database.dart';
+import '../../runs/logic/run_modes.dart';
 import '../data/group_dtos.dart';
 import '../data/small_kv_store.dart';
 import 'attendance_actions.dart';
@@ -29,7 +30,8 @@ Future<void> maybePromptPickGroup(
   WidgetRef ref,
   Session session,
 ) async {
-  if (session.groupMode == 'routes') return; // routes are not pace groups
+  // Routes, events and races are not pace groups (D79).
+  if (!usesPaceGroups(session.groupMode)) return;
   if (!isRunOpen(session, ref.read(groupsClockProvider)())) return;
   final groups = [
     for (final g in await ref.read(sessionGroupsProvider(session.id).future))

@@ -22,6 +22,8 @@ Map<String, Object?> groupJson(
   String? distanceUnit,
   String status = 'active',
   List<Map<String, Object?>> leaders = const [],
+  String? locationId,
+  String? createdByMemberId,
   int goingCount = 0,
   int maybeCount = 0,
 }) => {
@@ -41,6 +43,8 @@ Map<String, Object?> groupJson(
   'status': status,
   'sortOrder': 0,
   'leaders': leaders,
+  'locationId': locationId,
+  'createdByMemberId': createdByMemberId,
   'goingCount': goingCount,
   'maybeCount': maybeCount,
   'updatedAt': '2026-10-05T10:00:00.000Z',

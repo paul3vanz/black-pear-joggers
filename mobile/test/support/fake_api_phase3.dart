@@ -23,6 +23,7 @@ Map<String, Object?> seriesJson(
   String? venueId = 'v1',
   String? cmsSlug = 'monday-club-run',
   int? durationMin = 90,
+  String groupMode = 'paced',
   String? imageUrl,
   String? deletedAt,
 }) => {
@@ -36,7 +37,7 @@ Map<String, Object?> seriesJson(
   'intervalWeeks': 1,
   'validFrom': '2026-01-01',
   'validUntil': null,
-  'groupMode': 'paced',
+  'groupMode': groupMode,
   'cmsSlug': cmsSlug,
   'imageUrl': imageUrl,
   'updatedAt': '2026-10-01T10:00:00.000Z',
