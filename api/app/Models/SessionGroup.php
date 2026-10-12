@@ -15,7 +15,7 @@ final class SessionGroup extends Model
     use HasUuids;
     use SoftDeletes;
 
-    const KINDS = ['run', 'jog_walk', 'efforts', 'route', 'social', 'other'];
+    const KINDS = ['run', 'jog_walk', 'efforts', 'route', 'social', 'other', 'event'];
     const STATUS_ACTIVE = 'active';
     const STATUS_NEEDS_LEADER = 'needs_leader';
 
@@ -40,6 +40,7 @@ final class SessionGroup extends Model
         'status',
         'sort_order',
         'created_by_member_id',
+        'location_id',
     ];
 
     public function session()

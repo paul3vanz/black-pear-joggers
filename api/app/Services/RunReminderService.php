@@ -115,8 +115,12 @@ class RunReminderService
         $groups = SessionGroup::where('session_id', $session->id)->get()->keyBy('id');
 
         // member id => groups they confirmed as leader of on this run
+        // Events and races have no leaders (D79).
         $leading = [];
-        foreach (SessionGroupLeader::where('status', SessionGroupLeader::CONFIRMED)->whereIn('group_id', $groups->keys())->get() as $row) {
+        $rows = $session->isEventMode()
+            ? []
+            : SessionGroupLeader::where('status', SessionGroupLeader::CONFIRMED)->whereIn('group_id', $groups->keys())->get();
+        foreach ($rows as $row) {
             $leading[$row->member_id][] = $groups->get($row->group_id);
         }
 
@@ -159,7 +163,9 @@ class RunReminderService
                 $group = $answer && $answer->group_id ? $groups->get($answer->group_id) : null;
                 $name = $group ? RunText::groupName($group, $unit) : null;
 
-                if ($answer && $answer->status === SessionAttendee::GOING) {
+                if ($answer && $answer->status === SessionAttendee::GOING && $session->isEventMode() && $group && trim((string) $group->label) !== '') {
+                    $body = "You're going to {$group->label}. Can't make it?";
+                } elseif ($answer && $answer->status === SessionAttendee::GOING) {
                     $body = ($name ? "You're down for the $name group" : "You're down for this run") . ". Can't make it?";
                 } elseif ($answer && $answer->status === SessionAttendee::MAYBE) {
                     $body = 'You said maybe. Are you coming?';
@@ -213,6 +219,11 @@ class RunReminderService
         $auto = $recent->isEmpty() ? [] : SessionAttendee::whereIn('session_id', $recent)
             ->where('status', SessionAttendee::GOING)->pluck('member_id')->unique()->all();
 
+        // Events and races: only people who are going, plus an explicit "on" (the "usually comes" rule is off, D79).
+        if ($session->isEventMode()) {
+            $auto = [];
+        }
+
         $ids = [];
         foreach ($auto as $id) {
             if (($prefs[$id] ?? MemberSeriesPref::AUTO) !== MemberSeriesPref::OFF) {
@@ -234,7 +245,7 @@ class RunReminderService
     /** @return int notifications written */
     private function alertLeaders(Club $club, ClubSession $session, string $tz): int
     {
-        if ($session->group_mode === 'routes') {
+        if ($session->group_mode === 'routes' || $session->isEventMode()) {
             return 0;
         }
 

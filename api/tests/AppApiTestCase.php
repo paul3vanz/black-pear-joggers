@@ -75,6 +75,8 @@ abstract class AppApiTestCase extends TestCase
             '2026_10_14_090000_create_member_profiles_table.php',
             '2026_10_14_090100_create_member_photos_table.php',
             '2026_10_15_090000_make_posts_author_nullable.php',
+            '2026_10_16_090000_create_event_locations_table.php',
+            '2026_10_16_090100_add_location_id_to_session_groups_table.php',
         ]);
 
         // Stand in for the Auth0 verification: the sub comes from a header.

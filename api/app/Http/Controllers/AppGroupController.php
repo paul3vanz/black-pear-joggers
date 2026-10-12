@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\ManagesGroups;
 use App\Models\ClubSession;
+use App\Models\EventLocation;
 use App\Models\SessionAttendee;
 use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
@@ -45,7 +46,54 @@ class AppGroupController extends Controller
             'distanceValue' => 'nullable|numeric|between:0.1,200',
             'distanceUnit' => 'nullable|in:mi,km',
             'lead' => 'nullable|boolean',
+            'locationId' => 'nullable|uuid',
         ];
+    }
+
+    /** Events and race groups are events: they have no pace. */
+    private function isEventGroup(SessionGroup $group): bool
+    {
+        return $group->kind === 'event' || $group->session->isEventMode();
+    }
+
+    private function raceGroupFixed()
+    {
+        return response()->json([
+            'error' => 'race_group_fixed',
+            'message' => 'A race has exactly one group, so it cannot be added or removed.',
+        ], 409);
+    }
+
+    /** 422 when a request for an event group carries pace fields or asks to lead, else null. */
+    private function checkEventRequest(Request $request)
+    {
+        foreach (['paceUnit', 'paceFromS', 'paceToS'] as $key) {
+            $value = $request->input($key);
+
+            if ($request->has($key) && $value !== null && $value !== '') {
+                return $this->invalidField('paceFromS', 'Events have no pace.');
+            }
+        }
+
+        if (filter_var($request->input('lead', false), FILTER_VALIDATE_BOOLEAN)) {
+            return $this->invalidField('paceFromS', 'Events have no pace and no leaders.');
+        }
+
+        return null;
+    }
+
+    /** Distance needs its unit; the label of an event may not be empty. */
+    private function checkEventSpec(array $values)
+    {
+        if ($values['distance_value'] !== null && $values['distance_unit'] === null) {
+            return $this->invalidField('distanceUnit', 'distanceUnit is required when distanceValue is given.');
+        }
+
+        if (trim((string) $values['label']) === '') {
+            return $this->invalidField('label', 'label is required (or pick a location).');
+        }
+
+        return null;
     }
 
     /** Combination rules on the final values of a group, or null when fine. */
@@ -133,12 +181,12 @@ class AppGroupController extends Controller
      * @OA\Post(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions/{sessionId}/groups",
-     *   summary="Create a pace group. Any linked member with lead=true (they lead it); leaderless groups need committee, admin or the coordinator. Idempotent on id. A group with no pace needs a label (422 on label).",
+     *   summary="Create a pace group. Any linked member with lead=true (they lead it); leaderless groups need committee, admin or the coordinator. Idempotent on id. A group with no pace needs a label (422 on label). On an events run any linked member adds an event (locationId and/or label; kind forced to event; the same locationId returns the existing group with 200; the caller is marked going; pace fields and lead are 422 on paceFromS; 422 on locationId when it is not a live location of the club). On a race run: 409 race_group_fixed.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=201, description="The group (200 on a replayed id)"),
      *   @OA\Response(response=403, description="Not allowed"),
      *   @OA\Response(response=404, description="No such session"),
-     *   @OA\Response(response=409, description="session_cancelled | session_past | conflict"),
+     *   @OA\Response(response=409, description="session_cancelled | session_past | conflict | race_group_fixed"),
      *   @OA\Response(response=422, description="Validation error"),
      * )
      */
@@ -156,6 +204,14 @@ class AppGroupController extends Controller
 
         if ($validator->fails()) {
             return $this->validationFailed($validator);
+        }
+
+        if ($session->isEventMode()) {
+            return $this->storeEvent($request, $club, $member, $session);
+        }
+
+        if ($request->input('kind') === 'event') {
+            return $this->invalidField('kind', 'Event groups can only be added to events and race runs.');
         }
 
         $values = $this->fromRequest($request) + [
@@ -225,11 +281,93 @@ class AppGroupController extends Controller
         return $this->respond($group, 201);
     }
 
+    /** POST groups on an `events` (or `race`) run: any linked member adds an event (D76-D78). */
+    private function storeEvent(Request $request, $club, $member, ClubSession $session)
+    {
+        if ($session->group_mode === 'race') {
+            return $this->raceGroupFixed();
+        }
+
+        if ($bad = $this->checkEventRequest($request)) {
+            return $bad;
+        }
+
+        $location = null;
+
+        if ($request->input('locationId')) {
+            $location = EventLocation::where('club_id', $club->id)->find($request->input('locationId'));
+
+            if (!$location) {
+                return $this->invalidField('locationId', 'locationId does not match an event location of this club.');
+            }
+        }
+
+        $values = $this->fromRequest($request) + ['label' => null, 'description' => null, 'distance_value' => null, 'distance_unit' => null];
+        $values = array_intersect_key($values, array_flip(['label', 'description', 'distance_value', 'distance_unit']));
+        $values['label'] = trim((string) $values['label']) !== ''
+            ? trim((string) $values['label'])
+            : ($location ? mb_substr($location->name, 0, 80) : null);
+        $values['kind'] = 'event';
+
+        if ($bad = $this->checkEventSpec($values)) {
+            return $bad;
+        }
+
+        $id = $request->input('id');
+
+        if ($id && ($existing = SessionGroup::withTrashed()->find($id))) {
+            if ((int) $existing->club_id !== (int) $club->id || $existing->session_id !== $session->id) {
+                return response()->json(['error' => 'conflict', 'message' => 'That id is already in use.'], 409);
+            }
+
+            return $this->respond($existing, 200);
+        }
+
+        if ($bad = $this->closedResponse($session)) {
+            return $bad;
+        }
+
+        [$group, $created] = DB::transaction(function () use ($club, $member, $session, $values, $id, $location) {
+            $existing = $location
+                ? SessionGroup::where('session_id', $session->id)->where('location_id', $location->id)->orderBy('created_at')->first()
+                : null;
+
+            if ($existing) {
+                $group = $existing;
+                $created = false;
+            } else {
+                $group = new SessionGroup($values + [
+                    'club_id' => $club->id,
+                    'session_id' => $session->id,
+                    'created_by_member_id' => $member->id,
+                    'location_id' => $location ? $location->id : null,
+                    'status' => SessionGroup::STATUS_ACTIVE,
+                    'sort_order' => $this->nextSortOrder($session),
+                ]);
+
+                if ($id) {
+                    $group->id = $id;
+                }
+
+                $group->save();
+                $created = true;
+            }
+
+            // The member who adds (or re-adds) an event is going to it.
+            $this->attendInGroup($club, $session, $group, $member);
+            $session->touchForChange();
+
+            return [$group, $created];
+        });
+
+        return $this->respond($group, $created ? 201 : 200);
+    }
+
     /**
      * @OA\Patch(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/groups/{id}",
-     *   summary="Edit a group (its leaders, the coordinator, committee or admin). Fields sent as null are cleared. The result must have a pace or a label (422 on label).",
+     *   summary="Edit a group (its leaders, the coordinator, committee or admin; an event group: its creator, the coordinator, committee or admin). Fields sent as null are cleared. The result must have a pace or a label (422 on label). Event groups take label, description and distance only.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=200, description="The group"),
      *   @OA\Response(response=403, description="Not allowed"),
@@ -261,10 +399,33 @@ class AppGroupController extends Controller
         }
 
         $changes = $this->fromRequest($request);
-        $final = $changes + $group->only(array_values(self::FIELDS));
 
-        if ($bad = $this->checkSpec($final)) {
-            return $bad;
+        if ($this->isEventGroup($group)) {
+            if ($bad = $this->checkEventRequest($request)) {
+                return $bad;
+            }
+
+            if (isset($changes['kind']) && $changes['kind'] !== 'event') {
+                return $this->invalidField('kind', 'An event group stays an event.');
+            }
+
+            // Events have no pace and keep their kind.
+            $changes = array_diff_key($changes, array_flip(['kind', 'pace_unit', 'pace_from_s', 'pace_to_s']));
+            $final = $changes + $group->only(array_values(self::FIELDS));
+
+            if ($bad = $this->checkEventSpec($final)) {
+                return $bad;
+            }
+        } else {
+            if (isset($changes['kind']) && $changes['kind'] === 'event') {
+                return $this->invalidField('kind', 'Event groups can only be added to events and race runs.');
+            }
+
+            $final = $changes + $group->only(array_values(self::FIELDS));
+
+            if ($bad = $this->checkSpec($final)) {
+                return $bad;
+            }
         }
 
         if ($bad = $this->closedResponse($group->session)) {
@@ -293,6 +454,12 @@ class AppGroupController extends Controller
 
     private function canEdit(SessionGroup $group, $member): bool
     {
+        // An event group has no leaders: its creator, the coordinator and the committee manage it.
+        if ($this->isEventGroup($group)) {
+            return $this->isManagerOrCoordinator($member, $group->session)
+                || ($group->created_by_member_id !== null && $group->created_by_member_id === $member->id);
+        }
+
         return $this->isManagerOrCoordinator($member, $group->session) || $this->isLeaderOf($group, $member);
     }
 
@@ -300,12 +467,12 @@ class AppGroupController extends Controller
      * @OA\Delete(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/groups/{id}",
-     *   summary="Delete a group (its leaders, the coordinator, committee or admin). Its attendees become unassigned.",
+     *   summary="Delete a group (its leaders, the coordinator, committee or admin; an event group: its creator, the coordinator, committee or admin). Its attendees become unassigned. 409 race_group_fixed for the group of a race run.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=204, description="Deleted (also when already deleted)"),
      *   @OA\Response(response=403, description="Not allowed"),
      *   @OA\Response(response=404, description="No such group"),
-     *   @OA\Response(response=409, description="session_cancelled | session_past"),
+     *   @OA\Response(response=409, description="session_cancelled | session_past | race_group_fixed"),
      * )
      */
     public function destroy(Request $request, $clubId, $id)
@@ -320,6 +487,10 @@ class AppGroupController extends Controller
 
         if (!$this->canEdit($group, $member)) {
             return $this->forbidden('Only the group leaders, the run coordinator or the committee can delete this group.');
+        }
+
+        if ($group->session->group_mode === 'race') {
+            return $this->raceGroupFixed();
         }
 
         if ($group->trashed()) {

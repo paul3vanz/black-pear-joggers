@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\GenerateSessions',
         'App\Console\Commands\SendTestPush',
         'App\Console\Commands\SendReminders',
+        'App\Console\Commands\ImportEventLocations',
     ];
 
     /**

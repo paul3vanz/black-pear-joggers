@@ -84,6 +84,8 @@ class GroupPresenter
             'distanceM' => self::metres($group->distance_value, $group->distance_unit),
             'status' => $group->status,
             'sortOrder' => (int) $group->sort_order,
+            'locationId' => $group->location_id,
+            'createdByMemberId' => $group->created_by_member_id,
             'leaders' => $group->leaders
                 ->filter(function ($leader) {
                     return $leader->status === SessionGroupLeader::CONFIRMED;

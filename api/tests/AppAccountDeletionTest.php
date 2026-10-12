@@ -341,6 +341,29 @@ class AppAccountDeletionTest extends AppProfilesBase
         $this->assertSame(0, SessionGroupLeader::where('group_id', $group->id)->count());
     }
 
+    public function testEventGroupsTheMemberAddedStayWithNoCreatorAndTheirAttendanceGoes()
+    {
+        $session = $this->clubSession(1, null, 'events');
+        $group = SessionGroup::create([
+            'club_id' => 1, 'session_id' => $session->id, 'kind' => 'event', 'label' => 'Worcester parkrun', 'status' => 'active',
+            'created_by_member_id' => $this->victim->id,
+        ]);
+        $this->attend($session, $this->victim, 'going', $group);
+        $this->attend($session, $this->plain, 'going', $group);
+        $this->tick(120);
+        $before = $this->sessionUpdatedAt($session);
+
+        [$status] = $this->del('victim');
+
+        $this->assertSame(204, $status);
+        $kept = SessionGroup::find($group->id);
+        $this->assertNotNull($kept, 'the event stays for the others');
+        $this->assertNull($kept->created_by_member_id);
+        $this->assertSame('active', $kept->status);
+        $this->assertSame(1, SessionAttendee::where('group_id', $group->id)->count());
+        $this->assertNotSame($before, $this->sessionUpdatedAt($session), 'its counts changed');
+    }
+
     public function testNoNotificationIsWritten()
     {
         $session = $this->clubSession(1);

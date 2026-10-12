@@ -42,6 +42,15 @@ trait ManagesGroups
      */
     protected function attendAsLeader($club, ClubSession $session, SessionGroup $group, $member): void
     {
+        $this->attendInGroup($club, $session, $group, $member);
+    }
+
+    /**
+     * Marks the member going in the group (a leader of their group, or the member who just
+     * added an event). Same rules as attendAsLeader: an existing row keeps its per-run pace.
+     */
+    protected function attendInGroup($club, ClubSession $session, SessionGroup $group, $member): void
+    {
         $row = SessionAttendee::firstOrNew(['session_id' => $session->id, 'member_id' => $member->id]);
         $row->fill([
             'club_id' => $club->id,

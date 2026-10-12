@@ -1,0 +1,5 @@
+﻿{"type":"FeatureCollection","features":[
+{"id":1,"type":"Feature","properties":{"eventname":"worcester","EventLongName":"Worcester parkrun","EventShortName":"Worcester","countrycode":97},"geometry":{"type":"Point","coordinates":[-2.2258,52.19623]}},
+{"id":9,"type":"Feature","properties":{"eventname":"malvern","EventLongName":"Malvern Hills parkrun","EventShortName":"Malvern Hills","countrycode":97},"geometry":{"type":"Point","coordinates":[-2.33,52.1]}},
+{"id":10,"type":"Feature","properties":{"eventname":"galway","EventLongName":"Galway parkrun","EventShortName":"Galway","countrycode":42},"geometry":{"type":"Point","coordinates":[-9.05,53.27]}}
+]}

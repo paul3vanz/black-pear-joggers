@@ -79,6 +79,12 @@ final class ClubSession extends Model
         return in_array($this->group_mode, ['paced', 'single'], true);
     }
 
+    /** True for `events` and `race` runs: groups are events, with no pace, leaders or pace-group notifications. */
+    public function isEventMode(): bool
+    {
+        return in_array($this->group_mode, SessionSeries::EVENT_MODES, true);
+    }
+
     public function isCancelled(): bool
     {
         return $this->status === self::STATUS_CANCELLED;

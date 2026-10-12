@@ -9,6 +9,8 @@ use App\Models\SessionGroup;
 use App\Services\AttendanceService;
 use App\Services\GroupPresenter;
 use App\Services\NotificationPresenter;
+use App\Services\ThreadAccess;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 /**
@@ -174,11 +176,31 @@ class AppAttendanceController extends Controller
         })->sortBy('displayName')->values()->all();
     }
 
+    /** Short names ("Sam B.") and status of the members of an event group: no paces. */
+    private function eventNames($rows): array
+    {
+        $athletes = DB::table('club_members')
+            ->leftJoin('athletes', 'athletes.id', '=', 'club_members.athlete_id')
+            ->whereIn('club_members.id', $rows->pluck('member_id')->all())
+            ->get(['club_members.id', 'athletes.first_name', 'athletes.last_name'])
+            ->keyBy('id');
+
+        return $rows->map(function ($row) use ($athletes) {
+            $athlete = $athletes->get($row->member_id);
+
+            return [
+                'memberId' => $row->member_id,
+                'displayName' => ThreadAccess::shortName($athlete ? $athlete->first_name : null, $athlete ? $athlete->last_name : null),
+                'status' => $row->status,
+            ];
+        })->sortBy('displayName')->values()->all();
+    }
+
     /**
      * @OA\Get(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions/{sessionId}/plan",
-     *   summary="Who is coming and at what pace. Names only for the groups the caller leads, and for everyone to committee/admin/coordinator.",
+     *   summary="Who is coming and at what pace. Names only for the groups the caller leads, and for everyone to committee/admin/coordinator. For an event group (kind event) the names of its going/maybe members are also given to members of that same group (member id, short name, status).",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=200, description="The plan"),
      *   @OA\Response(response=404, description="No such session"),
@@ -215,6 +237,9 @@ class AppAttendanceController extends Controller
 
             if ($seeAll || $group->leaders->contains('member_id', $member->id)) {
                 $entry['attendees'] = $this->names($inGroup, $prefs);
+            } elseif ($group->kind === 'event' && $inGroup->contains('member_id', $member->id)) {
+                // Members of the same event see each other, for car sharing (D77). Nobody else does.
+                $entry['attendees'] = $this->eventNames($inGroup);
             }
 
             $groups[] = $entry;

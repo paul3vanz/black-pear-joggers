@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ClubSession;
+use App\Models\EventLocation;
 use App\Models\SessionSeries;
 use App\Models\Venue;
 
@@ -22,6 +23,24 @@ class RunPresenter
             'notes' => $venue->notes,
             'updatedAt' => NotificationPresenter::time($venue->updated_at),
             'deletedAt' => NotificationPresenter::time($venue->deleted_at),
+        ];
+    }
+
+    public static function eventLocation(EventLocation $location): array
+    {
+        return [
+            'id' => $location->id,
+            'kind' => $location->kind,
+            'name' => $location->name,
+            'slug' => $location->slug,
+            'country' => $location->country,
+            'region' => $location->region,
+            'lat' => $location->lat !== null ? (float) $location->lat : null,
+            'lng' => $location->lng !== null ? (float) $location->lng : null,
+            'url' => $location->url,
+            'source' => $location->source,
+            'updatedAt' => NotificationPresenter::time($location->updated_at),
+            'deletedAt' => NotificationPresenter::time($location->deleted_at),
         ];
     }
 

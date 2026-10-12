@@ -58,6 +58,20 @@ class AppSeriesController extends Controller
         return $key === 'imageUrl' && $value === '' ? null : $value;
     }
 
+    /** A race is a single event, so it cannot repeat weekly. */
+    private function checkMode(Request $request)
+    {
+        if ($request->input('groupMode') === 'race') {
+            return response()->json([
+                'error' => 'validation_failed',
+                'message' => 'Races are one-off runs.',
+                'errors' => ['groupMode' => ['Races are one-off runs.']],
+            ], 422);
+        }
+
+        return null;
+    }
+
     private function untilBeforeFrom()
     {
         return response()->json([
@@ -125,7 +139,7 @@ class AppSeriesController extends Controller
      *       @OA\Property(property="intervalWeeks", type="integer", minimum=1, maximum=8),
      *       @OA\Property(property="validFrom", type="string", format="date"),
      *       @OA\Property(property="validUntil", type="string", format="date", nullable=true),
-     *       @OA\Property(property="groupMode", type="string", enum={"paced","single","open","routes"}),
+     *       @OA\Property(property="groupMode", type="string", enum={"paced","single","open","routes","events","race"}),
      *       @OA\Property(property="cmsSlug", type="string", nullable=true),
      *       @OA\Property(property="imageUrl", type="string", nullable=true, maxLength=500, description="http(s) URL of the picture shown above each run, null clears it"),
      *     )
@@ -148,6 +162,10 @@ class AppSeriesController extends Controller
 
         if ($validator->fails()) {
             return $this->validationFailed($validator);
+        }
+
+        if ($bad = $this->checkMode($request)) {
+            return $bad;
         }
 
         $id = $request->input('id');
@@ -227,6 +245,10 @@ class AppSeriesController extends Controller
 
         if ($validator->fails()) {
             return $this->validationFailed($validator);
+        }
+
+        if ($bad = $this->checkMode($request)) {
+            return $bad;
         }
 
         if ($request->has('venueId') && ($bad = $this->checkVenue($club, $request->input('venueId')))) {

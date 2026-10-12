@@ -16,7 +16,10 @@ final class SessionSeries extends Model
 
     protected $table = 'session_series';
 
-    const GROUP_MODES = ['paced', 'single', 'open', 'routes'];
+    const GROUP_MODES = ['paced', 'single', 'open', 'routes', 'events', 'race'];
+
+    /** Modes whose groups are events people choose between (no pace, no leaders). */
+    const EVENT_MODES = ['events', 'race'];
 
     protected $attributes = [
         'interval_weeks' => 1,

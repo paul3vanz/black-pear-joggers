@@ -78,7 +78,8 @@ class RunNotifier
         $this->guard('leader withdrawn', function () use ($group, $actorId) {
             $session = $group->session;
 
-            if (!$session || !$this->isOpen($session)) {
+            // Events and races have no leaders, so nobody can withdraw (D79).
+            if (!$session || $session->isEventMode() || !$this->isOpen($session)) {
                 return;
             }
 
@@ -132,7 +133,13 @@ class RunNotifier
 
             $this->notifyByUnit($club, $this->activeIds($club, $attendeeIds, $actorId), self::CHANGES, RunText::data($session, $group->id), [
                 'dedupeKey' => 'group_removed:' . $group->id, 'onDuplicate' => 'replace',
-            ], function (?string $unit) use ($group, $day) {
+            ], function (?string $unit) use ($group, $day, $session) {
+                if ($session->isEventMode() || $group->kind === 'event') {
+                    $event = trim((string) $group->label) !== '' ? $group->label : 'Your event';
+
+                    return ['Group removed', RunText::clip("$event was removed. Pick another or let us know you can't make it.")];
+                }
+
                 $name = RunText::groupName($group, $unit) ?: 'Your group';
 
                 return ['Group removed', RunText::clip("$name on $day was removed. You're still down for the run: open it to pick another group.")];
@@ -162,7 +169,8 @@ class RunNotifier
         $group = SessionGroup::find($groupId);
         $session = $group ? $group->session : null;
 
-        if (!$group || !$session || !$this->isOpen($session)) {
+        // Events and races have no pace groups, so no group_match and no pick_group nudge (D79).
+        if (!$group || !$session || $session->isEventMode() || !$this->isOpen($session)) {
             return 0;
         }
 
@@ -247,7 +255,7 @@ class RunNotifier
     {
         $tz = $this->tz($club);
 
-        if ($session->trashed() || $session->isCancelled() || !$session->starts_at->gt($now->copy()->utc())
+        if ($session->trashed() || $session->isCancelled() || $session->isEventMode() || !$session->starts_at->gt($now->copy()->utc())
             || $now->lt($this->pickGroupTime($session, $tz))) {
             return 0;
         }

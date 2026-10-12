@@ -151,6 +151,12 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->patch('venues/{id}', 'AppVenueController@update');
         $router->delete('venues/{id}', 'AppVenueController@destroy');
 
+        // Phase 8: parkrun tourism and race events
+        $router->get('event-locations', 'AppEventLocationController@index');
+        $router->post('event-locations', 'AppEventLocationController@store');
+        $router->patch('event-locations/{id}', 'AppEventLocationController@update');
+        $router->delete('event-locations/{id}', 'AppEventLocationController@destroy');
+
         $router->get('series', 'AppSeriesController@index');
         $router->post('series', 'AppSeriesController@store');
         $router->patch('series/{id}', 'AppSeriesController@update');

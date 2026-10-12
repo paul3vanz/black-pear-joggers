@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\ManagesRuns;
 use App\Models\ClubMember;
 use App\Models\ClubSession;
+use App\Models\SessionGroup;
 use App\Models\SessionSeries;
 use App\Services\GroupPresenter;
 use App\Services\NotificationPresenter;
@@ -145,7 +146,7 @@ class AppSessionController extends Controller
      * @OA\Post(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions",
-     *   summary="Create an ad-hoc run with no series (committee/admin). Idempotent on the client id.",
+     *   summary="Create an ad-hoc run with no series (committee/admin). Idempotent on the client id. A race run also gets its single event group (label = title). venueId is optional in every mode.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Parameter(name="clubId", in="path", required=true, @OA\Schema(type="integer")),
      *   @OA\RequestBody(
@@ -159,7 +160,7 @@ class AppSessionController extends Controller
      *       @OA\Property(property="durationMin", type="integer", minimum=15, maximum=600, nullable=true, description="Optional. Omit or null = no end time (the run still counts as ending after 3 hours). On PATCH, null clears it."),
      *       @OA\Property(property="venueId", type="string", format="uuid", nullable=true),
      *       @OA\Property(property="notes", type="string", nullable=true),
-     *       @OA\Property(property="groupMode", type="string", enum={"paced","single","open","routes"}),
+     *       @OA\Property(property="groupMode", type="string", enum={"paced","single","open","routes","events","race"}),
      *       @OA\Property(property="coordinatorMemberId", type="string", format="uuid", nullable=true),
      *     )
      *   ),
@@ -217,6 +218,19 @@ class AppSessionController extends Controller
         }
 
         $session->save();
+
+        // A race is exactly one event, so its single group exists from the start (no leaders, never deleted).
+        if ($session->group_mode === 'race') {
+            SessionGroup::create([
+                'club_id' => $club->id,
+                'session_id' => $session->id,
+                'kind' => 'event',
+                'label' => mb_substr((string) $session->title, 0, 80),
+                'status' => SessionGroup::STATUS_ACTIVE,
+                'sort_order' => 0,
+                'created_by_member_id' => $request->attributes->get('member')->id,
+            ]);
+        }
 
         return $this->json($request, $session, 201);
     }
@@ -293,6 +307,12 @@ class AppSessionController extends Controller
         }
 
         $session->save();
+
+        // The single group of a race carries the run's title.
+        if ($session->group_mode === 'race' && $request->has('title')) {
+            SessionGroup::where('session_id', $session->id)->where('kind', 'event')
+                ->update(['label' => mb_substr((string) $session->title, 0, 80), 'updated_at' => Carbon::now()]);
+        }
 
         if (!$movedFrom['starts_at']->equalTo($session->starts_at) || $movedFrom['venue_id'] !== $session->venue_id) {
             app(RunNotifier::class)->sessionChanged($session, 'changed', $this->callerId($request), $movedFrom);
