@@ -118,6 +118,9 @@ $router->get('/uka', 'ScraperController@fetchMembers');
 // Phase 5: answers a reminder from its notification button. No sign-in: the notification's actionToken is the credential.
 $router->post('app/notification-actions', ['middleware' => 'throttle:30,1', 'uses' => 'AppNotificationActionController@store']);
 
+// Phase 6.5: a member's photo through a signed, versioned link (sig = HMAC of club|member|version), so image widgets need no token.
+$router->get('app/clubs/{clubId}/members/{memberId}/photo', ['middleware' => 'throttle:120,1', 'uses' => 'AppMemberProfileController@photo']);
+
 $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
     $router->get('me', 'AppMeController@getMe');
     $router->post('clubs/{clubId}/link', ['middleware' => 'club:optional', 'uses' => 'AppMembershipController@link']);
@@ -183,6 +186,16 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
 
         $router->get('members', 'AppMemberController@index');
         $router->patch('members/{memberId}/roles', 'AppMemberController@updateRoles');
+
+        // Phase 6.5: member profile card (photo, bio, goals)
+        $router->get('member-profile', 'AppMemberProfileController@show');
+        $router->put('member-profile', 'AppMemberProfileController@update');
+        $router->put('member-profile/photo', 'AppMemberProfileController@uploadPhoto');
+        $router->post('member-profile/photo', 'AppMemberProfileController@uploadPhoto'); // same, for clients that cannot send a multipart PUT
+        $router->delete('member-profile/photo', 'AppMemberProfileController@deletePhoto');
+        $router->get('members/{memberId}/profile', 'AppMemberProfileController@memberProfile');
+        $router->delete('members/{memberId}/profile', 'AppMemberProfileController@clearProfile');
+        $router->get('member-cards', 'AppMemberProfileController@cards');
     });
 });
 

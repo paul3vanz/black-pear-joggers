@@ -72,6 +72,8 @@ abstract class AppApiTestCase extends TestCase
             '2026_10_13_090000_make_series_duration_nullable.php',
             '2026_10_13_090100_add_image_url_to_session_series_table.php',
             '2026_10_13_090200_add_has_end_to_sessions_table.php',
+            '2026_10_14_090000_create_member_profiles_table.php',
+            '2026_10_14_090100_create_member_photos_table.php',
         ]);
 
         // Stand in for the Auth0 verification: the sub comes from a header.
