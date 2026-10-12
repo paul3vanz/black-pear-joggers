@@ -73,6 +73,12 @@ final class ClubSession extends Model
         $this->save();
     }
 
+    /** True when a pace group in this run needs a leader (paced and single group modes). */
+    public function expectsLeaders(): bool
+    {
+        return in_array($this->group_mode, ['paced', 'single'], true);
+    }
+
     public function isCancelled(): bool
     {
         return $this->status === self::STATUS_CANCELLED;

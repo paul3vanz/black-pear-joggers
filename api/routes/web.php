@@ -123,6 +123,7 @@ $router->get('app/clubs/{clubId}/members/{memberId}/photo', ['middleware' => 'th
 
 $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
     $router->get('me', 'AppMeController@getMe');
+    $router->delete('account', 'AppAccountController@destroy'); // Phase 7b: delete my account (not club-scoped)
     $router->post('clubs/{clubId}/link', ['middleware' => 'club:optional', 'uses' => 'AppMembershipController@link']);
     $router->delete('clubs/{clubId}/link', ['middleware' => 'club:optional', 'uses' => 'AppMembershipController@unlink']);
     $router->get('clubs/{clubId}/profile', ['middleware' => 'club:required', 'uses' => 'AppMembershipController@profile']);

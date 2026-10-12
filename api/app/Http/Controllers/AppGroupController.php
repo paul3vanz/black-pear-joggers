@@ -126,7 +126,7 @@ class AppGroupController extends Controller
     /** True when a group in a mode that expects leaders has none left. */
     private function expectsLeaders(ClubSession $session): bool
     {
-        return in_array($session->group_mode, ['paced', 'single'], true);
+        return $session->expectsLeaders();
     }
 
     /**
