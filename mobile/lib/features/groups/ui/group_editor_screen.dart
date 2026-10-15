@@ -19,6 +19,23 @@ import 'group_format.dart';
 import 'groups_providers.dart';
 import 'pace_input.dart';
 
+/// Why the editor was opened for a new group (D86).
+///
+/// - [lead]: the member pressed a "lead" action ("Offer to lead", "Lead a
+///   group"). The group is theirs, so the editor never asks whether they will
+///   lead it.
+/// - [add]: an "add a group" action for the committee or the run's coordinator
+///   ("Add a group", "Add route"). Only those people may create a leaderless
+///   group, so only they see the "I will lead this group" switch. Anyone else
+///   who somehow arrives with [add] still creates a group they lead.
+enum GroupIntent {
+  lead,
+  add;
+
+  /// The `intent` query parameter of the route; anything but `add` is [lead].
+  static GroupIntent fromQuery(String? value) => value == 'add' ? add : lead;
+}
+
 /// `/runs/:sessionId/groups/new` and `/runs/:sessionId/groups/:groupId/edit`.
 /// Creating a group is online-only (D23): errors show in a SnackBar and the
 /// form stays on screen. [initialKind] / [initialLead] pre-fill "Add route".
@@ -28,12 +45,36 @@ class GroupEditorScreen extends ConsumerWidget {
     required this.sessionId,
     this.groupId,
     this.initialKind,
+    this.intent = GroupIntent.lead,
     this.initialLead,
   });
+
+  /// The new-group screen for a route like
+  /// `/runs/a/groups/new?intent=add&kind=route&lead=false`. Shared by the
+  /// router and the tests, so the query parameters mean one thing.
+  factory GroupEditorScreen.fromUri(String sessionId, Uri uri) {
+    final q = uri.queryParameters;
+    return GroupEditorScreen(
+      sessionId: sessionId,
+      initialKind: q['kind'],
+      // 'lead' (default) or 'add' (D86).
+      intent: GroupIntent.fromQuery(q['intent']),
+      // Start state of the "I will lead" switch on 'add'.
+      initialLead: switch (q['lead']) {
+        'false' => false,
+        'true' => true,
+        _ => null,
+      },
+    );
+  }
 
   final String sessionId;
   final String? groupId;
   final String? initialKind;
+  final GroupIntent intent;
+
+  /// Where the "I will lead this group" switch starts for [GroupIntent.add]
+  /// (null = on). "Add route" starts it off.
   final bool? initialLead;
 
   @override
@@ -41,9 +82,9 @@ class GroupEditorScreen extends ConsumerWidget {
     final session = ref.watch(sessionProvider(sessionId));
     final groups = ref.watch(sessionGroupsProvider(sessionId));
     // "Lead a group" starts from the member's last group (not for routes or
-    // leaderless groups, which are not "mine").
+    // "add a group", which are not "mine").
     final prefill =
-        groupId == null && initialKind == null && initialLead != false;
+        groupId == null && initialKind == null && intent == GroupIntent.lead;
     final last = prefill ? ref.watch(lastGroupSpecProvider(sessionId)) : null;
     final editing = groupId != null;
     Widget body;
@@ -79,12 +120,21 @@ class GroupEditorScreen extends ConsumerWidget {
               session: s,
               existing: existing,
               initialKind: initialKind,
+              intent: intent,
               initialLead: initialLead,
               initialSpec: last?.value,
             );
     }
     return Scaffold(
-      appBar: AppBar(title: Text(editing ? 'Edit group' : 'Lead a group')),
+      appBar: AppBar(
+        title: Text(
+          editing
+              ? 'Edit group'
+              : intent == GroupIntent.add
+              ? 'Add a group'
+              : 'Lead a group',
+        ),
+      ),
       body: SafeArea(child: body),
     );
   }
@@ -97,6 +147,7 @@ class GroupForm extends ConsumerStatefulWidget {
     required this.session,
     this.existing,
     this.initialKind,
+    this.intent = GroupIntent.lead,
     this.initialLead,
     this.initialSpec,
   });
@@ -104,6 +155,7 @@ class GroupForm extends ConsumerStatefulWidget {
   final Session session;
   final Group? existing;
   final String? initialKind;
+  final GroupIntent intent;
   final bool? initialLead;
 
   /// The member's last group, used to pre-fill a new group.
@@ -176,6 +228,13 @@ class _GroupFormState extends ConsumerState<GroupForm> {
         : ref.read(canManageRunsProvider),
   );
 
+  /// Whether to ask "I will lead this group": a new group, opened through an
+  /// "add" action, by someone allowed to create leaderless groups (D86).
+  bool _showLeadSwitch({bool watch = false}) =>
+      !_editing &&
+      widget.intent == GroupIntent.add &&
+      _canLeaderless(watch: watch);
+
   /// Awaits [write]; if the server answers 422 on `label`, shows that message
   /// on the label field, then rethrows so the usual SnackBar still appears.
   Future<Object?> _surfaceLabelError(Future<Object?> write) async {
@@ -200,9 +259,10 @@ class _GroupFormState extends ConsumerState<GroupForm> {
     final description = _description.text.trim();
     final pace = _pace.spec;
     final distance = _distance.distance;
-    // Ordinary members must lead what they create (the server returns 403
-    // otherwise), so the switch is ignored unless they may go leaderless.
-    final lead = _canLeaderless() ? _lead : true;
+    // The switch only exists for "add a group" by someone who may create a
+    // leaderless group (D86). Everyone else leads what they create (the server
+    // returns 403 for a leaderless group from an ordinary member).
+    final lead = _showLeadSwitch() ? _lead : true;
     setState(() => _saving = true);
     final done = await runWrite(
       context,
@@ -245,7 +305,6 @@ class _GroupFormState extends ConsumerState<GroupForm> {
   @override
   Widget build(BuildContext context) {
     final route = _kind == 'route';
-    final leaderless = _canLeaderless(watch: true);
     final paceField = PaceInput(controller: _pace);
     final distanceField = DistanceInput(
       controller: _distance,
@@ -331,10 +390,9 @@ class _GroupFormState extends ConsumerState<GroupForm> {
               border: const OutlineInputBorder(),
             ),
           ),
-          if (!_editing)
+          if (_showLeadSwitch(watch: true))
             _LeadSwitch(
-              value: leaderless ? _lead : true,
-              locked: !leaderless,
+              value: _lead,
               onChanged: (v) => setState(() => _lead = v),
             ),
           formGap,
@@ -368,27 +426,20 @@ class _GroupFormState extends ConsumerState<GroupForm> {
 }
 
 class _LeadSwitch extends StatelessWidget {
-  const _LeadSwitch({
-    required this.value,
-    required this.locked,
-    required this.onChanged,
-  });
+  const _LeadSwitch({required this.value, required this.onChanged});
 
   final bool value;
-  final bool locked;
   final ValueChanged<bool> onChanged;
 
   @override
   Widget build(BuildContext context) => SwitchListTile(
     contentPadding: EdgeInsets.zero,
     title: const Text('I will lead this group'),
-    subtitle: Text(
-      locked
-          ? 'You lead the groups you create.'
-          : 'Turn off to create a group with no leader yet, such as a route.',
+    subtitle: const Text(
+      'Turn off to create a group with no leader yet, such as a route.',
     ),
     value: value,
-    onChanged: locked ? null : onChanged,
+    onChanged: onChanged,
   );
 }
 

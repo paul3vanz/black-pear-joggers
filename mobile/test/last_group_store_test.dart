@@ -99,6 +99,7 @@ void main() {
       WidgetTester tester, {
       Map<String, Object> routes = const {},
       String? kind,
+      GroupIntent intent = GroupIntent.lead,
       bool? lead,
     }) async {
       adapter = await prepareMember(tester, db, routes: routes);
@@ -121,6 +122,7 @@ void main() {
             builder: (_, _) => GroupEditorScreen(
               sessionId: 'a',
               initialKind: kind,
+              intent: intent,
               initialLead: lead,
             ),
           ),
@@ -142,7 +144,12 @@ void main() {
     testWidgets('leaderless groups and routes are not pre-filled', (
       tester,
     ) async {
-      await pumpEditor(tester, kind: 'route', lead: false);
+      await pumpEditor(
+        tester,
+        kind: 'route',
+        intent: GroupIntent.add,
+        lead: false,
+      );
       expect(valueField('Easy'), findsNothing);
       await unmount(tester);
     });

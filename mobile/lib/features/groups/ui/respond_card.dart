@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/units/pace_spec.dart';
+import '../../membership/ui/membership_providers.dart';
 import '../data/attendance_repository.dart';
 import 'attendance_actions.dart';
 import 'group_access.dart';
@@ -51,7 +54,7 @@ class RespondCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final now = ref.watch(groupsClockProvider)();
+    final now = ref.watch(nowProvider);
     final closed = runClosedReason(session, now);
     final resp = myResponse(ref, session.id);
     return Card(
@@ -123,9 +126,19 @@ class RespondCard extends ConsumerWidget {
   }
 }
 
-/// "My pace for this run": shows the per-run override (in the viewer's units)
-/// or "Using my usual pace", and opens the pace sheet. Saving also marks you
-/// as coming when you had not answered or said you can't come.
+/// The pace line of the "Are you coming?" card (D89). It always says which pace
+/// the club will see for you on this run:
+///
+/// - **a pace for this run** (set with the sheet): "Running at 9:30/mi this
+///   run" and a small **Change** link;
+/// - **your usual pace** from the profile: "Usual pace: 9:00-9:30/mi" and
+///   "Change for this run";
+/// - **neither**: "No usual pace set", with links to set the usual pace in the
+///   Profile tab or a pace for this run only.
+///
+/// All paces are in the viewer's units. Nothing shows when you said you can't
+/// come (a pace means nothing then). Saving a pace also marks you as coming
+/// when you had not answered.
 class MyPaceTile extends ConsumerWidget {
   const MyPaceTile({super.key, required this.session});
 
@@ -156,28 +169,86 @@ class MyPaceTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final resp = myResponse(ref, session.id);
+    if (resp.status == 'not_going') return const SizedBox.shrink();
+    final theme = Theme.of(context);
     final units = ref.watch(unitPrefsProvider);
+    // The usual pace is the same cached row the Profile tab edits, so a pace
+    // saved there shows up here at once. Null only until Drift's first emit.
+    final usual = ref
+        .watch(runPreferencesProvider(ref.watch(activeClubIdProvider)))
+        .value
+        ?.usualPace;
     final pace = resp.pace;
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Row(
+    // Small text buttons that sit inline with the text.
+    final linkStyle = TextButton.styleFrom(
+      visualDensity: VisualDensity.compact,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+    );
+    void edit() => unawaited(_edit(context, ref, resp, units));
+
+    final Widget line;
+    if (pace is! NoPace) {
+      line = Row(
         children: [
           Expanded(
             child: Text(
-              pace is NoPace
-                  ? 'Using my usual pace'
-                  : 'My pace: ${pace.display(units.paceUnit)}',
+              'Running at ${pace.display(units.paceUnit)} this run',
               style: theme.textTheme.bodyMedium,
             ),
           ),
           TextButton(
-            onPressed: () => unawaited(_edit(context, ref, resp, units)),
-            child: const Text('My pace for this run'),
+            key: const ValueKey('pace-change'),
+            style: linkStyle,
+            onPressed: edit,
+            child: const Text('Change'),
           ),
         ],
-      ),
-    );
+      );
+    } else if (usual != null && !usual.isNone) {
+      line = Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Usual pace: ${usual.display(units.paceUnit)}',
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
+          TextButton(
+            key: const ValueKey('pace-change'),
+            style: linkStyle,
+            onPressed: edit,
+            child: const Text('Change for this run'),
+          ),
+        ],
+      );
+    } else {
+      line = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (usual != null)
+            Text('No usual pace set', style: theme.textTheme.bodyMedium),
+          Wrap(
+            children: [
+              if (usual != null)
+                TextButton(
+                  key: const ValueKey('pace-set-usual'),
+                  style: linkStyle,
+                  // The pace boxes are on the Profile tab (D88).
+                  onPressed: () => context.go('/profile'),
+                  child: const Text('Set your usual pace'),
+                ),
+              TextButton(
+                key: const ValueKey('pace-change'),
+                style: linkStyle,
+                onPressed: edit,
+                child: const Text('Set pace for this run'),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+    return Padding(padding: const EdgeInsets.only(top: 8), child: line);
   }
 }

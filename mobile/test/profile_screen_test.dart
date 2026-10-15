@@ -4,12 +4,14 @@ import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/units/dist_unit.dart';
 import 'package:bpj/core/util/open_link.dart';
 import 'package:bpj/features/groups/data/run_preferences_repository.dart';
+import 'package:bpj/features/groups/ui/groups_providers.dart';
 import 'package:bpj/features/members/data/member_profile_repository.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
 import 'package:bpj/features/profile/data/profile_repository.dart';
 import 'package:bpj/features/profile/ui/profile_providers.dart';
 import 'package:bpj/features/profile/ui/profile_screen.dart';
+import 'package:bpj/features/profile/ui/run_preferences_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -214,87 +216,249 @@ void main() {
       await unmount(tester);
     });
 
-    testWidgets('rejects bad paces and a reversed range', (tester) async {
-      await pumpProfile(tester, online: true);
+    bool saveEnabled(WidgetTester tester) =>
+        tester
+            .widget<FilledButton>(find.byKey(const ValueKey('save-prefs')))
+            .onPressed !=
+        null;
 
+    testWidgets('Save is disabled until the pace is valid and changed', (
+      tester,
+    ) async {
+      await pumpProfile(tester, online: true);
+      // Seeded from the cache: nothing changed yet.
+      expect(saveEnabled(tester), isFalse);
+      expect(find.text('Not saved yet'), findsNothing);
+
+      // Invalid: no minutes.
       await typePace(tester, 'pace-from', '', '30');
-      await tester.tap(find.byKey(const ValueKey('save-prefs')));
       await tester.pump();
       expect(
         find.text('Enter minutes, like 9 (seconds are optional)'),
         findsOneWidget,
       );
+      expect(saveEnabled(tester), isFalse);
 
+      // Invalid: seconds out of range.
       await typePace(tester, 'pace-from', '9', '75');
-      await tester.tap(find.byKey(const ValueKey('save-prefs')));
       await tester.pump();
       expect(find.text('Seconds must be 0 to 59'), findsOneWidget);
+      expect(saveEnabled(tester), isFalse);
 
+      // Invalid: reversed range.
       await typePace(tester, 'pace-from', '10', '30');
       await typePace(tester, 'pace-to', '9', '30');
-      await tester.tap(find.byKey(const ValueKey('save-prefs')));
       await tester.pump();
       expect(find.text('Must be the same or slower than From'), findsOneWidget);
+      expect(saveEnabled(tester), isFalse);
 
+      // Invalid: outside 3:00-30:00.
+      await typePace(tester, 'pace-to', '12');
       await typePace(tester, 'pace-from', '2');
-      await tester.tap(find.byKey(const ValueKey('save-prefs')));
       await tester.pump();
       expect(find.text('Between 3:00 and 30:00'), findsOneWidget);
+      expect(saveEnabled(tester), isFalse);
+
+      // Valid and different from what is saved.
+      await typePace(tester, 'pace-from', '8', '45');
+      await tester.pump();
+      expect(saveEnabled(tester), isTrue);
+      expect(find.text('Not saved yet'), findsOneWidget);
+
+      // Back to exactly the saved range: nothing to save.
+      await typePace(tester, 'pace-from', '9');
+      await typePace(tester, 'pace-to', '10');
+      await tester.pump();
+      expect(saveEnabled(tester), isFalse);
       expect(adapter.requests.where((r) => r.method == 'PUT'), isEmpty);
       await unmount(tester);
     });
 
-    testWidgets('saving PUTs the new values and shows a snackbar', (
+    testWidgets(
+      'saving PUTs the pace, updates the shared provider, shows Saved',
+      (tester) async {
+        adapter.routes['PUT /app/clubs/1/preferences'] = const FakeResponse(
+          200,
+          {
+            'paceUnit': 'mi',
+            'distanceUnit': 'km',
+            'paceFromS': 510,
+            'paceToS': 570,
+            'updatedAt': '2026-10-07T10:00:00.000Z',
+          },
+        );
+        await pumpProfile(tester, online: true);
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(RunPreferencesCard)),
+        );
+        // Not saved: the shared provider still holds the server's 9:00-10:00.
+        await typePace(tester, 'pace-from', '8', '30');
+        await typePace(tester, 'pace-to', '9', '30');
+        await tester.pump();
+        expect(
+          container.read(runPreferencesProvider(1)).value!.paceFromS,
+          540,
+          reason: 'typing alone must not look saved',
+        );
+        expect(adapter.requests.where((r) => r.method == 'PUT'), isEmpty);
+
+        await tester.tap(find.byKey(const ValueKey('save-prefs')));
+        await settle(tester);
+
+        final put = adapter.requests.singleWhere((r) => r.method == 'PUT');
+        expect(put.data, {
+          'paceUnit': 'mi',
+          'distanceUnit': 'km',
+          'paceFromS': 510,
+          'paceToS': 570,
+        });
+        expect(find.byKey(const ValueKey('pace-saved')), findsOneWidget);
+        expect(find.text('Not saved yet'), findsNothing);
+        final prefs = container.read(runPreferencesProvider(1)).value!;
+        expect(prefs.paceFromS, 510);
+        expect(prefs.paceToS, 570);
+        expect(saveEnabled(tester), isFalse);
+        await unmount(tester);
+      },
+    );
+
+    testWidgets('a unit change saves at once with the converted range', (
       tester,
     ) async {
       adapter.routes['PUT /app/clubs/1/preferences'] = const FakeResponse(200, {
         'paceUnit': 'km',
         'distanceUnit': 'km',
-        'paceFromS': 330,
-        'paceToS': 360,
+        'paceFromS': 336,
+        'paceToS': 373,
         'updatedAt': '2026-10-07T10:00:00.000Z',
       });
       await pumpProfile(tester, online: true);
 
       await tester.tap(find.text('min/km'));
-      await tester.pump();
-      // 9:00/mi and 10:00/mi converted to the new unit.
-      expect(fieldText(tester, 'pace-from'), '5:36');
-      await typePace(tester, 'pace-from', '5', '30');
-      await typePace(tester, 'pace-to', '6');
-      await tester.tap(find.byKey(const ValueKey('save-prefs')));
       await settle(tester);
 
+      // 9:00/mi and 10:00/mi converted to the new unit.
+      expect(fieldText(tester, 'pace-from'), '5:36');
+      expect(fieldText(tester, 'pace-to'), '6:13');
       final put = adapter.requests.singleWhere((r) => r.method == 'PUT');
       expect(put.data, {
         'paceUnit': 'km',
         'distanceUnit': 'km',
-        'paceFromS': 330,
-        'paceToS': 360,
+        'paceFromS': 336,
+        'paceToS': 373,
       });
-      expect(find.text('Running preferences saved'), findsOneWidget);
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(RunPreferencesCard)),
+      );
+      expect(container.read(unitPrefsProvider).paceUnit, DistUnit.km);
       await unmount(tester);
     });
 
-    testWidgets('clear then save sends null, and offline save explains', (
+    testWidgets('a failed unit change goes back and explains', (tester) async {
+      await pumpProfile(tester, online: true);
+
+      await tester.tap(find.text('min/km')); // no PUT route: offline
+      await settle(tester);
+
+      expect(
+        find.text('You need a connection to save your preferences.'),
+        findsWidgets,
+      );
+      final paceUnit = tester.widget<SegmentedButton<DistUnit>>(
+        find.byKey(const ValueKey('pace-unit')),
+      );
+      expect(paceUnit.selected, {DistUnit.mi});
+      expect(fieldText(tester, 'pace-from'), '9:00');
+      await unmount(tester);
+    });
+
+    testWidgets('a failed save keeps the typed pace and shows the error', (
       tester,
     ) async {
       await pumpProfile(tester, online: true);
 
-      await tester.tap(find.byKey(const ValueKey('clear-pace')));
+      await typePace(tester, 'pace-from', '8');
       await tester.pump();
-      expect(fieldText(tester, 'pace-from'), '');
+      await tester.tap(find.byKey(const ValueKey('save-prefs')));
+      await settle(tester); // no PUT route: the fake network is down
+
+      expect(
+        tester.widget<Text>(find.byKey(const ValueKey('pace-error'))).data,
+        'You need a connection to save your preferences.',
+      );
+      expect(find.byKey(const ValueKey('pace-saved')), findsNothing);
+      expect(fieldText(tester, 'pace-from'), '8:00');
+      expect(saveEnabled(tester), isTrue, reason: 'can retry');
+      await unmount(tester);
+    });
+
+    testWidgets('a server validation error is shown', (tester) async {
+      adapter.routes['PUT /app/clubs/1/preferences'] = const FakeResponse(422, {
+        'message': 'The pace from s must be between 180 and 1800.',
+      });
+      await pumpProfile(tester, online: true);
+
+      await typePace(tester, 'pace-from', '8');
+      await tester.pump();
       await tester.tap(find.byKey(const ValueKey('save-prefs')));
       await settle(tester);
 
-      // No PUT route: the fake network is down.
-      expect(
-        find.text('You need a connection to save your preferences.'),
-        findsOneWidget,
+      expect(find.byKey(const ValueKey('pace-error')), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('Clear removes the stored pace straight away', (tester) async {
+      adapter.routes['PUT /app/clubs/1/preferences'] = const FakeResponse(200, {
+        'paceUnit': 'mi',
+        'distanceUnit': 'km',
+        'paceFromS': null,
+        'paceToS': null,
+        'updatedAt': '2026-10-07T10:00:00.000Z',
+      });
+      await pumpProfile(tester, online: true);
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(RunPreferencesCard)),
       );
+
+      await tester.tap(find.byKey(const ValueKey('clear-pace')));
+      await settle(tester);
+
+      expect(fieldText(tester, 'pace-from'), '');
       final put = adapter.requests.singleWhere((r) => r.method == 'PUT');
       expect(put.data, containsPair('paceFromS', null));
       expect(put.data, containsPair('paceToS', null));
+      expect(
+        container.read(runPreferencesProvider(1)).value!.usualPace.isNone,
+        isTrue,
+      );
+      expect(find.byKey(const ValueKey('pace-saved')), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('Clear with nothing saved only empties the boxes', (
+      tester,
+    ) async {
+      adapter.routes['GET /app/clubs/1/preferences'] = const FakeResponse(200, {
+        'paceUnit': 'mi',
+        'distanceUnit': 'mi',
+        'paceFromS': null,
+        'paceToS': null,
+        'updatedAt': null,
+      });
+      await pumpProfile(tester, online: true);
+
+      expect(
+        tester
+            .widget<TextButton>(find.byKey(const ValueKey('clear-pace')))
+            .onPressed,
+        isNull,
+      );
+      await typePace(tester, 'pace-from', '8');
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('clear-pace')));
+      await tester.pump();
+      expect(fieldText(tester, 'pace-from'), '');
+      expect(adapter.requests.where((r) => r.method == 'PUT'), isEmpty);
       await unmount(tester);
     });
   });

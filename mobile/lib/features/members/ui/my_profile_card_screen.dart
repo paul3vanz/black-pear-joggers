@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
@@ -303,7 +304,7 @@ class _MyProfileCardScreenState extends ConsumerState<MyProfileCardScreen> {
                   if (_staleSince != null) ...[
                     OfflineBanner(
                       'Offline: showing your last saved card '
-                      '(updated ${relativeTime(_staleSince!)}). You need a '
+                      '(updated ${relativeTime(_staleSince!, now: ref.watch(nowProvider))}). You need a '
                       'connection to save changes.',
                     ),
                     const SizedBox(height: 16),

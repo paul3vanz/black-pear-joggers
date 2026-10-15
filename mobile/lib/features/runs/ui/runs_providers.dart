@@ -2,15 +2,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/db/app_database.dart';
+import '../../../core/util/clock.dart';
 import '../../updates/ui/updates_providers.dart';
 import '../data/runs_repository.dart';
 
 // Hand-written (not @riverpod): riverpod_generator can't see Drift's row types.
 
-/// Upcoming sessions (today onward), ordered by date and start time.
+/// Upcoming sessions (today onward), ordered by date and start time. Watches
+/// the club-local date, so at midnight the query restarts with the new day and
+/// yesterday's runs drop out without a refresh (D87).
 final upcomingSessionsProvider = StreamProvider.family<List<Session>, int>(
-  (ref, clubId) =>
-      ref.watch(runsRepositoryProvider).watchUpcomingSessions(clubId),
+  (ref, clubId) => ref
+      .watch(runsRepositoryProvider)
+      .watchUpcomingSessions(clubId, since: ref.watch(clubTodayProvider).date),
 );
 
 final sessionProvider = StreamProvider.family<Session?, String>(

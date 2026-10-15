@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../messages/ui/messages_providers.dart';
 import '../../runs/ui/runs_providers.dart';
@@ -66,7 +67,7 @@ class GroupsSection extends ConsumerWidget {
     final resp = myResponse(ref, session.id);
     final myId = ref.watch(myMemberIdProvider);
     final isCommittee = ref.watch(canManageRunsProvider);
-    final open = isRunOpen(session, ref.watch(groupsClockProvider)());
+    final open = isRunOpen(session, ref.watch(nowProvider));
     final routes = session.groupMode == 'routes';
     final buttons = _Buttons(
       base: _base,
@@ -221,14 +222,15 @@ class _Buttons extends StatelessWidget {
         children: [
           if (showAddRoute)
             FilledButton.icon(
-              onPressed: () =>
-                  unawaited(context.push('$base/new?kind=route&lead=false')),
+              onPressed: () => unawaited(
+                context.push('$base/new?kind=route&intent=add&lead=false'),
+              ),
               icon: const Icon(Icons.add_road),
               label: const Text('Add route'),
             ),
           if (showLead)
             OutlinedButton.icon(
-              onPressed: () => unawaited(context.push('$base/new')),
+              onPressed: () => unawaited(context.push('$base/new?intent=lead')),
               icon: const Icon(Icons.flag_outlined),
               label: const Text('Lead a group'),
             ),

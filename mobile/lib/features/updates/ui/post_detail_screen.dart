@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/util/open_link.dart';
 import '../../../core/util/relative_time.dart';
 import '../../members/ui/member_avatar.dart';
@@ -90,7 +91,7 @@ class PostDetailScreen extends ConsumerWidget {
                       ),
                     Text(
                       '${post.authorName.isNotEmpty ? '· ' : ''}'
-                      '${relativeTime(post.publishedAt)}',
+                      '${relativeTime(post.publishedAt, now: ref.watch(nowProvider))}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),

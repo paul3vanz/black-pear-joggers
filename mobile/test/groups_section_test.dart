@@ -320,7 +320,7 @@ void main() {
       expect(find.text('3 going'), findsOneWidget);
       expect(find.text('Lead a group'), findsOneWidget);
       // The pace action sits next to the routes, once.
-      expect(find.text('My pace for this run'), findsOneWidget);
+      expect(find.text('Set pace for this run'), findsOneWidget);
       await unmount(tester);
     });
 

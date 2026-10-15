@@ -375,3 +375,19 @@ class EventLocations extends Table {
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
+
+/// The cached club standards document (Phase 9b, D90): one row per club holding
+/// the response body as JSON text, so the screen reads a Drift stream like every
+/// other feature. [etag] is what the server sent, replayed as `If-None-Match`.
+@DataClassName('StandardsCacheRow')
+class StandardsCache extends Table {
+  IntColumn get clubId => integer()();
+  TextColumn get bodyJson => text()();
+  TextColumn get etag => text().nullable()();
+
+  /// When the server last confirmed this copy (a 200 or a 304).
+  DateTimeColumn get fetchedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {clubId};
+}

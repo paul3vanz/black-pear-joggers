@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/util/clock.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../../core/config/club_config.dart';
 import '../../../core/db/app_database.dart';
@@ -88,7 +89,7 @@ class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
     final sessions = ref.watch(upcomingSessionsProvider(clubId)).value;
     final venues = ref.watch(venuesProvider(clubId)).value ?? const <Venue>[];
     final venueNames = {for (final v in venues) v.id: v.name};
-    final now = ref.watch(groupsClockProvider)();
+    final now = ref.watch(nowProvider);
     final myId = ref.watch(myMemberIdProvider);
     final allWeeks = buildRoster(sessions ?? const [], now);
     // Only offer weekdays that occur, and only when there is a choice. A

@@ -7,10 +7,13 @@ import 'package:drift/native.dart';
 
 /// A canned response for the fake HTTP layer.
 class FakeResponse {
-  const FakeResponse(this.status, [this.body]);
+  const FakeResponse(this.status, [this.body, this.headers = const {}]);
 
   final int status;
   final Object? body;
+
+  /// Extra response headers, e.g. `{"etag": "\"abc\""}`.
+  final Map<String, String> headers;
 }
 
 /// Stands in for the network: dio's `HttpClientAdapter` is the lowest layer, so
@@ -48,6 +51,7 @@ class FakeAdapter implements HttpClientAdapter {
       response.status,
       headers: {
         Headers.contentTypeHeader: [Headers.jsonContentType],
+        for (final h in response.headers.entries) h.key: [h.value],
       },
     );
   }

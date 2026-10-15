@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../runs/ui/run_format.dart';
 import '../../runs/data/session_changes.dart';
@@ -100,7 +101,7 @@ class RosterRunCard extends ConsumerWidget {
                 ),
               ),
               Text(
-                '${dayHeader(session.localDate, ref.watch(groupsClockProvider)())}, '
+                '${dayHeader(session.localDate, ref.watch(clubTodayProvider).now)}, '
                 '${timeRange(session.localStartTime, session.localEndTime)}'
                 '${venueName == null ? '' : ' · $venueName'}',
               ),
@@ -140,7 +141,7 @@ class RosterRunCard extends ConsumerWidget {
                       FilledButton.icon(
                         onPressed: () => unawaited(
                           context.push(
-                            '/runs/${session.id}/groups/new?lead=true',
+                            '/runs/${session.id}/groups/new?intent=lead',
                           ),
                         ),
                         icon: const Icon(Icons.flag_outlined),
@@ -193,7 +194,7 @@ class RosterRunCard extends ConsumerWidget {
       color: theme.colorScheme.onSurfaceVariant,
     );
     final when =
-        '${dayHeader(session.localDate, ref.watch(groupsClockProvider)())}, '
+        '${dayHeader(session.localDate, ref.watch(clubTodayProvider).now)}, '
         '${formatClock(session.localStartTime)}';
     return Card(
       margin: const EdgeInsets.only(bottom: 8),

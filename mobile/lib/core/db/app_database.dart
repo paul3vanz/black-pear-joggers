@@ -33,6 +33,7 @@ part 'app_database.g.dart';
     MemberCards,
     MemberProfiles,
     EventLocations,
+    StandardsCache,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -43,7 +44,7 @@ class AppDatabase extends _$AppDatabase {
     : super(driftDatabase(name: databaseNameFor(sub)));
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -99,6 +100,11 @@ class AppDatabase extends _$AppDatabase {
       // only: existing rows are untouched, the first refresh fills it.
       if (from < 8) {
         await m.createTable(eventLocations);
+      }
+      // v9 (Phase 9b): cached club standards. A new table only: existing rows
+      // are untouched, the first refresh fills it.
+      if (from < 9) {
+        await m.createTable(standardsCache);
       }
     },
   );

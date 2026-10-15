@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../runs/logic/run_modes.dart';
 import '../data/group_dtos.dart';
@@ -32,7 +33,7 @@ Future<void> maybePromptPickGroup(
 ) async {
   // Routes, events and races are not pace groups (D79).
   if (!usesPaceGroups(session.groupMode)) return;
-  if (!isRunOpen(session, ref.read(groupsClockProvider)())) return;
+  if (!isRunOpen(session, ref.read(clockProvider)())) return;
   final groups = [
     for (final g in await ref.read(sessionGroupsProvider(session.id).future))
       if (g.status == 'active') g,

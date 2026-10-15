@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/config/club_config.dart';
@@ -148,6 +149,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ],
         const SizedBox(height: 16),
         const MyProfileCardTile(),
+        // Club standards (Phase 9b): the Bronze to Platinum targets.
+        Card(
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            leading: const Icon(Icons.military_tech_outlined, size: 32),
+            title: const Text(
+              'Club standards',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            subtitle: const Text('Targets for your age category'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/profile/standards'),
+          ),
+        ),
         if (view.regStatus != null) ...[
           const SizedBox(height: 24),
           const _SectionTitle('England Athletics'),
@@ -392,18 +410,18 @@ class _LapsedCard extends StatelessWidget {
   }
 }
 
-class _OfflineBanner extends StatelessWidget {
+class _OfflineBanner extends ConsumerWidget {
   const _OfflineBanner({required this.updatedAt, required this.hasProfile});
 
   final DateTime? updatedAt;
   final bool hasProfile;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
     final when = updatedAt == null
         ? ''
-        : ' (updated ${relativeTime(updatedAt!)})';
+        : ' (updated ${relativeTime(updatedAt!, now: ref.watch(nowProvider))})';
     final text = hasProfile
         ? 'Offline — showing saved details$when'
         : "Offline — some details couldn't be loaded";

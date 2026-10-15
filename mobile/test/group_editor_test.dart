@@ -27,6 +27,7 @@ void main() {
     List<String> roles = const [],
     String? groupId,
     String? kind,
+    GroupIntent intent = GroupIntent.lead,
     bool? lead,
     String groupMode = 'paced',
     List<Map<String, Object?>> groups = const [],
@@ -49,6 +50,7 @@ void main() {
             sessionId: 'a',
             groupId: groupId,
             initialKind: kind,
+            intent: intent,
             initialLead: lead,
           ),
         ),
@@ -216,25 +218,48 @@ void main() {
     SwitchListTile lead(WidgetTester tester) =>
         tester.widget<SwitchListTile>(find.byType(SwitchListTile));
 
-    testWidgets('is locked on for an ordinary member', (tester) async {
-      // Even when opened with lead=false (as "Add route" does).
-      await pumpEditor(tester, lead: false, routes: {'POST $_create': created});
-      expect(lead(tester).value, isTrue);
-      expect(lead(tester).onChanged, isNull);
-      expect(find.text('You lead the groups you create.'), findsOneWidget);
+    testWidgets('an ordinary member is never asked (D86)', (tester) async {
+      // Not for "lead", and not even when opened as "add" with lead=false.
+      for (final intent in GroupIntent.values) {
+        await pumpEditor(
+          tester,
+          intent: intent,
+          lead: false,
+          routes: {'POST $_create': created},
+        );
+        expect(find.byType(SwitchListTile), findsNothing, reason: '$intent');
+        expect(find.text('I will lead this group'), findsNothing);
+        await tester.enterText(field('Label (required)'), 'Jog/walk');
+        await tapSave(tester);
+        expect(posted()['lead'], isTrue, reason: '$intent');
+        await unmount(tester);
+        await db.clearAll();
+      }
+    });
+
+    testWidgets('committee with "lead" is not asked either', (tester) async {
+      await pumpEditor(
+        tester,
+        roles: ['committee'],
+        routes: {'POST $_create': created},
+      );
+      expect(find.byType(SwitchListTile), findsNothing);
       await tester.enterText(field('Label (required)'), 'Jog/walk');
       await tapSave(tester);
       expect(posted()['lead'], isTrue);
       await unmount(tester);
     });
 
-    testWidgets('committee can create a leaderless group', (tester) async {
+    testWidgets('committee "add" can create a leaderless group', (
+      tester,
+    ) async {
       await pumpEditor(
         tester,
         roles: ['committee'],
+        intent: GroupIntent.add,
         routes: {'POST $_create': created},
       );
-      expect(lead(tester).value, isTrue);
+      expect(lead(tester).value, isTrue, reason: 'on by default');
       expect(lead(tester).onChanged, isNotNull);
       await tester.tap(find.byType(SwitchListTile));
       await tester.pumpAndSettle();
@@ -251,6 +276,7 @@ void main() {
         tester,
         roles: ['committee'],
         kind: 'route',
+        intent: GroupIntent.add,
         lead: false,
         groupMode: 'routes',
         routes: {'POST $_create': created},

@@ -7,19 +7,15 @@ import '../../../core/api/api_client.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/api/json.dart';
 import '../../../core/db/app_database.dart';
+import '../../../core/util/clock.dart' show localDateString;
 import '../../groups/data/attendance_repository.dart';
 import '../../groups/data/session_local.dart';
 import 'run_dtos.dart';
 
-part 'runs_repository.g.dart';
+// Moved to the shared clock (D87); re-exported so existing imports keep working.
+export '../../../core/util/clock.dart' show localDateString;
 
-/// `yyyy-MM-dd` for [d] in the device's local time. Used as "today" when
-/// comparing with the club-local `localDate` strings (good enough: the club and
-/// its members share a timezone in practice).
-String localDateString(DateTime d) =>
-    '${d.year.toString().padLeft(4, '0')}-'
-    '${d.month.toString().padLeft(2, '0')}-'
-    '${d.day.toString().padLeft(2, '0')}';
+part 'runs_repository.g.dart';
 
 /// Cache-first club runs schedule. The UI watches the `watch*` streams; [refresh]
 /// pulls venues, series and sessions (default window first, then `?since`
@@ -50,17 +46,19 @@ class RunsRepository {
   static String venuesCursorKey(int clubId) => 'venues:$clubId';
   static String seriesCursorKey(int clubId) => 'series:$clubId';
 
-  String get _today => localDateString(_now());
-
   // --- Reads -----------------------------------------------------------
 
-  /// Sessions from today onward by `localDate`, ordered by date then start time.
-  Stream<List<Session>> watchUpcomingSessions(int clubId) =>
+  /// Sessions from [since] (a club-local `yyyy-MM-dd`, default today) onward,
+  /// ordered by date then start time. The Runs providers pass the shared
+  /// `clubTodayProvider` date so the filter moves on at midnight (D87).
+  Stream<List<Session>> watchUpcomingSessions(int clubId, {String? since}) =>
       (_db.select(_db.sessions)
             ..where(
               (s) =>
                   s.clubId.equals(clubId) &
-                  s.localDate.isBiggerOrEqualValue(_today),
+                  s.localDate.isBiggerOrEqualValue(
+                    since ?? localDateString(_now()),
+                  ),
             )
             ..orderBy([
               (s) => OrderingTerm.asc(s.localDate),

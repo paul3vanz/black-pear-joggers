@@ -203,6 +203,9 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->get('members/{memberId}/profile', 'AppMemberProfileController@memberProfile');
         $router->delete('members/{memberId}/profile', 'AppMemberProfileController@clearProfile');
         $router->get('member-cards', 'AppMemberProfileController@cards');
+
+        // Phase 9: club standards (BPJ scheme, not club-scoped data)
+        $router->get('standards', 'AppStandardsController@index');
     });
 });
 

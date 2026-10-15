@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/ui/offline_banner.dart';
 import '../../../core/util/relative_time.dart';
@@ -88,7 +89,7 @@ class _Status extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final now = ref.watch(groupsClockProvider)();
+    final now = ref.watch(nowProvider);
     final value = load.value;
     final at = value?.fetchedAt;
     final offline = value?.offline ?? false;

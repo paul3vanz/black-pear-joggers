@@ -121,10 +121,14 @@ below) and **B** (committee). Give B the `committee` role (or admin) in the data
 1. **Member (A):** Runs tab → open an upcoming run. Under *Are you coming?* tap **I'm coming**; a
    *Pick your pace group?* sheet offers the groups once per run (**Join**, or **I'll decide on the
    day**); with no groups a short note says they are confirmed at the start. You can also join from the
-   cards below, or use **My pace for this run**. Under *Who's coming* you see counts and the anonymous
-   pace spread, no names.
+   cards below. The pace line under the buttons reads *Usual pace: 9:00-9:30/mi* with **Change for this
+   run**; with no usual pace saved it says *No usual pace set* with **Set your usual pace** (opens the
+   Profile tab) and **Set pace for this run**; after you set one it reads *Running at 9:30/mi this run*
+   with **Change**. Choose **Can't come** and the pace line disappears. Under *Who's coming* you see
+   counts and the anonymous pace spread, no names.
 2. **Leader (A):** Runs tab → **Lead a run** (top right) shows the next six weeks. Tap **Offer to
-   lead**, fill the editor and save. Next time **Same as last time** creates the group in one tap
+   lead**, fill the editor (there is no "I will lead this group" switch: you lead what you create) and
+   save. Next time **Same as last time** creates the group in one tap
    (Undo in the snackbar). Edit or **Step down** from the same card. As leader of the group you now
    see *Who's in this group* with names and paces.
    Creating or joining a group as leader also marks you as going in it, so you see *You're leading
@@ -136,7 +140,9 @@ below) and **B** (committee). Give B the `committee` role (or admin) in the data
 3. **Committee (B):** at the end of *Who's coming* on the run detail, a **Group coverage** card
    shows the groups that have a leader on a pace strip, the fastest and slowest led group, and gaps
    such as "Nobody leading slower than 10:30/mi" (a jog/walk group softens the slow end). Groups
-   with no leader are listed as *Needs a leader*; **Add a group** creates a leaderless one. If
+   with no leader are listed as *Needs a leader*; **Add a group** opens the editor with an *I will lead this
+   group* switch (on by default; turn it off to create a leaderless one). Only the committee, admins and
+   the run's coordinator see that switch; **Lead a group** never shows it. If
    members have said they're coming that no led group covers, a *People coming with no matching
    group* section appears in the same card. *Who's coming* also lists *Coming, no group yet* with
    names. **Manage** → *Members and roles* (also on the Profile tab) searches members
@@ -144,6 +150,20 @@ below) and **B** (committee). Give B the `committee` role (or admin) in the data
    run → **Coordinator** picks the member who can add routes (best for *routes* runs).
 4. **Offline:** turn on airplane mode; the run, groups and last plan still show, with *Updated …*.
    Writes show "You need a connection to do that." or queue (responses only).
+
+## Pace preferences, clock labels (D86-D89)
+
+1. **Usual pace needs Save:** Profile tab → *Running preferences*. Type a pace under *My usual pace range*:
+   **Save** stays disabled until the pace is valid and different from what is saved ("Not saved yet" shows
+   under it). Press **Save**: a green check and *Saved* appear, and the Runs → run page pace line shows the
+   new usual pace straight away, with no refresh. **Clear** removes a saved pace at once. With airplane
+   mode on, Save shows "You need a connection to save your preferences." and keeps what you typed. The
+   min/mile and min/km and Miles/Kilometres choices save as soon as you tap them (the pace range is
+   converted with the unit).
+2. **Stale "Today":** open the Runs tab, leave the app in the background past midnight, then reopen it:
+   yesterday's run is gone and tomorrow's reads **Today**. (To test quickly, move the phone clock past
+   midnight and bring the app to the front.) "Updated 5 minutes ago" labels move on about once a minute while
+   shown.
 
 ## Phase 5 testing guide (reminders and answer buttons)
 
@@ -226,6 +246,73 @@ phone for the camera. One account should be **committee** (call it **C**; it can
    goals are gone for everyone; A can add new ones. Plain members have no ⋮ menu, and nobody has it on their own page.
 10. **Not available:** make a member inactive (or use a random id in a deep link): the page says "This member isn't
     available".
+
+## Phase 8 testing guide (parkrun tourism and race events)
+
+Needs the Phase 8 API (`api/database/manual/2026_10_events.sql` applied), a committee account (**C**) and two
+member accounts (**A** and **B**) linked to the club.
+
+1. **Add event locations (C):** Profile tab → **Event locations** (committee only: a plain member has no row). The
+   screen says "N locations" and "The parkrun list is imported by an administrator on the server (see setup docs)".
+   Import the parkrun list on the server first (`php artisan app:import-event-locations {clubId} {file}`), then pull
+   to refresh: the parkruns appear. **Add location** → name "Droitwich 10k", kind **Race**, region → **Save**. Tap a
+   row to edit, **Delete** asks first. Search and the parkrun/Race/Other chips narrow the list. Offline, saving says
+   you need a connection.
+2. **Create an events series (C):** Runs tab → manage menu → **Manage series** → **Add series**. Title "Saturday
+   parkrun", Saturday, 09:00, **How we run: Events (e.g. parkrun)**. **Venue: No venue** (leave it). The dropdown has no
+   "Race" here. Save: one run per Saturday appears on the Runs tab with no venue line.
+3. **Ad-hoc race (C):** manage menu → **Add ad-hoc run**: the dropdown has both "Events (e.g. parkrun)" and "Race (one
+   event)". Pick Race, title "Droitwich 10k", **No venue**, Save.
+4. **Pace machinery stays off:** on those runs there is no pace note, no "Pick your pace group?" sheet after "I'm
+   coming", no coverage card (as committee) and the runs do not appear under **Lead a run**.
+5. **Runs card wording:** on the Runs tab the Saturday parkrun card shows "No one has picked a parkrun yet" (and
+   no "N groups", no pace, no "needs a leader"). The race card shows "No one has said they're going yet".
+6. **Add and join events (A):** open the Saturday run. The page says "Where are you running?" with "Nobody has picked
+   a parkrun yet." Tap **Add a parkrun / event**: the picker lists recently used parkruns first. Pick one (for
+   example Worcester): its card appears with "You're going", "1 going" and a **Chat** button, and a snackbar offers
+   **Add a note for car sharing**. Use the card's menu (**Edit note**, hint "e.g. Meeting at 8:15 at the Co-op car
+   park, 2 seats spare") and save: the note shows on the card. On the Runs card it now reads "1 going to 1 event" and
+   your chip "You're going to Worcester parkrun".
+7. **Free text and duplicates (B):** open the same run as **B**. **Add a parkrun / event** → **Other...** → type
+   "Hereford parkrun" (leave "Save for next time" off) → **Use this name**: a second card, B is in it. Now add
+   Worcester again: no second card, B just joins it ("You're going to Worcester parkrun"). **A** pulls to refresh
+   and sees "2 going" on Worcester.
+8. **Names only inside the same event:** A and B are both in Worcester, so each sees the other under **Also going**
+   with an avatar (tap to open the profile). On the Hereford card nobody sees any names. **Leave** on a card puts you
+   back to "going, event not chosen yet" (the page says "N going, event not chosen yet"); **Can't come** at the top
+   clears your answer.
+9. **Chat for a lift:** A and B tap **Chat** on Worcester and swap messages; the other gets a push and the unread dot
+   on the **Chat** button. Someone who is not in Worcester has no Chat button (committee do).
+10. **Notes and removing:** only the creator of an event, the committee and the run coordinator see the card menu.
+    **Remove event** asks first; people in it are left going with no event and get a notification.
+11. **Race (C creates "Droitwich 10k", A and B open it):** one card, "Who's going?", with **I'm going** / **Can't
+    go**, going count, **Chat** once you are going, and names of fellow attendees. No Add button, no menu, no "Are
+    you coming?" card. The Runs card reads "2 going".
+12. **Pace machinery stays off:** on events and race runs there is no pace override, no pace note, no pick-a-group
+    sheet, no coverage card (as committee), no "Lead a group", and the runs are not under **Lead a run**.
+
+## Club standards testing note
+
+Needs the Phase 9a API (`GET /app/clubs/{clubId}/standards`) and a member linked to the club. Profile tab → **Club
+standards** ("Targets for your age category").
+
+1. **Opens on your category:** the Men/Women control and the category chip row open on your own gender and age
+   category (a star on the chip, "Showing your category"). Each event (Mile, 5K, 10K, Half Marathon, Marathon) is a
+   card with Bronze, Silver, Gold and Platinum tiles. An event with no standard for the category is not shown.
+2. **Pick another:** tap **Men**/**Women** or another chip: the cards change and the caption reads "Showing V50
+   women" with **Back to mine**. Leave and reopen the screen: it opens on yours again.
+3. **Time / Pace:** switch to **Pace**: the tiles show min/mile or min/km according to the pace unit in Profile →
+   running preferences (for example 5K in 25:48 is 8:18/mi and 5:10/km). Change the unit in Profile and come back to
+   see it follow. The choice is kept after you close the app.
+4. **No category known:** a member whose athlete record has no date of birth or gender opens on Men SEN with a hint
+   to link the membership.
+5. **Offline:** open the screen once online, then turn on flight mode and reopen: the saved table shows with
+   "Offline — showing saved standards. Updated ..." (and "Updated 3 days ago" under the cards when online). With no
+   saved copy and no network it says it could not load and offers **Try again**.
+6. **Revalidation:** the second visit sends `If-None-Match` and the server answers 304 (check the API log); an edit to
+   the `standards` table changes the ETag and the new times appear on the next open.
+7. **Claim:** **Claim an award on the website** opens https://bpj.org.uk/claim-award in the browser.
+8. **Small phone:** at 320 px wide (or large system text) the award tiles go two by two and nothing overflows.
 
 ## Releasing
 

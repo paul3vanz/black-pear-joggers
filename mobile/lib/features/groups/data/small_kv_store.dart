@@ -30,4 +30,12 @@ class SmallKvStore {
   /// `leadRosterDays:<club>`: the weekdays chosen on the Lead a run page,
   /// stored as `1,3` (Dart's `DateTime.weekday`, Monday is 1).
   static String leadDaysKey(int clubId) => 'leadRosterDays:$clubId';
+
+  /// `standardsShowPace`: `1` when the club standards screen shows paces
+  /// instead of times (D91). Absent means times.
+  static const standardsShowPaceKey = 'standardsShowPace';
+
+  /// `standardsIntroSeen`: the "How it works" card has been shown once, so it
+  /// opens collapsed from now on (D91).
+  static const standardsIntroSeenKey = 'standardsIntroSeen';
 }

@@ -1,9 +1,13 @@
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/units/dist_unit.dart';
+import 'package:bpj/core/units/pace.dart';
+import 'package:bpj/core/units/pace_spec.dart';
+import 'package:bpj/features/groups/data/run_preferences_repository.dart';
 import 'package:bpj/features/runs/ui/session_detail_screen.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'support/fake_api.dart';
 import 'support/fake_api_phase4.dart';
@@ -35,6 +39,9 @@ void main() {
     String groupMode = 'paced',
     DistUnit paceUnit = DistUnit.mi,
     MyAttendanceCompanion? attendance,
+    int? usualFromS,
+    int? usualToS,
+    bool withRouter = false,
   }) async {
     adapter = await prepareMember(tester, db, routes: routes);
     await tester.runAsync(() async {
@@ -45,11 +52,36 @@ void main() {
         summary: summary ?? summaryJson(groupCount: 1),
         groupMode: groupMode,
       );
-      await seedUnits(db, pace: paceUnit);
+      await seedUnits(
+        db,
+        pace: paceUnit,
+        usualFromS: usualFromS,
+        usualToS: usualToS,
+      );
       if (attendance != null) {
         await db.into(db.myAttendance).insert(attendance);
       }
     });
+    if (withRouter) {
+      await pumpGroupsRouter(
+        tester,
+        db,
+        adapter,
+        GoRouter(
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (_, _) => const SessionDetailScreen(sessionId: 'a'),
+            ),
+            GoRoute(
+              path: '/profile',
+              builder: (_, _) => const Text('Profile page'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     await pumpGroupsApp(
       tester,
       db,
@@ -230,8 +262,8 @@ void main() {
           ),
         },
       );
-      expect(find.text('Using my usual pace'), findsOneWidget);
-      await tester.tap(find.text('My pace for this run'));
+      expect(find.text('No usual pace set'), findsOneWidget);
+      await tester.tap(find.text('Set pace for this run'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Single'));
       await tester.pumpAndSettle();
@@ -241,7 +273,7 @@ void main() {
       await settle(tester);
 
       expect(body(0), {'status': 'going', 'paceUnit': 'km', 'paceFromS': 350});
-      expect(find.text('My pace: 5:50/km'), findsOneWidget);
+      expect(find.text('Running at 5:50/km this run'), findsOneWidget);
       await finish(tester);
     });
 
@@ -261,9 +293,9 @@ void main() {
         ),
         routes: {'PUT $_put': FakeResponse(200, attendanceJson('a'))},
       );
-      expect(find.text('My pace: 9:30-10:00/mi'), findsOneWidget);
+      expect(find.text('Running at 9:30-10:00/mi this run'), findsOneWidget);
 
-      await tester.tap(find.text('My pace for this run'));
+      await tester.tap(find.text('Change'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(const ValueKey('pace-fast-min')), '');
       await tester.enterText(find.byKey(const ValueKey('pace-fast-sec')), '30');
@@ -275,7 +307,7 @@ void main() {
       await tester.tap(find.text('Use my usual pace'));
       await settle(tester);
       expect(body(0), {'status': 'going'});
-      expect(find.text('Using my usual pace'), findsOneWidget);
+      expect(find.text('No usual pace set'), findsOneWidget);
       await finish(tester);
     });
 
@@ -295,6 +327,197 @@ void main() {
       await tester.tap(find.text('Maybe'));
       await settle(tester);
       expect(body(0), {'status': 'maybe', 'paceUnit': 'mi', 'paceFromS': 540});
+      await finish(tester);
+    });
+  });
+  group('the pace line in "Are you coming?" (D89)', () {
+    MyAttendanceCompanion row(
+      String status, {
+      int? fromS,
+      int? toS,
+      String unit = 'mi',
+    }) => MyAttendanceCompanion.insert(
+      sessionId: 'a',
+      clubId: 1,
+      status: status,
+      paceUnit: Value(fromS == null ? null : unit),
+      paceFromS: Value(fromS),
+      paceToS: Value(toS),
+      updatedAt: DateTime.utc(2026, 10, 6),
+    );
+
+    const paceTexts = [
+      'No usual pace set',
+      'Set your usual pace',
+      'Set pace for this run',
+      'Change for this run',
+      'Change',
+    ];
+
+    testWidgets("can't come hides every pace link", (tester) async {
+      await pumpDetail(
+        tester,
+        attendance: row('not_going'),
+        usualFromS: 540,
+        usualToS: 570,
+      );
+      expect(selectedStatus(tester), 'not_going');
+      for (final t in paceTexts) {
+        expect(find.text(t), findsNothing, reason: t);
+      }
+      expect(find.textContaining('Usual pace'), findsNothing);
+      expect(find.textContaining('Running at'), findsNothing);
+      await finish(tester);
+    });
+
+    testWidgets("can't come hides them even with a pace for this run", (
+      tester,
+    ) async {
+      await pumpDetail(tester, attendance: row('not_going', fromS: 570));
+      for (final t in paceTexts) {
+        expect(find.text(t), findsNothing, reason: t);
+      }
+      expect(find.textContaining('Running at'), findsNothing);
+      await finish(tester);
+    });
+
+    testWidgets('going with a usual pace shows it in the viewer units', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        attendance: row('going'),
+        usualFromS: 540,
+        usualToS: 570,
+      );
+      expect(find.text('Usual pace: 9:00-9:30/mi'), findsOneWidget);
+      expect(find.text('Change for this run'), findsOneWidget);
+      expect(find.text('No usual pace set'), findsNothing);
+      expect(find.text('Set your usual pace'), findsNothing);
+      expect(find.text('My pace for this run'), findsNothing);
+      await finish(tester);
+    });
+
+    testWidgets('a usual pace in km shows as is for a km viewer', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        paceUnit: DistUnit.km,
+        attendance: row('going'),
+        usualFromS: 330,
+        usualToS: 350,
+      );
+      expect(find.text('Usual pace: 5:30-5:50/km'), findsOneWidget);
+      await finish(tester);
+    });
+
+    testWidgets('going with no pace at all asks for one', (tester) async {
+      await pumpDetail(tester, attendance: row('going'));
+      expect(find.text('No usual pace set'), findsOneWidget);
+      expect(find.text('Set your usual pace'), findsOneWidget);
+      expect(find.text('Set pace for this run'), findsOneWidget);
+      expect(find.text('Using my usual pace'), findsNothing);
+      await finish(tester);
+    });
+
+    testWidgets('maybe behaves like going', (tester) async {
+      await pumpDetail(tester, attendance: row('maybe'));
+      expect(find.text('Set your usual pace'), findsOneWidget);
+      await finish(tester);
+    });
+
+    testWidgets('no answer yet still offers the pace links', (tester) async {
+      await pumpDetail(tester);
+      expect(find.text('Set pace for this run'), findsOneWidget);
+      await finish(tester);
+    });
+
+    testWidgets('"Set your usual pace" opens the Profile tab', (tester) async {
+      await pumpDetail(tester, attendance: row('going'), withRouter: true);
+      await tester.tap(find.text('Set your usual pace'));
+      await tester.pumpAndSettle();
+      expect(find.text('Profile page'), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('a pace for this run is shown with a Change link', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        attendance: row('going', fromS: 570),
+        usualFromS: 540,
+        usualToS: 570,
+        routes: {
+          'PUT $_put': FakeResponse(
+            200,
+            attendanceJson('a', paceUnit: 'mi', paceFromS: 600),
+          ),
+        },
+      );
+      expect(find.text('Running at 9:30/mi this run'), findsOneWidget);
+      expect(find.text('My pace for this run'), findsNothing);
+      expect(find.textContaining('Usual pace'), findsNothing);
+
+      // Change opens the same sheet, which can go back to the usual pace.
+      await tester.tap(find.text('Change'));
+      await tester.pumpAndSettle();
+      expect(find.text('Use my usual pace'), findsOneWidget);
+      await tester.enterText(find.byKey(const ValueKey('pace-fast-min')), '10');
+      await tester.enterText(find.byKey(const ValueKey('pace-fast-sec')), '');
+      await tester.tap(find.text('Save pace'));
+      await settle(tester);
+      expect(find.text('Running at 10:00/mi this run'), findsOneWidget);
+      await finish(tester);
+    });
+
+    testWidgets('the run pace is converted for a km viewer, original kept', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        paceUnit: DistUnit.km,
+        attendance: row('going', fromS: 570),
+      );
+      expect(
+        find.text('Running at 5:54/km (9:30/mi) this run'),
+        findsOneWidget,
+      );
+      await finish(tester);
+    });
+
+    testWidgets('a usual pace saved in the profile shows here at once', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        attendance: row('going'),
+        routes: {
+          'PUT /app/clubs/1/preferences': const FakeResponse(200, {
+            'paceUnit': 'mi',
+            'distanceUnit': 'mi',
+            'paceFromS': 540,
+            'paceToS': null,
+            'updatedAt': '2026-10-07T10:00:00.000Z',
+          }),
+        },
+      );
+      expect(find.text('No usual pace set'), findsOneWidget);
+
+      // What the Profile tab's Save button calls; nothing else is refreshed.
+      await tester.runAsync(
+        () => RunPreferencesRepository(db, fakeDio(adapter)).save(
+          1,
+          paceUnit: DistUnit.mi,
+          distanceUnit: DistUnit.mi,
+          usualPace: const SinglePace(Pace(540, DistUnit.mi)),
+        ),
+      );
+      await settle(tester);
+
+      expect(find.text('Usual pace: 9:00/mi'), findsOneWidget);
+      expect(find.text('No usual pace set'), findsNothing);
       await finish(tester);
     });
   });

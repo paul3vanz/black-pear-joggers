@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
@@ -351,7 +352,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     child: _MessageList(
                       messages: messages,
                       controller: _scroll,
-                      now: ref.watch(groupsClockProvider)(),
+                      now: ref.watch(clubTodayProvider).now,
                       isMine: (m) => m.memberId == me,
                       canDelete: (m) =>
                           !m.isDeleted &&

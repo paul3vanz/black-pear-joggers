@@ -8,6 +8,7 @@ import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/ui/offline_banner.dart';
+import '../../../core/util/clock.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../events/logic/event_summary.dart';
 import '../../groups/data/group_dtos.dart';
@@ -101,7 +102,8 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
     List<Session>? sessions,
     List<Venue> venues,
   ) {
-    final now = DateTime.now();
+    // The club-local day, refreshed at midnight and on resume (D87).
+    final now = ref.watch(clubTodayProvider).now;
     final venueNames = {for (final v in venues) v.id: v.name};
     final groups = groupByDay(sessions ?? const [], now);
     final showBanner = _refreshFailed && !_refreshing;

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
@@ -184,7 +185,7 @@ class _MemberProfileScreenState extends ConsumerState<MemberProfileScreen> {
         banner: _state == _Load.ok && _staleSince != null
             ? OfflineBanner(
                 'Offline: showing a saved copy '
-                '(updated ${relativeTime(_staleSince!)})',
+                '(updated ${relativeTime(_staleSince!, now: ref.watch(nowProvider))})',
               )
             : null,
         onPhotoTap: _showPhoto,

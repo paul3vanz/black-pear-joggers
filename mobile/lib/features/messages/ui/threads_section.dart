@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
-import '../../groups/ui/group_access.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/run_format.dart';
 import 'messages_providers.dart';
@@ -21,7 +21,7 @@ class GroupChatsSection extends ConsumerWidget {
     final clubId = ref.watch(activeClubIdProvider);
     final threads = ref.watch(threadsProvider(clubId)).value ?? const [];
     if (threads.isEmpty) return const SizedBox.shrink();
-    final now = ref.watch(groupsClockProvider)();
+    final now = ref.watch(clubTodayProvider).now;
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

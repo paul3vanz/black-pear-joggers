@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/db/app_database.dart';
@@ -127,14 +128,14 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
   }
 }
 
-class _InboxTile extends StatelessWidget {
+class _InboxTile extends ConsumerWidget {
   const _InboxTile({required this.item, required this.onTap});
 
   final InboxItem item;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final unread = item.readAt == null;
     final category = notificationCategoryFor(item.category).name;
@@ -153,7 +154,7 @@ class _InboxTile extends StatelessWidget {
         ),
       ),
       subtitle: Text(
-        '${item.body}\n$category · ${relativeTime(item.createdAt)}',
+        '${item.body}\n$category · ${relativeTime(item.createdAt, now: ref.watch(nowProvider))}',
         maxLines: 4,
         overflow: TextOverflow.ellipsis,
       ),

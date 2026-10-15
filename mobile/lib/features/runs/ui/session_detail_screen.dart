@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/config/club_config.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/util/open_link.dart';
@@ -121,8 +122,7 @@ class _Body extends ConsumerWidget {
           // run is open, so the run-level card only shows for the closed
           // explanation. Events keep it: it is where you say you can't come.
           if (!isRaceMode(session.groupMode) ||
-              runClosedReason(session, ref.watch(groupsClockProvider)()) !=
-                  null)
+              runClosedReason(session, ref.watch(nowProvider)) != null)
             RespondCard(
               session: session,
               // No pace override on routes (shown with the routes), events or

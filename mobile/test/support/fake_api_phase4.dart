@@ -178,6 +178,9 @@ Future<void> seedUnits(
   AppDatabase db, {
   DistUnit pace = DistUnit.mi,
   DistUnit distance = DistUnit.mi,
+  // The usual pace range in [pace] units (seconds); none by default.
+  int? usualFromS,
+  int? usualToS,
 }) => db
     .into(db.preferences)
     .insert(
@@ -185,6 +188,8 @@ Future<void> seedUnits(
         clubId: const Value(1),
         paceUnit: pace.code,
         distanceUnit: distance.code,
+        paceFromS: Value(usualFromS),
+        paceToS: Value(usualToS),
       ),
     );
 

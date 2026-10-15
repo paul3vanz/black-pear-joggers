@@ -25,6 +25,7 @@ import '../features/runs/ui/session_edit_screen.dart';
 import '../features/runs/ui/venues_screen.dart';
 import '../features/settings/ui/notification_settings_screen.dart';
 import '../features/shell/app_shell.dart';
+import '../features/standards/ui/standards_screen.dart';
 import '../features/updates/ui/compose_post_screen.dart';
 import '../features/updates/ui/post_detail_screen.dart';
 import '../features/updates/ui/updates_screen.dart';
@@ -158,15 +159,9 @@ GoRouter router(Ref ref) {
                       GoRoute(
                         path: 'groups/new',
                         parentNavigatorKey: rootNavigatorKey,
-                        builder: (_, state) => GroupEditorScreen(
-                          sessionId: state.pathParameters['id']!,
-                          initialKind: state.uri.queryParameters['kind'],
-                          initialLead:
-                              switch (state.uri.queryParameters['lead']) {
-                                'false' => false,
-                                'true' => true,
-                                _ => null,
-                              },
+                        builder: (_, state) => GroupEditorScreen.fromUri(
+                          state.pathParameters['id']!,
+                          state.uri,
                         ),
                       ),
                       GoRoute(
@@ -231,6 +226,11 @@ GoRouter router(Ref ref) {
                     path: 'card',
                     parentNavigatorKey: rootNavigatorKey,
                     builder: (_, _) => const MyProfileCardScreen(),
+                  ),
+                  GoRoute(
+                    path: 'standards',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (_, _) => const StandardsScreen(),
                   ),
                   GoRoute(
                     path: 'notifications',

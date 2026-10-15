@@ -399,10 +399,66 @@ void main() {
     expect(row.deletedAt, isNull);
   });
 
-  test('a fresh database is created at schema v8', () async {
+  test('v8 -> v9 adds the standards cache and keeps existing data', () async {
+    // A v8 database: an event location and a sync cursor, as Phase 8b left them.
+    final db = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE event_locations (id TEXT NOT NULL PRIMARY KEY, '
+              'club_id INTEGER NOT NULL, kind TEXT NOT NULL, '
+              'name TEXT NOT NULL, slug TEXT, country TEXT, region TEXT, '
+              'lat REAL, lng REAL, url TEXT, '
+              "source TEXT NOT NULL DEFAULT 'manual', "
+              'updated_at INTEGER NOT NULL, deleted_at INTEGER)',
+            )
+            ..execute(
+              'INSERT INTO event_locations (id, club_id, kind, name, updated_at) '
+              "VALUES ('e1', 1, 'parkrun', 'Worcester parkrun', 1)",
+            )
+            ..execute(
+              'CREATE TABLE sync_cursors (key TEXT NOT NULL PRIMARY KEY, '
+              'server_time TEXT NOT NULL)',
+            )
+            ..execute(
+              "INSERT INTO sync_cursors VALUES ('eventLocations:1', 'x')",
+            )
+            ..execute('PRAGMA user_version = 8');
+        },
+      ),
+    );
+    addTearDown(db.close);
+
+    await db.customSelect('SELECT 1').get();
+
+    // Existing data survives.
+    expect(
+      (await db.select(db.eventLocations).getSingle()).name,
+      'Worcester parkrun',
+    );
+    expect(await db.select(db.syncCursors).get(), hasLength(1));
+
+    // The new table exists, is empty and accepts a row.
+    expect(await db.select(db.standardsCache).get(), isEmpty);
+    await db
+        .into(db.standardsCache)
+        .insert(
+          StandardsCacheCompanion.insert(
+            clubId: const Value(1),
+            bodyJson: '{}',
+            fetchedAt: DateTime.utc(2026, 10, 15),
+          ),
+        );
+    final row = await db.select(db.standardsCache).getSingle();
+    expect(row.etag, isNull);
+    expect(row.bodyJson, '{}');
+  });
+
+  test('a fresh database is created at schema v9', () async {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 8);
+    expect(db.schemaVersion, 9);
     await db.customSelect('SELECT 1').get();
     expect(await db.select(db.sessions).get(), isEmpty);
   });

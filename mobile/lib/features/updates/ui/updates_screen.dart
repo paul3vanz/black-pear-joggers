@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/db/app_database.dart';
@@ -79,7 +80,8 @@ class _UpdatesScreenState extends ConsumerState<UpdatesScreen> {
   }
 
   Widget _buildList(BuildContext context, List<Post>? posts) {
-    final now = DateTime.now();
+    // Minute-fresh, so "5 minutes ago" and pin expiry keep up (D87).
+    final now = ref.watch(nowProvider);
     final showBanner = _refreshFailed && !_refreshing;
     final loadingFirst = posts == null || (posts.isEmpty && _refreshing);
     return ListView(
@@ -99,7 +101,8 @@ class _UpdatesScreenState extends ConsumerState<UpdatesScreen> {
           ),
         if (!loadingFirst && posts.isEmpty && !showBanner) const _EmptyState(),
         if (posts != null)
-          for (final post in posts) _PostCard(post: post, now: now),
+          for (final post in sortPosts(posts, now))
+            _PostCard(post: post, now: now),
       ],
     );
   }
@@ -203,7 +206,7 @@ class _PostCard extends StatelessWidget {
               Text(
                 [
                   if (post.authorName.isNotEmpty) post.authorName,
-                  relativeTime(post.publishedAt),
+                  relativeTime(post.publishedAt, now: now),
                 ].join(' · '),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: scheme.onSurfaceVariant,

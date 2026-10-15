@@ -180,8 +180,10 @@ void main() {
     testWidgets('no pace, leader or coverage machinery', (tester) async {
       await pump(tester, roles: const ['committee'], coordinator: 'me');
       for (final text in [
-        'My pace for this run',
-        'Using my usual pace',
+        'Set pace for this run',
+        'No usual pace set',
+        'Set your usual pace',
+        'Change for this run',
         'Group coverage',
         'Lead a group',
         "I'll lead this group too",
@@ -862,7 +864,7 @@ void main() {
       expect(find.byTooltip('Event options'), findsNothing);
       expect(find.text('Are you coming?'), findsNothing);
       expect(find.byType(RespondCard), findsNothing);
-      expect(find.text('My pace for this run'), findsNothing);
+      expect(find.text('Set pace for this run'), findsNothing);
       expect(find.text('Chat'), findsNothing);
       expect(find.text('Sam B.'), findsNothing);
       await unmount(tester);
@@ -961,7 +963,7 @@ void main() {
         mode: 'paced',
         groups: [groupJson('p1', label: 'Tempo', goingCount: 2)],
       );
-      expect(find.text('My pace for this run'), findsOneWidget);
+      expect(find.text('Set pace for this run'), findsOneWidget);
       expect(find.text('Pace groups'), findsOneWidget);
       expect(find.text('Join this group'), findsOneWidget);
       expect(find.text('Add a parkrun / event'), findsNothing);

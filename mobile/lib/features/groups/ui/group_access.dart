@@ -6,12 +6,6 @@ import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../data/group_dtos.dart';
 
-/// The clock the groups UI uses to decide whether a run has finished. A
-/// provider so tests can pin it.
-final groupsClockProvider = Provider<DateTime Function()>(
-  (ref) => DateTime.now,
-);
-
 /// The signed-in member's id in the active club, or null when not linked.
 final myMemberIdProvider = Provider<String?>(
   (ref) => ref.watch(activeMembershipProvider)?.memberId,

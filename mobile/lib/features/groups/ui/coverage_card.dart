@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/units/dist_unit.dart';
 import '../data/group_dtos.dart';
@@ -74,7 +75,7 @@ class CoverageCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final unit = units.paceUnit;
     final report = buildCoverage(groups: groups, unit: unit);
-    final open = isRunOpen(session, ref.watch(groupsClockProvider)());
+    final open = isRunOpen(session, ref.watch(nowProvider));
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -102,7 +103,7 @@ class CoverageCard extends ConsumerWidget {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   onPressed: () => unawaited(
-                    context.push('/runs/${session.id}/groups/new?lead=false'),
+                    context.push('/runs/${session.id}/groups/new?intent=add'),
                   ),
                   icon: const Icon(Icons.add),
                   label: const Text('Add a group'),

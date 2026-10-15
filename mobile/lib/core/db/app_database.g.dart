@@ -10021,6 +10021,305 @@ class EventLocationsCompanion extends UpdateCompanion<EventLocation> {
   }
 }
 
+class $StandardsCacheTable extends StandardsCache
+    with TableInfo<$StandardsCacheTable, StandardsCacheRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StandardsCacheTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bodyJsonMeta = const VerificationMeta(
+    'bodyJson',
+  );
+  @override
+  late final GeneratedColumn<String> bodyJson = GeneratedColumn<String>(
+    'body_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _etagMeta = const VerificationMeta('etag');
+  @override
+  late final GeneratedColumn<String> etag = GeneratedColumn<String>(
+    'etag',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fetchedAt = GeneratedColumn<DateTime>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [clubId, bodyJson, etag, fetchedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'standards_cache';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StandardsCacheRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    }
+    if (data.containsKey('body_json')) {
+      context.handle(
+        _bodyJsonMeta,
+        bodyJson.isAcceptableOrUnknown(data['body_json']!, _bodyJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyJsonMeta);
+    }
+    if (data.containsKey('etag')) {
+      context.handle(
+        _etagMeta,
+        etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {clubId};
+  @override
+  StandardsCacheRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StandardsCacheRow(
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      bodyJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body_json'],
+      )!,
+      etag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}etag'],
+      ),
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $StandardsCacheTable createAlias(String alias) {
+    return $StandardsCacheTable(attachedDatabase, alias);
+  }
+}
+
+class StandardsCacheRow extends DataClass
+    implements Insertable<StandardsCacheRow> {
+  final int clubId;
+  final String bodyJson;
+  final String? etag;
+
+  /// When the server last confirmed this copy (a 200 or a 304).
+  final DateTime fetchedAt;
+  const StandardsCacheRow({
+    required this.clubId,
+    required this.bodyJson,
+    this.etag,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['club_id'] = Variable<int>(clubId);
+    map['body_json'] = Variable<String>(bodyJson);
+    if (!nullToAbsent || etag != null) {
+      map['etag'] = Variable<String>(etag);
+    }
+    map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    return map;
+  }
+
+  StandardsCacheCompanion toCompanion(bool nullToAbsent) {
+    return StandardsCacheCompanion(
+      clubId: Value(clubId),
+      bodyJson: Value(bodyJson),
+      etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory StandardsCacheRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StandardsCacheRow(
+      clubId: serializer.fromJson<int>(json['clubId']),
+      bodyJson: serializer.fromJson<String>(json['bodyJson']),
+      etag: serializer.fromJson<String?>(json['etag']),
+      fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'clubId': serializer.toJson<int>(clubId),
+      'bodyJson': serializer.toJson<String>(bodyJson),
+      'etag': serializer.toJson<String?>(etag),
+      'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+    };
+  }
+
+  StandardsCacheRow copyWith({
+    int? clubId,
+    String? bodyJson,
+    Value<String?> etag = const Value.absent(),
+    DateTime? fetchedAt,
+  }) => StandardsCacheRow(
+    clubId: clubId ?? this.clubId,
+    bodyJson: bodyJson ?? this.bodyJson,
+    etag: etag.present ? etag.value : this.etag,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  StandardsCacheRow copyWithCompanion(StandardsCacheCompanion data) {
+    return StandardsCacheRow(
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      bodyJson: data.bodyJson.present ? data.bodyJson.value : this.bodyJson,
+      etag: data.etag.present ? data.etag.value : this.etag,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StandardsCacheRow(')
+          ..write('clubId: $clubId, ')
+          ..write('bodyJson: $bodyJson, ')
+          ..write('etag: $etag, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(clubId, bodyJson, etag, fetchedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StandardsCacheRow &&
+          other.clubId == this.clubId &&
+          other.bodyJson == this.bodyJson &&
+          other.etag == this.etag &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class StandardsCacheCompanion extends UpdateCompanion<StandardsCacheRow> {
+  final Value<int> clubId;
+  final Value<String> bodyJson;
+  final Value<String?> etag;
+  final Value<DateTime> fetchedAt;
+  const StandardsCacheCompanion({
+    this.clubId = const Value.absent(),
+    this.bodyJson = const Value.absent(),
+    this.etag = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+  });
+  StandardsCacheCompanion.insert({
+    this.clubId = const Value.absent(),
+    required String bodyJson,
+    this.etag = const Value.absent(),
+    required DateTime fetchedAt,
+  }) : bodyJson = Value(bodyJson),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<StandardsCacheRow> custom({
+    Expression<int>? clubId,
+    Expression<String>? bodyJson,
+    Expression<String>? etag,
+    Expression<DateTime>? fetchedAt,
+  }) {
+    return RawValuesInsertable({
+      if (clubId != null) 'club_id': clubId,
+      if (bodyJson != null) 'body_json': bodyJson,
+      if (etag != null) 'etag': etag,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+    });
+  }
+
+  StandardsCacheCompanion copyWith({
+    Value<int>? clubId,
+    Value<String>? bodyJson,
+    Value<String?>? etag,
+    Value<DateTime>? fetchedAt,
+  }) {
+    return StandardsCacheCompanion(
+      clubId: clubId ?? this.clubId,
+      bodyJson: bodyJson ?? this.bodyJson,
+      etag: etag ?? this.etag,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (bodyJson.present) {
+      map['body_json'] = Variable<String>(bodyJson.value);
+    }
+    if (etag.present) {
+      map['etag'] = Variable<String>(etag.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StandardsCacheCompanion(')
+          ..write('clubId: $clubId, ')
+          ..write('bodyJson: $bodyJson, ')
+          ..write('etag: $etag, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -10040,6 +10339,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MemberCardsTable memberCards = $MemberCardsTable(this);
   late final $MemberProfilesTable memberProfiles = $MemberProfilesTable(this);
   late final $EventLocationsTable eventLocations = $EventLocationsTable(this);
+  late final $StandardsCacheTable standardsCache = $StandardsCacheTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -10061,6 +10361,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     memberCards,
     memberProfiles,
     eventLocations,
+    standardsCache,
   ];
 }
 
@@ -15017,6 +15318,196 @@ typedef $$EventLocationsTableProcessedTableManager =
       EventLocation,
       PrefetchHooks Function()
     >;
+typedef $$StandardsCacheTableCreateCompanionBuilder =
+    StandardsCacheCompanion Function({
+      Value<int> clubId,
+      required String bodyJson,
+      Value<String?> etag,
+      required DateTime fetchedAt,
+    });
+typedef $$StandardsCacheTableUpdateCompanionBuilder =
+    StandardsCacheCompanion Function({
+      Value<int> clubId,
+      Value<String> bodyJson,
+      Value<String?> etag,
+      Value<DateTime> fetchedAt,
+    });
+
+class $$StandardsCacheTableFilterComposer
+    extends Composer<_$AppDatabase, $StandardsCacheTable> {
+  $$StandardsCacheTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bodyJson => $composableBuilder(
+    column: $table.bodyJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$StandardsCacheTableOrderingComposer
+    extends Composer<_$AppDatabase, $StandardsCacheTable> {
+  $$StandardsCacheTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bodyJson => $composableBuilder(
+    column: $table.bodyJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StandardsCacheTableAnnotationComposer
+    extends Composer<_$AppDatabase, $StandardsCacheTable> {
+  $$StandardsCacheTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get bodyJson =>
+      $composableBuilder(column: $table.bodyJson, builder: (column) => column);
+
+  GeneratedColumn<String> get etag =>
+      $composableBuilder(column: $table.etag, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$StandardsCacheTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $StandardsCacheTable,
+          StandardsCacheRow,
+          $$StandardsCacheTableFilterComposer,
+          $$StandardsCacheTableOrderingComposer,
+          $$StandardsCacheTableAnnotationComposer,
+          $$StandardsCacheTableCreateCompanionBuilder,
+          $$StandardsCacheTableUpdateCompanionBuilder,
+          (
+            StandardsCacheRow,
+            BaseReferences<
+              _$AppDatabase,
+              $StandardsCacheTable,
+              StandardsCacheRow
+            >,
+          ),
+          StandardsCacheRow,
+          PrefetchHooks Function()
+        > {
+  $$StandardsCacheTableTableManager(
+    _$AppDatabase db,
+    $StandardsCacheTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StandardsCacheTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StandardsCacheTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StandardsCacheTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> clubId = const Value.absent(),
+                Value<String> bodyJson = const Value.absent(),
+                Value<String?> etag = const Value.absent(),
+                Value<DateTime> fetchedAt = const Value.absent(),
+              }) => StandardsCacheCompanion(
+                clubId: clubId,
+                bodyJson: bodyJson,
+                etag: etag,
+                fetchedAt: fetchedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> clubId = const Value.absent(),
+                required String bodyJson,
+                Value<String?> etag = const Value.absent(),
+                required DateTime fetchedAt,
+              }) => StandardsCacheCompanion.insert(
+                clubId: clubId,
+                bodyJson: bodyJson,
+                etag: etag,
+                fetchedAt: fetchedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$StandardsCacheTable, StandardsCacheRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $StandardsCacheTable,
+                    StandardsCacheRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$StandardsCacheTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $StandardsCacheTable,
+      StandardsCacheRow,
+      $$StandardsCacheTableFilterComposer,
+      $$StandardsCacheTableOrderingComposer,
+      $$StandardsCacheTableAnnotationComposer,
+      $$StandardsCacheTableCreateCompanionBuilder,
+      $$StandardsCacheTableUpdateCompanionBuilder,
+      (
+        StandardsCacheRow,
+        BaseReferences<_$AppDatabase, $StandardsCacheTable, StandardsCacheRow>,
+      ),
+      StandardsCacheRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -15053,6 +15544,8 @@ class $AppDatabaseManager {
       $$MemberProfilesTableTableManager(_db, _db.memberProfiles);
   $$EventLocationsTableTableManager get eventLocations =>
       $$EventLocationsTableTableManager(_db, _db.eventLocations);
+  $$StandardsCacheTableTableManager get standardsCache =>
+      $$StandardsCacheTableTableManager(_db, _db.standardsCache);
 }
 
 // **************************************************************************

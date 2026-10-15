@@ -150,13 +150,13 @@ void main() {
       await unmount(tester);
     });
 
-    testWidgets('Offer to lead opens the editor with lead=true', (
+    testWidgets('Offer to lead opens the editor with the lead intent', (
       tester,
     ) async {
       await pumpRoster(tester);
       await tester.tap(inCard('b', find.text('Offer to lead')));
       await tester.pumpAndSettle();
-      expect(find.text('new lead=true'), findsOneWidget);
+      expect(find.text('new intent=lead'), findsOneWidget);
       await unmount(tester);
     });
 

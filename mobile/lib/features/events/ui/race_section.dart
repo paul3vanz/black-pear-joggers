@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../groups/data/group_dtos.dart';
 import '../../groups/data/plan_dtos.dart';
@@ -35,7 +36,7 @@ class RaceSection extends ConsumerWidget {
     final summary = ref.watch(sessionSummaryProvider(session.id)).value;
     final myId = ref.watch(myMemberIdProvider);
     final isCommittee = ref.watch(canManageRunsProvider);
-    final open = isRunOpen(session, ref.watch(groupsClockProvider)());
+    final open = isRunOpen(session, ref.watch(nowProvider));
     // Names come from the plan (online-only, cached): the load fetches it.
     ref.watch(planLoadProvider(session.id));
     final plan = ref.watch(sessionPlanProvider(session.id)).value;

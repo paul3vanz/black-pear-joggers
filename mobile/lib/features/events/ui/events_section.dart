@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../groups/data/group_dtos.dart';
 import '../../groups/data/plan_dtos.dart';
@@ -151,7 +152,7 @@ class _EventsSectionState extends ConsumerState<EventsSection> {
     final resp = myResponse(ref, session.id);
     final myId = ref.watch(myMemberIdProvider);
     final isCommittee = ref.watch(canManageRunsProvider);
-    final open = isRunOpen(session, ref.watch(groupsClockProvider)());
+    final open = isRunOpen(session, ref.watch(nowProvider));
     final summary = ref.watch(sessionSummaryProvider(session.id)).value;
     // Names come from the plan (online-only, last response cached). Watching
     // the load is what fetches it; a failure just means no names (D77).
