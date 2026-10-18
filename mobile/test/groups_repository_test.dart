@@ -11,6 +11,7 @@ import 'package:bpj/features/groups/data/plan_repository.dart';
 import 'package:bpj/features/groups/data/run_preferences_repository.dart';
 import 'package:bpj/features/groups/data/summary_dtos.dart';
 import 'package:drift/drift.dart' show Value;
+import 'package:bpj/features/runs/logic/my_days.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/fake_api.dart';
@@ -79,146 +80,271 @@ void main() {
       expect(s.myLeading, isTrue);
     });
 
-    group('leaders attend their own group (D30)', () {
-      Future<MyAttendanceRow?> attendance() =>
-          db.select(db.myAttendance).getSingleOrNull();
+    group(
+      'leaders attend their own group (D30); stepping down leaves it (D109)',
+      () {
+        Future<MyAttendanceRow?> attendance() =>
+            db.select(db.myAttendance).getSingleOrNull();
 
-      test('createGroup(lead) marks me going in the new group', () async {
-        await seedSession(db, 'a', groups: [], summary: summaryJson());
-        await setup({
-          'POST /app/clubs/1/sessions/a/groups': FakeResponse(
-            201,
-            groupJson('new-uuid', leaders: [leaderJson('me')], goingCount: 1),
-          ),
+        test('createGroup(lead) marks me going in the new group', () async {
+          await seedSession(db, 'a', groups: [], summary: summaryJson());
+          await setup({
+            'POST /app/clubs/1/sessions/a/groups': FakeResponse(
+              201,
+              groupJson('new-uuid', leaders: [leaderJson('me')], goingCount: 1),
+            ),
+          });
+          await repo.createGroup('a');
+
+          final row = (await attendance())!;
+          expect(row.status, 'going');
+          expect(row.groupId, 'new-uuid');
+          expect(row.pending, isFalse);
+          final s = await summary();
+          expect(s.myStatus, 'going');
+          expect(s.myGroupId, 'new-uuid');
+          expect(s.myLeading, isTrue);
+          expect(s.goingCount, 1);
+          // The server's group already counted the leader: no double count.
+          expect((await groups()).single.goingCount, 1);
         });
-        await repo.createGroup('a');
 
-        final row = (await attendance())!;
-        expect(row.status, 'going');
-        expect(row.groupId, 'new-uuid');
-        expect(row.pending, isFalse);
-        final s = await summary();
-        expect(s.myStatus, 'going');
-        expect(s.myGroupId, 'new-uuid');
-        expect(s.myLeading, isTrue);
-        expect(s.goingCount, 1);
-        // The server's group already counted the leader: no double count.
-        expect((await groups()).single.goingCount, 1);
-      });
-
-      test('a leaderless group (lead: false) changes nothing', () async {
-        await seedSession(db, 'a', groups: [], summary: summaryJson());
-        await setup({
-          'POST /app/clubs/1/sessions/a/groups': FakeResponse(
-            201,
-            groupJson('new-uuid', status: 'needs_leader'),
-          ),
+        test('a leaderless group (lead: false) changes nothing', () async {
+          await seedSession(db, 'a', groups: [], summary: summaryJson());
+          await setup({
+            'POST /app/clubs/1/sessions/a/groups': FakeResponse(
+              201,
+              groupJson('new-uuid', status: 'needs_leader'),
+            ),
+          });
+          await repo.createGroup('a', lead: false);
+          expect(await attendance(), isNull);
+          expect((await summary()).myStatus, isNull);
         });
-        await repo.createGroup('a', lead: false);
-        expect(await attendance(), isNull);
-        expect((await summary()).myStatus, isNull);
-      });
 
-      test('joinAsLeader moves me from another group, keeps my pace', () async {
-        await seedSession(
-          db,
-          'a',
-          groups: [
-            groupJson('g1', goingCount: 2),
-            groupJson('g2', goingCount: 1),
-          ],
-          summary: summaryJson(
-            groupCount: 2,
-            goingCount: 3,
-            myStatus: 'going',
-            myGroupId: 'g1',
-          ),
-        );
-        await setup({
-          'POST /app/clubs/1/groups/g2/leaders': FakeResponse(
-            200,
-            groupJson('g2', leaders: [leaderJson('me')], goingCount: 2),
-          ),
-        });
-        await db
-            .into(db.myAttendance)
-            .insert(
-              MyAttendanceCompanion.insert(
-                sessionId: 'a',
-                clubId: 1,
-                status: 'going',
-                groupId: const Value('g1'),
-                paceUnit: const Value('km'),
-                paceFromS: const Value(350),
-                updatedAt: DateTime.utc(2026, 10, 6),
+        test(
+          'joinAsLeader moves me from another group, keeps my pace',
+          () async {
+            await seedSession(
+              db,
+              'a',
+              groups: [
+                groupJson('g1', goingCount: 2),
+                groupJson('g2', goingCount: 1),
+              ],
+              summary: summaryJson(
+                groupCount: 2,
+                goingCount: 3,
+                myStatus: 'going',
+                myGroupId: 'g1',
               ),
             );
+            await setup({
+              'POST /app/clubs/1/groups/g2/leaders': FakeResponse(
+                200,
+                groupJson('g2', leaders: [leaderJson('me')], goingCount: 2),
+              ),
+            });
+            await db
+                .into(db.myAttendance)
+                .insert(
+                  MyAttendanceCompanion.insert(
+                    sessionId: 'a',
+                    clubId: 1,
+                    status: 'going',
+                    groupId: const Value('g1'),
+                    paceUnit: const Value('km'),
+                    paceFromS: const Value(350),
+                    updatedAt: DateTime.utc(2026, 10, 6),
+                  ),
+                );
 
-        await repo.joinAsLeader('a', 'g2');
+            await repo.joinAsLeader('a', 'g2');
 
-        final row = (await attendance())!;
-        expect(row.groupId, 'g2');
-        expect(row.status, 'going');
-        expect([row.paceUnit, row.paceFromS], ['km', 350]);
-        final s = await summary();
-        expect(s.myGroupId, 'g2');
-        expect(s.goingCount, 3, reason: 'I was already going');
-        final gs = {for (final g in await groups()) g.id: g};
-        expect(gs['g1']!.goingCount, 1, reason: 'I left g1');
-        expect(gs['g2']!.goingCount, 2, reason: 'server count kept');
-      });
-
-      test('a maybe becomes going without changing the total', () async {
-        await seedSession(
-          db,
-          'a',
-          groups: [groupJson('g1', maybeCount: 1)],
-          summary: summaryJson(
-            groupCount: 1,
-            maybeCount: 1,
-            myStatus: 'maybe',
-            myGroupId: 'g1',
-          ),
+            final row = (await attendance())!;
+            expect(row.groupId, 'g2');
+            expect(row.status, 'going');
+            expect([row.paceUnit, row.paceFromS], ['km', 350]);
+            final s = await summary();
+            expect(s.myGroupId, 'g2');
+            expect(s.goingCount, 3, reason: 'I was already going');
+            final gs = {for (final g in await groups()) g.id: g};
+            expect(gs['g1']!.goingCount, 1, reason: 'I left g1');
+            expect(gs['g2']!.goingCount, 2, reason: 'server count kept');
+          },
         );
-        await setup({
-          'POST /app/clubs/1/groups/g1/leaders': FakeResponse(
-            200,
-            groupJson('g1', leaders: [leaderJson('me')], goingCount: 1),
-          ),
-        });
-        await repo.joinAsLeader('a', 'g1');
-        final s = await summary();
-        expect([s.goingCount, s.maybeCount, s.myStatus], [1, 0, 'going']);
-      });
 
-      test('withdrawAsLeader leaves my attendance alone', () async {
-        await seedSession(
-          db,
-          'a',
-          groups: [
-            groupJson('g1', leaders: [leaderJson('me')], goingCount: 1),
-          ],
-          summary: summaryJson(
-            groupCount: 1,
-            leaderCount: 1,
-            goingCount: 1,
-            myStatus: 'going',
-            myGroupId: 'g1',
-            myLeading: true,
-          ),
-        );
-        await setup({
-          'DELETE /app/clubs/1/groups/g1/leaders/me': FakeResponse(
-            200,
-            groupJson('g1', status: 'needs_leader', goingCount: 1),
-          ),
+        test('a maybe becomes going without changing the total', () async {
+          await seedSession(
+            db,
+            'a',
+            groups: [groupJson('g1', maybeCount: 1)],
+            summary: summaryJson(
+              groupCount: 1,
+              maybeCount: 1,
+              myStatus: 'maybe',
+              myGroupId: 'g1',
+            ),
+          );
+          await setup({
+            'POST /app/clubs/1/groups/g1/leaders': FakeResponse(
+              200,
+              groupJson('g1', leaders: [leaderJson('me')], goingCount: 1),
+            ),
+          });
+          await repo.joinAsLeader('a', 'g1');
+          final s = await summary();
+          expect([s.goingCount, s.maybeCount, s.myStatus], [1, 0, 'going']);
         });
-        await repo.withdrawAsLeader('a', 'g1');
-        final s = await summary();
-        expect(s.myLeading, isFalse);
-        expect([s.myStatus, s.myGroupId, s.goingCount], ['going', 'g1', 1]);
-      });
-    });
+
+        group('stepping down (D109)', () {
+          Future<void> seedLed({int goingCount = 2}) async {
+            await seedSession(
+              db,
+              'a',
+              groups: [
+                groupJson(
+                  'g1',
+                  leaders: [leaderJson('me')],
+                  goingCount: goingCount,
+                ),
+                groupJson('g2', goingCount: 1),
+              ],
+              summary: summaryJson(
+                groupCount: 2,
+                leaderCount: 1,
+                goingCount: goingCount + 1,
+                myStatus: 'going',
+                myGroupId: 'g1',
+                myLeading: true,
+              ),
+            );
+            await db
+                .into(db.myAttendance)
+                .insert(
+                  MyAttendanceCompanion.insert(
+                    sessionId: 'a',
+                    clubId: 1,
+                    status: 'going',
+                    groupId: const Value('g1'),
+                    paceUnit: const Value('km'),
+                    paceFromS: const Value(350),
+                    updatedAt: DateTime.utc(2026, 10, 6),
+                  ),
+                );
+          }
+
+          test(
+            'removes me from the group, still going, keeps my pace',
+            () async {
+              await seedLed();
+              await setup({
+                'DELETE /app/clubs/1/groups/g1/leaders/me': FakeResponse(
+                  200,
+                  groupJson('g1', status: 'needs_leader', goingCount: 1),
+                ),
+              });
+              final g = await repo.withdrawAsLeader('a', 'g1');
+              expect(g.isDeleted, isFalse);
+              expect(adapter.requests.single.data, {'notGoing': false});
+
+              final row = (await attendance())!;
+              expect(row.status, 'going');
+              expect(row.groupId, isNull);
+              expect([row.paceUnit, row.paceFromS], ['km', 350]);
+              final s = await summary();
+              expect(s.myLeading, isFalse);
+              expect(
+                [s.myStatus, s.myGroupId, s.goingCount],
+                ['going', null, 3],
+              );
+              final gs = {for (final g in await groups()) g.id: g};
+              expect(
+                gs['g1']!.goingCount,
+                1,
+                reason: "the server's count is kept",
+              );
+              expect(gs['g1']!.needsLeader, isTrue);
+            },
+          );
+
+          test('notGoing sends true and marks me not going', () async {
+            await seedLed();
+            await setup({
+              'DELETE /app/clubs/1/groups/g1/leaders/me': FakeResponse(
+                200,
+                groupJson('g1', status: 'needs_leader', goingCount: 1),
+              ),
+            });
+            await repo.withdrawAsLeader('a', 'g1', notGoing: true);
+            expect(adapter.requests.single.data, {'notGoing': true});
+
+            final row = (await attendance())!;
+            expect([row.status, row.groupId], ['not_going', null]);
+            final s = await summary();
+            expect([s.myStatus, s.myGroupId], ['not_going', null]);
+            expect(s.goingCount, 2, reason: 'one fewer going');
+          });
+
+          test('a deleted group is removed and my group cleared', () async {
+            await seedLed(goingCount: 1);
+            await setup({
+              'DELETE /app/clubs/1/groups/g1/leaders/me': FakeResponse(200, () {
+                final g = groupJson('g1', goingCount: 0);
+                g['deletedAt'] = '2026-10-07T10:00:00.000Z';
+                return g;
+              }()),
+            });
+            final g = await repo.withdrawAsLeader('a', 'g1');
+            expect(g.isDeleted, isTrue);
+
+            expect([for (final g in await groups()) g.id], ['g2']);
+            final row = (await attendance())!;
+            expect([row.status, row.groupId], ['going', null]);
+            final s = await summary();
+            expect(s.groupCount, 1);
+            expect(s.myLeading, isFalse);
+            expect([s.myStatus, s.myGroupId], ['going', null]);
+          });
+
+          test('with no local answer nothing is invented', () async {
+            await seedSession(
+              db,
+              'a',
+              groups: [
+                groupJson('g1', leaders: [leaderJson('me')]),
+              ],
+              summary: summaryJson(groupCount: 1, myLeading: true),
+            );
+            await setup({
+              'DELETE /app/clubs/1/groups/g1/leaders/me': FakeResponse(
+                200,
+                groupJson('g1', status: 'needs_leader'),
+              ),
+            });
+            await repo.withdrawAsLeader('a', 'g1');
+            expect(await attendance(), isNull);
+            expect((await summary()).myStatus, isNull);
+          });
+
+          test('errors leave the cache alone', () async {
+            await seedLed();
+            await setup({
+              'DELETE /app/clubs/1/groups/g1/leaders/me': const FakeResponse(
+                409,
+                {'error': 'session_past', 'message': 'Finished'},
+              ),
+            });
+            await expectLater(
+              repo.withdrawAsLeader('a', 'g1'),
+              throwsA(isA<ApiException>()),
+            );
+            expect((await attendance())!.groupId, 'g1');
+            expect((await summary()).myGroupId, 'g1');
+          });
+        });
+      },
+    );
 
     test('updateGroup patches every field and replaces the group', () async {
       await seedSession(
@@ -495,6 +621,100 @@ void main() {
         throwsA(isA<ApiException>().having((e) => e.isNetworkError, 'n', true)),
       );
       expect((await repo.watch(1).first).paceUnit, DistUnit.mi);
+    });
+
+    group('leadDays (D107)', () {
+      const body = {'paceUnit': 'mi', 'distanceUnit': 'mi'};
+
+      test('null (never chosen), [] (none) and a list round-trip', () async {
+        final repo = make({
+          'GET /app/clubs/1/preferences': const FakeResponse(200, {
+            ...body,
+            'leadDays': null,
+          }),
+        });
+        await repo.refresh(1);
+        expect((await repo.watch(1).first).leadDays, isNull);
+
+        for (final days in [
+          <int>[],
+          [2, 4],
+        ]) {
+          final r = make({
+            'PUT /app/clubs/1/preferences': FakeResponse(200, {
+              ...body,
+              'leadDays': days,
+            }),
+          });
+          await r.saveDays(1, DayKind.lead, days);
+          expect((await r.watch(1).first).leadDays, days);
+        }
+      });
+
+      test('saveDays sends only leadDays, sorted; null resets', () async {
+        final adapter = FakeAdapter({
+          'PUT /app/clubs/1/preferences': const FakeResponse(200, {
+            ...body,
+            'leadDays': [2, 4],
+          }),
+        });
+        final repo = RunPreferencesRepository(db, fakeDio(adapter));
+        await repo.saveDays(1, DayKind.lead, [4, 2]);
+        expect(adapter.requests.single.data, {
+          'leadDays': [2, 4],
+        });
+        await repo.saveDays(1, DayKind.lead, null);
+        expect(adapter.requests.last.data, {'leadDays': null});
+      });
+
+      test(
+        'saving units keeps the cached leadDays (the server echoes it)',
+        () async {
+          final adapter = FakeAdapter({
+            'PUT /app/clubs/1/preferences': const FakeResponse(200, {
+              'paceUnit': 'km',
+              'distanceUnit': 'km',
+              'leadDays': [3],
+            }),
+          });
+          final repo = RunPreferencesRepository(db, fakeDio(adapter));
+          await repo.save(1, paceUnit: DistUnit.km, distanceUnit: DistUnit.km);
+          expect((await repo.watch(1).first).leadDays, [3]);
+          expect(adapter.requests.single.data, isNot(contains('leadDays')));
+        },
+      );
+
+      test('runDays: sends only runDays and caches both lists back', () async {
+        final adapter = FakeAdapter({
+          'PUT /app/clubs/1/preferences': const FakeResponse(200, {
+            ...body,
+            // The server dropped Wednesday from the lead days (D115).
+            'runDays': [1, 3],
+            'leadDays': [1],
+          }),
+        });
+        final repo = RunPreferencesRepository(db, fakeDio(adapter));
+        await repo.saveDays(1, DayKind.run, [3, 1]);
+        expect(adapter.requests.single.data, {
+          'runDays': [1, 3],
+        });
+        final cached = await repo.watch(1).first;
+        expect(cached.runDays, [1, 3]);
+        expect(cached.leadDays, [1]);
+        expect(cached.daysOf(DayKind.run), [1, 3]);
+        expect(cached.daysOf(DayKind.lead), [1]);
+      });
+
+      test('offline throws and keeps the cache', () async {
+        final repo = make({});
+        await expectLater(
+          repo.saveDays(1, DayKind.lead, [1]),
+          throwsA(
+            isA<ApiException>().having((e) => e.isNetworkError, 'n', true),
+          ),
+        );
+        expect((await repo.watch(1).first).leadDays, isNull);
+      });
     });
   });
 

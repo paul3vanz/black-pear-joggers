@@ -83,3 +83,48 @@ bool canChatIn({
   if (myMemberId == null) return false;
   return group.isLedBy(myMemberId) || session.coordinatorMemberId == myMemberId;
 }
+
+/// The roles a member can take when joining a group as a leader, with their
+/// labels, in the order the sheet lists them.
+const leaderRoles = [
+  ('leader', 'Leader'),
+  ('co_leader', 'Co-leader'),
+  ('backmarker', 'Backmarker'),
+];
+
+/// Whether [group] already has a confirmed leader with the `leader` role.
+/// (Co-leaders and backmarkers don't count: only one `leader` per group, D108.)
+bool hasLeaderRole(Group group) => group.leaders.any((l) => l.role == 'leader');
+
+/// The roles offered in "How will you help lead?": "Leader" is left out when
+/// the group already has one (the server would 409 `leader_exists`). With no
+/// leader every option stays. [leaderTaken] forces "Leader" out, used after
+/// the server said so but the cached group is stale.
+List<(String, String)> roleOptionsFor(
+  Group group, {
+  bool leaderTaken = false,
+}) => [
+  for (final r in leaderRoles)
+    if (r.$1 != 'leader' || !(leaderTaken || hasLeaderRole(group))) r,
+];
+
+/// The group in [groups] that [memberId] leads, if any. A member leads at most
+/// one group per run (D108), so a second offer must be blocked.
+Group? groupLedBy(List<Group> groups, String? memberId) {
+  if (memberId == null) return null;
+  for (final g in groups) {
+    if (!g.isDeleted && g.isLedBy(memberId)) return g;
+  }
+  return null;
+}
+
+/// Whether stepping down would delete [group] (D109): [myMemberId] created it,
+/// no other confirmed leader remains and nobody else is in it. [Group.goingCount]
+/// and [Group.maybeCount] both include the viewer, who is going in a group they
+/// lead, so "nobody else" means the two together are at most one. This only
+/// words the dialog; the server decides.
+bool stepDownDeletesGroup(Group group, String? myMemberId) =>
+    myMemberId != null &&
+    group.createdByMemberId == myMemberId &&
+    !group.leaders.any((l) => l.memberId != myMemberId) &&
+    group.goingCount + group.maybeCount - 1 <= 0;

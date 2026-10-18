@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
@@ -44,10 +45,15 @@ class AppDatabase extends _$AppDatabase {
     : super(driftDatabase(name: databaseNameFor(sub)));
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 11;
+
+  /// Diagnostics hook (D100): told about every successful open, with the
+  /// from/to versions when it migrated. Set once in `main`; null in tests.
+  static void Function(OpeningDetails details)? onOpened;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+    beforeOpen: (details) async => onOpened?.call(details),
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
       // v2 (Phase 2): club updates, inbox and sync cursors.
@@ -106,6 +112,26 @@ class AppDatabase extends _$AppDatabase {
       if (from < 9) {
         await m.createTable(standardsCache);
       }
+      // v10 (D111): "days I may lead" on the cached preferences. A database older
+      // than v4 just created `preferences` with the column, so only v4-v9 add it.
+      if (from >= 4 && from < 10) {
+        // Defensive: look at the real table first so a half-built file (or a
+        // hand-made test fixture without it) can't abort the whole upgrade.
+        final cols = await customSelect('PRAGMA table_info(preferences)').get();
+        if (cols.isEmpty) {
+          await m.createTable(preferences);
+        } else if (!cols.any((c) => c.read<String>('name') == 'lead_days')) {
+          await m.addColumn(preferences, preferences.leadDays);
+        }
+      }
+      // v11 (D115): "days I run" next to "days I may lead". Same defensive check;
+      // a v<4 database (or one the v10 step just created the table for) has it.
+      if (from >= 4 && from < 11) {
+        final cols = await customSelect('PRAGMA table_info(preferences)').get();
+        if (!cols.any((c) => c.read<String>('name') == 'run_days')) {
+          await m.addColumn(preferences, preferences.runDays);
+        }
+      }
     },
   );
 
@@ -136,6 +162,9 @@ AppDatabase appDatabase(Ref ref) {
     throw StateError('appDatabase read while no account is signed in');
   }
   final db = AppDatabase.forAccount(sub);
-  ref.onDispose(db.close);
+  // A database that never opened can throw when closed; nobody can act on that.
+  ref.onDispose(
+    () => unawaited(db.close().then((_) {}, onError: (Object _) {})),
+  );
   return db;
 }

@@ -69,10 +69,15 @@ class GroupsSection extends ConsumerWidget {
     final isCommittee = ref.watch(canManageRunsProvider);
     final open = isRunOpen(session, ref.watch(nowProvider));
     final routes = session.groupMode == 'routes';
+    // One group per leader per run (D108): once you lead one, no more offers.
+    final ledByMe = groupLedBy(groups, myId);
     final buttons = _Buttons(
       base: _base,
       showAddRoute: open && ref.watch(canAddRoutesProvider(session)),
-      showLead: open && !(session.groupMode == 'single' && groups.isNotEmpty),
+      showLead:
+          open &&
+          ledByMe == null &&
+          !(session.groupMode == 'single' && groups.isNotEmpty),
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -112,7 +117,17 @@ class GroupsSection extends ConsumerWidget {
           )
         else ...[
           for (final g in groups)
-            _card(context, ref, g, units, resp, myId, isCommittee, open),
+            _card(
+              context,
+              ref,
+              g,
+              units,
+              resp,
+              myId,
+              isCommittee,
+              open,
+              ledByMe,
+            ),
           buttons,
         ],
       ],
@@ -128,6 +143,7 @@ class GroupsSection extends ConsumerWidget {
     String? myId,
     bool isCommittee,
     bool open,
+    Group? ledByMe,
   ) {
     final mine = resp.groupId == g.id && resp.status != 'not_going';
     final leading = myId != null && g.isLedBy(myId);
@@ -166,8 +182,13 @@ class GroupsSection extends ConsumerWidget {
               respondToRun(context, ref, session: session, status: 'going'),
             )
           : null,
-      onLeadToo: open && !leading
+      // Not offered on other groups of a run you already lead in (D108).
+      onLeadToo: open && !leading && ledByMe == null
           ? () => unawaited(joinAsLeaderWithRole(context, ref, session, g))
+          : null,
+      leadHint: open && !leading && ledByMe != null
+          ? "You're already leading the ${groupHeading(ledByMe, units).title} "
+                'group'
           : null,
       onStepDown: open && leading
           ? () => unawaited(stepDownFrom(context, ref, session, g))

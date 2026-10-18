@@ -283,7 +283,7 @@ class AppAttendanceTest extends AppGroupsBase
         [$status, $body] = $this->api('GET', '/preferences', 'plain');
 
         $this->assertSame(200, $status);
-        $this->assertSame(['paceUnit' => 'mi', 'distanceUnit' => 'mi', 'paceFromS' => null, 'paceToS' => null, 'updatedAt' => null], $body);
+        $this->assertSame(['paceUnit' => 'mi', 'distanceUnit' => 'mi', 'paceFromS' => null, 'paceToS' => null, 'leadDays' => null, 'runDays' => null, 'updatedAt' => null], $body);
         $this->assertSame(0, MemberPreference::count());
     }
 

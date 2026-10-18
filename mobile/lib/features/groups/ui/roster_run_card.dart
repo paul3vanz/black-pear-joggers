@@ -36,7 +36,9 @@ class RosterRunCard extends ConsumerWidget {
     final messenger = ScaffoldMessenger.of(context);
     final store = ref.read(lastGroupStoreProvider);
     Group? created;
-    final ok = await groupWrite(context, ref, (repo) async {
+    final ok = await groupWrite(context, ref, sessionId: session.id, (
+      repo,
+    ) async {
       created = await repo.createGroup(
         session.id,
         kind: last.kind,
@@ -122,6 +124,12 @@ class RosterRunCard extends ConsumerWidget {
                   group: g,
                   units: units,
                   mine: myId != null && g.isLedBy(myId),
+                  // One group per leader per run (D108): no offers on the
+                  // other groups once you lead one; say why instead.
+                  leadHint: leading.isNotEmpty && !g.isLedBy(myId ?? '')
+                      ? "You're already leading the "
+                            '${groupHeading(leading.first, units).title} group'
+                      : null,
                   onEdit: () => unawaited(
                     context.push('/runs/${session.id}/groups/${g.id}/edit'),
                   ),
@@ -236,6 +244,7 @@ class _GroupLine extends StatelessWidget {
     required this.group,
     required this.units,
     required this.mine,
+    required this.leadHint,
     required this.onEdit,
     required this.onStepDown,
     required this.onJoin,
@@ -244,6 +253,9 @@ class _GroupLine extends StatelessWidget {
   final Group group;
   final UnitPrefs units;
   final bool mine;
+
+  /// Replaces the join button when the viewer already leads another group.
+  final String? leadHint;
   final VoidCallback onEdit;
   final VoidCallback onStepDown;
   final VoidCallback onJoin;
@@ -289,7 +301,14 @@ class _GroupLine extends StatelessWidget {
                   onPressed: onStepDown,
                   child: const Text('Step down'),
                 ),
-              ] else
+              ] else if (leadHint != null)
+                Text(
+                  leadHint!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                )
+              else
                 TextButton(
                   onPressed: onJoin,
                   child: Text(

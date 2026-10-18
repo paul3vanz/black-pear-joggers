@@ -21,7 +21,7 @@ class NotificationCategories
     /**
      * Definitions in display order.
      *
-     *  default    true, false, or 'leader' (on only for members with the leader role)
+     *  default    true, false, or 'leader' (on for members with the leader role, who set days they may lead, or who have led)
      *  locked     can't be turned off
      *  visible    true, or a list of roles of which the member needs one. Every
      *             member can offer to lead (D12), so nothing is hidden today.
@@ -45,7 +45,7 @@ class NotificationCategories
             ],
             self::GROUP_MATCHES => [
                 'label' => 'Matching groups',
-                'description' => 'A group in your pace range is added to a run you are going to.',
+                'description' => 'A group in your pace range is added to a run you are going to, or to one on the days you run.',
                 'default' => true,
                 'locked' => false,
                 'visible' => true,
@@ -103,7 +103,8 @@ class NotificationCategories
         $default = self::definitions()[$category]['default'] ?? false;
 
         if ($default === 'leader') {
-            return in_array('leader', $member->roles ?? [], true);
+            // On for the leader role, and for anyone who chose days they may lead or has led (D106).
+            return in_array('leader', $member->roles ?? [], true) || LeaderAudience::wantsPrompts($member);
         }
 
         return (bool) $default;

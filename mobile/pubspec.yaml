@@ -16,8 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
-
+version: 1.0.0+4
 environment:
   sdk: ^3.13.5
 
@@ -123,15 +122,17 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
-# App icon, generated from the club logo: `dart run flutter_launcher_icons`.
-# Android gets an adaptive icon (logo inset on a white background); iOS gets a
-# flattened square because it does not allow transparency.
+# App icon: `node scripts/build-icons.mjs` builds the PNGs in assets/icon from
+# logo.svg + the club stripes, then `dart run flutter_launcher_icons` writes the
+# Android and iOS resources. Android gets an adaptive icon (stripes background,
+# badge foreground sized to the safe zone); iOS gets the flattened composite
+# because it does not allow transparency.
 flutter_launcher_icons:
   image_path: "assets/icon/icon.png"
   android: true
   ios: true
   remove_alpha_ios: true
-  background_color_ios: "#FFFFFF"
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/icon/icon.png"
-  adaptive_icon_foreground_inset: 20
+  background_color_ios: "#000000"
+  adaptive_icon_background: "assets/icon/icon_background.png"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  adaptive_icon_foreground_inset: 0

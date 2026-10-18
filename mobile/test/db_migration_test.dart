@@ -455,10 +455,82 @@ void main() {
     expect(row.bodyJson, '{}');
   });
 
-  test('a fresh database is created at schema v9', () async {
+  test('v9 -> v10 adds preferences.lead_days and keeps existing data', () async {
+    // A v9 database: the preferences row as the last release stored it.
+    final db = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE preferences (club_id INTEGER NOT NULL PRIMARY KEY, '
+              'pace_unit TEXT NOT NULL, distance_unit TEXT NOT NULL, '
+              'pace_from_s INTEGER, pace_to_s INTEGER, updated_at INTEGER)',
+            )
+            ..execute(
+              'INSERT INTO preferences (club_id, pace_unit, distance_unit, '
+              "pace_from_s, pace_to_s, updated_at) VALUES (1, 'km', 'mi', 330, 360, 1)",
+            )
+            ..execute('PRAGMA user_version = 9');
+        },
+      ),
+    );
+    addTearDown(db.close);
+
+    await db.customSelect('SELECT 1').get();
+
+    // The row survives; lead_days is null = "never chosen".
+    final row = await db.select(db.preferences).getSingle();
+    expect(row.paceUnit, 'km');
+    expect(row.paceFromS, 330);
+    expect(row.leadDays, isNull);
+
+    // The column accepts "none" ('') and a list.
+    await (db.update(db.preferences)..where((p) => p.clubId.equals(1))).write(
+      const PreferencesCompanion(leadDays: Value('')),
+    );
+    expect((await db.select(db.preferences).getSingle()).leadDays, '');
+    await (db.update(db.preferences)..where((p) => p.clubId.equals(1))).write(
+      const PreferencesCompanion(leadDays: Value('2,4')),
+    );
+    expect((await db.select(db.preferences).getSingle()).leadDays, '2,4');
+  });
+
+  test('v10 -> v11 adds preferences.run_days and keeps lead_days', () async {
+    final db = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE preferences (club_id INTEGER NOT NULL PRIMARY KEY, '
+              'pace_unit TEXT NOT NULL, distance_unit TEXT NOT NULL, '
+              'pace_from_s INTEGER, pace_to_s INTEGER, lead_days TEXT, '
+              'updated_at INTEGER)',
+            )
+            ..execute(
+              'INSERT INTO preferences (club_id, pace_unit, distance_unit, '
+              "lead_days, updated_at) VALUES (1, 'mi', 'mi', '1', 1)",
+            )
+            ..execute('PRAGMA user_version = 10');
+        },
+      ),
+    );
+    addTearDown(db.close);
+
+    await db.customSelect('SELECT 1').get();
+
+    final row = await db.select(db.preferences).getSingle();
+    expect(row.leadDays, '1');
+    expect(row.runDays, isNull);
+    await (db.update(db.preferences)..where((p) => p.clubId.equals(1))).write(
+      const PreferencesCompanion(runDays: Value('1,3')),
+    );
+    expect((await db.select(db.preferences).getSingle()).runDays, '1,3');
+  });
+
+  test('a fresh database is created at schema v11', () async {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 9);
+    expect(db.schemaVersion, 11);
     await db.customSelect('SELECT 1').get();
     expect(await db.select(db.sessions).get(), isEmpty);
   });

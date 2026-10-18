@@ -181,13 +181,7 @@ class PushService {
         title: notification.title,
         body: notification.body,
         notificationDetails: NotificationDetails(
-          android: AndroidNotificationDetails(
-            category.key,
-            category.name,
-            channelDescription: category.description,
-            importance: Importance.high,
-            priority: Priority.high,
-          ),
+          android: androidDetails(category),
           iOS: const DarwinNotificationDetails(),
         ),
         payload: jsonEncode(data),

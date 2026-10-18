@@ -2,10 +2,11 @@
 # Build the arm64 release APK and send it to testers with Firebase App Distribution.
 #
 # Usage (from anywhere; run it with Git Bash on Windows):
-#   mobile/scripts/distribute-android.sh [--no-build] [--group NAME] [--notes "text"]
+#   mobile/scripts/distribute-android.sh [--no-build] [--no-bump] [--group NAME] [--notes "text"]
 #
 # Options:
 #   --no-build      Skip `flutter build`; upload the APK that is already built.
+#   --no-bump       Build without increasing the build number first (it is bumped by default).
 #   --group NAME    Tester group alias in Firebase (default: $GROUP, else "testers").
 #   --notes "text"  Release notes (default: $NOTES, else "<version> <git short sha>").
 #   -h, --help      Show this help.
@@ -20,7 +21,7 @@
 set -euo pipefail
 
 usage() {
-  sed -n '2,19p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+  sed -n '2,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
 }
 
 die() {
@@ -35,6 +36,7 @@ cd "$SCRIPT_DIR/.."
 CONFIG="config/prod.json"
 APK="build/app/outputs/flutter-apk/app-arm64-v8a-release.apk"
 BUILD=1
+BUMP=1
 GROUP_NAME="${GROUP:-testers}"
 RELEASE_NOTES="${NOTES:-}"
 
@@ -42,6 +44,10 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --no-build)
       BUILD=0
+      shift
+      ;;
+    --no-bump)
+      BUMP=0
       shift
       ;;
     --group)
@@ -103,6 +109,9 @@ fi
 
 if [ "$BUILD" -eq 1 ]; then
   command -v flutter >/dev/null 2>&1 || die "flutter is not on PATH"
+  if [ "$BUMP" -eq 1 ]; then
+    echo "Bumping the build number: $("$SCRIPT_DIR/bump-version.sh")"
+  fi
   echo "Building the arm64 release APK (config: $CONFIG)..."
   flutter build apk --release --split-per-abi --target-platform android-arm64 \
     --dart-define-from-file="$CONFIG"

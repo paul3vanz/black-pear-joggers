@@ -1,5 +1,6 @@
 import 'package:bpj/core/auth/accounts_controller.dart';
 import 'package:bpj/core/db/app_database.dart';
+import 'package:bpj/features/groups/data/run_preferences_repository.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
 import 'package:bpj/features/messages/data/messages_repository.dart';
@@ -14,6 +15,8 @@ import 'support/fake_api_phase3.dart';
 import 'support/fake_api_phase4.dart';
 import 'support/groups_test_support.dart';
 
+import 'package:bpj/features/runs/logic/my_days.dart';
+
 void main() {
   late AppDatabase db;
 
@@ -23,12 +26,32 @@ void main() {
   String day(int offset) =>
       localDateString(DateTime.now().add(Duration(days: offset)));
 
+  late FakeAdapter adapter;
+
+  // [runDays] / [leadDays] are what `GET /preferences` returns; a PUT echoes
+  // what was sent (and keeps the lead days, as the server would here).
   Future<void> pumpRuns(
     WidgetTester tester, {
     required List<String> roles,
     required List<Map<String, Object?>> sessions,
+    List<int>? runDays,
+    List<int>? leadDays,
   }) async {
-    final adapter = FakeAdapter({
+    Map<String, Object?> prefs(List<int>? run) => {
+      'paceUnit': 'mi',
+      'distanceUnit': 'mi',
+      'runDays': run,
+      'leadDays': leadDays,
+    };
+    adapter = FakeAdapter({
+      'GET /app/clubs/1/preferences': FakeResponse(200, prefs(runDays)),
+      'PUT /app/clubs/1/preferences': () => FakeResponse(
+        200,
+        prefs(
+          ((adapter.requests.last.data as Map)['runDays'] as List?)
+              ?.cast<int>(),
+        ),
+      ),
       'POST /app/clubs/1/link': FakeResponse(200, membershipJson(roles: roles)),
       'GET /app/clubs/1/sessions': FakeResponse(200, {
         'items': sessions,
@@ -62,6 +85,9 @@ void main() {
           runsRepositoryProvider.overrideWithValue(RunsRepository(db, dio)),
           messagesRepositoryProvider.overrideWithValue(
             MessagesRepository(db, dio),
+          ),
+          runPreferencesRepositoryProvider.overrideWithValue(
+            RunPreferencesRepository(db, dio),
           ),
           activeClubIdProvider.overrideWithValue(1),
           activeSubProvider.overrideWithValue('test|sub'),
@@ -108,6 +134,7 @@ void main() {
   testWidgets('groups runs by day with cancelled and changed badges', (
     tester,
   ) async {
+    tallSurface(tester);
     await pumpRuns(tester, roles: [], sessions: sessions);
 
     expect(find.text('Tomorrow'), findsOneWidget);
@@ -194,6 +221,161 @@ void main() {
     expect(find.text('Cancelled'), findsOneWidget);
     expect(find.text('2 groups · 4 going'), findsNothing);
     await unmount(tester);
+  });
+
+  group('days I run (D115)', () {
+    // One run on each of the next seven days, so every weekday occurs once.
+    // Run 1 has my "going", run 2 my "maybe", run 3 has me leading, run 4 my
+    // "can't come".
+    List<Map<String, Object?>> week() => [
+      for (var i = 1; i <= 7; i++)
+        {
+          ...sessionJson('r$i', localDate: day(i), title: 'Run $i'),
+          'groups': <Object?>[],
+          'summary': switch (i) {
+            1 => summaryJson(myStatus: 'going'),
+            2 => summaryJson(myStatus: 'maybe'),
+            3 => summaryJson(myLeading: true),
+            4 => summaryJson(myStatus: 'not_going'),
+            _ => summaryJson(),
+          },
+        },
+    ];
+    int weekday(int offset) =>
+        DateTime.now().add(Duration(days: offset)).weekday;
+    String short(int offset) => weekdayShort[weekday(offset) - 1];
+
+    testWidgets('no choice: every day, with a quiet Choose days', (
+      tester,
+    ) async {
+      tallSurface(tester);
+      await pumpRuns(tester, roles: [], sessions: week());
+      expect(find.text('Showing every day'), findsOneWidget);
+      expect(find.byType(FilterChip), findsNothing);
+      for (var i = 1; i <= 7; i++) {
+        expect(find.text('Run $i'), findsOneWidget);
+      }
+      await unmount(tester);
+    });
+
+    testWidgets('run days hide other days but keep runs I answered or lead', (
+      tester,
+    ) async {
+      tallSurface(tester);
+      await pumpRuns(
+        tester,
+        roles: [],
+        sessions: week(),
+        runDays: [weekday(5)],
+      );
+      expect(find.text('Run days: ${short(5)}'), findsOneWidget);
+      expect(find.text('Run 5'), findsOneWidget);
+      expect(find.text('Run 1'), findsOneWidget); // going
+      expect(find.text('Run 2'), findsOneWidget); // maybe
+      expect(find.text('Run 3'), findsOneWidget); // leading
+      expect(find.text('Run 4'), findsNothing); // can't come
+      expect(find.text('Run 6'), findsNothing);
+      expect(find.text('Run 7'), findsNothing);
+
+      await tester.tap(find.text('Show 3 more'));
+      await tester.pumpAndSettle();
+      for (var i = 1; i <= 7; i++) {
+        expect(find.text('Run $i'), findsOneWidget);
+      }
+      await tester.tap(find.text('Just my days'));
+      await tester.pumpAndSettle();
+      expect(find.text('Run 6'), findsNothing);
+      expect(sent(adapter, 'PUT', '/app/clubs/1/preferences'), isEmpty);
+      await unmount(tester);
+    });
+
+    testWidgets('a lead day also shows on the Runs tab', (tester) async {
+      tallSurface(tester);
+      await pumpRuns(
+        tester,
+        roles: [],
+        sessions: week(),
+        runDays: [weekday(5)],
+        leadDays: [weekday(6)],
+      );
+      expect(find.text('Run 6'), findsOneWidget);
+      expect(find.text('Run 7'), findsNothing);
+      await unmount(tester);
+    });
+
+    testWidgets('Choose days saves runDays; Show every day clears them', (
+      tester,
+    ) async {
+      tallSurface(tester);
+      await pumpRuns(tester, roles: [], sessions: week());
+      await tester.tap(find.text('Choose days'));
+      await tester.pumpAndSettle();
+      expect(find.text('Which days do you usually run?'), findsOneWidget);
+      // Nothing ticked: a run day needs at least one day.
+      final save = find.byKey(const ValueKey('runDaysSave'));
+      expect(tester.widget<FilledButton>(save).onPressed, isNull);
+
+      await tester.tap(find.widgetWithText(FilterChip, short(6)));
+      await tester.pump();
+      await tester.tap(save);
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pumpAndSettle();
+      expect(sent(adapter, 'PUT', '/app/clubs/1/preferences').single.data, {
+        'runDays': [weekday(6)],
+      });
+      expect(find.text('Run days: ${short(6)}'), findsOneWidget);
+      expect(find.text('Run 7'), findsNothing);
+
+      await tester.tap(find.byKey(const ValueKey('runDaysChange')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('runDaysEveryDay')));
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pumpAndSettle();
+      expect(sent(adapter, 'PUT', '/app/clubs/1/preferences').last.data, {
+        'runDays': null,
+      });
+      expect(find.text('Showing every day'), findsOneWidget);
+      expect(find.text('Run 7'), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('dropping a lead day warns that leading stops too', (
+      tester,
+    ) async {
+      tallSurface(tester);
+      await pumpRuns(
+        tester,
+        roles: [],
+        sessions: week(),
+        runDays: [weekday(5), weekday(6)],
+        leadDays: [weekday(6)],
+      );
+      await tester.tap(find.byKey(const ValueKey('runDaysChange')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilterChip, short(6)));
+      await tester.pump();
+      expect(
+        find.text("You'll stop being asked to lead on ${short(6)}."),
+        findsOneWidget,
+      );
+      await unmount(tester);
+    });
+
+    testWidgets('a single weekday and no choice shows no panel', (
+      tester,
+    ) async {
+      await pumpRuns(
+        tester,
+        roles: [],
+        sessions: [sessionJson('a', localDate: day(1), title: 'Only run')],
+      );
+      expect(find.byKey(const ValueKey('runDaysPanel')), findsNothing);
+      await unmount(tester);
+    });
   });
 
   testWidgets('shows an empty state with no upcoming runs', (tester) async {

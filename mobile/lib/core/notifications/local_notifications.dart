@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' show Color;
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -20,9 +21,41 @@ final iosNotificationCategories = <DarwinNotificationCategory>[
   ),
 ];
 
+/// Android notification art (D112), as drawable names in
+/// `android/app/src/main/res` (made by `tool/make_notification_icon.dart`):
+/// a white pear silhouette for the status bar (Android uses only its alpha),
+/// tinted club orange, and the round logo as the large icon.
+const statIcon = 'ic_stat_bpj';
+const largeIconDrawable = 'ic_notification_large';
+const notificationAccent = Color(0xFFF89829);
+
+/// The icon, tint and large icon for every notification the app builds itself
+/// (reminders, foreground messages, the confirmation). The ones the OS shows
+/// from a push's `notification` block use the manifest meta-data instead.
+/// (Dart note: a function returning the pieces beats repeating three named
+/// arguments in each `AndroidNotificationDetails`.)
+AndroidNotificationDetails androidDetails(
+  NotificationCategory category, {
+  List<AndroidNotificationAction>? actions,
+  bool onlyAlertOnce = false,
+  int? timeoutAfter,
+}) => AndroidNotificationDetails(
+  category.key,
+  category.name,
+  channelDescription: category.description,
+  importance: Importance.high,
+  priority: Priority.high,
+  icon: statIcon,
+  color: notificationAccent,
+  largeIcon: const DrawableResourceAndroidBitmap(largeIconDrawable),
+  actions: actions,
+  onlyAlertOnce: onlyAlertOnce,
+  timeoutAfter: timeoutAfter,
+);
+
 /// Shared init settings for the main isolate and the background isolate.
 InitializationSettings localNotificationSettings() => InitializationSettings(
-  android: const AndroidInitializationSettings('@mipmap/ic_launcher'),
+  android: const AndroidInitializationSettings(statIcon),
   iOS: DarwinInitializationSettings(
     requestAlertPermission: false,
     requestBadgePermission: false,
@@ -64,12 +97,8 @@ Future<void> showActionNotification(
     title: n.title,
     body: n.body,
     notificationDetails: NotificationDetails(
-      android: AndroidNotificationDetails(
-        category.key,
-        category.name,
-        channelDescription: category.description,
-        importance: Importance.high,
-        priority: Priority.high,
+      android: androidDetails(
+        category,
         actions: [
           for (final a in n.actions)
             AndroidNotificationAction(
@@ -119,12 +148,8 @@ Future<ActionOutcome?> answerFromNotification(
     title: data['title']?.toString() ?? 'Black Pear Joggers',
     body: confirmationText(action, outcome),
     notificationDetails: NotificationDetails(
-      android: AndroidNotificationDetails(
-        category.key,
-        category.name,
-        channelDescription: category.description,
-        importance: Importance.high,
-        priority: Priority.high,
+      android: androidDetails(
+        category,
         onlyAlertOnce: true,
         timeoutAfter: 15000, // ms; the confirmation tidies itself away
       ),

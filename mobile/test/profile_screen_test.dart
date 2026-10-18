@@ -1,3 +1,4 @@
+import 'package:bpj/app/theme.dart';
 import 'package:bpj/core/auth/account.dart';
 import 'package:bpj/core/auth/accounts_controller.dart';
 import 'package:bpj/core/db/app_database.dart';
@@ -84,7 +85,8 @@ void main() {
             return true;
           }),
         ],
-        child: const MaterialApp(home: ProfileScreen()),
+        // The app theme, so layout bugs from its button sizes show up here.
+        child: MaterialApp(theme: BpjTheme.dark, home: const ProfileScreen()),
       ),
     );
     // Let the Drift streams and the background refresh complete.

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/auth/accounts_controller.dart';
 import '../../core/auth/session_expiry.dart';
 import '../../core/notifications/push_service.dart';
+import '../../core/ui/health_banner.dart';
 import '../events/data/event_locations_repository.dart';
 import '../groups/data/attendance_repository.dart';
 import '../inbox/data/inbox_repository.dart';
@@ -140,7 +141,7 @@ class _AppShellState extends ConsumerState<AppShell>
     final clubId = ref.watch(activeClubIdProvider);
     final unread = ref.watch(unreadCountProvider(clubId)).value ?? 0;
     return Scaffold(
-      body: widget.shell,
+      body: HealthBannerScope(child: widget.shell),
       bottomNavigationBar: NavigationBar(
         selectedIndex: widget.shell.currentIndex,
         onDestinationSelected: (i) => widget.shell.goBranch(

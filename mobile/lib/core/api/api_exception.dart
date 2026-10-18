@@ -13,6 +13,7 @@ class ApiException implements Exception {
     required this.message,
     this.isNetworkError = false,
     this.fieldErrors = const {},
+    this.body = const {},
   });
 
   /// HTTP status, or null when the request never got a response.
@@ -30,11 +31,23 @@ class ApiException implements Exception {
   /// `{label: 'The label field is required.'}`. Empty for other errors.
   final Map<String, String> fieldErrors;
 
+  /// The raw JSON error body, for extra fields such as a 409's `groupId`.
+  /// Empty when the response had no JSON object.
+  final Map<String, Object?> body;
+
   bool get isSessionExpired => code == 'session_expired';
 
   /// Converts anything thrown by a dio call into an [ApiException].
   factory ApiException.from(Object error) {
     if (error is ApiException) return error;
+    if (error is AuthRenewalException) {
+      return ApiException(
+        message: error.isNetworkError
+            ? 'Could not reach the server. Check your connection.'
+            : 'Could not refresh your sign-in. Please try again.',
+        isNetworkError: error.isNetworkError,
+      );
+    }
     if (error is DioException) {
       final inner = error.error;
       if (inner is ApiException) return inner;
@@ -81,6 +94,7 @@ class ApiException implements Exception {
       // An unknown low-level failure (e.g. socket closed) is also treated as offline.
       isNetworkError: status == null && e.type == DioExceptionType.unknown,
       fieldErrors: fieldErrors,
+      body: data is Map ? Map<String, Object?>.from(data) : const {},
     );
   }
 

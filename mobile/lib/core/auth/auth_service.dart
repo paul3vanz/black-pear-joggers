@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auth0_flutter/auth0_flutter.dart' as auth0_sdk;
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -19,6 +21,21 @@ class SessionExpiredException implements Exception {
   String toString() => 'SessionExpiredException(sub: $sub)';
 }
 
+/// Thrown when renewing the access token failed for a reason that does NOT mean
+/// the session is dead: no network, Auth0 5xx or 429, or an unexpected local error
+/// (a platform exception, say). The caller shows a retryable error and keeps the
+/// account. [isNetworkError] says whether to word it as "offline".
+class AuthRenewalException implements Exception {
+  const AuthRenewalException({required this.isNetworkError, this.cause});
+
+  final bool isNetworkError;
+  final Object? cause;
+
+  @override
+  String toString() =>
+      'AuthRenewalException(network: $isNetworkError, cause: $cause)';
+}
+
 /// Thrown when sign-in is attempted before the Auth0 Native app id is configured.
 class AuthNotConfiguredException implements Exception {
   const AuthNotConfiguredException();
@@ -34,10 +51,13 @@ class LoginCancelledException implements Exception {
 /// Talks to Auth0 and keeps [AccountStore] up to date. The UI never touches tokens
 /// directly: the API client asks [getValidAccessToken] for one per request.
 class AuthService {
-  AuthService(this._store, {this._auth0});
+  /// [isConfigured] defaults to [Env.isAuth0Configured]; tests override it.
+  AuthService(this._store, {this._auth0, bool? isConfigured})
+    : _isConfigured = isConfigured ?? Env.isAuth0Configured;
 
   final AccountStore _store;
   auth0_sdk.Auth0? _auth0;
+  final bool _isConfigured;
 
   /// Renewals in flight, per account. Auth0 refresh tokens rotate, so two parallel
   /// renewals would invalidate each other: share one future instead
@@ -46,6 +66,7 @@ class AuthService {
 
   static const _scopes = {'openid', 'profile', 'email', 'offline_access'};
   static const _renewMargin = Duration(seconds: 60);
+  static const _renewTimeout = Duration(seconds: 30);
 
   auth0_sdk.Auth0 get _client =>
       _auth0 ??= auth0_sdk.Auth0(Env.auth0Domain, Env.auth0ClientId);
@@ -143,36 +164,80 @@ class AuthService {
     if (!forceRenew && !stored.isExpiringWithin(_renewMargin)) {
       return stored.accessToken;
     }
-    final renewed = await (_renewals[sub] ??= _renew(
-      sub,
-      stored,
-    ).whenComplete(() => _renewals.remove(sub)));
+    final renewed = await _renewShared(sub, stored);
     return renewed.accessToken;
+  }
+
+  /// One renewal per account at a time: callers that arrive while it runs share
+  /// its result (or its failure).
+  ///
+  /// The entry is removed in a separate `then`, NOT with
+  /// `_renew(..).whenComplete(() => _renewals.remove(sub))`: that callback
+  /// returns the map entry, which is the very future `whenComplete` is about to
+  /// complete, so it waited for itself forever. Every request that needed a
+  /// renewal then hung before reaching the network, with no error to route the
+  /// user to sign-in (D103).
+  Future<StoredCredentials> _renewShared(String sub, StoredCredentials stored) {
+    final running = _renewals[sub];
+    if (running != null) return running;
+    final renewal = _renew(sub, stored);
+    _renewals[sub] = renewal;
+    // Block bodies on purpose: an arrow would return the removed future, which
+    // would then be awaited (and rethrow its error) by this derived future.
+    renewal.then<void>(
+      (_) {
+        _renewals.remove(sub);
+      },
+      onError: (Object _) {
+        _renewals.remove(sub);
+      },
+    );
+    return renewal;
   }
 
   Future<StoredCredentials> _renew(String sub, StoredCredentials old) async {
     final refreshToken = old.refreshToken;
-    if (refreshToken == null || !Env.isAuth0Configured) {
+    if (refreshToken == null || !_isConfigured) {
       throw SessionExpiredException(sub);
     }
+    final StoredCredentials updated;
     try {
-      final fresh = await _client.api.renewCredentials(
-        refreshToken: refreshToken,
-      );
-      final updated = StoredCredentials(
+      final fresh = await _client.api
+          .renewCredentials(refreshToken: refreshToken)
+          // A platform call that never answers must not hang every request.
+          .timeout(_renewTimeout);
+      updated = StoredCredentials(
         accessToken: fresh.accessToken,
         // Rotation may or may not return a new refresh token: keep the old one if not.
         refreshToken: fresh.refreshToken ?? refreshToken,
         expiresAt: fresh.expiresAt,
         idToken: fresh.idToken,
       );
-      await _store.writeCredentials(sub, updated);
-      return updated;
     } on auth0_sdk.ApiException catch (e) {
-      // Network trouble isn't a dead session: let the caller see it and retry later.
-      if (e.isNetworkError) rethrow;
+      // Network trouble, a 429, an Auth0 outage or a failure with no HTTP
+      // status at all (statusCode 0: it never got an answer) isn't a dead
+      // session: the caller shows a retryable error and the account stays (D103).
+      // Only an answer in the 4xx range (invalid_grant and friends) ends it.
+      if (e.isNetworkError ||
+          e.statusCode == 0 ||
+          e.statusCode >= 500 ||
+          e.statusCode == 429) {
+        throw AuthRenewalException(isNetworkError: e.isNetworkError, cause: e);
+      }
       throw SessionExpiredException(sub);
+    } on TimeoutException catch (e) {
+      throw AuthRenewalException(isNetworkError: true, cause: e);
+    } on Object catch (e) {
+      // Anything else (a platform exception, a malformed reply) is a local
+      // failure, not proof that the refresh token is bad.
+      throw AuthRenewalException(isNetworkError: false, cause: e);
     }
+    try {
+      await _store.writeCredentials(sub, updated);
+    } on Object {
+      // The new token is good for this session even if it can't be saved.
+    }
+    return updated;
   }
 
   /// Signs [sub] out of this device. The Auth0 browser session is only cleared when it
@@ -180,7 +245,7 @@ class AuthService {
   Future<void> logout(String sub) async {
     await _store.removeAccount(sub);
     final remaining = await _store.readAccounts();
-    if (remaining.isEmpty && Env.isAuth0Configured) {
+    if (remaining.isEmpty && _isConfigured) {
       try {
         await _client
             .webAuthentication(

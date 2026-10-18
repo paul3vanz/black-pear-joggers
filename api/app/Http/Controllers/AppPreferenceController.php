@@ -8,7 +8,7 @@ use App\Services\NotificationPresenter;
 use Illuminate\Http\Request;
 
 /**
- * The caller's units and usual pace range, per club (Phase 4).
+ * The caller's units, usual pace range and the days they run and may lead, per club (Phase 4, D107, D115).
  */
 class AppPreferenceController extends Controller
 {
@@ -21,6 +21,8 @@ class AppPreferenceController extends Controller
             'distanceUnit' => $pref ? $pref->distance_unit : 'mi',
             'paceFromS' => $pref && $pref->pace_from_s !== null ? (int) $pref->pace_from_s : null,
             'paceToS' => $pref && $pref->pace_to_s !== null ? (int) $pref->pace_to_s : null,
+            'leadDays' => $pref ? MemberPreference::parseDays($pref->lead_days) : null,
+            'runDays' => $pref ? MemberPreference::parseDays($pref->run_days) : null,
             'updatedAt' => $pref ? NotificationPresenter::time($pref->updated_at) : null,
         ];
     }
@@ -29,7 +31,7 @@ class AppPreferenceController extends Controller
      * @OA\Get(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/preferences",
-     *   summary="The caller's pace/distance units and pace range (defaults mi/mi, no range).",
+     *   summary="The caller's pace/distance units, pace range, runDays and leadDays (defaults mi/mi, no range, both day lists null).",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=200, description="Preferences"),
      * )
@@ -47,7 +49,7 @@ class AppPreferenceController extends Controller
      * @OA\Put(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/preferences",
-     *   summary="Save the caller's preferences. null clears the range; changing paceUnit without a range clears it.",
+     *   summary="Save the caller's preferences. null clears the range; changing paceUnit without a range clears it. runDays and leadDays (lists of ISO weekdays 1-7, null = never chosen, [] = none) set the days the caller runs and may lead; lead days are kept inside run days (saving leadDays adds them to runDays, saving only runDays drops lead days outside it).",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=200, description="Saved preferences"),
      *   @OA\Response(response=422, description="Validation error"),
@@ -67,6 +69,18 @@ class AppPreferenceController extends Controller
 
         if ($validator->fails()) {
             return $this->validationFailed($validator);
+        }
+
+        $days = [];
+        foreach (['runDays', 'leadDays'] as $field) {
+            if (!$request->has($field)) {
+                continue;
+            }
+            $raw = $request->input($field);
+            if ($raw !== null && !$this->isWeekdayList($raw)) {
+                return $this->invalidField($field, "$field must be a list of weekdays (1 = Monday to 7 = Sunday), or null.");
+            }
+            $days[$field] = $raw === null ? null : array_values($raw);
         }
 
         $pref = MemberPreference::firstOrNew(['club_id' => $club->id, 'member_id' => $member->id]);
@@ -93,9 +107,50 @@ class AppPreferenceController extends Controller
         $pref->distance_unit = $request->input('distanceUnit', $pref->distance_unit);
         $pref->pace_from_s = $from !== null ? (int) $from : null;
         $pref->pace_to_s = $to !== null ? (int) $to : null;
+        if ($days) {
+            [$run, $lead] = $this->alignDays(
+                array_key_exists('runDays', $days) ? $days['runDays'] : MemberPreference::parseDays($pref->run_days),
+                array_key_exists('leadDays', $days) ? $days['leadDays'] : MemberPreference::parseDays($pref->lead_days),
+                array_key_exists('leadDays', $days)
+            );
+            $pref->run_days = MemberPreference::formatDays($run);
+            $pref->lead_days = MemberPreference::formatDays($lead);
+        }
         $pref->updated_at = \Illuminate\Support\Carbon::now();
         $pref->save();
 
         return response()->json($this->body($pref->fresh()));
+    }
+
+    private function isWeekdayList($raw): bool
+    {
+        if (!is_array($raw) || !array_is_list($raw)) {
+            return false;
+        }
+        foreach ($raw as $d) {
+            if (!is_int($d) || $d < 1 || $d > 7) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Keeps the days you may lead inside the days you run (you are there when you lead), when both
+     * are chosen (D115). The list just saved wins: new lead days are added to the run days, and
+     * run days saved on their own drop the lead days they no longer include.
+     *
+     * @return array{0: ?array, 1: ?array} run days, lead days
+     */
+    private function alignDays(?array $run, ?array $lead, bool $leadSaved): array
+    {
+        if ($run === null || $lead === null) {
+            return [$run, $lead];
+        }
+
+        return $leadSaved
+            ? [array_values(array_unique(array_merge($run, $lead))), $lead]
+            : [$run, array_values(array_intersect($lead, $run))];
     }
 }

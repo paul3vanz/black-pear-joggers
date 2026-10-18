@@ -41,22 +41,33 @@ class AccountsController extends _$AccountsController {
   @override
   Future<AccountsState> build() => _load();
 
+  /// Never throws: if secure storage can't be read at all (decryption failure
+  /// and the like) the app starts signed out and shows the sign-in screen. An
+  /// `AsyncError` here would leave the router on `/splash` forever (D104).
   Future<AccountsState> _load() async {
-    final accounts = await _store.readAccounts();
-    var activeSub = await _store.readActiveSub();
-    // Heal inconsistent storage: the active account must be one we actually have.
-    if (activeSub == null || !accounts.any((a) => a.sub == activeSub)) {
-      activeSub = accounts.isEmpty ? null : accounts.first.sub;
-      await _store.writeActiveSub(activeSub);
+    try {
+      final accounts = await _store.readAccounts();
+      var activeSub = await _store.readActiveSub();
+      // Heal inconsistent storage: the active account must be one we actually have.
+      if (activeSub == null || !accounts.any((a) => a.sub == activeSub)) {
+        activeSub = accounts.isEmpty ? null : accounts.first.sub;
+        try {
+          await _store.writeActiveSub(activeSub);
+        } on Object {
+          // Healing is best effort; the in-memory state below is right anyway.
+        }
+      }
+      final clubId = activeSub == null
+          ? null
+          : await _store.readActiveClubId(activeSub) ?? Env.clubId;
+      return AccountsState(
+        accounts: accounts,
+        activeSub: activeSub,
+        activeClubId: clubId,
+      );
+    } on Object {
+      return const AccountsState(accounts: []);
     }
-    final clubId = activeSub == null
-        ? null
-        : await _store.readActiveClubId(activeSub) ?? Env.clubId;
-    return AccountsState(
-      accounts: accounts,
-      activeSub: activeSub,
-      activeClubId: clubId,
-    );
   }
 
   Future<void> _reload() async => state = AsyncData(await _load());

@@ -20,6 +20,7 @@ class GroupCard extends StatefulWidget {
     this.onJoin,
     this.onLeave,
     this.onLeadToo,
+    this.leadHint,
     this.onStepDown,
     this.onEdit,
     this.onDelete,
@@ -40,6 +41,11 @@ class GroupCard extends StatefulWidget {
   final VoidCallback? onJoin;
   final VoidCallback? onLeave;
   final VoidCallback? onLeadToo;
+
+  /// Shown instead of "I'll lead this group too" when the caller already
+  /// leads another group of this run (D108), e.g. "You're already leading the
+  /// Tempo group".
+  final String? leadHint;
   final VoidCallback? onStepDown;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
@@ -204,6 +210,11 @@ class _GroupCardState extends State<GroupCard> {
                     ),
                   ],
                 ),
+              ),
+            if (widget.leadHint != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(widget.leadHint!, style: muted),
               ),
             if (widget.onJoin != null ||
                 widget.onLeave != null ||

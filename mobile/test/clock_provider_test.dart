@@ -2,6 +2,7 @@ import 'package:bpj/core/auth/accounts_controller.dart';
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/util/clock.dart';
 import 'package:bpj/core/util/relative_time.dart';
+import 'package:bpj/features/groups/data/run_preferences_repository.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
 import 'package:bpj/features/messages/data/messages_repository.dart';
@@ -187,6 +188,9 @@ void main() {
             ),
             messagesRepositoryProvider.overrideWithValue(
               MessagesRepository(db, dio),
+            ),
+            runPreferencesRepositoryProvider.overrideWithValue(
+              RunPreferencesRepository(db, dio),
             ),
             activeClubIdProvider.overrideWithValue(1),
             activeSubProvider.overrideWithValue('test|sub'),

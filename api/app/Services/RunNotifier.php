@@ -71,7 +71,7 @@ class RunNotifier
 
     /**
      * The last leader of a group stepped down, so it needs one (D36). Its attendees get a
-     * locked notice; `leader`-role members whose pace fits get "leaders needed".
+     * locked notice; members who may lead that day (LeaderAudience, D106) whose pace fits get "leaders needed".
      */
     public function leaderWithdrawn(SessionGroup $group, ?string $actorId = null): void
     {
@@ -193,13 +193,17 @@ class RunNotifier
         $leaders = SessionGroupLeader::where('group_id', $group->id)->where('status', SessionGroupLeader::CONFIRMED)->pluck('member_id')->all();
 
         $ids = [];
+        $weekday = app(LeaderAudience::class)->weekday($session, $this->tz($club));
+
         foreach ($this->activeIds($club, ClubMember::where('club_id', $club->id)->pluck('id'), $actorId) as $id) {
             $answer = $attendees->get($id);
             $pref = $prefs->get($id);
 
+            // Without an answer, only runs on the member's days (D115); going or maybe always counts.
             if (in_array($id, $leaders, true)
                 || ($answer && $answer->status === SessionAttendee::NOT_GOING)
                 || ($answer && $answer->group_id === $group->id)
+                || (!$answer && !MemberPreference::runsOn($pref, $weekday))
                 || !PaceMatcher::memberFitsGroup($answer, $pref, $group)) {
                 continue;
             }
@@ -343,7 +347,8 @@ class RunNotifier
     }
 
     /**
-     * `leader`-role active members who could lead $group (or any needy group in the run): not
+     * Active members who may lead (LeaderAudience: their chosen days, else series history, else a
+     * brand-new `leader`) $group (or any needy group in the run): not
      * leading anything in the run, not "not going", and whose pace fits the group's (or who
      * have no pace, or whose group has none).
      *
@@ -359,11 +364,14 @@ class RunNotifier
         $prefs = MemberPreference::where('club_id', $club->id)->get()->keyBy('member_id');
         $groupBand = $group ? PaceMatcher::groupBand($group) : null;
 
+        $members = ClubMember::where('club_id', $club->id)->where('status', 'active')->get();
+        $mayLead = array_flip(app(LeaderAudience::class)->candidates($session, $this->tz($club), $members));
+
         $ids = [];
-        foreach (ClubMember::where('club_id', $club->id)->where('status', 'active')->get() as $member) {
+        foreach ($members as $member) {
             $answer = $answers->get($member->id);
 
-            if (!$member->hasRole('leader')
+            if (!isset($mayLead[$member->id])
                 || in_array($member->id, $exclude, true)
                 || in_array($member->id, $leading, true)
                 || ($answer && $answer->status === SessionAttendee::NOT_GOING)) {

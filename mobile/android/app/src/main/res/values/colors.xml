@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#FFFFFF</color>
+    <!-- Club orange: tints the notification small icon (D112). -->
+    <color name="notification_accent">#F89829</color>
 </resources>

@@ -19,6 +19,7 @@ Future<bool> runWrite(
   Future<Object?> Function() action, {
   String? success,
   String Function(Object error)? errorMessage,
+  SnackBarAction? Function(Object error)? errorAction,
 }) async {
   final messenger = ScaffoldMessenger.of(context);
   final sub = ref.read(activeSubProvider);
@@ -28,7 +29,10 @@ Future<bool> runWrite(
   } on Object catch (e) {
     if (sub != null && await handleExpiry(sub, e)) return false;
     messenger.showSnackBar(
-      SnackBar(content: Text((errorMessage ?? runsErrorMessage)(e))),
+      SnackBar(
+        content: Text((errorMessage ?? runsErrorMessage)(e)),
+        action: errorAction?.call(e),
+      ),
     );
     return false;
   }

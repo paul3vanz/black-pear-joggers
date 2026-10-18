@@ -374,6 +374,33 @@ void main() {
       await unmount(tester);
     });
 
+    testWidgets('other groups of the run offer nothing, and say why (D108)', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        groups: [mineLed, fast],
+        summary: summaryJson(
+          groupCount: 2,
+          myStatus: 'going',
+          myGroupId: 'mine',
+          myLeading: true,
+        ),
+      );
+      expect(find.text("I'll lead this group too"), findsNothing);
+      expect(find.textContaining("You're already leading the"), findsOneWidget);
+      expect(find.text('Lead a group'), findsNothing);
+      await unmount(tester);
+    });
+
+    testWidgets('someone not leading still sees the offers', (tester) async {
+      await pumpDetail(tester, groups: [fast]);
+      expect(find.text("I'll lead this group too"), findsOneWidget);
+      expect(find.textContaining("You're already leading"), findsNothing);
+      expect(find.text('Lead a group'), findsOneWidget);
+      await unmount(tester);
+    });
+
     testWidgets('even before the attendance row catches up', (tester) async {
       await pumpDetail(tester, groups: [mineLed]);
       expect(find.text('Join this group'), findsNothing);
@@ -400,7 +427,7 @@ void main() {
       await unmount(tester);
     });
 
-    testWidgets('after stepping down I am still in it and can leave', (
+    testWidgets('a member (not a leader) is in the group and can leave', (
       tester,
     ) async {
       final withMe = groupJson(

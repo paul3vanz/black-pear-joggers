@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../core/auth/accounts_controller.dart';
+import '../core/diagnostics/db_guard.dart';
 import '../features/auth/ui/sign_in_screen.dart';
 import '../features/events/ui/event_locations_screen.dart';
 import '../features/groups/ui/group_editor_screen.dart';
@@ -17,6 +18,8 @@ import '../features/members/ui/my_profile_card_screen.dart';
 import '../features/messages/ui/chat_screen.dart';
 import '../features/profile/ui/about_screen.dart';
 import '../features/profile/ui/delete_account_screen.dart';
+import '../features/profile/ui/diagnostics_screen.dart';
+import '../features/profile/ui/recover_screen.dart';
 import '../features/profile/ui/profile_screen.dart';
 import '../features/runs/ui/runs_screen.dart';
 import '../features/runs/ui/series_screens.dart';
@@ -40,6 +43,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 /// like an auth guard in Next.js middleware:
 ///   * accounts (or the first `/app/me` refresh) still loading -> `/splash`
 ///   * nobody signed in                                         -> `/sign-in`
+///   * the database failed its first check (twice)              -> `/recover`
 ///   * signed in, active club has no membership                 -> `/link`
 ///   * first load failed with nothing cached                    -> `/unavailable`
 ///   * linked                                                   -> `/runs`
@@ -50,7 +54,8 @@ GoRouter router(Ref ref) {
   final refresh = ValueNotifier<int>(0);
   ref
     ..listen(accountsControllerProvider, (_, _) => refresh.value++)
-    ..listen(linkStatusProvider, (_, _) => refresh.value++);
+    ..listen(linkStatusProvider, (_, _) => refresh.value++)
+    ..listen(dbGuardProvider, (_, _) => refresh.value++);
   ref.onDispose(refresh.dispose);
 
   final router = GoRouter(
@@ -65,6 +70,15 @@ GoRouter router(Ref ref) {
 
       if (!accounts.hasValue) return only('/splash');
       if (accounts.requireValue.activeSub == null) return only('/sign-in');
+
+      // The database must prove it can answer a query before any screen reads
+      // it (D101). `/recover` is the way out when it can't, even after a reset.
+      final guard = ref.read(dbGuardProvider);
+      if (guard.hasError || guard.value == DbGuardResult.failed) {
+        return only('/recover');
+      }
+      if (!guard.hasValue) return only('/splash');
+      if (location == '/recover') return '/';
 
       return switch (ref.read(linkStatusProvider)) {
         LinkStatus.unknown => only('/splash'),
@@ -259,6 +273,11 @@ GoRouter router(Ref ref) {
                         parentNavigatorKey: rootNavigatorKey,
                         builder: (_, _) => const DeleteAccountScreen(),
                       ),
+                      GoRoute(
+                        path: 'diagnostics',
+                        parentNavigatorKey: rootNavigatorKey,
+                        builder: (_, _) => const DiagnosticsScreen(),
+                      ),
                     ],
                   ),
                 ],
@@ -274,6 +293,9 @@ GoRouter router(Ref ref) {
         builder: (_, state) =>
             MemberProfileScreen(memberId: state.pathParameters['memberId']!),
       ),
+      // Outside the shell and with no database access: shown when the saved
+      // data can't be opened even after the automatic repair (D101).
+      GoRoute(path: '/recover', builder: (_, _) => const RecoverScreen()),
       GoRoute(path: '/link', builder: (_, _) => const LinkScreen()),
       GoRoute(path: '/sign-in', builder: (_, _) => const SignInScreen()),
       GoRoute(

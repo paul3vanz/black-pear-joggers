@@ -6901,6 +6901,28 @@ class $PreferencesTable extends Preferences
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _leadDaysMeta = const VerificationMeta(
+    'leadDays',
+  );
+  @override
+  late final GeneratedColumn<String> leadDays = GeneratedColumn<String>(
+    'lead_days',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _runDaysMeta = const VerificationMeta(
+    'runDays',
+  );
+  @override
+  late final GeneratedColumn<String> runDays = GeneratedColumn<String>(
+    'run_days',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -6919,6 +6941,8 @@ class $PreferencesTable extends Preferences
     distanceUnit,
     paceFromS,
     paceToS,
+    leadDays,
+    runDays,
     updatedAt,
   ];
   @override
@@ -6970,6 +6994,18 @@ class $PreferencesTable extends Preferences
         paceToS.isAcceptableOrUnknown(data['pace_to_s']!, _paceToSMeta),
       );
     }
+    if (data.containsKey('lead_days')) {
+      context.handle(
+        _leadDaysMeta,
+        leadDays.isAcceptableOrUnknown(data['lead_days']!, _leadDaysMeta),
+      );
+    }
+    if (data.containsKey('run_days')) {
+      context.handle(
+        _runDaysMeta,
+        runDays.isAcceptableOrUnknown(data['run_days']!, _runDaysMeta),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -7005,6 +7041,14 @@ class $PreferencesTable extends Preferences
         DriftSqlType.int,
         data['${effectivePrefix}pace_to_s'],
       ),
+      leadDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lead_days'],
+      ),
+      runDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}run_days'],
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -7025,6 +7069,15 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
   final int? paceFromS;
   final int? paceToS;
 
+  /// "Days I may lead" (D107): comma-separated ISO weekdays (`2,4`, Monday = 1).
+  /// Null = never chosen, empty string = chose none. The server owns it; this is
+  /// a cache (D111).
+  final String? leadDays;
+
+  /// "Days I run" (D115), the same encoding as [leadDays]. Null = never chosen
+  /// (every day). Hides runs on other days on the Runs tab.
+  final String? runDays;
+
   /// Null until the server has stored them.
   final DateTime? updatedAt;
   const RunPreferences({
@@ -7033,6 +7086,8 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
     required this.distanceUnit,
     this.paceFromS,
     this.paceToS,
+    this.leadDays,
+    this.runDays,
     this.updatedAt,
   });
   @override
@@ -7046,6 +7101,12 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
     }
     if (!nullToAbsent || paceToS != null) {
       map['pace_to_s'] = Variable<int>(paceToS);
+    }
+    if (!nullToAbsent || leadDays != null) {
+      map['lead_days'] = Variable<String>(leadDays);
+    }
+    if (!nullToAbsent || runDays != null) {
+      map['run_days'] = Variable<String>(runDays);
     }
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -7064,6 +7125,12 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
       paceToS: paceToS == null && nullToAbsent
           ? const Value.absent()
           : Value(paceToS),
+      leadDays: leadDays == null && nullToAbsent
+          ? const Value.absent()
+          : Value(leadDays),
+      runDays: runDays == null && nullToAbsent
+          ? const Value.absent()
+          : Value(runDays),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(updatedAt),
@@ -7081,6 +7148,8 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
       distanceUnit: serializer.fromJson<String>(json['distanceUnit']),
       paceFromS: serializer.fromJson<int?>(json['paceFromS']),
       paceToS: serializer.fromJson<int?>(json['paceToS']),
+      leadDays: serializer.fromJson<String?>(json['leadDays']),
+      runDays: serializer.fromJson<String?>(json['runDays']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
   }
@@ -7093,6 +7162,8 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
       'distanceUnit': serializer.toJson<String>(distanceUnit),
       'paceFromS': serializer.toJson<int?>(paceFromS),
       'paceToS': serializer.toJson<int?>(paceToS),
+      'leadDays': serializer.toJson<String?>(leadDays),
+      'runDays': serializer.toJson<String?>(runDays),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
   }
@@ -7103,6 +7174,8 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
     String? distanceUnit,
     Value<int?> paceFromS = const Value.absent(),
     Value<int?> paceToS = const Value.absent(),
+    Value<String?> leadDays = const Value.absent(),
+    Value<String?> runDays = const Value.absent(),
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => RunPreferences(
     clubId: clubId ?? this.clubId,
@@ -7110,6 +7183,8 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
     distanceUnit: distanceUnit ?? this.distanceUnit,
     paceFromS: paceFromS.present ? paceFromS.value : this.paceFromS,
     paceToS: paceToS.present ? paceToS.value : this.paceToS,
+    leadDays: leadDays.present ? leadDays.value : this.leadDays,
+    runDays: runDays.present ? runDays.value : this.runDays,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
   RunPreferences copyWithCompanion(PreferencesCompanion data) {
@@ -7121,6 +7196,8 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
           : this.distanceUnit,
       paceFromS: data.paceFromS.present ? data.paceFromS.value : this.paceFromS,
       paceToS: data.paceToS.present ? data.paceToS.value : this.paceToS,
+      leadDays: data.leadDays.present ? data.leadDays.value : this.leadDays,
+      runDays: data.runDays.present ? data.runDays.value : this.runDays,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -7133,6 +7210,8 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
           ..write('distanceUnit: $distanceUnit, ')
           ..write('paceFromS: $paceFromS, ')
           ..write('paceToS: $paceToS, ')
+          ..write('leadDays: $leadDays, ')
+          ..write('runDays: $runDays, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -7145,6 +7224,8 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
     distanceUnit,
     paceFromS,
     paceToS,
+    leadDays,
+    runDays,
     updatedAt,
   );
   @override
@@ -7156,6 +7237,8 @@ class RunPreferences extends DataClass implements Insertable<RunPreferences> {
           other.distanceUnit == this.distanceUnit &&
           other.paceFromS == this.paceFromS &&
           other.paceToS == this.paceToS &&
+          other.leadDays == this.leadDays &&
+          other.runDays == this.runDays &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -7165,6 +7248,8 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
   final Value<String> distanceUnit;
   final Value<int?> paceFromS;
   final Value<int?> paceToS;
+  final Value<String?> leadDays;
+  final Value<String?> runDays;
   final Value<DateTime?> updatedAt;
   const PreferencesCompanion({
     this.clubId = const Value.absent(),
@@ -7172,6 +7257,8 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
     this.distanceUnit = const Value.absent(),
     this.paceFromS = const Value.absent(),
     this.paceToS = const Value.absent(),
+    this.leadDays = const Value.absent(),
+    this.runDays = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
   PreferencesCompanion.insert({
@@ -7180,6 +7267,8 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
     required String distanceUnit,
     this.paceFromS = const Value.absent(),
     this.paceToS = const Value.absent(),
+    this.leadDays = const Value.absent(),
+    this.runDays = const Value.absent(),
     this.updatedAt = const Value.absent(),
   }) : paceUnit = Value(paceUnit),
        distanceUnit = Value(distanceUnit);
@@ -7189,6 +7278,8 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
     Expression<String>? distanceUnit,
     Expression<int>? paceFromS,
     Expression<int>? paceToS,
+    Expression<String>? leadDays,
+    Expression<String>? runDays,
     Expression<DateTime>? updatedAt,
   }) {
     return RawValuesInsertable({
@@ -7197,6 +7288,8 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
       if (distanceUnit != null) 'distance_unit': distanceUnit,
       if (paceFromS != null) 'pace_from_s': paceFromS,
       if (paceToS != null) 'pace_to_s': paceToS,
+      if (leadDays != null) 'lead_days': leadDays,
+      if (runDays != null) 'run_days': runDays,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
   }
@@ -7207,6 +7300,8 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
     Value<String>? distanceUnit,
     Value<int?>? paceFromS,
     Value<int?>? paceToS,
+    Value<String?>? leadDays,
+    Value<String?>? runDays,
     Value<DateTime?>? updatedAt,
   }) {
     return PreferencesCompanion(
@@ -7215,6 +7310,8 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
       distanceUnit: distanceUnit ?? this.distanceUnit,
       paceFromS: paceFromS ?? this.paceFromS,
       paceToS: paceToS ?? this.paceToS,
+      leadDays: leadDays ?? this.leadDays,
+      runDays: runDays ?? this.runDays,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
@@ -7237,6 +7334,12 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
     if (paceToS.present) {
       map['pace_to_s'] = Variable<int>(paceToS.value);
     }
+    if (leadDays.present) {
+      map['lead_days'] = Variable<String>(leadDays.value);
+    }
+    if (runDays.present) {
+      map['run_days'] = Variable<String>(runDays.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -7251,6 +7354,8 @@ class PreferencesCompanion extends UpdateCompanion<RunPreferences> {
           ..write('distanceUnit: $distanceUnit, ')
           ..write('paceFromS: $paceFromS, ')
           ..write('paceToS: $paceToS, ')
+          ..write('leadDays: $leadDays, ')
+          ..write('runDays: $runDays, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -13675,6 +13780,8 @@ typedef $$PreferencesTableCreateCompanionBuilder =
       required String distanceUnit,
       Value<int?> paceFromS,
       Value<int?> paceToS,
+      Value<String?> leadDays,
+      Value<String?> runDays,
       Value<DateTime?> updatedAt,
     });
 typedef $$PreferencesTableUpdateCompanionBuilder =
@@ -13684,6 +13791,8 @@ typedef $$PreferencesTableUpdateCompanionBuilder =
       Value<String> distanceUnit,
       Value<int?> paceFromS,
       Value<int?> paceToS,
+      Value<String?> leadDays,
+      Value<String?> runDays,
       Value<DateTime?> updatedAt,
     });
 
@@ -13718,6 +13827,16 @@ class $$PreferencesTableFilterComposer
 
   ColumnFilters<int> get paceToS => $composableBuilder(
     column: $table.paceToS,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get leadDays => $composableBuilder(
+    column: $table.leadDays,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get runDays => $composableBuilder(
+    column: $table.runDays,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13761,6 +13880,16 @@ class $$PreferencesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get leadDays => $composableBuilder(
+    column: $table.leadDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get runDays => $composableBuilder(
+    column: $table.runDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -13792,6 +13921,12 @@ class $$PreferencesTableAnnotationComposer
 
   GeneratedColumn<int> get paceToS =>
       $composableBuilder(column: $table.paceToS, builder: (column) => column);
+
+  GeneratedColumn<String> get leadDays =>
+      $composableBuilder(column: $table.leadDays, builder: (column) => column);
+
+  GeneratedColumn<String> get runDays =>
+      $composableBuilder(column: $table.runDays, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -13833,6 +13968,8 @@ class $$PreferencesTableTableManager
                 Value<String> distanceUnit = const Value.absent(),
                 Value<int?> paceFromS = const Value.absent(),
                 Value<int?> paceToS = const Value.absent(),
+                Value<String?> leadDays = const Value.absent(),
+                Value<String?> runDays = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => PreferencesCompanion(
                 clubId: clubId,
@@ -13840,6 +13977,8 @@ class $$PreferencesTableTableManager
                 distanceUnit: distanceUnit,
                 paceFromS: paceFromS,
                 paceToS: paceToS,
+                leadDays: leadDays,
+                runDays: runDays,
                 updatedAt: updatedAt,
               ),
           createCompanionCallback:
@@ -13849,6 +13988,8 @@ class $$PreferencesTableTableManager
                 required String distanceUnit,
                 Value<int?> paceFromS = const Value.absent(),
                 Value<int?> paceToS = const Value.absent(),
+                Value<String?> leadDays = const Value.absent(),
+                Value<String?> runDays = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
               }) => PreferencesCompanion.insert(
                 clubId: clubId,
@@ -13856,6 +13997,8 @@ class $$PreferencesTableTableManager
                 distanceUnit: distanceUnit,
                 paceFromS: paceFromS,
                 paceToS: paceToS,
+                leadDays: leadDays,
+                runDays: runDays,
                 updatedAt: updatedAt,
               ),
           withReferenceMapper: (p0) => p0
@@ -15610,4 +15753,4 @@ final class AppDatabaseProvider
   }
 }
 
-String _$appDatabaseHash() => r'c53f99994ee018e22e8a8b76414168e87ed384fb';
+String _$appDatabaseHash() => r'653831fd611665bbab1553f2c83c1f026593cd77';

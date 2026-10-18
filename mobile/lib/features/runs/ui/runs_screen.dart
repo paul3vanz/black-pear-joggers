@@ -12,19 +12,24 @@ import '../../../core/util/clock.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../events/logic/event_summary.dart';
 import '../../groups/data/group_dtos.dart';
+import '../../groups/data/run_preferences_repository.dart';
 import '../../groups/data/summary_dtos.dart';
 import '../../groups/ui/group_format.dart';
+import '../../groups/ui/groups_providers.dart';
 import '../../messages/data/messages_repository.dart';
 import '../data/runs_repository.dart';
 import '../data/session_changes.dart';
+import '../logic/my_days.dart';
 import '../logic/run_modes.dart';
+import 'my_days_panel.dart';
 import 'run_format.dart';
 import 'series_image.dart';
 import 'runs_providers.dart';
 
 /// The Runs tab (`/runs`): upcoming club runs grouped by day. Same offline
 /// pattern as Updates: render the Drift cache straight away, refresh in the
-/// background and show a small banner if that fails.
+/// background and show a small banner if that fails. The "Days I run" panel
+/// (D115) hides other weekdays, except runs you're going to or leading.
 class RunsScreen extends ConsumerStatefulWidget {
   const RunsScreen({super.key});
 
@@ -36,10 +41,30 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
   bool _refreshing = true;
   bool _refreshFailed = false;
 
+  /// True once the preferences refresh finished (either way), so the panel
+  /// does not flash "Showing every day" while the saved choice loads.
+  bool _prefsSettled = false;
+
+  /// The member tapped Show N more: list every day until they tap back.
+  bool _showAll = false;
+
   @override
   void initState() {
     super.initState();
     unawaited(_refresh());
+  }
+
+  /// Pulls the saved run days; a failure keeps the cached value and never
+  /// shows the offline banner on its own.
+  Future<void> _refreshPrefs() async {
+    try {
+      await ref
+          .read(runPreferencesRepositoryProvider)
+          .refresh(ref.read(activeClubIdProvider));
+    } on Object {
+      // Offline: the cached choice (or every day) is shown.
+    }
+    if (mounted && !_prefsSettled) setState(() => _prefsSettled = true);
   }
 
   Future<void> _refresh() async {
@@ -48,6 +73,7 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
     final sub = ref.read(activeSubProvider);
     final handleExpiry = ref.read(sessionExpiryHandlerProvider);
     if (!_refreshing && mounted) setState(() => _refreshing = true);
+    unawaited(_refreshPrefs());
     var failed = false;
     try {
       await repo.refresh(clubId);
@@ -105,9 +131,28 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
     // The club-local day, refreshed at midnight and on resume (D87).
     final now = ref.watch(clubTodayProvider).now;
     final venueNames = {for (final v in venues) v.id: v.name};
-    final groups = groupByDay(sessions ?? const [], now);
+    final prefs = ref
+        .watch(runPreferencesProvider(ref.watch(activeClubIdProvider)))
+        .value;
+    final inRange = [
+      for (final (_, day) in groupByDay(sessions ?? const [], now)) ...day,
+    ];
+    final filtered = filterByDays(
+      inRange,
+      _showAll
+          ? null
+          : runTabDays(runDays: prefs?.runDays, leadDays: prefs?.leadDays),
+      _isMine,
+    );
+    final groups = groupByDay(filtered.kept, now);
+    final present = weekdaysOf(inRange);
+    final saved = prefs?.runDays;
+    // Like the old roster filter (D56): one weekday has nothing to narrow.
+    final showPanel =
+        (_prefsSettled || saved != null) &&
+        (saved != null || present.length > 1);
     final showBanner = _refreshFailed && !_refreshing;
-    final empty = sessions != null && groups.isEmpty;
+    final empty = sessions != null && inRange.isEmpty;
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
@@ -122,7 +167,32 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
                   : 'Offline — showing saved runs',
             ),
           ),
+        if (showPanel)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: MyDaysPanel(
+              kind: DayKind.run,
+              present: present,
+              saved: saved,
+              otherSaved: prefs?.leadDays,
+              preselect: prefs?.leadDays?.toSet() ?? const {},
+              hidden: filtered.hidden,
+              showAll: _showAll,
+              onShowAll: (on) => setState(() => _showAll = on),
+              onSaved: () => setState(() => _showAll = false),
+            ),
+          ),
         if (empty && !_refreshing && !showBanner) const _EmptyState(),
+        if (!empty && groups.isEmpty && filtered.hidden > 0)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+            child: Text(
+              'No runs on your days. Tap Show ${filtered.hidden} more to see '
+              'the rest.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
         for (final (date, day) in groups) ...[
           _DayHeader(
             label: dayHeader(date, now),
@@ -138,6 +208,16 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
         ],
       ],
     );
+  }
+
+  /// Runs that ignore the day filter: ones you said you're coming to (or
+  /// might) and ones you lead, so an answer never disappears.
+  static bool _isMine(Session s) {
+    final summary = decodeSummary(s.summaryJson);
+    if (summary == null) return false;
+    return summary.myLeading ||
+        summary.myStatus == 'going' ||
+        summary.myStatus == 'maybe';
   }
 
   void _showManageMenu(BuildContext context) {

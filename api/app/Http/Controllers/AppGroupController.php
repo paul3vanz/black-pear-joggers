@@ -181,12 +181,12 @@ class AppGroupController extends Controller
      * @OA\Post(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions/{sessionId}/groups",
-     *   summary="Create a pace group. Any linked member with lead=true (they lead it); leaderless groups need committee, admin or the coordinator. Idempotent on id. A group with no pace needs a label (422 on label). On an events run any linked member adds an event (locationId and/or label; kind forced to event; the same locationId returns the existing group with 200; the caller is marked going; pace fields and lead are 422 on paceFromS; 422 on locationId when it is not a live location of the club). On a race run: 409 race_group_fixed.",
+     *   summary="Create a pace group. Any linked member with lead=true (they lead it); leaderless groups need committee, admin or the coordinator. With lead=true: 409 already_leading (with groupId) when the caller already leads another group of the run. Idempotent on id. A group with no pace needs a label (422 on label). On an events run any linked member adds an event (locationId and/or label; kind forced to event; the same locationId returns the existing group with 200; the caller is marked going; pace fields and lead are 422 on paceFromS; 422 on locationId when it is not a live location of the club). On a race run: 409 race_group_fixed.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=201, description="The group (200 on a replayed id)"),
      *   @OA\Response(response=403, description="Not allowed"),
      *   @OA\Response(response=404, description="No such session"),
-     *   @OA\Response(response=409, description="session_cancelled | session_past | conflict | race_group_fixed"),
+     *   @OA\Response(response=409, description="session_cancelled | session_past | conflict | race_group_fixed | already_leading"),
      *   @OA\Response(response=422, description="Validation error"),
      * )
      */
@@ -241,6 +241,10 @@ class AppGroupController extends Controller
 
         if ($bad = $this->closedResponse($session)) {
             return $bad;
+        }
+
+        if ($lead && ($led = $this->groupLedIn($session, $member))) {
+            return $this->alreadyLeading($led);
         }
 
         $group = DB::transaction(function () use ($club, $member, $session, $values, $id, $lead) {
@@ -522,11 +526,11 @@ class AppGroupController extends Controller
      * @OA\Post(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/groups/{id}/leaders",
-     *   summary="The caller joins the group as a leader (any linked member). A needs_leader group becomes active.",
+     *   summary="The caller joins the group as leader, co_leader or backmarker (any linked member). A needs_leader group becomes active. 409 already_leading (with groupId) when they already lead another group of the run; 409 leader_exists for role leader when the group already has a confirmed leader. Re-joining the same group is idempotent.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=200, description="The group"),
      *   @OA\Response(response=404, description="No such group"),
-     *   @OA\Response(response=409, description="session_cancelled | session_past"),
+     *   @OA\Response(response=409, description="session_cancelled | session_past | already_leading | leader_exists"),
      *   @OA\Response(response=422, description="Unknown role"),
      * )
      */
@@ -550,8 +554,25 @@ class AppGroupController extends Controller
             return $bad;
         }
 
-        DB::transaction(function () use ($club, $member, $group, $request) {
-            $role = $request->input('role') ?: 'leader';
+        $role = $request->input('role') ?: 'leader';
+
+        // One group per leader and one `leader` per group (D108); event groups have no leaders to limit.
+        if (!$group->session->isEventMode() && $group->kind !== 'event') {
+            if ($led = $this->groupLedIn($group->session, $member, $group)) {
+                return $this->alreadyLeading($led);
+            }
+
+            if ($role === 'leader' && SessionGroupLeader::where('group_id', $group->id)
+                ->where('status', SessionGroupLeader::CONFIRMED)->where('role', 'leader')
+                ->where('member_id', '!=', $member->id)->exists()) {
+                return response()->json([
+                    'error' => 'leader_exists',
+                    'message' => 'This group already has a leader. Join as co-leader or backmarker.',
+                ], 409);
+            }
+        }
+
+        DB::transaction(function () use ($club, $member, $group, $role) {
             $row = SessionGroupLeader::where('group_id', $group->id)->where('member_id', $member->id)->first();
 
             if ($row) {
@@ -581,26 +602,39 @@ class AppGroupController extends Controller
      * @OA\Delete(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/groups/{id}/leaders/me",
-     *   summary="The caller withdraws as leader. The last leader leaving a paced/single run makes the group needs_leader.",
+     *   summary="The caller steps down as leader (D109). They are removed from the group (still going; optional body {notGoing:true} makes them not going). The creator leaving a group nobody else is in deletes it (200 with deletedAt, no notifications); otherwise the last leader leaving a paced/single run makes the group needs_leader and fitting members are asked to lead. Replays return the group.",
      *   security={{"bearerAuth":{}}},
-     *   @OA\Response(response=200, description="The group"),
+     *   @OA\RequestBody(required=false, @OA\JsonContent(@OA\Property(property="notGoing", type="boolean"))),
+     *   @OA\Response(response=200, description="The group (deletedAt set when it was deleted)"),
      *   @OA\Response(response=404, description="No such group"),
      *   @OA\Response(response=409, description="session_cancelled | session_past"),
+     *   @OA\Response(response=422, description="notGoing is not a boolean"),
      * )
      */
     public function withdraw(Request $request, $clubId, $id)
     {
         $club = $request->attributes->get('club');
         $member = $request->attributes->get('member');
-        $group = $this->groupFor($club, $id);
+        $group = $this->groupFor($club, $id, true);
 
         if (!$group) {
             return $this->notFound('No such group.');
         }
 
+        if ($request->has('notGoing') && !is_bool($request->input('notGoing'))) {
+            return $this->invalidField('notGoing', 'notGoing must be true or false.');
+        }
+
+        // Replay after the group was deleted (by this call or by anyone): same payload, deletedAt set.
+        if ($group->trashed()) {
+            return $this->respond($group);
+        }
+
         if ($bad = $this->closedResponse($group->session)) {
             return $bad;
         }
+
+        $notGoing = $request->input('notGoing') === true;
 
         $row = SessionGroupLeader::where('group_id', $group->id)
             ->where('member_id', $member->id)
@@ -610,13 +644,34 @@ class AppGroupController extends Controller
         $needsLeader = false;
 
         if ($row) {
-            DB::transaction(function () use ($row, $group, &$needsLeader) {
+            DB::transaction(function () use ($row, $group, $member, $notGoing, &$needsLeader) {
                 $row->fill(['status' => SessionGroupLeader::WITHDRAWN, 'withdrawn_at' => Carbon::now()])->save();
+
+                $mine = SessionAttendee::where('session_id', $group->session_id)->where('member_id', $member->id)->first();
+
+                if ($mine && ($mine->group_id === $group->id || $notGoing)) {
+                    $mine->group_id = null;
+                    $mine->status = $notGoing ? SessionAttendee::NOT_GOING : $mine->status;
+                    $mine->updated_at = Carbon::now();
+                    $mine->save();
+                } elseif (!$mine && $notGoing) {
+                    SessionAttendee::create([
+                        'club_id' => $group->club_id,
+                        'session_id' => $group->session_id,
+                        'member_id' => $member->id,
+                        'status' => SessionAttendee::NOT_GOING,
+                    ]);
+                }
 
                 $remaining = SessionGroupLeader::where('group_id', $group->id)
                     ->where('status', SessionGroupLeader::CONFIRMED)->count();
 
-                if ($remaining === 0 && $this->expectsLeaders($group->session)) {
+                // An unused group the caller made goes away instead of waiting for a leader.
+                if ($remaining === 0
+                    && $group->created_by_member_id === $member->id
+                    && !SessionAttendee::where('group_id', $group->id)->exists()) {
+                    $group->delete();
+                } elseif ($remaining === 0 && $this->expectsLeaders($group->session)) {
                     $group->status = SessionGroup::STATUS_NEEDS_LEADER;
                     $group->save();
                     $needsLeader = true;

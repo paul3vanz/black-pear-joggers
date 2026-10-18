@@ -129,7 +129,7 @@ class RunReminderService
                 return in_array($a->status, [SessionAttendee::GOING, SessionAttendee::MAYBE], true);
             })->keys()->all(),
             array_keys($leading),
-            $this->seriesAudience($session, $now)
+            $this->seriesAudience($session, $now, $tz)
         );
 
         $notGoing = $answers->filter(function ($a) {
@@ -194,12 +194,12 @@ class RunReminderService
 
     /**
      * Members the series rule adds on top of the people who answered (D35): `on` always,
-     * `off` never, otherwise (auto) anyone who was going at one of the last runs of the series.
-     * A run with no series adds nobody.
+     * `off` never, otherwise (auto) anyone who was going at one of the last runs of the series and
+     * runs on this weekday (their run days, D115). A run with no series adds nobody.
      *
      * @return string[]
      */
-    private function seriesAudience(ClubSession $session, Carbon $now): array
+    private function seriesAudience(ClubSession $session, Carbon $now, string $tz): array
     {
         if (!$session->series_id) {
             return [];
@@ -224,9 +224,12 @@ class RunReminderService
             $auto = [];
         }
 
+        $weekday = Carbon::parse($session->starts_at)->setTimezone($tz)->dayOfWeekIso;
+        $days = $auto ? MemberPreference::where('club_id', $session->club_id)->whereIn('member_id', $auto)->get()->keyBy('member_id') : collect();
+
         $ids = [];
         foreach ($auto as $id) {
-            if (($prefs[$id] ?? MemberSeriesPref::AUTO) !== MemberSeriesPref::OFF) {
+            if (($prefs[$id] ?? MemberSeriesPref::AUTO) !== MemberSeriesPref::OFF && MemberPreference::runsOn($days->get($id), $weekday)) {
                 $ids[] = $id;
             }
         }

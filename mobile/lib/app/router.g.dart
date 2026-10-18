@@ -12,6 +12,7 @@ part of 'router.dart';
 /// like an auth guard in Next.js middleware:
 ///   * accounts (or the first `/app/me` refresh) still loading -> `/splash`
 ///   * nobody signed in                                         -> `/sign-in`
+///   * the database failed its first check (twice)              -> `/recover`
 ///   * signed in, active club has no membership                 -> `/link`
 ///   * first load failed with nothing cached                    -> `/unavailable`
 ///   * linked                                                   -> `/runs`
@@ -23,6 +24,7 @@ final routerProvider = RouterProvider._();
 /// like an auth guard in Next.js middleware:
 ///   * accounts (or the first `/app/me` refresh) still loading -> `/splash`
 ///   * nobody signed in                                         -> `/sign-in`
+///   * the database failed its first check (twice)              -> `/recover`
 ///   * signed in, active club has no membership                 -> `/link`
 ///   * first load failed with nothing cached                    -> `/unavailable`
 ///   * linked                                                   -> `/runs`
@@ -34,6 +36,7 @@ final class RouterProvider
   /// like an auth guard in Next.js middleware:
   ///   * accounts (or the first `/app/me` refresh) still loading -> `/splash`
   ///   * nobody signed in                                         -> `/sign-in`
+  ///   * the database failed its first check (twice)              -> `/recover`
   ///   * signed in, active club has no membership                 -> `/link`
   ///   * first load failed with nothing cached                    -> `/unavailable`
   ///   * linked                                                   -> `/runs`
@@ -70,4 +73,4 @@ final class RouterProvider
   }
 }
 
-String _$routerHash() => r'32823e347b54663bdec1ad094eff76a0e1c7a600';
+String _$routerHash() => r'c1ddf5dbcaef6474713aebde2cfbf02e7e681a28';

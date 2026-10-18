@@ -4,6 +4,8 @@ import 'package:bpj/core/units/pace_spec.dart';
 import 'package:bpj/core/units/pace.dart';
 import 'package:bpj/core/units/dist_unit.dart';
 import 'package:bpj/features/groups/data/last_group_store.dart';
+import 'package:bpj/features/groups/data/group_dtos.dart';
+import 'package:bpj/features/groups/data/session_local.dart';
 import 'package:bpj/features/groups/logic/roster.dart';
 import 'package:bpj/features/groups/ui/leader_roster_screen.dart';
 import 'package:bpj/features/groups/ui/roster_run_card.dart';
@@ -148,6 +150,38 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('edit g-mine'), findsOneWidget);
       await unmount(tester);
+    });
+
+    testWidgets('on a run I lead, other groups offer nothing (D108)', (
+      tester,
+    ) async {
+      await pumpRoster(
+        tester,
+        seed: () => SessionLocalStore(db).mergeGroup(
+          Group.fromJson(
+            groupJson(
+              'g-other',
+              sessionId: 'a',
+              label: 'Theirs',
+              leaders: [other],
+              paceFromS: 540,
+              paceToS: null,
+            ),
+          ),
+          myMemberId: 'me',
+        ),
+      );
+      expect(inCard('a', find.text('Edit')), findsOneWidget);
+      expect(inCard('a', find.text('Join as co-leader')), findsNothing);
+      expect(inCard('a', find.text('Lead this group')), findsNothing);
+      expect(inCard('a', find.text('Offer to lead')), findsNothing);
+      expect(
+        inCard('a', find.textContaining("You're already leading the")),
+        findsOneWidget,
+      );
+      // Other runs are unaffected.
+      expect(inCard('b', find.text('Join as co-leader')), findsOneWidget);
+      await finish(tester);
     });
 
     testWidgets('Offer to lead opens the editor with the lead intent', (

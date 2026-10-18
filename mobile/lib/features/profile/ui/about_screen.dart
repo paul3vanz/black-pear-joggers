@@ -61,6 +61,15 @@ class AboutScreen extends ConsumerWidget {
               label: 'Contact the committee',
               url: club.contactUrl,
             ),
+            // Opens the copyable error report and the repair actions (D100).
+            ListTile(
+              key: const ValueKey('diagnostics-tile'),
+              leading: const Icon(Icons.healing_outlined),
+              title: const Text('Diagnostics'),
+              subtitle: const Text('Help us fix problems'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/profile/about/diagnostics'),
+            ),
             const SizedBox(height: 32),
             Text(
               'Danger zone',

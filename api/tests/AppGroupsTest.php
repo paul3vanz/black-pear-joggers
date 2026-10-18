@@ -198,7 +198,7 @@ class AppGroupsTest extends AppGroupsBase
         $this->assertEquals(3.0, $mi["distanceValue"]); // JSON may carry 3 or 3.0
         $this->assertSame(4828, $mi['distanceM']);
 
-        [, $km] = $this->api('POST', "/sessions/{$s->id}/groups", 'plain', [
+        [, $km] = $this->api('POST', "/sessions/{$s->id}/groups", 'leaderA', [
             'paceUnit' => 'km', 'paceFromS' => 330, 'distanceValue' => 5, 'distanceUnit' => 'km', 'lead' => true,
         ]);
 
@@ -207,7 +207,7 @@ class AppGroupsTest extends AppGroupsBase
         $this->assertNull($km['paceToSPerKm']);
         $this->assertSame(5000, $km['distanceM']);
 
-        [, $none] = $this->api('POST', "/sessions/{$s->id}/groups", 'plain', ['lead' => true, 'label' => 'Social']);
+        [, $none] = $this->api('POST', "/sessions/{$s->id}/groups", 'leaderB', ['lead' => true, 'label' => 'Social']);
         $this->assertNull($none['paceUnit']);
         $this->assertNull($none['paceFromSPerKm']);
         $this->assertNull($none['distanceM']);

@@ -332,7 +332,7 @@ class AppGroupsLeadersTest extends AppGroupsBase
     {
         $s = $this->session();
         $other = $this->group($s, [$this->leaderB]);
-        $mine = $this->group($s, [$this->leaderB]);
+        $mine = $this->group($s); // leaderless: a second `leader` would be refused (D108)
         // Already coming to a different group, with a pace for this run.
         $this->attend($s, $this->leaderA, 'maybe', $other, ['pace_unit' => 'km', 'pace_from_s' => 330]);
 
@@ -357,7 +357,7 @@ class AppGroupsLeadersTest extends AppGroupsBase
         $this->assertSame('going', $row->status);
     }
 
-    public function testLeaderlessGroupsAndWithdrawingDoNotChangeAttendance()
+    public function testLeaderlessGroupsDoNotChangeAttendanceAndSteppingDownRemovesYouFromTheGroup()
     {
         $s = $this->session();
         $this->api('POST', "/sessions/{$s->id}/groups", 'committee', ['lead' => false, 'label' => 'Walk']);
@@ -366,10 +366,12 @@ class AppGroupsLeadersTest extends AppGroupsBase
         [, $group] = $this->api('POST', "/sessions/{$s->id}/groups", 'leaderA', ['lead' => true, 'label' => 'Walk']);
         $this->api('DELETE', "/groups/{$group['id']}/leaders/me", 'leaderA');
 
-        // Stepping down as leader leaves them going in the group.
+        // D109 (supersedes D30's "withdraw keeps attendance"): stepping down removes them from the group
+        // but they stay going; a group nobody else joined is deleted (see AppStepDownTest for the matrix).
         $row = SessionAttendee::where('session_id', $s->id)->where('member_id', $this->leaderA->id)->first();
         $this->assertSame('going', $row->status);
-        $this->assertSame($group['id'], $row->group_id);
+        $this->assertNull($row->group_id);
+        $this->assertNotNull(SessionGroup::withTrashed()->find($group['id'])->deleted_at);
     }
 
     public function testGroupChangesBumpTheSessionAndSinceDeliversIt()
@@ -394,7 +396,7 @@ class AppGroupsLeadersTest extends AppGroupsBase
         $this->assertGreaterThan($afterCreate, $afterPatch);
 
         $this->tick(60);
-        $this->api('POST', "/groups/{$group['id']}/leaders", 'leaderA');
+        $this->api('POST', "/groups/{$group['id']}/leaders", 'leaderA', ['role' => 'co_leader']);
         $afterJoin = $this->sessionUpdatedAt($s);
         $this->assertGreaterThan($afterPatch, $afterJoin);
 

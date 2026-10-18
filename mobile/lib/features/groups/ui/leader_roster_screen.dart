@@ -10,8 +10,11 @@ import '../../../core/db/app_database.dart';
 import '../../../core/ui/offline_banner.dart';
 import '../../../core/util/open_link.dart';
 import '../../runs/data/runs_repository.dart';
+import '../../runs/logic/my_days.dart';
+import '../../runs/ui/my_days_panel.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../data/group_dtos.dart';
+import '../data/run_preferences_repository.dart';
 import '../data/small_kv_store.dart';
 import '../data/summary_dtos.dart';
 import '../logic/roster.dart';
@@ -21,8 +24,9 @@ import 'roster_run_card.dart';
 
 /// `/runs/lead`: the next six weeks of runs grouped by week, so a member can
 /// see which need a leader and offer to lead. Reads the Drift cache; pull to
-/// refresh runs the normal sessions refresh. A day filter (only the weekdays
-/// that exist) narrows the list; it is remembered per club (D56).
+/// refresh runs the normal sessions refresh. The "Days I may lead" panel (D107,
+/// D115) is saved on the server and narrows the list to those weekdays (else
+/// to the days you run); **Show N more** reveals the rest for this visit.
 class LeaderRosterScreen extends ConsumerStatefulWidget {
   const LeaderRosterScreen({super.key});
 
@@ -33,34 +37,42 @@ class LeaderRosterScreen extends ConsumerStatefulWidget {
 class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
   bool _refreshFailed = false;
 
-  /// The chosen weekdays (1 = Monday); empty means all days.
-  Set<int> _days = {};
+  /// True once the preferences refresh finished (either way), so the panel does
+  /// not flash the first-time prompt while the saved choice is still loading.
+  bool _prefsSettled = false;
+
+  /// The old local day filter (D56), only used to pre-select the chips when the
+  /// server has no choice yet. Not saved until the member taps Save.
+  Set<int> _legacyDays = {};
+
+  /// The member tapped Show N more: list every day until they tap back.
+  bool _showAll = false;
 
   @override
   void initState() {
     super.initState();
     unawaited(_refresh());
-    unawaited(_loadDays());
+    unawaited(_refreshPrefs());
+    unawaited(_loadLegacyDays());
   }
 
-  Future<void> _loadDays() async {
+  Future<void> _loadLegacyDays() async {
     final clubId = ref.read(activeClubIdProvider);
     final stored = await ref
         .read(smallKvStoreProvider)
         .get(SmallKvStore.leadDaysKey(clubId));
-    if (mounted) setState(() => _days = decodeWeekdays(stored));
+    if (mounted) setState(() => _legacyDays = decodeWeekdays(stored));
   }
 
-  Future<void> _setDays(Set<int> days) async {
-    setState(() => _days = days);
+  /// Pulls the saved "days I may lead"; a failure keeps the cached value.
+  Future<void> _refreshPrefs() async {
     final clubId = ref.read(activeClubIdProvider);
-    final store = ref.read(smallKvStoreProvider);
-    final key = SmallKvStore.leadDaysKey(clubId);
-    if (days.isEmpty) {
-      await store.remove(key);
-    } else {
-      await store.set(key, encodeWeekdays(days));
+    try {
+      await ref.read(runPreferencesRepositoryProvider).refresh(clubId);
+    } on Object {
+      // Offline: the cache (or the first-time prompt) is shown.
     }
+    if (mounted) setState(() => _prefsSettled = true);
   }
 
   Future<void> _refresh() async {
@@ -76,7 +88,7 @@ class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
   }
 
   /// Whether the viewer leads a group on [s] (from the cached summary, else
-  /// the cached groups). Such runs ignore the day filter.
+  /// the cached groups). Such runs ignore the days choice.
   bool _leads(Session s, String? myId) {
     if (decodeSummary(s.summaryJson)?.myLeading ?? false) return true;
     return myId != null &&
@@ -91,15 +103,14 @@ class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
     final venueNames = {for (final v in venues) v.id: v.name};
     final now = ref.watch(nowProvider);
     final myId = ref.watch(myMemberIdProvider);
+    final prefs = ref.watch(runPreferencesProvider(clubId)).value;
+    // null = never chosen; [] = chose none.
+    final saved = prefs?.leadDays;
+    final runDays = prefs?.runDays;
     final allWeeks = buildRoster(sessions ?? const [], now);
-    // Only offer weekdays that occur, and only when there is a choice. A
-    // remembered day that no longer occurs is ignored rather than hiding runs.
-    final present = rosterWeekdays(allWeeks);
-    final canFilter = present.length > 1;
-    final selected = canFilter ? _days.intersection(present) : <int>{};
     final filtered = filterRosterByDays(
       allWeeks,
-      selected,
+      _showAll ? null : leadRosterDays(runDays: runDays, leadDays: saved),
       (s) => _leads(s, myId),
     );
     final weeks = filtered.weeks;
@@ -108,7 +119,10 @@ class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
       appBar: AppBar(title: const Text('Lead a run')),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: _refresh,
+          onRefresh: () async {
+            unawaited(_refreshPrefs());
+            await _refresh();
+          },
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -141,23 +155,29 @@ class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
                   label: const Text('Tips on leading a group'),
                 ),
               ),
-              if (canFilter)
-                _DayFilter(
-                  days: present.toList()..sort(),
-                  selected: selected,
-                  onChanged: (d) => unawaited(_setDays(d)),
-                ),
-              if (filtered.hidden > 0)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    '${filtered.hidden} '
-                    '${filtered.hidden == 1 ? 'run' : 'runs'} hidden by your '
-                    'day filter',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+              if (_prefsSettled || saved != null)
+                MyDaysPanel(
+                  kind: DayKind.lead,
+                  present: rosterWeekdays(allWeeks),
+                  saved: saved,
+                  otherSaved: runDays,
+                  // The old local filter, else the run days, start ticked.
+                  preselect: _legacyDays.isNotEmpty
+                      ? _legacyDays
+                      : (runDays?.toSet() ?? const {}),
+                  promptWhenUnset: true,
+                  hidden: filtered.hidden,
+                  showAll: _showAll,
+                  onShowAll: (on) => setState(() => _showAll = on),
+                  onSaved: () {
+                    setState(() => _showAll = false);
+                    // The server owns the choice now; drop the old local filter.
+                    unawaited(
+                      ref
+                          .read(smallKvStoreProvider)
+                          .remove(SmallKvStore.leadDaysKey(clubId)),
+                    );
+                  },
                 ),
               const SizedBox(height: 8),
               if (_refreshFailed)
@@ -169,10 +189,13 @@ class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
                   ),
                 ),
               if (sessions != null && weeks.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(24),
+                Padding(
+                  padding: const EdgeInsets.all(24),
                   child: Text(
-                    'No runs coming up that need leaders.',
+                    filtered.hidden > 0
+                        ? 'No runs on your days. Tap Show ${filtered.hidden} '
+                              'more to see the rest.'
+                        : 'No runs coming up that need leaders.',
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -199,38 +222,4 @@ class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
       ),
     );
   }
-}
-
-/// Weekday chips (multi-select, none = all days) and "Show all".
-class _DayFilter extends StatelessWidget {
-  const _DayFilter({
-    required this.days,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final List<int> days;
-  final Set<int> selected;
-  final ValueChanged<Set<int>> onChanged;
-
-  @override
-  Widget build(BuildContext context) => Wrap(
-    spacing: 8,
-    runSpacing: 4,
-    crossAxisAlignment: WrapCrossAlignment.center,
-    children: [
-      for (final d in days)
-        FilterChip(
-          label: Text(weekdayShort[d - 1]),
-          selected: selected.contains(d),
-          onSelected: (on) =>
-              onChanged(on ? {...selected, d} : ({...selected}..remove(d))),
-        ),
-      if (selected.isNotEmpty)
-        TextButton(
-          onPressed: () => onChanged(<int>{}),
-          child: const Text('Show all'),
-        ),
-    ],
-  );
 }

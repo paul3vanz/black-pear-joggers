@@ -264,6 +264,33 @@ class AppRunRemindersTest extends AppGroupsBase
         $this->assertCount(0, $this->got($futureOnly));
     }
 
+    public function testAutoSkipsMembersWhoNoLongerRunThatDayButAnAnswerOrAlwaysWins()
+    {
+        $series = $this->series();
+        $last = $this->seriesRun($series, '2026-10-05');
+        $today = $this->seriesRun($series, '2026-10-12'); // Mondays
+        $stillMonday = $this->m('stillmonday', 301);
+        $nowWednesday = $this->m('nowwednesday', 302);
+        $wednesdayButGoing = $this->m('wedgoing', 303);
+        $wednesdayButAlways = $this->m('wedalways', 304);
+        foreach ([$stillMonday, $nowWednesday, $wednesdayButGoing, $wednesdayButAlways] as $who) {
+            $this->attend($last, $who, 'going');
+        }
+        MemberPreference::create(['club_id' => 1, 'member_id' => $stillMonday->id, 'pace_unit' => 'mi', 'run_days' => '1,3']);
+        foreach ([$nowWednesday, $wednesdayButGoing, $wednesdayButAlways] as $who) {
+            MemberPreference::create(['club_id' => 1, 'member_id' => $who->id, 'pace_unit' => 'mi', 'run_days' => '3']);
+        }
+        $this->attend($today, $wednesdayButGoing, 'going');
+        MemberSeriesPref::create(['club_id' => 1, 'member_id' => $wednesdayButAlways->id, 'series_id' => $series->id, 'reminders' => 'on']);
+
+        $this->runAt('2026-10-12 08:00');
+
+        $this->assertCount(1, $this->got($stillMonday));
+        $this->assertCount(0, $this->got($nowWednesday));
+        $this->assertCount(1, $this->got($wednesdayButGoing));
+        $this->assertCount(1, $this->got($wednesdayButAlways));
+    }
+
     public function testACancelledPastRunDoesNotCountTowardsAuto()
     {
         $series = $this->series();

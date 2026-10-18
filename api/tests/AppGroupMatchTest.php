@@ -207,6 +207,32 @@ class AppGroupMatchTest extends AppGroupsBase
         $this->assertCount(1, $this->matchRows($maybe));
     }
 
+    public function testWithoutAnAnswerOnlyRunsOnTheMembersDaysCount()
+    {
+        $s = $this->session(); // a Monday
+        $g = $this->paced($s);
+        $monday = $this->m('monday', 301, [570, 600]);
+        $wednesday = $this->m('wednesday', 302, [570, 600]);
+        $leadsMonday = $this->m('leadsmonday', 303, [570, 600]);
+        $goingAnyway = $this->m('going', 304, [570, 600]);
+        $maybeAnyway = $this->m('maybe', 305, [570, 600]);
+        MemberPreference::where('member_id', $monday->id)->update(['run_days' => '1,3']);
+        MemberPreference::where('member_id', $wednesday->id)->update(['run_days' => '3']);
+        MemberPreference::where('member_id', $leadsMonday->id)->update(['run_days' => '3', 'lead_days' => '1']);
+        MemberPreference::where('member_id', $goingAnyway->id)->update(['run_days' => '3']);
+        MemberPreference::where('member_id', $maybeAnyway->id)->update(['run_days' => '']);
+        $this->attend($s, $goingAnyway, 'going');
+        $this->attend($s, $maybeAnyway, 'maybe');
+
+        $this->runJob($g);
+
+        $this->assertCount(1, $this->matchRows($monday));
+        $this->assertCount(0, $this->matchRows($wednesday));
+        $this->assertCount(1, $this->matchRows($leadsMonday)); // a lead day is a day they run
+        $this->assertCount(1, $this->matchRows($goingAnyway)); // said they are coming
+        $this->assertCount(1, $this->matchRows($maybeAnyway));
+    }
+
     public function testMembersAlreadyInAGroupThatFitsAreLeftOutButOthersAreNot()
     {
         $s = $this->session();

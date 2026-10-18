@@ -7,6 +7,8 @@ import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/auth_service.dart';
 import '../../../core/config/club_config.dart';
 import '../../../core/config/env.dart';
+import '../../../core/diagnostics/diagnostics.dart';
+import '../../../core/diagnostics/redaction.dart';
 
 /// Landing screen when nobody is signed in. The router sends users here and, once an
 /// account exists, redirects away automatically, so this screen never navigates itself.
@@ -41,11 +43,19 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       _error = null;
       _detail = null;
     });
+    final diagnostics = ref.read(diagnosticsProvider);
     try {
       await action();
+      diagnostics.record(DiagArea.auth, 'sign-in succeeded');
     } on LoginCancelledException {
-      // User backed out of the browser: nothing to report.
+      // User backed out of the browser: nothing to report to them.
+      diagnostics.record(DiagArea.auth, 'sign-in cancelled');
     } on Object catch (e) {
+      diagnostics.record(
+        DiagArea.auth,
+        'sign-in failed: ${describeError(e)}',
+        level: DiagLevel.error,
+      );
       debugPrint('Sign-in failed: $e');
       if (mounted) {
         setState(() {

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Release builds shrink unused resources. The notification icons are looked up
+     by name from Dart (flutter_local_notifications), which the shrinker can't
+     see, so keep them explicitly (D112). -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_stat_bpj,@drawable/ic_notification_large" />

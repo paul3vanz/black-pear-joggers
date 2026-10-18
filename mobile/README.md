@@ -66,6 +66,25 @@ the red button only enables when `DELETE` is typed exactly (capitals).
 - Airplane mode: "You need a connection to delete your account."
 - With two accounts on the device, only the deleted one is removed; the app switches to the other.
 
+## Diagnostics
+
+Profile → **About & privacy** → **Diagnostics** (`/profile/about/diagnostics`, D100-D102) shows a plain-text
+report: app version and build, OS, database schema, whether someone is signed in, the active club, when each
+repository last synced, and the last 100 events (failed requests with status and path only, sign-in and database
+events, uncaught errors), newest first. It never holds tokens, emails, names, query strings or request bodies.
+
+- **Sending a report (testers):** open Diagnostics, tap **Copy report**, paste it into an email to
+  webmaster@bpj.org.uk. **Clear log** empties it first if you want a clean run to reproduce a problem.
+- **If every screen fails:** the app now repairs itself at start (a database that won't open is deleted and
+  recreated once). If it still can't, it shows "The app couldn't load its saved data" with **Reset and try again**.
+  A "Something's not working. Tap to fix" banner appears at the top after several real failures in a row (not
+  for being offline) and opens the same screen.
+- **Resetting by hand:** Diagnostics → **Reset local data** (clears the phone's copy and downloads it again, you
+  stay signed in) or **Sign out and clear everything on this phone** (also signs out, no server call). Nobody
+  should need Android's "Clear data" any more.
+- **Trying it:** the self-heal and `/recover` are covered by `test/db_guard_test.dart` (a junk file in place of the
+  database, and a database that never opens).
+
 ## Signed release APK
 
 `flutter build apk --release --dart-define-from-file=config/prod.json` signs with the
@@ -132,9 +151,9 @@ below) and **B** (committee). Give B the `committee` role (or admin) in the data
    (Undo in the snackbar). Edit or **Step down** from the same card. As leader of the group you now
    see *Who's in this group* with names and paces.
    Creating or joining a group as leader also marks you as going in it, so you see *You're leading
-   this group* with a **Step down** button on the same row (no Join/Leave); after stepping down you stay in it
-   as a member. A group with no pace needs a label (the editor says so). On *Lead a run*, day chips (only
-   the weekdays that exist, remembered) filter the list, **Can't attend** folds a run to one line, and
+   this group* with a **Step down** button on the same row (no Join/Leave); stepping down removes you from the
+   group again (see the leader prompts guide below). A group with no pace needs a label (the editor says so). On *Lead a run*, the *Days I may lead*
+   panel (below) picks the weekdays, **Can't attend** folds a run to one line, and
    *Tips on leading a group* opens the website.
    Pace fields are two boxes, **min** and optional **sec** (the Android number pad has no colon).
 3. **Committee (B):** at the end of *Who's coming* on the run detail, a **Group coverage** card
@@ -150,6 +169,39 @@ below) and **B** (committee). Give B the `committee` role (or admin) in the data
    run → **Coordinator** picks the member who can add routes (best for *routes* runs).
 4. **Offline:** turn on airplane mode; the run, groups and last plan still show, with *Updated …*.
    Writes show "You need a connection to do that." or queue (responses only).
+
+## Leader prompts testing guide (days I may lead, step down, one group per leader, icons)
+
+Needs the API with `member_preferences.lead_days` applied and the leader-prompts changes (api-contract.md, "Update
+(2026-10-17)"). Use two accounts, **A** (a leader) and **B** (a member), on a run with groups.
+
+1. **Days I may lead:** Runs tab -> **Lead a run**. With nothing saved, the panel asks *Which days could you lead?*
+   with chips for the weekdays that have runs and a **Save** button (enabled even with nothing chosen). If an old
+   day filter was stored on this phone, those chips start selected but nothing is saved until **Save**. After
+   Save the panel becomes one line, *Days you may lead: Tue, Thu*, with **Change** (chips plus **Save** / **Cancel**).
+   The list shows only runs on those days plus runs you lead, with a *N runs hidden by the days you chose* note.
+   Save with none selected: *No days chosen: you won't be asked to lead*, and only runs you lead are listed. In
+   airplane mode Save says *You need a connection to save your days.* and stays open. Check in the database that
+   `member_preferences.lead_days` is `2,4` (empty string for none).
+2. **How will you help lead?** On a group that already has a leader, **I'll lead this group too** offers only
+   *Co-leader* and *Backmarker*. A group with no leader (or only co-leaders) still offers *Leader*. To see the
+   409 message, open the dialog on A's phone, make B the leader of that group on B's phone, then pick *Leader*:
+   the dialog says *This group already has a leader...* and drops the option.
+3. **Step down (delete an empty group):** as A, create a group nobody else joins, then **Step down**: the dialog
+   says *You'll be removed from this group.* and *Nobody else has joined, so this group will be deleted.* with a
+   checkbox *I can't make this run at all*. Confirm: the group disappears and A is still going (or not going if
+   ticked). With B in the group, or a second leader, the delete line is absent: A leaves the group, which stays
+   (*Needs a leader* if nobody leads) and A can join it again like anyone.
+4. **One group per leader:** while A leads a group on a run, other groups of that run show *You're already leading
+   the ... group* instead of *I'll lead this group too* / *Join as co-leader*, *Offer to lead* and *Lead a group*
+   are gone, and an editor opened by a link says *You're already leading a group on this run* with **Open it**
+   (Save never sends the request). A committee **Add a group** with the switch off is still allowed. Pressing
+   **Save group** twice quickly (or retrying after an error) never makes two groups.
+5. **Notification icon (Android):** send a test push (`php artisan app:send-test-push` on the host) or wait for a
+   run reminder, and look at the status bar and shade: a small white pear outline (not a white square) tinted club
+   orange, with the round logo as the large icon on reminders and foreground messages. Regenerate the PNGs after a
+   logo change with `dart run tool/make_notification_icon.dart --preview <dir>` (the preview folder holds the
+   picked pear and the icons on a checkerboard) and commit `android/app/src/main/res/drawable-*/ic_stat_bpj.png`.
 
 ## Pace preferences, clock labels (D86-D89)
 
@@ -319,3 +371,20 @@ standards** ("Targets for your age category").
 Beta builds (Firebase App Distribution), the Google Play steps, version numbers and the pre-release checklist are in
 [docs/store/release-checklist.md](docs/store/release-checklist.md). Store text, the privacy policy draft and the Play
 Data safety answers live next to it in [docs/store/](docs/store/README.md). Quick beta: `scripts/distribute-android.sh`.
+
+## Upgrade testing
+
+Play users jump from whatever version they had straight to the latest, so every schema bump is tested against a real
+database written by the old code. `test/fixtures/db/vN.sqlite` is a file created by the app code of schema version N, with
+every table filled with realistic rows; `test/db_upgrade_fixtures_test.dart` copies each one, opens it with the current
+`AppDatabase` and checks `PRAGMA user_version`, `integrity_check`, a `select` over every table, row counts, a second clean
+open, and a `watch*` plus `refresh()` of every repository. **EVERY schema bump must add a fixture for the version it
+replaces (or extend the fixture test)**; the last test in that file fails if you forget.
+
+To make one: `git worktree add <new empty dir outside the repo> <commit of the release>`, `flutter pub get` there, copy
+`test/fixtures/db/generate_fixture.dart.txt` to `test/gen_fixture_test.dart`, run
+`FIXTURE_OUT=<abs path>/vN.sqlite flutter test test/gen_fixture_test.dart` (it uses that commit's `AppDatabase`, inserts rows
+only into columns that schema has, and fails if a table stays empty), check `PRAGMA user_version` is N and the file is under
+about 200 KB, copy it into `test/fixtures/db/`, add it to `_fixtures` in the test, then `git worktree remove` it (on Windows
+a deep `build/` can hit "Filename too long": delete the directory with `node -e "fs.rmSync(dir,{recursive:true})"`, then
+`git worktree prune`). Update the generator's row maps first if the new schema added tables or columns.

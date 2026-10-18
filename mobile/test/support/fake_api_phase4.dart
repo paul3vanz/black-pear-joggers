@@ -26,6 +26,7 @@ Map<String, Object?> groupJson(
   String? createdByMemberId,
   int goingCount = 0,
   int maybeCount = 0,
+  String? deletedAt,
 }) => {
   'id': id,
   'sessionId': sessionId,
@@ -48,7 +49,7 @@ Map<String, Object?> groupJson(
   'goingCount': goingCount,
   'maybeCount': maybeCount,
   'updatedAt': '2026-10-05T10:00:00.000Z',
-  'deletedAt': null,
+  'deletedAt': deletedAt,
 };
 
 Map<String, Object?> leaderJson(

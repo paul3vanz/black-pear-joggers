@@ -10,6 +10,7 @@ import '../../../core/units/distance.dart';
 import '../../../core/units/pace_spec.dart';
 import 'group_dtos.dart';
 import 'session_local.dart';
+import 'summary_dtos.dart';
 
 part 'groups_repository.g.dart';
 
@@ -76,7 +77,8 @@ class GroupsRepository {
   /// or joining as a leader) also marks the caller going in it. The merged
   /// group already counts them (the server counted), so only the session
   /// summary and any other group they were in are adjusted. A per-run pace
-  /// override is kept. Withdrawing as a leader leaves attendance alone.
+  /// override is kept. Stepping down does the reverse (D109): it removes them
+  /// from the group again, see [withdrawAsLeader].
   Future<void> _markLeaderGoing(int clubId, Group group) async {
     final sessionId = group.sessionId;
     final existing = await (_db.select(
@@ -233,17 +235,86 @@ class GroupsRepository {
     return group;
   }
 
-  /// The caller withdraws as a leader of [groupId] (it may become
-  /// `needs_leader`).
-  Future<Group> withdrawAsLeader(String sessionId, String groupId) async {
+  /// The caller steps down as a leader of [groupId] (D109, replacing D30's
+  /// "stay going in the group"). The server also removes them from the group
+  /// (still going, or `not_going` when [notGoing]) and soft-deletes a group they
+  /// created that nobody else joined: that response carries `deletedAt`. Mirror
+  /// both locally: drop the deleted group, or merge the returned one, then
+  /// clear the caller's group and set their status.
+  Future<Group> withdrawAsLeader(
+    String sessionId,
+    String groupId, {
+    bool notGoing = false,
+  }) async {
     final clubId = await _clubOf(sessionId);
-    return _merge(
-      clubId,
-      await guardApi(
-        () => _dio.delete<Object?>(
-          '/app/clubs/$clubId/groups/$groupId/leaders/me',
+    final group = Group.fromJson(
+      jsonObject(
+        await guardApi(
+          () => _dio.delete<Object?>(
+            '/app/clubs/$clubId/groups/$groupId/leaders/me',
+            data: {'notGoing': notGoing},
+          ),
         ),
       ),
+    );
+    final me = await _me(clubId);
+    if (group.isDeleted) {
+      await _local.removeGroup(sessionId, groupId, myMemberId: me);
+    } else {
+      await _local.mergeGroup(group, myMemberId: me);
+    }
+    await _leaveGroupLocally(
+      clubId,
+      sessionId,
+      notGoing: notGoing,
+      // A kept group's counts came from the server and already exclude me.
+      serverCountedGroupId: group.isDeleted ? null : group.id,
+    );
+    return group;
+  }
+
+  /// After stepping down: the caller's row has no group (their per-run pace
+  /// is kept) and is still going, or `not_going` when [notGoing]. Also moves
+  /// the cached summary (`myGroupId` null, counts).
+  Future<void> _leaveGroupLocally(
+    int clubId,
+    String sessionId, {
+    required bool notGoing,
+    String? serverCountedGroupId,
+  }) async {
+    final existing = await (_db.select(
+      _db.myAttendance,
+    )..where((a) => a.sessionId.equals(sessionId))).getSingleOrNull();
+    final cached = decodeSummary(
+      (await _local.session(sessionId))?.summaryJson,
+    );
+    // Still going (or whatever they answered); nothing to move without an answer.
+    final status = notGoing
+        ? 'not_going'
+        : (existing?.status ?? cached?.myStatus);
+    if (status == null) return;
+    if (existing != null || notGoing) {
+      await _db
+          .into(_db.myAttendance)
+          .insertOnConflictUpdate(
+            MyAttendanceCompanion.insert(
+              sessionId: sessionId,
+              clubId: clubId,
+              status: status,
+              groupId: const Value(null),
+              paceUnit: Value(existing?.paceUnit),
+              paceFromS: Value(existing?.paceFromS),
+              paceToS: Value(existing?.paceToS),
+              pending: const Value(false),
+              updatedAt: _now(),
+            ),
+          );
+    }
+    await _local.applyAttendance(
+      sessionId,
+      status: status,
+      groupId: null,
+      serverCountedGroupId: serverCountedGroupId,
     );
   }
 }

@@ -10,13 +10,14 @@ import 'package:go_router/go_router.dart';
 
 import 'support/fake_api.dart';
 import 'support/fake_api_phase4.dart';
+import 'support/gated_adapter.dart';
 import 'support/groups_test_support.dart';
 
 const _create = '/app/clubs/1/sessions/a/groups';
 
 void main() {
   late AppDatabase db;
-  late FakeAdapter adapter;
+  late GatedAdapter adapter;
   late GoRouter router;
 
   setUp(() => db = memoryDb());
@@ -33,7 +34,9 @@ void main() {
     List<Map<String, Object?>> groups = const [],
     Map<String, Object> routes = const {},
   }) async {
-    adapter = await prepareMember(tester, db, roles: roles, routes: routes);
+    adapter = GatedAdapter(
+      (await prepareMember(tester, db, roles: roles, routes: routes)).routes,
+    );
     await tester.runAsync(() async {
       await seedSession(db, 'a', groups: groups, groupMode: groupMode);
       await seedUnits(db);
@@ -43,6 +46,11 @@ void main() {
         GoRoute(
           path: '/',
           builder: (_, _) => const Scaffold(body: Text('detail screen')),
+        ),
+        GoRoute(
+          path: '/runs/a/groups/:gid/edit',
+          builder: (_, state) =>
+              Scaffold(body: Text('opened ${state.pathParameters['gid']}')),
         ),
         GoRoute(
           path: '/edit',
@@ -465,6 +473,189 @@ void main() {
         'distanceUnit': null,
       });
       expect(find.text('detail screen'), findsOneWidget);
+      await unmount(tester);
+    });
+  });
+
+  group('double submit (one group, one id)', () {
+    String sentId(int i) =>
+        (sent(adapter, 'POST', _create)[i].data as Map)['id']! as String;
+
+    Finder saveButton() =>
+        find.widgetWithText(FilledButton, 'Save group', skipOffstage: false);
+
+    testWidgets('a second tap while saving sends nothing more', (tester) async {
+      await pumpEditor(tester, routes: {'POST $_create': created});
+      final gate = adapter.gates['POST $_create'] = Completer<void>();
+      await tester.enterText(field('Label (required)'), 'Jog/walk');
+      await tester.ensureVisible(find.text('Save group'));
+      await tester.tap(find.text('Save group'));
+      await tester.pump();
+      // In flight: the button is disabled and shows a spinner, not its label.
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text('Save group'), findsNothing);
+      final button = find.byType(FilledButton).last;
+      expect(tester.widget<FilledButton>(button).onPressed, isNull);
+      await tester.tap(button, warnIfMissed: false);
+      await tester.pump();
+
+      gate.complete();
+      await settle(tester);
+      expect(sent(adapter, 'POST', _create), hasLength(1));
+      expect(find.text('detail screen'), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('a failed save can be retried with the same id', (
+      tester,
+    ) async {
+      var calls = 0;
+      await pumpEditor(
+        tester,
+        routes: {
+          'POST $_create': () => ++calls == 1
+              ? const FakeResponse(500, {'error': 'server_error'})
+              : FakeResponse(201, groupJson('new')),
+        },
+      );
+      await tester.enterText(field('Label (required)'), 'Jog/walk');
+      await tapSave(tester);
+      expect(sent(adapter, 'POST', _create), hasLength(1));
+      // The form stays, enabled again, with the error shown.
+      expect(find.text('detail screen'), findsNothing);
+      expect(tester.widget<FilledButton>(saveButton()).onPressed, isNotNull);
+      expect(find.byType(SnackBar), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 6));
+      await tapSave(tester);
+      expect(sent(adapter, 'POST', _create), hasLength(2));
+      expect(sentId(1), sentId(0), reason: 'a retry replays the same id');
+      expect(find.text('detail screen'), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('a 200 (the server replaying that id) closes as a success', (
+      tester,
+    ) async {
+      await pumpEditor(
+        tester,
+        routes: {'POST $_create': FakeResponse(200, groupJson('new'))},
+      );
+      await tester.enterText(field('Label (required)'), 'Jog/walk');
+      await tapSave(tester);
+      expect(find.text('detail screen'), findsOneWidget);
+      expect(find.byType(SnackBar), findsNothing);
+      await unmount(tester);
+    });
+
+    testWidgets('each new editor makes its own id', (tester) async {
+      await pumpEditor(tester, routes: {'POST $_create': created});
+      await tester.enterText(field('Label (required)'), 'One');
+      await tapSave(tester);
+      final first = sentId(0);
+      await unmount(tester);
+      await tester.runAsync(db.clearAll);
+
+      await pumpEditor(tester, routes: {'POST $_create': created});
+      await tester.enterText(field('Label (required)'), 'Two');
+      await tapSave(tester);
+      expect(sentId(0), isNot(first));
+      await unmount(tester);
+    });
+  });
+
+  group('one group per leader per run (D108)', () {
+    final mine = groupJson(
+      'mine',
+      label: 'Mine',
+      leaders: [leaderJson('me')],
+      goingCount: 1,
+    );
+
+    testWidgets('a second led group is blocked, with a way to open mine', (
+      tester,
+    ) async {
+      await pumpEditor(
+        tester,
+        groups: [mine],
+        routes: {'POST $_create': created},
+      );
+      await tester.enterText(field('Label (required)'), 'Another');
+      await tapSave(tester);
+
+      expect(sent(adapter, 'POST', _create), isEmpty);
+      expect(
+        find.text("You're already leading a group on this run"),
+        findsOneWidget,
+      );
+      expect(find.text('detail screen'), findsNothing);
+      await tester.tap(find.text('Open it'));
+      await tester.pumpAndSettle();
+      expect(find.text('opened mine'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 6));
+      await unmount(tester);
+    });
+
+    testWidgets('a server 409 already_leading is handled the same way', (
+      tester,
+    ) async {
+      await pumpEditor(
+        tester,
+        routes: {
+          'POST $_create': const FakeResponse(409, {
+            'error': 'already_leading',
+            'message': 'You already lead a group on this run.',
+            'groupId': 'elsewhere',
+          }),
+        },
+      );
+      await tester.enterText(field('Label (required)'), 'Another');
+      await tapSave(tester);
+
+      expect(sent(adapter, 'POST', _create), hasLength(1));
+      expect(
+        find.text("You're already leading a group on this run"),
+        findsOneWidget,
+      );
+      // The form stays open and can be used again.
+      expect(find.text('Save group'), findsOneWidget);
+      await tester.tap(find.text('Open it'));
+      await tester.pumpAndSettle();
+      expect(find.text('opened elsewhere'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 6));
+      await unmount(tester);
+    });
+
+    testWidgets('a committee leaderless add is not blocked', (tester) async {
+      await pumpEditor(
+        tester,
+        roles: ['committee'],
+        intent: GroupIntent.add,
+        kind: 'route',
+        lead: false,
+        groups: [mine],
+        routes: {'POST $_create': created},
+      );
+      await tester.enterText(field('Label (required)'), 'Route A');
+      await tapSave(tester);
+      expect(posted()['lead'], false);
+      expect(find.text('detail screen'), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('someone leading nothing here can create a group', (
+      tester,
+    ) async {
+      await pumpEditor(
+        tester,
+        groups: [
+          groupJson('other', label: 'Theirs', leaders: [leaderJson('l1')]),
+        ],
+        routes: {'POST $_create': created},
+      );
+      await tester.enterText(field('Label (required)'), 'Mine too');
+      await tapSave(tester);
+      expect(sent(adapter, 'POST', _create), hasLength(1));
       await unmount(tester);
     });
   });

@@ -94,6 +94,9 @@ String groupsIntro(String mode) => switch (mode) {
   _ => '',
 };
 
+/// The message when someone tries to lead a second group on a run (D108).
+const alreadyLeadingMessage = "You're already leading a group on this run";
+
 /// Friendly text for a failed group or attendance write.
 String groupErrorMessage(Object error) {
   final api = ApiException.from(error);
@@ -101,6 +104,11 @@ String groupErrorMessage(Object error) {
   return switch (api.code) {
     'session_cancelled' => 'This run has been cancelled.',
     'session_past' => 'This run has finished.',
+    'already_leading' => alreadyLeadingMessage,
+    'leader_exists' =>
+      api.body['message'] is String
+          ? api.body['message']! as String
+          : 'This group already has a leader. Join as co-leader or backmarker.',
     _ => api.statusCode == 403 ? "You can't do that." : api.message,
   };
 }

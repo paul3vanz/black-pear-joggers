@@ -1,0 +1,530 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:bpj/core/db/app_database.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+// Generator for the real on-disk upgrade fixtures. Run inside a worktree of the
+// OLD commit: it uses that commit's AppDatabase to create the file, then inserts
+// representative rows with raw SQL (only into columns the old schema has).
+const t0 = 1792000000; // mid Oct 2026, unix seconds
+String j(Object? o) => jsonEncode(o);
+
+final rows = <String, List<Map<String, Object?>>>{
+  'memberships': [
+    {
+      'member_id': 'mem_8f21',
+      'club_id': 1,
+      'club_name': 'Black Pear Joggers',
+      'club_slug': 'black-pear-joggers',
+      'join_url': 'https://bpj.org.uk/join',
+      'status': 'active',
+      'roles_json': j(['member', 'run_leader']),
+      'athlete_id': 4521987,
+      'first_name': 'Sam',
+      'last_name': 'Taylor',
+      'gender': 'M',
+      'category': 'V45',
+      'updated_at': t0,
+    },
+  ],
+  'profiles': [
+    {
+      'member_id': 'mem_8f21',
+      'club_id': 1,
+      'status': 'active',
+      'roles_json': j(['member', 'run_leader']),
+      'athlete_row_id': 311,
+      'athlete_id': 4521987,
+      'po10_guid': 'a1b2c3d4-0000-4000-8000-000000000001',
+      'first_name': 'Sam',
+      'last_name': 'Taylor',
+      'gender': 'M',
+      'category': 'V45',
+      'active': 1,
+      'affiliated': 1,
+      'competitive_reg_status': 'registered',
+      'first_claim_club_name': 'Black Pear Joggers',
+      'results_url': 'https://bpj.org.uk/results/311',
+      'power_of10_url': 'https://www.thepowerof10.info/athletes/profile.aspx?athleteid=4521987',
+      'claim_award_url': 'https://bpj.org.uk/claim-award',
+      'updated_at': t0,
+    },
+  ],
+  'posts': [
+    {
+      'id': 'post_01',
+      'club_id': 1,
+      'title': 'Club night moved to Tuesday',
+      'body_md': 'Due to **roadworks** the Tuesday run starts at the *rugby club*.\n\n- Meet 18:45\n- Lights please',
+      'priority': 'important',
+      'audience': 'all',
+      'published_at': t0 - 86400,
+      'pinned_until': t0 + 86400 * 5,
+      'author_member_id': 'mem_admin1',
+      'author_name': 'Jo Bennett',
+      'updated_at': t0 - 80000,
+    },
+    {
+      'id': 'post_02',
+      'club_id': 1,
+      'title': 'Worcester parkrun volunteers',
+      'body_md': 'We need 3 marshals on Saturday.',
+      'priority': 'normal',
+      'audience': 'all',
+      'published_at': t0 - 86400 * 4,
+      'author_member_id': 'mem_admin1',
+      'author_name': 'Jo Bennett',
+      'updated_at': t0 - 86400 * 4,
+    },
+  ],
+  'inbox_items': [
+    {
+      'id': 'inb_1',
+      'club_id': 1,
+      'category': 'club_update',
+      'title': 'Club night moved to Tuesday',
+      'body': 'Due to roadworks the Tuesday run starts at the rugby club.',
+      'data_json': j({'postId': 'post_01'}),
+      'created_at': t0 - 86000,
+      'read_at': null,
+      'read_pending': 0,
+    },
+    {
+      'id': 'inb_2',
+      'club_id': 1,
+      'category': 'group_message',
+      'title': 'Tuesday 8-9 min/mile',
+      'body': 'Chris: see you at the gate',
+      'data_json': j({'sessionId': 'ses_100', 'groupId': 'grp_a'}),
+      'created_at': t0 - 3600,
+      'read_at': t0 - 1800,
+      'read_pending': 1,
+    },
+  ],
+  'sync_cursors': [
+    {'key': 'posts:1', 'server_time': '2026-10-14T08:30:00+00:00'},
+    {'key': 'inbox:1', 'server_time': '2026-10-14T08:30:02+00:00'},
+    {'key': 'sessions:1', 'server_time': '2026-10-14T08:30:04+00:00'},
+    {'key': 'venues:1', 'server_time': '2026-10-14T08:30:05+00:00'},
+    {'key': 'series:1', 'server_time': '2026-10-14T08:30:06+00:00'},
+    {'key': 'groups:ses_100', 'server_time': '2026-10-14T08:31:00+00:00'},
+    {'key': 'messages:grp_a', 'server_time': '2026-10-14T08:32:00+00:00'},
+    {'key': 'members:1', 'server_time': '2026-10-14T08:33:00+00:00'},
+    {'key': 'events:1', 'server_time': '2026-10-14T08:34:00+00:00'},
+  ],
+  'venues': [
+    {
+      'id': 'ven_1',
+      'club_id': 1,
+      'name': 'Worcester Rugby Club',
+      'address': 'Sixways, Worcester WR3 8ZE',
+      'lat': 52.2312,
+      'lng': -2.2065,
+      'notes': 'Park at the back',
+      'updated_at': t0 - 90000,
+    },
+    {
+      'id': 'ven_2',
+      'club_id': 1,
+      'name': 'Gheluvelt Park',
+      'address': null,
+      'lat': null,
+      'lng': null,
+      'notes': null,
+      'updated_at': t0 - 90000,
+    },
+  ],
+  'session_series': [
+    {
+      'id': 'ser_1',
+      'club_id': 1,
+      'title': 'Tuesday club run',
+      'description': 'All paces welcome',
+      'venue_id': 'ven_1',
+      'weekday': 2,
+      'start_time': '18:45',
+      'duration_min': 75,
+      'interval_weeks': 1,
+      'valid_from': '2026-01-06',
+      'valid_until': null,
+      'group_mode': 'paced',
+      'cms_slug': 'tuesday-club-run',
+      'updated_at': t0 - 90000,
+    },
+    {
+      'id': 'ser_2',
+      'club_id': 1,
+      'title': 'Sunday long run',
+      'description': null,
+      'venue_id': 'ven_2',
+      'weekday': 0,
+      'start_time': '08:30',
+      'duration_min': 120,
+      'interval_weeks': 1,
+      'valid_from': '2026-01-04',
+      'valid_until': '2026-12-31',
+      'group_mode': 'open',
+      'cms_slug': null,
+      'updated_at': t0 - 90000,
+    },
+  ],
+  'sessions': [
+    {
+      'id': 'ses_100',
+      'club_id': 1,
+      'series_id': 'ser_1',
+      'occurrence_date': '2026-10-20',
+      'title': 'Tuesday club run',
+      'venue_id': 'ven_1',
+      'notes': 'Hill reps',
+      'starts_at': t0 + 86400 * 6,
+      'ends_at': t0 + 86400 * 6 + 4500,
+      'local_date': '2026-10-20',
+      'local_start_time': '18:45',
+      'local_end_time': '20:00',
+      'group_mode': 'paced',
+      'status': 'scheduled',
+      'cancel_reason': null,
+      'coordinator_member_id': 'mem_8f21',
+      'coordinator_name': 'Sam Taylor',
+      'is_detached': 0,
+      'original_json': null,
+      'groups_json': j([
+        {
+          'id': 'grp_a',
+          'sessionId': 'ses_100',
+          'kind': 'run',
+          'label': '8-9 min/mile',
+          'paceUnit': 'mile',
+          'paceFromS': 480,
+          'paceToS': 540,
+          'paceFromSPerKm': 298,
+          'paceToSPerKm': 336,
+          'distanceValue': 5.0,
+          'distanceUnit': 'mile',
+          'distanceM': 8047,
+          'status': 'active',
+          'sortOrder': 0,
+          'leaders': [
+            {'memberId': 'mem_8f21', 'displayName': 'Sam Taylor'},
+          ],
+          'goingCount': 6,
+          'maybeCount': 1,
+          'updatedAt': '2026-10-14T08:00:00+00:00',
+        },
+        {
+          'id': 'grp_b',
+          'sessionId': 'ses_100',
+          'kind': 'run',
+          'label': 'Easy 5k',
+          'status': 'needs_leader',
+          'sortOrder': 1,
+          'leaders': [],
+          'goingCount': 2,
+          'maybeCount': 0,
+        },
+      ]),
+      'summary_json': j({
+        'groupCount': 2,
+        'leaderCount': 1,
+        'goingCount': 8,
+        'maybeCount': 1,
+        'myStatus': 'going',
+        'myGroupId': 'grp_a',
+        'myLeading': true,
+      }),
+      'updated_at': t0 - 7000,
+    },
+    {
+      'id': 'ses_101',
+      'club_id': 1,
+      'series_id': 'ser_2',
+      'occurrence_date': '2026-10-18',
+      'title': 'Sunday long run',
+      'venue_id': 'ven_2',
+      'notes': null,
+      'starts_at': t0 + 86400 * 4,
+      'ends_at': t0 + 86400 * 4 + 7200,
+      'local_date': '2026-10-18',
+      'local_start_time': '08:30',
+      'local_end_time': '10:30',
+      'group_mode': 'open',
+      'status': 'cancelled',
+      'cancel_reason': 'Waterlogged',
+      'is_detached': 0,
+      'groups_json': null,
+      'summary_json': null,
+      'updated_at': t0 - 7000,
+    },
+    {
+      'id': 'ses_102',
+      'club_id': 1,
+      'series_id': null,
+      'occurrence_date': null,
+      'title': 'Social 5k + pub',
+      'venue_id': null,
+      'notes': 'Meet at the Plough',
+      'starts_at': t0 + 86400 * 9,
+      'ends_at': t0 + 86400 * 9 + 3600,
+      'local_date': '2026-10-23',
+      'local_start_time': '19:00',
+      'local_end_time': '20:00',
+      'group_mode': 'open',
+      'status': 'scheduled',
+      'is_detached': 1,
+      'original_json': j({'title': 'Social'}),
+      'groups_json': j([]),
+      'summary_json': j({'groupCount': 0}),
+      'updated_at': t0 - 7000,
+    },
+  ],
+  'session_plans': [
+    {
+      'session_id': 'ses_100',
+      'club_id': 1,
+      'json': j({
+        'sessionId': 'ses_100',
+        'groups': [
+          {
+            'groupId': 'grp_a',
+            'paces': [
+              {'fromSPerKm': 300, 'toSPerKm': 330},
+            ],
+            'attendees': [
+              {
+                'memberId': 'mem_8f21',
+                'displayName': 'Sam Taylor',
+                'status': 'going',
+                'paceUnit': 'mile',
+                'paceFromS': 480,
+                'paceToS': 540,
+              },
+            ],
+          },
+        ],
+        'unassigned': {'paces': [], 'members': []},
+      }),
+      'fetched_at': t0 - 600,
+    },
+  ],
+  'my_attendance': [
+    {
+      'session_id': 'ses_100',
+      'club_id': 1,
+      'status': 'going',
+      'group_id': 'grp_a',
+      'pace_unit': 'mile',
+      'pace_from_s': 480,
+      'pace_to_s': 540,
+      'pending': 0,
+      'updated_at': t0 - 500,
+    },
+    {
+      'session_id': 'ses_102',
+      'club_id': 1,
+      'status': 'maybe',
+      'group_id': null,
+      'pace_unit': null,
+      'pace_from_s': null,
+      'pace_to_s': null,
+      'pending': 1,
+      'updated_at': t0 - 100,
+    },
+  ],
+  'preferences': [
+    {
+      'club_id': 1,
+      'pace_unit': 'mile',
+      'distance_unit': 'mile',
+      'pace_from_s': 480,
+      'pace_to_s': 540,
+      'lead_days': '2,4',
+      'run_days': '1,2,4',
+      'updated_at': t0 - 5000,
+    },
+  ],
+  'group_messages': [
+    {
+      'id': 'msg_1',
+      'club_id': 1,
+      'group_id': 'grp_a',
+      'member_id': 'mem_8f21',
+      'author_name': 'Sam Taylor',
+      'author_role': 'leader',
+      'body': 'See you at the gate at 18:40',
+      'created_at': t0 - 3700,
+      'deleted_at': null,
+      'send_state': 'sent',
+    },
+    {
+      'id': 'msg_2',
+      'club_id': 1,
+      'group_id': 'grp_a',
+      'member_id': 'mem_9c02',
+      'author_name': 'Chris Lee',
+      'author_role': 'member',
+      'body': 'Running a bit late!',
+      'created_at': t0 - 3600,
+      'deleted_at': null,
+      'send_state': 'pending',
+    },
+    {
+      'id': 'msg_3',
+      'club_id': 1,
+      'group_id': 'grp_a',
+      'member_id': 'mem_9c02',
+      'author_name': 'Chris Lee',
+      'author_role': 'member',
+      'body': '(removed)',
+      'created_at': t0 - 3500,
+      'deleted_at': t0 - 3400,
+      'send_state': 'sent',
+    },
+  ],
+  'thread_states': [
+    {
+      'group_id': 'grp_a',
+      'club_id': 1,
+      'session_id': 'ses_100',
+      'label': '8-9 min/mile',
+      'local_date': '2026-10-20',
+      'last_message_at': t0 - 3600,
+      'last_body': 'Running a bit late!',
+      'last_author': 'Chris Lee',
+      'unread_count': 2,
+      'muted': 0,
+      'closed': 0,
+    },
+  ],
+  'member_cards': [
+    {
+      'member_id': 'mem_8f21',
+      'club_id': 1,
+      'display_name': 'Sam Taylor',
+      'photo_path': '/members/mem_8f21/photo.jpg',
+      'roles_csv': 'member,run_leader',
+      'has_bio': 1,
+    },
+    {
+      'member_id': 'mem_9c02',
+      'club_id': 1,
+      'display_name': 'Chris Lee',
+      'photo_path': null,
+      'roles_csv': 'member',
+      'has_bio': 0,
+    },
+  ],
+  'member_profiles': [
+    {
+      'member_id': 'mem_8f21',
+      'club_id': 1,
+      'json': j({
+        'memberId': 'mem_8f21',
+        'displayName': 'Sam Taylor',
+        'bio': 'Marathon runner and run leader since 2019.',
+        'photoPath': '/members/mem_8f21/photo.jpg',
+        'roles': ['member', 'run_leader'],
+      }),
+      'fetched_at': t0 - 4000,
+    },
+  ],
+  'standards_cache': [
+    {
+      'club_id': 1,
+      'body_json': j({'categories': [], 'sets': []}),
+      'etag': '"abc123"',
+      'fetched_at': t0 - 3000,
+    },
+  ],
+  'event_locations': [
+    {
+      'id': 'loc_1',
+      'club_id': 1,
+      'kind': 'parkrun',
+      'name': 'Worcester parkrun',
+      'slug': 'worcester',
+      'country': 'GB',
+      'region': 'West Midlands',
+      'lat': 52.1894,
+      'lng': -2.2224,
+      'url': 'https://www.parkrun.org.uk/worcester',
+      'source': 'parkrun',
+      'updated_at': t0 - 60000,
+      'deleted_at': null,
+    },
+    {
+      'id': 'loc_2',
+      'club_id': 1,
+      'kind': 'race',
+      'name': 'Malvern Hills 10k',
+      'source': 'manual',
+      'updated_at': t0 - 60000,
+    },
+  ],
+};
+
+void main() {
+  test('generate', () async {
+    final out = Platform.environment['FIXTURE_OUT']!;
+    final f = File(out);
+    if (f.existsSync()) f.deleteSync();
+    final db = AppDatabase(NativeDatabase(f));
+    await db.customSelect('select 1').get();
+    final version = (await db
+        .customSelect('pragma user_version')
+        .getSingle()).data.values.first;
+    stdout.writeln('created $out user_version=$version');
+    final existing = <String>{};
+    final tables = await db
+        .customSelect(
+          "select name from sqlite_master where type='table' and name not like 'sqlite_%'",
+        )
+        .get();
+    for (final r in tables) {
+      existing.add(r.read<String>('name'));
+    }
+    for (final e in rows.entries) {
+      if (!existing.contains(e.key)) {
+        stdout.writeln('skip ${e.key} (not in this schema)');
+        continue;
+      }
+      final info = await db.customSelect('pragma table_info(${e.key})').get();
+      final cols = {for (final c in info) c.read<String>('name'): c};
+      for (final row in e.value) {
+        final data = {
+          for (final kv in row.entries)
+            if (cols.containsKey(kv.key)) kv.key: kv.value,
+        };
+        // A NOT NULL column without default that the fixture didn't list.
+        for (final c in cols.values) {
+          final name = c.read<String>('name');
+          if (c.read<int>('notnull') == 1 &&
+              c.data['dflt_value'] == null &&
+              !data.containsKey(name)) {
+            data[name] = c.read<String>('type').toUpperCase().contains('INT')
+                ? 1
+                : 'x';
+            stdout.writeln('  filled ${e.key}.$name');
+          }
+        }
+        final names = data.keys.toList();
+        await db.customStatement(
+          'insert into ${e.key} (${names.join(',')}) values (${names.map((_) => '?').join(',')})',
+          [for (final n in names) data[n]],
+        );
+      }
+      stdout.writeln('${e.key}: ${e.value.length} rows');
+    }
+    for (final t in existing) {
+      final n = (await db
+          .customSelect('select count(*) c from $t')
+          .getSingle()).read<int>('c');
+      stdout.writeln('count $t = $n');
+      expect(n, greaterThan(0), reason: '$t empty');
+    }
+    await db.close();
+    stdout.writeln('size ${f.lengthSync()}');
+  });
+}

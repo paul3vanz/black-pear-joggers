@@ -38,7 +38,7 @@ trait ManagesGroups
     /**
      * Someone leading a group is going on that run, so mark them as attending it.
      * An existing response keeps its per-run pace; "not going" or "maybe" becomes
-     * "going". Leaving the group as a leader later does not undo this.
+     * "going". Stepping down later removes them from the group again (D109).
      */
     protected function attendAsLeader($club, ClubSession $session, SessionGroup $group, $member): void
     {
@@ -58,6 +58,33 @@ trait ManagesGroups
             'group_id' => $group->id,
         ]);
         $row->save();
+    }
+
+    /**
+     * The live group of this run the member confirmed-leads, other than $except (D108), or null.
+     * Leaderless and event groups never count: only a confirmed leader row on a live group does.
+     */
+    protected function groupLedIn(ClubSession $session, $member, ?SessionGroup $except = null): ?SessionGroup
+    {
+        $query = SessionGroup::where('session_id', $session->id)
+            ->whereIn('id', SessionGroupLeader::where('member_id', $member->id)
+                ->where('status', SessionGroupLeader::CONFIRMED)->select('group_id'));
+
+        if ($except) {
+            $query->where('id', '!=', $except->id);
+        }
+
+        return $query->orderBy('created_at')->first();
+    }
+
+    /** 409 already_leading carrying the group the member already leads in this run. */
+    protected function alreadyLeading(SessionGroup $group)
+    {
+        return response()->json([
+            'error' => 'already_leading',
+            'message' => 'You are already leading a group on this run.',
+            'groupId' => $group->id,
+        ], 409);
     }
 
     /** A live session of this club, or null. */

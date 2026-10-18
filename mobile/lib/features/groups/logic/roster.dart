@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/db/app_database.dart';
 import '../../runs/data/runs_repository.dart';
+import '../../runs/logic/my_days.dart';
 import '../../runs/logic/run_modes.dart';
 import '../../runs/ui/run_format.dart';
 
@@ -66,30 +67,26 @@ List<RosterWeek> buildRoster(
   return result;
 }
 
-/// Short names for the weekday filter chips, indexed by `DateTime.weekday - 1`
-/// (Dart numbers Monday 1 to Sunday 7).
-const weekdayShort = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
 /// The weekdays (1 = Monday ... 7 = Sunday) that occur in [weeks], so the
 /// filter only offers days that exist.
-Set<int> rosterWeekdays(List<RosterWeek> weeks) => {
-  for (final w in weeks)
-    for (final s in w.sessions) parseLocalDate(s.localDate).weekday,
-};
+Set<int> rosterWeekdays(List<RosterWeek> weeks) =>
+    weekdaysOf(weeks.expand((w) => w.sessions));
 
 /// The roster after the day filter: [weeks] is what to show and [hidden] how
 /// many runs the filter removed.
 typedef RosterFilterResult = ({List<RosterWeek> weeks, int hidden});
 
-/// Keeps the runs on one of [days] (empty = all days) plus every run for which
-/// [isLeading] is true, so a run you lead never disappears (D56). Weeks that
-/// end up empty are dropped.
+/// Keeps the runs on one of [days] plus every run for which [isLeading] is
+/// true, so a run you lead never disappears (D56). [days] is what
+/// `leadRosterDays` picks (D115): null = nothing chosen or Show all, so nothing
+/// is filtered; an empty set = chose none, so only the runs you lead remain.
+/// Weeks that end up empty are dropped.
 RosterFilterResult filterRosterByDays(
   List<RosterWeek> weeks,
-  Set<int> days,
+  Set<int>? days,
   bool Function(Session session) isLeading,
 ) {
-  if (days.isEmpty) return (weeks: weeks, hidden: 0);
+  if (days == null) return (weeks: weeks, hidden: 0);
   var hidden = 0;
   final kept = <RosterWeek>[];
   for (final w in weeks) {
@@ -107,12 +104,3 @@ RosterFilterResult filterRosterByDays(
   }
   return (weeks: kept, hidden: hidden);
 }
-
-/// `1,3` -> {1, 3}; ignores anything that is not a weekday number.
-Set<int> decodeWeekdays(String? stored) => {
-  for (final part in (stored ?? '').split(','))
-    if (int.tryParse(part.trim()) case final d? when d >= 1 && d <= 7) d,
-};
-
-/// {3, 1} -> `1,3`.
-String encodeWeekdays(Set<int> days) => (days.toList()..sort()).join(',');

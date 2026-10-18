@@ -252,6 +252,15 @@ class Preferences extends Table {
   IntColumn get paceFromS => integer().nullable()();
   IntColumn get paceToS => integer().nullable()();
 
+  /// "Days I may lead" (D107): comma-separated ISO weekdays (`2,4`, Monday = 1).
+  /// Null = never chosen, empty string = chose none. The server owns it; this is
+  /// a cache (D111).
+  TextColumn get leadDays => text().nullable()();
+
+  /// "Days I run" (D115), the same encoding as [leadDays]. Null = never chosen
+  /// (every day). Hides runs on other days on the Runs tab.
+  TextColumn get runDays => text().nullable()();
+
   /// Null until the server has stored them.
   DateTimeColumn get updatedAt => dateTime().nullable()();
 

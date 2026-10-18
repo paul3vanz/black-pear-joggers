@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/db/app_database.dart';
@@ -15,6 +16,7 @@ import '../data/groups_repository.dart';
 import '../data/last_group_store.dart';
 import 'distance_input.dart';
 import 'group_access.dart';
+import 'group_actions.dart';
 import 'group_format.dart';
 import 'groups_providers.dart';
 import 'pace_input.dart';
@@ -175,6 +177,12 @@ class _GroupFormState extends ConsumerState<GroupForm> {
   late bool _lead;
   bool _saving = false;
 
+  /// The new group's client id, made ONCE per editor and reused by every save
+  /// attempt. The server de-duplicates on `id` (a replay answers 200 with the
+  /// same group), so pressing Save twice, or retrying after a slow or failed
+  /// response, can never create two groups.
+  final String _newGroupId = const Uuid().v4();
+
   /// The server's 422 message for `label`, shown on the field until it is
   /// edited (the client rule should catch it first; this is the safety net).
   String? _serverLabelError;
@@ -251,6 +259,8 @@ class _GroupFormState extends ConsumerState<GroupForm> {
   }
 
   Future<void> _save() async {
+    // A save is already in flight: ignore the tap (the button is disabled too).
+    if (_saving) return;
     if (!_formKey.currentState!.validate()) return;
     final router = GoRouter.of(context);
     final repo = ref.read(groupsRepositoryProvider);
@@ -263,6 +273,17 @@ class _GroupFormState extends ConsumerState<GroupForm> {
     // leaderless group (D86). Everyone else leads what they create (the server
     // returns 403 for a leaderless group from an ordinary member).
     final lead = _showLeadSwitch() ? _lead : true;
+    // One group per leader per run (D108): don't even try a second led group.
+    if (!_editing && lead) {
+      final mine = groupLedBy(
+        ref.read(sessionGroupsProvider(widget.session.id)).value ?? const [],
+        ref.read(myMemberIdProvider),
+      );
+      if (mine != null) {
+        showAlreadyLeading(context, widget.session, mine.id);
+        return;
+      }
+    }
     setState(() => _saving = true);
     final done = await runWrite(
       context,
@@ -281,6 +302,7 @@ class _GroupFormState extends ConsumerState<GroupForm> {
             : () async {
                 final g = await repo.createGroup(
                   widget.session.id,
+                  id: _newGroupId,
                   kind: _kind,
                   label: label.isEmpty ? null : label,
                   description: description.isEmpty ? null : description,
@@ -293,6 +315,7 @@ class _GroupFormState extends ConsumerState<GroupForm> {
               }(),
       ),
       errorMessage: groupErrorMessage,
+      errorAction: (e) => groupErrorAction(router, widget.session.id, e),
     );
     if (!mounted) return;
     if (done) {
@@ -304,6 +327,10 @@ class _GroupFormState extends ConsumerState<GroupForm> {
 
   @override
   Widget build(BuildContext context) {
+    // Keep these live so `_save` (which only reads) sees who I am and which
+    // group I lead on this run, for the one-group-per-leader check (D108).
+    ref.watch(myMemberIdProvider);
+    ref.watch(sessionGroupsProvider(widget.session.id));
     final route = _kind == 'route';
     final paceField = PaceInput(controller: _pace);
     final distanceField = DistanceInput(

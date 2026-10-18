@@ -43,7 +43,7 @@ final class AccountsControllerProvider
 }
 
 String _$accountsControllerHash() =>
-    r'1b1074d99565b26806196192cadcf1c58c83cd20';
+    r'7559f64a1fed148b3f9ae31047691c34005c7acc';
 
 /// Source of truth for accounts. React/TS equivalent: a Zustand store / React Query
 /// mutation set. `AsyncNotifier` = state that is loaded asynchronously, exposed to
