@@ -383,7 +383,7 @@ class AppNotificationsV2Test extends AppGroupsBase
         );
     }
 
-    public function testPutSavesTheCapAndSeriesOverridesAndAutoDeletesTheRow()
+    public function testPutSavesTheCapAndSeriesOverridesAsFollowModes()
     {
         $tue = $this->makeSeries('Tuesday run', 2, '19:00');
         $thu = $this->makeSeries('Thursday', 4, '19:00');
@@ -405,16 +405,26 @@ class AppNotificationsV2Test extends AppGroupsBase
         $this->assertSame(6, $other['dailyPushCap']);
         $this->assertSame(['auto', 'auto'], array_column($other['series'], 'reminders'));
 
-        // Partial update: only a series; auto deletes the row and the cap is kept.
+        // Stored as the follow mode (D117): Never = hide, Always = follow.
+        $this->assertSame(['hide', 'follow'], [
+            MemberSeriesPref::where('series_id', $tue->id)->first()->mode,
+            MemberSeriesPref::where('series_id', $thu->id)->first()->mode,
+        ]);
+
+        // Partial update: only a series; auto clears the override and the cap is kept.
         [, $body] = $this->call_('PUT', '/app/clubs/1/notification-settings', 'plain', ['series' => [$tue->id => 'auto']]);
         $this->assertSame(12, $body['dailyPushCap']);
         $this->assertSame(['auto', 'on'], array_column($body['series'], 'reminders'));
-        $this->assertSame(1, MemberSeriesPref::count());
+        $this->assertSame('auto', MemberSeriesPref::where('series_id', $tue->id)->first()->mode);
 
         // Updating an override replaces it rather than adding a row.
         $this->call_('PUT', '/app/clubs/1/notification-settings', 'plain', ['series' => [$thu->id => 'off']]);
-        $this->assertSame(1, MemberSeriesPref::count());
-        $this->assertSame('off', MemberSeriesPref::first()->reminders);
+        $this->assertSame(2, MemberSeriesPref::count());
+        $this->assertSame('hide', MemberSeriesPref::where('series_id', $thu->id)->first()->mode);
+
+        // And the new follows endpoint sees the same choices.
+        [, $follows] = $this->call_('GET', '/app/clubs/1/follows', 'plain');
+        $this->assertSame(['auto', 'hide'], array_column($follows['series'], 'mode'));
     }
 
     public function testPutZeroMeansNoLimitAndKeepsPacePreferences()

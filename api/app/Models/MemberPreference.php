@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * `run_days` and `lead_days` are comma-separated ISO weekdays (1 = Monday ... 7 = Sunday): null =
  * never chosen, '' = chose none. Lead days are kept inside run days when both are set (D115).
+ * `run_days` no longer narrows anything on the server (D117): it is kept for older app versions and
+ * for `app:migrate-follows`, which sets `follows_migrated_at` once it has turned it into series modes.
  */
 final class MemberPreference extends Model
 {
@@ -27,12 +29,14 @@ final class MemberPreference extends Model
         'push_daily_cap',
         'lead_days',
         'run_days',
+        'follows_migrated_at',
     ];
 
     protected $casts = [
         'push_daily_cap' => 'integer',
         'lead_days' => 'string',
         'run_days' => 'string',
+        'follows_migrated_at' => 'datetime',
     ];
 
     /** ISO weekdays (1-7), sorted: null = never chosen, [] = none. */
@@ -63,22 +67,6 @@ final class MemberPreference extends Model
         sort($days);
 
         return implode(',', $days);
-    }
-
-    /**
-     * Whether a member with these preferences runs on $weekday (ISO), for run notifications they did
-     * not ask for by answering (D115): no run days chosen means every day, and a day they may lead
-     * always counts.
-     */
-    public static function runsOn(?self $pref, int $weekday): bool
-    {
-        $run = $pref ? self::parseDays($pref->run_days) : null;
-
-        if ($run === null) {
-            return true;
-        }
-
-        return in_array($weekday, $run, true) || in_array($weekday, self::parseDays($pref->lead_days) ?? [], true);
     }
 
     public function member()

@@ -6,7 +6,6 @@ use App\Models\Club;
 use App\Models\ClubMember;
 use App\Models\ClubSession;
 use App\Models\MemberPreference;
-use App\Models\MemberSeriesPref;
 use App\Models\Notification;
 use App\Models\SessionAttendee;
 use App\Models\SessionGroup;
@@ -14,7 +13,7 @@ use App\Models\SessionGroupLeader;
 use Illuminate\Support\Carbon;
 
 /**
- * The time-driven run notifications (Phase 5b, D31, D35), found by
+ * The time-driven run notifications (Phase 5b, D31, D35, D117), found by
  * `app:send-reminders` every 10 minutes:
  *
  *  - morning-of reminders (`run_reminders`, with going / not-going buttons)
@@ -35,8 +34,6 @@ class RunReminderService
     /** The "leaders needed" check starts each local day at this hour. */
     const LEADERS_AFTER_HOUR = 9;
     const LEADERS_WINDOW_HOURS = 72;
-    /** How many finished runs of a series decide who is reminded automatically. */
-    const AUTO_HISTORY = 6;
 
     /** @var RunNotifier */
     private $notifier;
@@ -129,7 +126,7 @@ class RunReminderService
                 return in_array($a->status, [SessionAttendee::GOING, SessionAttendee::MAYBE], true);
             })->keys()->all(),
             array_keys($leading),
-            $this->seriesAudience($session, $now, $tz)
+            $this->seriesAudience($session, $now)
         );
 
         $notGoing = $answers->filter(function ($a) {
@@ -193,54 +190,24 @@ class RunReminderService
     }
 
     /**
-     * Members the series rule adds on top of the people who answered (D35): `on` always,
-     * `off` never, otherwise (auto) anyone who was going at one of the last runs of the series and
-     * runs on this weekday (their run days, D115). A run with no series adds nobody.
+     * Members the series rule adds on top of the people who answered: those who follow the run's
+     * series, or have it on auto and usually come (FollowResolver, D117). Hidden series and runs with
+     * no series add nobody.
      *
      * @return string[]
      */
-    private function seriesAudience(ClubSession $session, Carbon $now, string $tz): array
+    private function seriesAudience(ClubSession $session, Carbon $now): array
     {
         if (!$session->series_id) {
             return [];
         }
 
-        $prefs = MemberSeriesPref::where('club_id', $session->club_id)->where('series_id', $session->series_id)
-            ->pluck('reminders', 'member_id')->all();
+        $ids = ClubMember::where('club_id', $session->club_id)->pluck('id')->all();
+        $resolved = app(SeriesFollows::class)->resolveRun($session, $ids, [], $now);
 
-        $recent = ClubSession::where('series_id', $session->series_id)
-            ->where('id', '!=', $session->id)
-            ->where('status', ClubSession::STATUS_SCHEDULED)
-            ->where('ends_at', '<', $now->copy()->utc())
-            ->orderByDesc('starts_at')
-            ->limit(self::AUTO_HISTORY)
-            ->pluck('id');
-
-        $auto = $recent->isEmpty() ? [] : SessionAttendee::whereIn('session_id', $recent)
-            ->where('status', SessionAttendee::GOING)->pluck('member_id')->unique()->all();
-
-        // Events and races: only people who are going, plus an explicit "on" (the "usually comes" rule is off, D79).
-        if ($session->isEventMode()) {
-            $auto = [];
-        }
-
-        $weekday = Carbon::parse($session->starts_at)->setTimezone($tz)->dayOfWeekIso;
-        $days = $auto ? MemberPreference::where('club_id', $session->club_id)->whereIn('member_id', $auto)->get()->keyBy('member_id') : collect();
-
-        $ids = [];
-        foreach ($auto as $id) {
-            if (($prefs[$id] ?? MemberSeriesPref::AUTO) !== MemberSeriesPref::OFF && MemberPreference::runsOn($days->get($id), $weekday)) {
-                $ids[] = $id;
-            }
-        }
-
-        foreach ($prefs as $id => $value) {
-            if ($value === MemberSeriesPref::ON) {
-                $ids[] = $id;
-            }
-        }
-
-        return $ids;
+        return array_keys(array_filter($resolved, function ($r) {
+            return $r['followed'];
+        }));
     }
 
     // ---- leaders needed --------------------------------------------------------------------

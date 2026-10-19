@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Models\ClubMember;
 use App\Models\ClubSession;
 use App\Models\MemberPreference;
+use App\Models\MemberSeriesPref;
 use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
+use App\Models\SessionSeries;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -19,8 +21,8 @@ use Illuminate\Support\Collection;
  * A member is a candidate when:
  *  1. their `lead_days` is set (not null): the run's weekday, in club-local time, is in it, else no.
  *     An explicit choice always wins, even over history;
- *  2. else their `run_days` is set and does not include the weekday: no (nobody leads on a day they
- *     don't run, D115);
+ *  2. else they hid the run's series: no (nobody leads a run they chose not to see, D117; this
+ *     replaced the run-days check of D115);
  *  3. else they led before: any `session_group_leaders` row (any status) on a session of the same
  *     series in the 26 weeks before the run, or, for a run with no series, on any session on the
  *     same weekday in that window;
@@ -42,6 +44,8 @@ class LeaderAudience
         $prefs = MemberPreference::where('club_id', $session->club_id)->get()->keyBy('member_id');
         $history = array_flip($this->historyMemberIds($session, $tz, $weekday));
         $everLed = null;
+        $series = $session->series_id ? SessionSeries::withTrashed()->find($session->series_id) : null;
+        $modes = $series ? app(SeriesFollows::class)->modesForSeries($series, $members->pluck('id')->all()) : [];
 
         $ids = [];
         foreach ($members as $member) {
@@ -52,7 +56,7 @@ class LeaderAudience
                 if (in_array($weekday, $days, true)) {
                     $ids[] = $member->id;
                 }
-            } elseif (!MemberPreference::runsOn($pref, $weekday)) {
+            } elseif (($modes[$member->id] ?? null) === MemberSeriesPref::HIDE) {
                 continue;
             } elseif (isset($history[$member->id])) {
                 $ids[] = $member->id;

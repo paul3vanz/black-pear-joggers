@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\ManagesGroups;
 use App\Models\MemberPreference;
 use App\Services\NotificationPresenter;
+use App\Services\SeriesFollows;
 use Illuminate\Http\Request;
 
 /**
@@ -118,6 +119,11 @@ class AppPreferenceController extends Controller
         }
         $pref->updated_at = \Illuminate\Support\Carbon::now();
         $pref->save();
+
+        // Older apps still save "days I run" (D115): it now follows the series on those days (D117).
+        if (array_key_exists('runDays', $days) && $days['runDays']) {
+            app(SeriesFollows::class)->followDays($club->id, $member->id, MemberPreference::parseDays($pref->run_days));
+        }
 
         return response()->json($this->body($pref->fresh()));
     }

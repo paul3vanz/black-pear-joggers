@@ -6,9 +6,11 @@ use App\Jobs\NotifyMatchingGroupJob;
 use App\Jobs\SendPushNotificationsJob;
 use App\Models\ClubMember;
 use App\Models\MemberPreference;
+use App\Models\MemberSeriesPref;
 use App\Models\Notification;
 use App\Models\NotificationPreference;
 use App\Models\SessionGroup;
+use App\Models\SessionSeries;
 use App\Services\RunNotifier;
 use Illuminate\Support\Facades\Queue;
 
@@ -207,30 +209,53 @@ class AppGroupMatchTest extends AppGroupsBase
         $this->assertCount(1, $this->matchRows($maybe));
     }
 
-    public function testWithoutAnAnswerOnlyRunsOnTheMembersDaysCount()
+    public function testWithoutAnAnswerOnlyRunsInMyRunsCount()
     {
-        $s = $this->session(); // a Monday
+        // D117: the series mode decides (run days no longer do); going or maybe always counts.
+        $series = SessionSeries::create([
+            'club_id' => 1, 'title' => 'Monday club run', 'weekday' => 1, 'start_time' => '19:00', 'duration_min' => 90,
+            'interval_weeks' => 1, 'valid_from' => '2026-01-01', 'valid_until' => null, 'group_mode' => 'paced',
+        ]);
+        $last = $this->session(['date' => '2026-10-05', 'series_id' => $series->id]);
+        $s = $this->session(['series_id' => $series->id]); // a Monday
         $g = $this->paced($s);
-        $monday = $this->m('monday', 301, [570, 600]);
-        $wednesday = $this->m('wednesday', 302, [570, 600]);
-        $leadsMonday = $this->m('leadsmonday', 303, [570, 600]);
-        $goingAnyway = $this->m('going', 304, [570, 600]);
-        $maybeAnyway = $this->m('maybe', 305, [570, 600]);
-        MemberPreference::where('member_id', $monday->id)->update(['run_days' => '1,3']);
-        MemberPreference::where('member_id', $wednesday->id)->update(['run_days' => '3']);
-        MemberPreference::where('member_id', $leadsMonday->id)->update(['run_days' => '3', 'lead_days' => '1']);
-        MemberPreference::where('member_id', $goingAnyway->id)->update(['run_days' => '3']);
-        MemberPreference::where('member_id', $maybeAnyway->id)->update(['run_days' => '']);
-        $this->attend($s, $goingAnyway, 'going');
-        $this->attend($s, $maybeAnyway, 'maybe');
+        $follows = $this->m('follows', 301, [570, 600]);
+        $hidden = $this->m('hidden', 302, [570, 600]);
+        $usual = $this->m('usual', 303, [570, 600]);
+        $rarely = $this->m('rarely', 304, [570, 600]);
+        $hiddenGoing = $this->m('hiddengoing', 305, [570, 600]);
+        $hiddenMaybe = $this->m('hiddenmaybe', 306, [570, 600]);
+        $otherDay = $this->m('otherday', 307, [570, 600]);
+        foreach ([[$follows, 'follow'], [$hidden, 'hide'], [$hiddenGoing, 'hide'], [$hiddenMaybe, 'hide']] as [$who, $mode]) {
+            MemberSeriesPref::create(['club_id' => 1, 'member_id' => $who->id, 'series_id' => $series->id, 'mode' => $mode]);
+        }
+        $this->attend($last, $usual, 'going');
+        $this->attend($last, $otherDay, 'going');
+        MemberPreference::where('member_id', $otherDay->id)->update(['run_days' => '3', 'follows_migrated_at' => '2026-10-11 00:00:00']);
+        $this->attend($s, $hiddenGoing, 'going');
+        $this->attend($s, $hiddenMaybe, 'maybe');
 
         $this->runJob($g);
 
-        $this->assertCount(1, $this->matchRows($monday));
-        $this->assertCount(0, $this->matchRows($wednesday));
-        $this->assertCount(1, $this->matchRows($leadsMonday)); // a lead day is a day they run
-        $this->assertCount(1, $this->matchRows($goingAnyway)); // said they are coming
-        $this->assertCount(1, $this->matchRows($maybeAnyway));
+        $this->assertCount(1, $this->matchRows($follows));
+        $this->assertCount(0, $this->matchRows($hidden));
+        $this->assertCount(1, $this->matchRows($usual)); // auto, came last week
+        $this->assertCount(0, $this->matchRows($rarely)); // auto, never came
+        $this->assertCount(1, $this->matchRows($hiddenGoing)); // said they are coming
+        $this->assertCount(1, $this->matchRows($hiddenMaybe));
+        $this->assertCount(1, $this->matchRows($otherDay)); // migrated: old run days are ignored
+    }
+
+    public function testAOneOffRunTellsEveryoneWhosePaceFits()
+    {
+        $s = $this->session(); // no series
+        $g = $this->paced($s);
+        $who = $this->m('who', 301, [570, 600]);
+        MemberPreference::where('member_id', $who->id)->update(['run_days' => '3']);
+
+        $this->runJob($g);
+
+        $this->assertCount(1, $this->matchRows($who));
     }
 
     public function testMembersAlreadyInAGroupThatFitsAreLeftOutButOthersAreNot()

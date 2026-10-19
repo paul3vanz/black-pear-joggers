@@ -1,0 +1,32 @@
+{
+  "about": "The one case table for FollowResolver (D117). Read by api/tests/FollowResolverTest.php (PHP resolver and the reminder job) and mobile/test/follow_resolver_test.dart (the app's copy), so the feed and the notifications must give the same answer. Columns: rsvp (null = no answer), mode (null = a run with no series), usuallyComes, then the expected followed and inMine. Rule numbers are the My runs order in the build plan: 1 RSVP, 2 hide, 3 follow, 4 auto.",
+  "columns": ["rsvp", "mode", "usuallyComes", "followed", "inMine", "why"],
+  "cases": [
+    [null, "follow", false, true, true, "3: follow shows"],
+    [null, "follow", true, true, true, "3: follow shows"],
+    [null, "auto", true, true, true, "4: auto, usually comes"],
+    [null, "auto", false, false, false, "4: auto, rarely comes"],
+    [null, "hide", true, false, false, "2: hide wins over history"],
+    [null, "hide", false, false, false, "2: hide"],
+    [null, null, false, false, true, "one-off run: always shows, never followed"],
+    [null, null, true, false, true, "one-off run: always shows, never followed"],
+
+    ["going", "follow", false, true, true, "1: RSVP"],
+    ["going", "auto", false, false, true, "1: RSVP beats auto rarely"],
+    ["going", "auto", true, true, true, "1: RSVP"],
+    ["going", "hide", false, false, true, "1: RSVP beats hide"],
+    ["going", "hide", true, false, true, "1: RSVP beats hide"],
+    ["going", null, false, false, true, "1: RSVP, one-off"],
+
+    ["maybe", "follow", true, true, true, "1: RSVP"],
+    ["maybe", "auto", false, false, true, "1: RSVP beats auto rarely"],
+    ["maybe", "hide", false, false, true, "1: RSVP beats hide"],
+    ["maybe", null, false, false, true, "1: RSVP, one-off"],
+
+    ["not_going", "follow", false, true, true, "3: can't come is not an RSVP yes; still followed"],
+    ["not_going", "auto", true, true, true, "4: still followed (the reminder job drops not_going itself)"],
+    ["not_going", "auto", false, false, false, "4: auto, rarely comes"],
+    ["not_going", "hide", true, false, false, "2: hide"],
+    ["not_going", null, false, false, true, "one-off run: always shows"]
+  ]
+}

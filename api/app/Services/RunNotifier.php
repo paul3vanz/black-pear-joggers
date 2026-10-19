@@ -193,17 +193,18 @@ class RunNotifier
         $leaders = SessionGroupLeader::where('group_id', $group->id)->where('status', SessionGroupLeader::CONFIRMED)->pluck('member_id')->all();
 
         $ids = [];
-        $weekday = app(LeaderAudience::class)->weekday($session, $this->tz($club));
+        $candidates = $this->activeIds($club, ClubMember::where('club_id', $club->id)->pluck('id'), $actorId);
+        $resolved = app(SeriesFollows::class)->resolveRun($session, $candidates, [], Carbon::now());
 
-        foreach ($this->activeIds($club, ClubMember::where('club_id', $club->id)->pluck('id'), $actorId) as $id) {
+        foreach ($candidates as $id) {
             $answer = $attendees->get($id);
             $pref = $prefs->get($id);
 
-            // Without an answer, only runs on the member's days (D115); going or maybe always counts.
+            // Without an answer, only runs in the member's My runs (D117); going or maybe always counts.
             if (in_array($id, $leaders, true)
                 || ($answer && $answer->status === SessionAttendee::NOT_GOING)
                 || ($answer && $answer->group_id === $group->id)
-                || (!$answer && !MemberPreference::runsOn($pref, $weekday))
+                || (!$answer && !$resolved[$id]['inMine'])
                 || !PaceMatcher::memberFitsGroup($answer, $pref, $group)) {
                 continue;
             }

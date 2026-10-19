@@ -183,6 +183,11 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->get('preferences', 'AppPreferenceController@show');
         $router->put('preferences', 'AppPreferenceController@update');
 
+        // Runs I follow (D117): one mode per series for the feed and reminders
+        $router->get('follows', 'AppFollowController@index');
+        $router->put('follows', 'AppFollowController@updateMany');
+        $router->put('follows/{seriesId}', 'AppFollowController@update');
+
         // Phase 6: group messaging
         $router->get('groups/{groupId}/messages', 'AppGroupMessageController@index');
         $router->post('groups/{groupId}/messages', 'AppGroupMessageController@store');

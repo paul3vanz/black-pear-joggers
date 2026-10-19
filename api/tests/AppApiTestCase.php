@@ -79,6 +79,7 @@ abstract class AppApiTestCase extends TestCase
             '2026_10_16_090100_add_location_id_to_session_groups_table.php',
             '2026_10_17_090000_add_lead_days_to_member_preferences_table.php',
             '2026_10_18_090000_add_run_days_to_member_preferences_table.php',
+            '2026_10_19_090000_add_follow_mode_to_member_series_prefs_table.php',
         ]);
 
         // Stand in for the Auth0 verification: the sub comes from a header.

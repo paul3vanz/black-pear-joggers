@@ -264,31 +264,39 @@ class AppRunRemindersTest extends AppGroupsBase
         $this->assertCount(0, $this->got($futureOnly));
     }
 
-    public function testAutoSkipsMembersWhoNoLongerRunThatDayButAnAnswerOrAlwaysWins()
+    public function testRunDaysNoLongerNarrowAutoButHideDoesAndAnAnswerWins()
     {
+        // D117: an old day filter is read through the migration mapping (Automatic on another day
+        // stays auto, so "usually comes" still reminds); only Hide stops the series rule.
         $series = $this->series();
         $last = $this->seriesRun($series, '2026-10-05');
         $today = $this->seriesRun($series, '2026-10-12'); // Mondays
         $stillMonday = $this->m('stillmonday', 301);
         $nowWednesday = $this->m('nowwednesday', 302);
-        $wednesdayButGoing = $this->m('wedgoing', 303);
-        $wednesdayButAlways = $this->m('wedalways', 304);
-        foreach ([$stillMonday, $nowWednesday, $wednesdayButGoing, $wednesdayButAlways] as $who) {
+        $hidden = $this->m('hidden', 303);
+        $hiddenButGoing = $this->m('hiddengoing', 304);
+        $followsNeverCame = $this->m('follows', 305);
+        $mondayNoHistory = $this->m('mondaynohistory', 306);
+        foreach ([$stillMonday, $nowWednesday, $hidden, $hiddenButGoing] as $who) {
             $this->attend($last, $who, 'going');
         }
         MemberPreference::create(['club_id' => 1, 'member_id' => $stillMonday->id, 'pace_unit' => 'mi', 'run_days' => '1,3']);
-        foreach ([$nowWednesday, $wednesdayButGoing, $wednesdayButAlways] as $who) {
-            MemberPreference::create(['club_id' => 1, 'member_id' => $who->id, 'pace_unit' => 'mi', 'run_days' => '3']);
+        MemberPreference::create(['club_id' => 1, 'member_id' => $nowWednesday->id, 'pace_unit' => 'mi', 'run_days' => '3']);
+        // Not migrated yet: Automatic on a selected day reads as follow, even with no history.
+        MemberPreference::create(['club_id' => 1, 'member_id' => $mondayNoHistory->id, 'pace_unit' => 'mi', 'run_days' => '1']);
+        foreach ([[$hidden, 'hide'], [$hiddenButGoing, 'hide'], [$followsNeverCame, 'follow']] as [$who, $mode]) {
+            MemberSeriesPref::create(['club_id' => 1, 'member_id' => $who->id, 'series_id' => $series->id, 'mode' => $mode]);
         }
-        $this->attend($today, $wednesdayButGoing, 'going');
-        MemberSeriesPref::create(['club_id' => 1, 'member_id' => $wednesdayButAlways->id, 'series_id' => $series->id, 'reminders' => 'on']);
+        $this->attend($today, $hiddenButGoing, 'going');
 
         $this->runAt('2026-10-12 08:00');
 
         $this->assertCount(1, $this->got($stillMonday));
-        $this->assertCount(0, $this->got($nowWednesday));
-        $this->assertCount(1, $this->got($wednesdayButGoing));
-        $this->assertCount(1, $this->got($wednesdayButAlways));
+        $this->assertCount(1, $this->got($nowWednesday));
+        $this->assertCount(0, $this->got($hidden));
+        $this->assertCount(1, $this->got($hiddenButGoing));
+        $this->assertCount(1, $this->got($followsNeverCame));
+        $this->assertCount(1, $this->got($mondayNoHistory));
     }
 
     public function testACancelledPastRunDoesNotCountTowardsAuto()

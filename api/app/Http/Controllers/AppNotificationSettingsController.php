@@ -7,12 +7,16 @@ use App\Models\MemberPreference;
 use App\Models\MemberSeriesPref;
 use App\Models\SessionSeries;
 use App\Services\NotificationService;
+use App\Services\SeriesFollows;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Push settings beyond per-category on/off: the daily push limit and the
  * run-reminder override per weekly series (Phase 5, D34/D35).
+ *
+ * The per-series list is kept for older app versions only (D117): Always, Automatic and Never are
+ * read from and written to the series' follow mode, so they also change that member's My runs.
  */
 class AppNotificationSettingsController extends Controller
 {
@@ -20,27 +24,37 @@ class AppNotificationSettingsController extends Controller
 
     const MAX_CAP = 50;
 
+    /** Old reminder value => follow mode. */
+    const LEGACY = [
+        MemberSeriesPref::ON => MemberSeriesPref::FOLLOW,
+        MemberSeriesPref::AUTO => MemberSeriesPref::AUTO,
+        MemberSeriesPref::OFF => MemberSeriesPref::HIDE,
+    ];
+
+    /** @var SeriesFollows */
+    private $follows;
+
+    public function __construct(SeriesFollows $follows)
+    {
+        $this->follows = $follows;
+    }
+
     private function body($club, $member): array
     {
         $pref = MemberPreference::where('club_id', $club->id)->where('member_id', $member->id)->first();
 
-        $overrides = MemberSeriesPref::where('club_id', $club->id)
-            ->where('member_id', $member->id)
-            ->pluck('reminders', 'series_id');
-
-        $series = SessionSeries::where('club_id', $club->id)
-            ->orderBy('weekday')->orderBy('start_time')->orderBy('title')
-            ->get()
-            ->map(function ($s) use ($overrides) {
-                return [
-                    'seriesId' => $s->id,
-                    'title' => $s->title,
-                    'weekday' => (int) $s->weekday,
-                    'localStartTime' => $s->startHm(),
-                    'reminders' => $overrides->get($s->id, MemberSeriesPref::AUTO),
-                ];
-            })
-            ->all();
+        // Older apps still show Automatic / Always / Never here: read from the follow mode (D117).
+        $all = $this->follows->series($club->id);
+        $modes = $this->follows->modesForMember($club->id, $member->id, $all);
+        $series = $all->map(function ($s) use ($modes) {
+            return [
+                'seriesId' => $s->id,
+                'title' => $s->title,
+                'weekday' => (int) $s->weekday,
+                'localStartTime' => $s->startHm(),
+                'reminders' => array_search($modes[$s->id], self::LEGACY, true),
+            ];
+        })->values()->all();
 
         return [
             'dailyPushCap' => NotificationService::capFrom($pref ? $pref->push_daily_cap : null),
@@ -117,17 +131,10 @@ class AppNotificationSettingsController extends Controller
                 $pref->save();
             }
 
-            foreach ($series as $id => $value) {
-                if ($value === MemberSeriesPref::AUTO) {
-                    MemberSeriesPref::where('member_id', $member->id)->where('series_id', $id)->delete();
-
-                    continue;
-                }
-
-                MemberSeriesPref::updateOrCreate(
-                    ['member_id' => $member->id, 'series_id' => (string) $id],
-                    ['club_id' => $club->id, 'reminders' => $value]
-                );
+            if ($series) {
+                $this->follows->set($club->id, $member->id, array_map(function ($value) {
+                    return self::LEGACY[$value];
+                }, $series));
             }
         });
 

@@ -5,6 +5,7 @@ require_once __DIR__ . '/AppGroupsBase.php';
 use App\Models\ClubMember;
 use App\Models\ClubSession;
 use App\Models\MemberPreference;
+use App\Models\MemberSeriesPref;
 use App\Models\Notification;
 use App\Models\NotificationPreference;
 use App\Models\SessionGroupLeader;
@@ -239,20 +240,23 @@ class AppLeaderAudienceTest extends AppGroupsBase
     }
 
     /** @dataProvider channels */
-    public function testWithoutLeadDaysTheRunDaysLimitTheFallback(string $channel)
+    public function testWithoutLeadDaysHidingTheSeriesLimitsTheFallback(string $channel)
     {
         $run = $this->sessionOn($this->monday, '2026-10-12', '19:00');
-        $this->ledBefore($this->who('historyMonday'), '2026-10-05', $this->monday);
-        $this->ledBefore($this->who('historyWednesday'), '2026-10-05', $this->monday);
-        $this->who('newLeaderWednesday', ['leader']);
-        $this->who('leadsMondayRunsWednesday');
-        foreach (['historyMonday' => '1,3', 'historyWednesday' => '3', 'newLeaderWednesday' => '3'] as $key => $days) {
-            MemberPreference::updateOrCreate(['club_id' => 1, 'member_id' => $this->m[$key]->id], ['pace_unit' => 'mi', 'distance_unit' => 'mi', 'run_days' => $days]);
+        $this->ledBefore($this->who('historyFollows'), '2026-10-05', $this->monday);
+        $this->ledBefore($this->who('historyHidden'), '2026-10-05', $this->monday);
+        $this->who('newLeaderHidden', ['leader']);
+        $this->who('leadsMondayHidden');
+        $this->ledBefore($this->who('historyOldRunDays'), '2026-10-05', $this->monday);
+        foreach (['historyFollows' => 'follow', 'historyHidden' => 'hide', 'newLeaderHidden' => 'hide', 'leadsMondayHidden' => 'hide'] as $key => $mode) {
+            MemberSeriesPref::create(['club_id' => 1, 'member_id' => $this->m[$key]->id, 'series_id' => $this->monday->id, 'mode' => $mode]);
         }
-        // Explicit lead days still win over run days.
-        MemberPreference::updateOrCreate(['club_id' => 1, 'member_id' => $this->m['leadsMondayRunsWednesday']->id], ['pace_unit' => 'mi', 'distance_unit' => 'mi', 'run_days' => '3', 'lead_days' => '1']);
+        // Explicit lead days still win over a hidden series.
+        $this->days($this->m['leadsMondayHidden'], '1');
+        // Run days no longer narrow anything (D117).
+        MemberPreference::updateOrCreate(['club_id' => 1, 'member_id' => $this->m['historyOldRunDays']->id], ['pace_unit' => 'mi', 'distance_unit' => 'mi', 'run_days' => '3']);
 
-        $this->assertSame(['Lou', 'historyMonday', 'leadsMondayRunsWednesday'], $this->asked($channel, $run));
+        $this->assertSame(['Lou', 'historyFollows', 'historyOldRunDays', 'leadsMondayHidden'], $this->asked($channel, $run));
     }
 
     public function testAnExplicitPreferenceStillWinsAndAMemberWithDaysNeedsNoRole()
