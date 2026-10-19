@@ -16,7 +16,7 @@ const ORANGE = '#ff7e32';
 const STRIPE = 120; // width of each of the three stripes (orange centre, white either side)
 const BADGE_IOS = 0.74; // badge diameter as a fraction of the iOS icon
 const BADGE_ANDROID = 0.58; // must sit inside Android's circular safe zone (~66%)
-const ROTATION = 45; // rotation angle for the stripes
+const ROTATION = 90; // rotation angle for the stripes
 
 const c = SIZE / 2;
 const stripes = `<g transform="rotate(${ROTATION} ${c} ${c})">
