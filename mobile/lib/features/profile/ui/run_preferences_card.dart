@@ -380,6 +380,9 @@ class _RunPreferencesCardState extends ConsumerState<RunPreferencesCard> {
                   key: const ValueKey('save-prefs'),
                   // The theme's full-width minimum is infinite inside a Row,
                   // which stops the button laying out (and drawing) at all.
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(96, 44),
+                  ),
                   onPressed: canSave ? () => unawaited(_savePace()) : null,
                   child: _saving
                       ? const SizedBox(

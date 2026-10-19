@@ -14,6 +14,16 @@ config:
         username: ""
         password: ""
       bypassProxy: ""
+
+request:
+  auth:
+    type: bearer
+    token: "{{token}}"
+  variables:
+    - name: baseUrl
+      value: https://bpj.org.uk/api/public/index.php
+    - name: token
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJicGpSb2xlcyI6WyJDb21taXR0ZWUiLCJNZW1iZXIiXSwiaXNzIjoiaHR0cHM6Ly9ibGFja3BlYXJqb2dnZXJzLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2MTYzMmE4ODcyZWZhODAwNjljYmU4ODQiLCJhdWQiOlsiaHR0cHM6Ly9icGoub3JnLnVrIl0sImlhdCI6MTc5MTgwNjk1NywiZXhwIjoxNzkxODkzMzU3LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwiYXpwIjoiMzBQMEdFeU9DQ2pYalRJN1Z0SmVBaFl3b3ZhSlNLcTEiLCJwZXJtaXNzaW9ucyI6WyJhdGhsZXRlczphZG1pbiIsImNsdWJzOnJlYWQiLCJjbHViU3RhbmRhcmRzOmFkbWluIiwibWFnaWNNaWxlOmFkbWluIiwibWVtYmVyczpyZWFkIl19.m257Ve20BWMZar8Xf3D6NvD5zuT0QR8eCgwL3uR5DU0
 bundled: false
 extensions:
   bruno:

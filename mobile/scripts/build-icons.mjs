@@ -35,7 +35,8 @@ const badgeSvg = (fraction) => {
   const off = Math.round((SIZE - d) / 2);
   return `<image x="${off}" y="${off}" width="${d}" height="${d}" href="${logoDataUri}"/>`;
 };
-const svg = (content) => `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}">${content}</svg>`;
+const svg = (content) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}">${content}</svg>`;
 async function badge(fraction) {
   const d = Math.round(SIZE * fraction);
   const png = await sharp(logo, { density: 300 }).resize(d, d).png().toBuffer();
