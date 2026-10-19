@@ -123,6 +123,11 @@ abstract final class BpjTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      extensions: [
+        scheme.brightness == Brightness.dark
+            ? RunFeedColors.dark
+            : RunFeedColors.light,
+      ],
       scaffoldBackgroundColor: scheme.surface,
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
@@ -185,4 +190,66 @@ abstract final class BpjTheme {
       ),
     );
   }
+}
+
+/// Colours for the Runs feed (D117) that the `ColorScheme` has no slot for.
+/// The dark values are the ones in the run feed design; the light ones keep
+/// the same roles with readable contrast on white.
+@immutable
+class RunFeedColors extends ThemeExtension<RunFeedColors> {
+  const RunFeedColors({
+    required this.followingOutline,
+    required this.bannerFill,
+    required this.bannerBorder,
+    required this.bannerText,
+    required this.hiddenFill,
+    required this.hiddenBorder,
+    required this.hiddenText,
+  });
+
+  /// Outline of the Following chip.
+  final Color followingOutline;
+
+  /// The All runs "Just looking" banner (dashed border = temporary).
+  final Color bannerFill;
+  final Color bannerBorder;
+  final Color bannerText;
+
+  /// A hidden run's card in All runs (dimmed).
+  final Color hiddenFill;
+  final Color hiddenBorder;
+  final Color hiddenText;
+
+  static const dark = RunFeedColors(
+    followingOutline: Color(0xFF8A5A1E),
+    bannerFill: Color(0xFF1A1308),
+    bannerBorder: Color(0xFF8A5A1E),
+    bannerText: Color(0xFFE8D5BC),
+    hiddenFill: Color(0xFF121212),
+    hiddenBorder: Color(0xFF232323),
+    hiddenText: Color(0xFF8F8F8F),
+  );
+
+  static const light = RunFeedColors(
+    followingOutline: BpjColors.orangeText,
+    bannerFill: Color(0xFFFFF6EA),
+    bannerBorder: BpjColors.orangeText,
+    bannerText: BpjColors.orangeDeep,
+    hiddenFill: BpjColors.neutral100,
+    hiddenBorder: BpjColors.neutral200,
+    hiddenText: BpjColors.neutral500,
+  );
+
+  static RunFeedColors of(BuildContext context) {
+    final theme = Theme.of(context);
+    return theme.extension<RunFeedColors>() ??
+        (theme.brightness == Brightness.dark ? dark : light);
+  }
+
+  @override
+  RunFeedColors copyWith() => this;
+
+  @override
+  RunFeedColors lerp(RunFeedColors? other, double t) =>
+      t < 0.5 || other == null ? this : other;
 }

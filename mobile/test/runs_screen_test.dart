@@ -1,21 +1,21 @@
 import 'package:bpj/core/auth/accounts_controller.dart';
 import 'package:bpj/core/db/app_database.dart';
-import 'package:bpj/features/groups/data/run_preferences_repository.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
 import 'package:bpj/features/messages/data/messages_repository.dart';
+import 'package:bpj/features/runs/data/follows_repository.dart';
 import 'package:bpj/features/runs/data/runs_repository.dart';
 import 'package:bpj/features/runs/ui/runs_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'support/fake_api.dart';
+import 'support/fake_api_follows.dart';
 import 'support/fake_api_phase3.dart';
 import 'support/fake_api_phase4.dart';
 import 'support/groups_test_support.dart';
-
-import 'package:bpj/features/runs/logic/my_days.dart';
 
 void main() {
   late AppDatabase db;
@@ -27,31 +27,19 @@ void main() {
       localDateString(DateTime.now().add(Duration(days: offset)));
 
   late FakeAdapter adapter;
+  late FakeFollowsServer follows;
 
-  // [runDays] / [leadDays] are what `GET /preferences` returns; a PUT echoes
-  // what was sent (and keeps the lead days, as the server would here).
+  // [series] is what `GET /follows` returns (empty = no choices yet, so the
+  // tab opens on All runs). The router gives the Runs I follow link a target.
   Future<void> pumpRuns(
     WidgetTester tester, {
     required List<String> roles,
     required List<Map<String, Object?>> sessions,
-    List<int>? runDays,
-    List<int>? leadDays,
+    List<Map<String, Object?>> series = const [],
   }) async {
-    Map<String, Object?> prefs(List<int>? run) => {
-      'paceUnit': 'mi',
-      'distanceUnit': 'mi',
-      'runDays': run,
-      'leadDays': leadDays,
-    };
+    follows = FakeFollowsServer(series);
     adapter = FakeAdapter({
-      'GET /app/clubs/1/preferences': FakeResponse(200, prefs(runDays)),
-      'PUT /app/clubs/1/preferences': () => FakeResponse(
-        200,
-        prefs(
-          ((adapter.requests.last.data as Map)['runDays'] as List?)
-              ?.cast<int>(),
-        ),
-      ),
+      ...follows.routes(() => adapter.requests.last.data),
       'POST /app/clubs/1/link': FakeResponse(200, membershipJson(roles: roles)),
       'GET /app/clubs/1/sessions': FakeResponse(200, {
         'items': sessions,
@@ -76,6 +64,20 @@ void main() {
         dio,
       ).link(1, urn: 1, dob: DateTime(1990, 1, 1)),
     );
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const RunsScreen()),
+        GoRoute(
+          path: '/follows',
+          builder: (_, _) => const Scaffold(body: Text('Follows page')),
+        ),
+        GoRoute(
+          path: '/runs/:id',
+          builder: (_, state) =>
+              Scaffold(body: Text('Run ${state.pathParameters['id']}')),
+        ),
+      ],
+    );
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -86,25 +88,16 @@ void main() {
           messagesRepositoryProvider.overrideWithValue(
             MessagesRepository(db, dio),
           ),
-          runPreferencesRepositoryProvider.overrideWithValue(
-            RunPreferencesRepository(db, dio),
+          followsRepositoryProvider.overrideWithValue(
+            FollowsRepository(db, dio),
           ),
           activeClubIdProvider.overrideWithValue(1),
           activeSubProvider.overrideWithValue('test|sub'),
         ],
-        child: const MaterialApp(home: RunsScreen()),
+        child: MaterialApp.router(routerConfig: router),
       ),
     );
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
-    );
-    await tester.pumpAndSettle();
-  }
-
-  // Works around Drift's stream-cleanup timer outliving the test.
-  Future<void> unmount(WidgetTester tester) async {
-    await tester.pumpWidget(const SizedBox());
-    await tester.pump(const Duration(milliseconds: 10));
+    await settle(tester);
   }
 
   final sessions = [
@@ -155,7 +148,7 @@ void main() {
     await unmount(tester);
   });
 
-  testWidgets('shows group and going counts with your response chips', (
+  testWidgets('shows group and going counts with your status chips', (
     tester,
   ) async {
     tallSurface(tester);
@@ -210,170 +203,277 @@ void main() {
     );
 
     expect(find.text('3 groups · 12 going'), findsOneWidget);
-    // Only the member's run (f) shows "You're going": on run a the viewer is
-    // leading, which implies going, so the chip is hidden.
-    expect(find.text("You're going"), findsOneWidget);
+    // Going (leading counts, run a) on a, e and f.
+    expect(find.text('Going'), findsNWidgets(3));
     expect(find.text("You're leading"), findsOneWidget);
     expect(find.text('1 group'), findsOneWidget);
     expect(find.text('Maybe'), findsOneWidget);
     expect(find.text("Can't come"), findsOneWidget);
+    expect(find.text('Not following'), findsOneWidget);
     // A cancelled run keeps its badge and drops the summary.
     expect(find.text('Cancelled'), findsOneWidget);
     expect(find.text('2 groups · 4 going'), findsNothing);
     await unmount(tester);
   });
 
-  group('days I run (D115)', () {
-    // One run on each of the next seven days, so every weekday occurs once.
-    // Run 1 has my "going", run 2 my "maybe", run 3 has me leading, run 4 my
-    // "can't come".
-    List<Map<String, Object?>> week() => [
-      for (var i = 1; i <= 7; i++)
-        {
-          ...sessionJson('r$i', localDate: day(i), title: 'Run $i'),
-          'groups': <Object?>[],
-          'summary': switch (i) {
-            1 => summaryJson(myStatus: 'going'),
-            2 => summaryJson(myStatus: 'maybe'),
-            3 => summaryJson(myLeading: true),
-            4 => summaryJson(myStatus: 'not_going'),
-            _ => summaryJson(),
-          },
-        },
+  group('My runs and All runs (D117)', () {
+    // The member's feedback: The Mug Run (Thursday) on Follow, Thursday
+    // Perdiswell on Hide, Monday club run on Auto (usually comes), a Saturday
+    // run on Auto (rarely), and a one-off social.
+    Map<String, Object?> run(
+      String id,
+      int offset,
+      String? seriesId, {
+      String? title,
+      Map<String, Object?>? summary,
+    }) => {
+      ...sessionJson(
+        id,
+        localDate: day(offset),
+        title: title ?? 'Run $id',
+        seriesId: seriesId,
+      ),
+      'groups': <Object?>[],
+      'summary': summary ?? summaryJson(),
+    };
+    List<Map<String, Object?>> feed() => [
+      run('mug', 1, 'mug', title: 'The Mug Run'),
+      run('perd', 1, 'perd', title: 'Thursday Perdiswell'),
+      run('mon', 2, 'mon', title: 'Monday club run'),
+      run('sat', 3, 'sat', title: 'Saturday long run'),
+      run('social', 4, null, title: 'Social run'),
+      run(
+        'perdGoing',
+        5,
+        'perd',
+        title: 'Perdiswell, going',
+        summary: summaryJson(myStatus: 'going'),
+      ),
     ];
-    int weekday(int offset) =>
-        DateTime.now().add(Duration(days: offset)).weekday;
-    String short(int offset) => weekdayShort[weekday(offset) - 1];
+    final series = [
+      followJson('mon', usuallyComes: true),
+      followJson('mug', title: 'The Mug Run', weekday: 4, mode: 'follow'),
+      followJson(
+        'perd',
+        title: 'Thursday Perdiswell',
+        weekday: 4,
+        mode: 'hide',
+      ),
+      followJson('sat', title: 'Saturday long run', weekday: 6),
+    ];
 
-    testWidgets('no choice: every day, with a quiet Choose days', (
+    testWidgets('My runs shows follows, usual runs, RSVPs and one-offs only', (
       tester,
     ) async {
       tallSurface(tester);
-      await pumpRuns(tester, roles: [], sessions: week());
-      expect(find.text('Showing every day'), findsOneWidget);
-      expect(find.byType(FilterChip), findsNothing);
-      for (var i = 1; i <= 7; i++) {
-        expect(find.text('Run $i'), findsOneWidget);
-      }
+      await pumpRuns(tester, roles: [], sessions: feed(), series: series);
+
+      expect(find.text('Followed runs and your RSVPs'), findsOneWidget);
+      expect(find.text('The Mug Run'), findsOneWidget);
+      expect(find.text('Monday club run'), findsOneWidget); // auto, usual
+      expect(find.text('Social run'), findsOneWidget); // one-off
+      expect(find.text('Perdiswell, going'), findsOneWidget); // RSVP wins
+      expect(find.text('Thursday Perdiswell'), findsNothing); // hidden
+      expect(find.text('Saturday long run'), findsNothing); // auto, rarely
+      expect(find.text('Following'), findsNWidgets(2));
+      // Footer: the two runs All runs adds, both this week.
+      expect(find.text('2 other runs this week'), findsOneWidget);
       await unmount(tester);
     });
 
-    testWidgets('run days hide other days but keep runs I answered or lead', (
-      tester,
-    ) async {
+    testWidgets('switching views is instant and saves nothing', (tester) async {
       tallSurface(tester);
-      await pumpRuns(
-        tester,
-        roles: [],
-        sessions: week(),
-        runDays: [weekday(5)],
-      );
-      expect(find.text('Run days: ${short(5)}'), findsOneWidget);
-      expect(find.text('Run 5'), findsOneWidget);
-      expect(find.text('Run 1'), findsOneWidget); // going
-      expect(find.text('Run 2'), findsOneWidget); // maybe
-      expect(find.text('Run 3'), findsOneWidget); // leading
-      expect(find.text('Run 4'), findsNothing); // can't come
-      expect(find.text('Run 6'), findsNothing);
-      expect(find.text('Run 7'), findsNothing);
+      await pumpRuns(tester, roles: [], sessions: feed(), series: series);
+      final before = adapter.requests.length;
 
-      await tester.tap(find.text('Show 3 more'));
-      await tester.pumpAndSettle();
-      for (var i = 1; i <= 7; i++) {
-        expect(find.text('Run $i'), findsOneWidget);
-      }
-      await tester.tap(find.text('Just my days'));
-      await tester.pumpAndSettle();
-      expect(find.text('Run 6'), findsNothing);
-      expect(sent(adapter, 'PUT', '/app/clubs/1/preferences'), isEmpty);
-      await unmount(tester);
-    });
-
-    testWidgets('a lead day also shows on the Runs tab', (tester) async {
-      tallSurface(tester);
-      await pumpRuns(
-        tester,
-        roles: [],
-        sessions: week(),
-        runDays: [weekday(5)],
-        leadDays: [weekday(6)],
-      );
-      expect(find.text('Run 6'), findsOneWidget);
-      expect(find.text('Run 7'), findsNothing);
-      await unmount(tester);
-    });
-
-    testWidgets('Choose days saves runDays; Show every day clears them', (
-      tester,
-    ) async {
-      tallSurface(tester);
-      await pumpRuns(tester, roles: [], sessions: week());
-      await tester.tap(find.text('Choose days'));
-      await tester.pumpAndSettle();
-      expect(find.text('Which days do you usually run?'), findsOneWidget);
-      // Nothing ticked: a run day needs at least one day.
-      final save = find.byKey(const ValueKey('runDaysSave'));
-      expect(tester.widget<FilledButton>(save).onPressed, isNull);
-
-      await tester.tap(find.widgetWithText(FilterChip, short(6)));
+      await tester.tap(find.byKey(const ValueKey('view-all')));
       await tester.pump();
-      await tester.tap(save);
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 100)),
-      );
-      await tester.pumpAndSettle();
-      expect(sent(adapter, 'PUT', '/app/clubs/1/preferences').single.data, {
-        'runDays': [weekday(6)],
-      });
-      expect(find.text('Run days: ${short(6)}'), findsOneWidget);
-      expect(find.text('Run 7'), findsNothing);
+      expect(find.text('Thursday Perdiswell'), findsOneWidget);
+      expect(find.text('Saturday long run'), findsOneWidget);
+      expect(find.textContaining('Just looking'), findsOneWidget);
+      expect(find.text('Hidden'), findsOneWidget);
+      expect(find.text('Not following'), findsOneWidget);
+      expect(find.text('Followed runs and your RSVPs'), findsNothing);
+      expect(find.text('2 other runs this week'), findsNothing);
 
-      await tester.tap(find.byKey(const ValueKey('runDaysChange')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('runDaysEveryDay')));
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 100)),
-      );
-      await tester.pumpAndSettle();
-      expect(sent(adapter, 'PUT', '/app/clubs/1/preferences').last.data, {
-        'runDays': null,
-      });
-      expect(find.text('Showing every day'), findsOneWidget);
-      expect(find.text('Run 7'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('view-mine')));
+      await tester.pump();
+      expect(find.text('Thursday Perdiswell'), findsNothing);
+      // No request at all, let alone a preference write.
+      expect(adapter.requests.length, before);
       await unmount(tester);
     });
 
-    testWidgets('dropping a lead day warns that leading stops too', (
+    testWidgets('the footer link switches to All runs', (tester) async {
+      tallSurface(tester);
+      await pumpRuns(tester, roles: [], sessions: feed(), series: series);
+
+      await tester.tap(find.byKey(const ValueKey('showAllRuns')));
+      await tester.pump();
+      expect(find.text('Saturday long run'), findsOneWidget);
+      expect(adapter.requests.where((r) => r.method == 'PUT'), isEmpty);
+      await unmount(tester);
+    });
+
+    testWidgets('a hidden run in All runs is dimmed and offers Follow', (
+      tester,
+    ) async {
+      tallSurface(tester);
+      await pumpRuns(tester, roles: [], sessions: feed(), series: series);
+      await tester.tap(find.byKey(const ValueKey('view-all')));
+      await tester.pump();
+
+      Card cardOf(String title) => tester.widget<Card>(
+        find.ancestor(of: find.text(title), matching: find.byType(Card)),
+      );
+      expect(cardOf('Thursday Perdiswell').color, isNotNull); // dimmed fill
+      expect(cardOf('The Mug Run').color, isNull);
+      expect(find.byKey(const ValueKey('follow-perd')), findsOneWidget);
+      expect(find.byKey(const ValueKey('follow-sat')), findsOneWidget);
+      expect(find.byKey(const ValueKey('manage-mug')), findsOneWidget);
+      // RSVP'd runs and one-offs are managed, never followed.
+      expect(find.byKey(const ValueKey('manage-perdGoing')), findsOneWidget);
+      expect(find.byKey(const ValueKey('manage-social')), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('Follow on a card saves at once and updates it in place', (
+      tester,
+    ) async {
+      tallSurface(tester);
+      await pumpRuns(tester, roles: [], sessions: feed(), series: series);
+      await tester.tap(find.byKey(const ValueKey('view-all')));
+      await tester.pump();
+
+      await tester.tap(find.byKey(const ValueKey('follow-sat')));
+      await settle(tester);
+
+      expect(sent(adapter, 'PUT', '/app/clubs/1/follows/sat').single.data, {
+        'mode': 'follow',
+      });
+      expect(find.byKey(const ValueKey('follow-sat')), findsNothing);
+      expect(find.byKey(const ValueKey('manage-sat')), findsOneWidget);
+      expect(find.text('Not following'), findsNothing);
+      // Still on All runs.
+      expect(find.textContaining('Just looking'), findsOneWidget);
+      // And it is in My runs now.
+      await tester.tap(find.byKey(const ValueKey('view-mine')));
+      await tester.pump();
+      expect(find.text('Saturday long run'), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('a failed Follow leaves the card as it was', (tester) async {
+      tallSurface(tester);
+      await pumpRuns(tester, roles: [], sessions: feed(), series: series);
+      await tester.tap(find.byKey(const ValueKey('view-all')));
+      await tester.pump();
+      follows.fail = true;
+
+      await tester.tap(find.byKey(const ValueKey('follow-sat')));
+      await settle(tester);
+
+      expect(find.textContaining("Couldn't follow that run"), findsOneWidget);
+      expect(find.byKey(const ValueKey('follow-sat')), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('everything hidden but one: only that and RSVPs remain', (
       tester,
     ) async {
       tallSurface(tester);
       await pumpRuns(
         tester,
         roles: [],
-        sessions: week(),
-        runDays: [weekday(5), weekday(6)],
-        leadDays: [weekday(6)],
+        sessions: [
+          for (final r in feed())
+            if (r['seriesId'] != null) r,
+        ],
+        series: [
+          followJson('mon', usuallyComes: true, mode: 'hide'),
+          followJson('mug', title: 'The Mug Run', weekday: 4, mode: 'follow'),
+          followJson('perd', title: 'Perdiswell', weekday: 4, mode: 'hide'),
+          followJson('sat', title: 'Saturday', weekday: 6, mode: 'hide'),
+        ],
       );
-      await tester.tap(find.byKey(const ValueKey('runDaysChange')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(FilterChip, short(6)));
+      expect(find.text('The Mug Run'), findsOneWidget);
+      expect(find.text('Perdiswell, going'), findsOneWidget);
+      expect(find.text('Monday club run'), findsNothing);
+      expect(find.text('Saturday long run'), findsNothing);
+      expect(find.text('Thursday Perdiswell'), findsNothing);
+      await unmount(tester);
+    });
+
+    testWidgets('zero follows: an empty My runs with a way out, no error', (
+      tester,
+    ) async {
+      tallSurface(tester);
+      await pumpRuns(
+        tester,
+        roles: [],
+        sessions: [run('sat', 3, 'sat', title: 'Saturday long run')],
+        series: [
+          followJson(
+            'sat',
+            title: 'Saturday long run',
+            weekday: 6,
+            mode: 'hide',
+          ),
+        ],
+      );
+      expect(find.text("You're not following any runs yet"), findsOneWidget);
+      expect(find.text('Choose runs'), findsOneWidget);
+      expect(find.text('Saturday long run'), findsNothing);
+
+      await tester.tap(find.text('Show all runs').first);
       await tester.pump();
+      expect(find.text('Saturday long run'), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('with no choices yet it opens on All runs', (tester) async {
+      tallSurface(tester);
+      await pumpRuns(
+        tester,
+        roles: [],
+        sessions: feed(),
+        series: [
+          for (final s in series) {...s, 'mode': 'auto'},
+        ],
+      );
+      expect(find.textContaining('Just looking'), findsOneWidget);
+      expect(find.text('Saturday long run'), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('Runs I follow link opens the settings screen', (tester) async {
+      tallSurface(tester);
+      await pumpRuns(tester, roles: [], sessions: feed(), series: series);
+      await tester.tap(find.byKey(const ValueKey('runsIFollowLink')));
+      await tester.pumpAndSettle();
+      expect(find.text('Follows page'), findsOneWidget);
+      await unmount(tester);
+    });
+
+    testWidgets('the view switch is 48dp and marks the selected side', (
+      tester,
+    ) async {
+      tallSurface(tester);
+      await pumpRuns(tester, roles: [], sessions: feed(), series: series);
       expect(
-        find.text("You'll stop being asked to lead on ${short(6)}."),
-        findsOneWidget,
+        tester.getSize(find.byKey(const ValueKey('view-mine'))).height,
+        48,
       );
-      await unmount(tester);
-    });
-
-    testWidgets('a single weekday and no choice shows no panel', (
-      tester,
-    ) async {
-      await pumpRuns(
-        tester,
-        roles: [],
-        sessions: [sessionJson('a', localDate: day(1), title: 'Only run')],
+      Finder check(String key) => find.descendant(
+        of: find.byKey(ValueKey(key)),
+        matching: find.byIcon(Icons.check),
       );
-      expect(find.byKey(const ValueKey('runDaysPanel')), findsNothing);
+      expect(check('view-mine'), findsOneWidget);
+      expect(check('view-all'), findsNothing);
+      expect(
+        tester.getSize(find.byKey(const ValueKey('manage-mug'))).height,
+        greaterThanOrEqualTo(44),
+      );
       await unmount(tester);
     });
   });

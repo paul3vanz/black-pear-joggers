@@ -24,9 +24,10 @@ import 'roster_run_card.dart';
 
 /// `/runs/lead`: the next six weeks of runs grouped by week, so a member can
 /// see which need a leader and offer to lead. Reads the Drift cache; pull to
-/// refresh runs the normal sessions refresh. The "Days I may lead" panel (D107,
-/// D115) is saved on the server and narrows the list to those weekdays (else
-/// to the days you run); **Show N more** reveals the rest for this visit.
+/// refresh runs the normal sessions refresh. The "Days I may lead" panel (D107)
+/// is saved on the server and narrows the list to those weekdays (every day
+/// until chosen; run days no longer apply, D117); **Show N more** reveals the
+/// rest for this visit.
 class LeaderRosterScreen extends ConsumerStatefulWidget {
   const LeaderRosterScreen({super.key});
 
@@ -106,11 +107,10 @@ class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
     final prefs = ref.watch(runPreferencesProvider(clubId)).value;
     // null = never chosen; [] = chose none.
     final saved = prefs?.leadDays;
-    final runDays = prefs?.runDays;
     final allWeeks = buildRoster(sessions ?? const [], now);
     final filtered = filterRosterByDays(
       allWeeks,
-      _showAll ? null : leadRosterDays(runDays: runDays, leadDays: saved),
+      _showAll ? null : leadRosterDays(leadDays: saved),
       (s) => _leads(s, myId),
     );
     final weeks = filtered.weeks;
@@ -160,11 +160,11 @@ class _LeaderRosterScreenState extends ConsumerState<LeaderRosterScreen> {
                   kind: DayKind.lead,
                   present: rosterWeekdays(allWeeks),
                   saved: saved,
-                  otherSaved: runDays,
-                  // The old local filter, else the run days, start ticked.
-                  preselect: _legacyDays.isNotEmpty
-                      ? _legacyDays
-                      : (runDays?.toSet() ?? const {}),
+                  // Run days no longer exist in the app (D117), so there is
+                  // no "this changes your run days" hint.
+                  otherSaved: null,
+                  // The old local filter starts ticked.
+                  preselect: _legacyDays,
                   promptWhenUnset: true,
                   hidden: filtered.hidden,
                   showAll: _showAll,

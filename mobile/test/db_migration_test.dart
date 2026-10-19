@@ -527,11 +527,56 @@ void main() {
     expect((await db.select(db.preferences).getSingle()).runDays, '1,3');
   });
 
-  test('a fresh database is created at schema v11', () async {
+  test('v11 -> v12 adds series_follows and keeps the preferences', () async {
+    final db = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE preferences (club_id INTEGER NOT NULL PRIMARY KEY, '
+              'pace_unit TEXT NOT NULL, distance_unit TEXT NOT NULL, '
+              'pace_from_s INTEGER, pace_to_s INTEGER, lead_days TEXT, '
+              'run_days TEXT, updated_at INTEGER)',
+            )
+            ..execute(
+              'INSERT INTO preferences (club_id, pace_unit, distance_unit, '
+              "lead_days, run_days, updated_at) VALUES (1, 'mi', 'mi', '1', "
+              "'1,3', 1)",
+            )
+            ..execute('PRAGMA user_version = 11');
+        },
+      ),
+    );
+    addTearDown(db.close);
+
+    await db.customSelect('SELECT 1').get();
+
+    expect((await db.select(db.preferences).getSingle()).runDays, '1,3');
+    expect(await db.select(db.seriesFollows).get(), isEmpty);
+    await db
+        .into(db.seriesFollows)
+        .insert(
+          SeriesFollowsCompanion.insert(
+            seriesId: 's1',
+            clubId: 1,
+            title: 'Monday club run',
+            weekday: 1,
+            localStartTime: '19:00',
+            groupMode: 'paced',
+            mode: 'hide',
+            fetchedAt: DateTime(2026, 10, 19),
+          ),
+        );
+    final row = await db.select(db.seriesFollows).getSingle();
+    expect((row.mode, row.usuallyComes), ('hide', false));
+  });
+
+  test('a fresh database is created at schema v12', () async {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 11);
+    expect(db.schemaVersion, 12);
     await db.customSelect('SELECT 1').get();
     expect(await db.select(db.sessions).get(), isEmpty);
+    expect(await db.select(db.seriesFollows).get(), isEmpty);
   });
 }

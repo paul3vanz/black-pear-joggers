@@ -159,7 +159,7 @@ void main() {
 
     final text = reportText(tester);
     expect(text, contains('App version: 2.3.4 (56)'));
-    expect(text, contains('Database schema: 11'));
+    expect(text, contains('Database schema: 12'));
     expect(text, contains('Signed in: yes'));
     expect(text, contains('/app/me -> 500'));
     expect(text, contains('cold start'));

@@ -1320,3 +1320,113 @@ day" means: `run_days` is null, or the weekday is in `run_days` or `lead_days`.
   (`test/fixtures/db/v10.sqlite`).
 - **Tests:** `AppLeadDaysTest` (run days, alignment, validation), `AppGroupMatchTest`, `AppRunRemindersTest`,
   `AppLeaderAudienceTest` (both channels).
+
+## Update (2026-10-19): Runs I follow (D117, D118)
+
+Applies on top of the 2026-10-18 update. Replaces "days I run" as the thing that narrows the Runs tab and the
+unasked-for run notifications.
+
+### The model
+- **One mode per member and series**: `follow`, `auto` or `hide` in `member_series_prefs.mode`. No row = `auto`.
+- **One resolver** decides both effects, `Services/FollowResolver::resolve($rsvp, $mode, $usuallyComes)` on the server
+  and `resolveFollow` in the app (`features/runs/logic/follow_resolver.dart`). Both are tested against one case table,
+  `api/tests/fixtures/follow_resolver_cases.json`. In order:
+  1. RSVP going or maybe (leading counts as going): shown in My runs;
+  2. `hide`: not followed, not shown;
+  3. `follow`: followed and shown;
+  4. `auto`: followed and shown only when the member usually comes (D35: going at one of the last 6 ended,
+     not-cancelled runs of the series; never for `events`/`race` series, D79).
+  A run with no series (a one-off) is never followed but always shows (open question 5).
+- **What "followed" drives on the server:**
+  - **Run reminders:** going/maybe/leading on the run, plus everyone the resolver calls followed, minus `not_going`.
+    So Hide stops the series reminder but an RSVP still reminds (open question 1).
+  - **`group_matches`:** a member with no answer is told only when the run is in their My runs.
+  - **`leaders_needed` fallback:** `lead_days` set still decides alone; otherwise a member who hid the series is not
+    asked (this replaced the run-days rule of `LeaderAudience`).
+- `run_days` no longer narrows anything on the server.
+
+### `GET /app/clubs/{clubId}/follows`
+```json
+{ "series": [ { "seriesId": "uuid", "title": "The Mug Run", "weekday": 4, "localStartTime": "18:30",
+                "groupMode": "paced", "mode": "follow|auto|hide", "usuallyComes": true, "followed": true } ] }
+```
+Every live series of the club, in week order (weekday, time, title). `followed` is what the mode resolves to with no
+RSVP; the app resolves RSVPs itself from the cached session `summary`.
+
+### `PUT /app/clubs/{clubId}/follows/{seriesId}` `{ "mode": "follow|auto|hide" }`
+Returns that series' entry. 404 `not_found` for a series that is not a live series of the club; 422
+`validation_failed` for a missing or bad mode. Idempotent: the same mode again writes nothing.
+
+### `PUT /app/clubs/{clubId}/follows`
+- `{ "seriesIds": ["uuid", ...], "mode": "follow" }`: Follow all (one day) and Follow everything.
+- `{ "modes": { "uuid": "auto", ... } }`: Undo, putting each series back exactly.
+
+Returns `{ "previous": { "uuid": "mode", ... }, "series": [every entry, as GET] }`. Nothing is saved when any id is not
+a live series of the club (422 naming `series.<id>`) or any mode is bad (422). An empty `seriesIds` is a 200 no-op.
+
+### No `view` parameter on the feed
+The plan suggested `GET /sessions?view=mine|all`. The app is offline-first and builds the Runs tab from the Drift
+cache, so the feed is filtered on the device with the same resolver, using the cached `/follows` entries and each
+session's `summary`. `GET /sessions` is unchanged, and switching views never touches the network.
+
+### Older app versions (kept until step 5 of the rollout)
+- `GET /notification-settings` still lists `series[].reminders`, now read from the mode: `follow` = `on`,
+  `hide` = `off`, `auto` = `auto`. `PUT` with `series` writes the mode the same way (`auto` stores an explicit `auto`
+  row rather than deleting it). New apps no longer show this list.
+- `PUT /preferences` with a non-null `runDays` still stores `run_days` (the old app filters on it) and also sets every
+  `auto` series on those days to `follow`, the bulk equivalent of Follow all; `hide` and `follow` are left alone.
+  `runDays: null` writes no modes. `GET /preferences` still returns `runDays`.
+
+### Migration (`php artisan app:migrate-follows [--dry-run]`)
+Per member and live series, first match wins:
+
+| Existing state | Mode | Rule key in the report |
+|---|---|---|
+| Reminder setting Never (`off`) | `hide`, even on a selected day | `never_to_hide` |
+| Always (`on`) | `follow` | `always_to_follow` |
+| Automatic, series on a selected day (run days plus lead days, as the old Runs tab showed) | `follow` | `automatic_on_selected_day_to_follow` |
+| Automatic, series on another day | `auto` | `automatic_on_other_day_to_auto` |
+| No day filter ever saved | `auto` | `no_day_filter_to_auto` |
+
+- Only non-`auto` results (and existing rows) are written. The old `reminders` value and `run_days` are kept.
+- Each migrated member gets `member_preferences.follows_migrated_at` (a row is created if they had none), so a second
+  run changes nothing. `--dry-run` prints the same counts and writes nothing.
+- **Before the migration runs** a member is read through the same mapping on the fly
+  (`SeriesFollows::effective`), and any write migrates that member first, so there is no gap where behaviour differs.
+
+### App behaviour
+- **Runs tab** has a 48dp **My runs | All runs** switch (selected side orange with a check). It is screen state only,
+  never saved, and resets when the app restarts. A member with no choices at all (every series `auto`) starts on
+  All runs, since they saw every run before (open question 3); once they choose anything it starts on My runs.
+- **My runs:** caption "Followed runs and your RSVPs" with a **Runs I follow ›** link; runs the resolver shows; a bar
+  above the navigation "N other runs this week" (else "N other runs coming up") with **Show all runs**, hidden at 0.
+  Empty: "You're not following any runs yet" (or "None of the runs you follow are coming up") with **Choose runs** and
+  **Show all runs**.
+- **All runs:** dashed "Just looking. This doesn't change which runs you follow." banner; every run; hidden runs
+  dimmed with a Hidden chip.
+- **Card:** time (bold orange), one status chip (Going, Maybe, Can't come, Following, Not following, Hidden; none for a
+  one-off), name, meeting point. **Follow** (outlined) for a series run that is not followed and has no RSVP yes;
+  it saves at once and the card updates in place. Otherwise **Manage** opens the run.
+- **Runs I follow** (`/follows`, also from Notification settings' "Run reminders" row): series by weekday with
+  **Follow all** per day, a 44dp **Follow | Auto | Hide** control per series and a status line ("Following",
+  "Auto: following (you usually come)", "Auto: not following (you rarely come)", "Auto: not following (choose Follow
+  for events)", "Hidden · only shown in All runs"), and **Follow everything**. Every tap saves; Follow all and Follow
+  everything show a snackbar with **Undo** that any later change dismisses. A failed write reverts and says so.
+- **Notification settings** keeps the categories and the daily push limit; the per-run list is replaced by one row.
+- **Lead a run** shows the lead days, else every day (no run-days fallback any more) and no longer warns that saving
+  lead days changes the run days.
+- The days-I-run panel is gone from the Runs tab. `MyDaysPanel` now serves only Lead a run.
+
+### Implementation notes (2026-10-19)
+- **Schema:** migration `2026_10_19_090000_add_follow_mode_to_member_series_prefs_table`; manual SQL
+  `api/database/manual/2026_10_follows.sql` (after `2026_10_run_days.sql`).
+- **Server code:** `Services/FollowResolver` (the rule), `Services/SeriesFollows` (modes, usually-comes history,
+  writes, migration mapping), `AppFollowController`, `Console/Commands/MigrateFollows`. `MemberPreference::runsOn` is
+  gone.
+- **App cache:** table `series_follows`, Drift schema v12, with an upgrade test from a real v11 file
+  (`test/fixtures/db/v11.sqlite`). Writes are online-only and optimistic (`FollowsRepository`): the cache changes at
+  once and is put back if the PUT fails.
+- **Tests:** `FollowResolverTest` (shared table, plus every row through the real reminder job and `GET /follows`),
+  `AppFollowsTest`, `MigrateFollowsTest`, updated `AppGroupMatchTest`, `AppRunRemindersTest`, `AppLeaderAudienceTest`,
+  `AppNotificationsV2Test`; app `follow_resolver_test` (same table), `follows_repository_test`,
+  `runs_i_follow_screen_test`, `runs_screen_test`.

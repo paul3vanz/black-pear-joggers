@@ -14,6 +14,7 @@ import 'package:bpj/features/members/data/member_profile_repository.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/messages/data/messages_repository.dart';
 import 'package:bpj/features/profile/data/profile_repository.dart';
+import 'package:bpj/features/runs/data/follows_repository.dart';
 import 'package:bpj/features/runs/data/runs_repository.dart';
 import 'package:bpj/features/standards/data/standards_repository.dart';
 import 'package:bpj/features/updates/data/posts_repository.dart';
@@ -39,9 +40,10 @@ const _fixtures = <String, int>{
   'v8.sqlite': 8,
   'v9.sqlite': 9,
   'v10.sqlite': 10,
+  'v11.sqlite': 11,
 };
 
-const _currentVersion = 11;
+const _currentVersion = 12;
 
 /// Which tables each old schema had, so the test can check row counts survive.
 const _clubId = 1;
@@ -140,6 +142,7 @@ Future<void> _exerciseRepositories(AppDatabase db) async {
   final members = MemberProfileRepository(db, dio);
   final events = EventLocationsRepository(db, dio);
   final standards = StandardsRepository(db, dio);
+  final follows = FollowsRepository(db, dio);
 
   await first(memberships.watchMemberships());
   await first(profiles.watchProfile(_clubId));
@@ -166,6 +169,7 @@ Future<void> _exerciseRepositories(AppDatabase db) async {
   await first(members.watchMine(_clubId));
   await first(events.watch(_clubId));
   await first(standards.watch(_clubId));
+  await first(follows.watch(_clubId));
 
   await memberships.refreshMe();
   await profiles.refreshProfile(_clubId);
@@ -178,6 +182,7 @@ Future<void> _exerciseRepositories(AppDatabase db) async {
   await members.refreshCards(_clubId);
   await events.refresh(_clubId);
   await standards.refresh(_clubId);
+  await follows.refresh(_clubId);
 
   expect(adapter.requests, isNotEmpty);
 }
@@ -256,10 +261,12 @@ void main() {
         expect(session.imageUrl, isNull);
         final series = await db.select(db.sessionSeries).get();
         expect(series.map((s) => s.durationMin), containsAll([75, 120]));
-        // v11 (D115): run days arrive empty ("never chosen"); v10's lead days
-        // survive.
+        // v11 (D115): run days arrive empty ("never chosen") before v11; lead
+        // days survive from v10. v12 (D117) only adds series_follows, empty
+        // until the first refresh.
+        expect(await db.select(db.seriesFollows).get(), isEmpty);
         final prefs = await db.select(db.preferences).getSingle();
-        expect(prefs.runDays, isNull);
+        expect(prefs.runDays, entry.value >= 11 ? '1,2,4' : isNull);
         expect(prefs.leadDays, entry.value >= 10 ? '2,4' : isNull);
 
         await db.close();

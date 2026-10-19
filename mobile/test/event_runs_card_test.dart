@@ -121,7 +121,7 @@ void main() {
         tester,
         summary: summaryJson(goingCount: 1, myStatus: 'going'),
       );
-      expect(find.text("You're going"), findsOneWidget);
+      expect(find.text('Going'), findsOneWidget); // the status chip (D118)
       expect(find.text('1 going'), findsOneWidget);
       await unmount(tester);
     });
@@ -184,7 +184,7 @@ void main() {
       );
       expect(find.text('4 going'), findsOneWidget);
       expect(find.textContaining(' to '), findsNothing);
-      expect(find.text("You're going"), findsOneWidget);
+      expect(find.text('Going'), findsOneWidget); // the status chip (D118)
       expect(anyGroupsText(), findsNothing);
       await unmount(tester);
     });

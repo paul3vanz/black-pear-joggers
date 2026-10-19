@@ -7,6 +7,7 @@ import 'package:bpj/features/settings/ui/notification_settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'support/fake_api.dart';
 import 'notification_settings_repository_test.dart' show settingsJson;
@@ -114,9 +115,7 @@ void main() {
     }),
   };
 
-  testWidgets('shows the push limit and one reminder row per series', (
-    tester,
-  ) async {
+  testWidgets('shows the push limit and a Run reminders row', (tester) async {
     adapter = FakeAdapter({
       ...prefsRoute,
       'GET /app/clubs/1/notification-settings': FakeResponse(
@@ -126,7 +125,7 @@ void main() {
     });
     await pumpSettings(tester);
     await tester.scrollUntilVisible(
-      find.text('Tuesday 7pm · Tuesday run'),
+      find.byKey(const ValueKey('runsIFollowRow')),
       200,
       scrollable: find.byType(Scrollable).first,
     );
@@ -140,25 +139,64 @@ void main() {
           .selected,
       {12},
     );
-    expect(
-      find.textContaining('reminds you about runs you usually'),
-      findsOneWidget,
-    );
-    expect(find.text('Tuesday 7pm · Tuesday run'), findsOneWidget);
-    expect(find.text('Thursday 6:30pm · Thursday run'), findsOneWidget);
-    expect(
-      tester
-          .widget<SegmentedButton<ReminderMode>>(
-            find.byKey(const ValueKey('reminders-s-thu')),
-          )
-          .selected,
-      {ReminderMode.off},
-    );
+    // The per-run Automatic / Always / Never list is gone (D117).
+    expect(find.text('Run reminders'), findsOneWidget);
+    expect(find.textContaining('Runs I follow'), findsOneWidget);
+    expect(find.text('Always'), findsNothing);
+    expect(find.text('Tuesday 7pm · Tuesday run'), findsNothing);
   });
 
-  testWidgets('changing the cap and a series saves through the repository', (
-    tester,
-  ) async {
+  testWidgets('the Run reminders row opens Runs I follow', (tester) async {
+    adapter = FakeAdapter({
+      ...prefsRoute,
+      'GET /app/clubs/1/notification-settings': FakeResponse(
+        200,
+        settingsJson(),
+      ),
+    });
+    final router = GoRouter(
+      initialLocation: '/settings',
+      routes: [
+        GoRoute(
+          path: '/settings',
+          builder: (_, _) => const NotificationSettingsScreen(),
+        ),
+        GoRoute(
+          path: '/follows',
+          builder: (_, _) => const Scaffold(body: Text('Follows page')),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          notificationSettingsRepositoryProvider.overrideWithValue(
+            NotificationSettingsRepository(fakeDio(adapter)),
+          ),
+          preferencesRepositoryProvider.overrideWithValue(
+            PreferencesRepository(fakeDio(adapter)),
+          ),
+          activeClubIdProvider.overrideWithValue(1),
+          activeSubProvider.overrideWithValue('test|sub'),
+          pushPermissionProvider.overrideWith(
+            (ref) async => PushPermission.denied,
+          ),
+        ],
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('runsIFollowRow')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.byKey(const ValueKey('runsIFollowRow')));
+    await tester.pumpAndSettle();
+    expect(find.text('Follows page'), findsOneWidget);
+  });
+
+  testWidgets('changing the cap saves through the repository', (tester) async {
     adapter = FakeAdapter({
       ...prefsRoute,
       'GET /app/clubs/1/notification-settings': FakeResponse(
@@ -167,7 +205,7 @@ void main() {
       ),
       'PUT /app/clubs/1/notification-settings': FakeResponse(
         200,
-        settingsJson(cap: 0, tuesday: 'on'),
+        settingsJson(cap: 0),
       ),
     });
     await pumpSettings(tester);
@@ -179,30 +217,10 @@ void main() {
 
     await tester.tap(find.text('No limit'));
     await tester.pumpAndSettle();
-    var put = adapter.requests.last;
+    final put = adapter.requests.last;
     expect(put.method, 'PUT');
     expect(put.data, {'dailyPushCap': 0});
     expect(find.textContaining('No limit: every notification'), findsOneWidget);
-
-    await tester.scrollUntilVisible(
-      find.text('Always').first,
-      200,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.tap(find.text('Always').first);
-    await tester.pumpAndSettle();
-    put = adapter.requests.last;
-    expect(put.data, {
-      'series': {'s-tue': 'on'},
-    });
-    expect(
-      tester
-          .widget<SegmentedButton<ReminderMode>>(
-            find.byKey(const ValueKey('reminders-s-tue')),
-          )
-          .selected,
-      {ReminderMode.on},
-    );
   });
 
   testWidgets('a failed save reverts the choice and shows a snackbar', (

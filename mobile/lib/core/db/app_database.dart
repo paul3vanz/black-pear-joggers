@@ -35,6 +35,7 @@ part 'app_database.g.dart';
     MemberProfiles,
     EventLocations,
     StandardsCache,
+    SeriesFollows,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -45,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
     : super(driftDatabase(name: databaseNameFor(sub)));
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   /// Diagnostics hook (D100): told about every successful open, with the
   /// from/to versions when it migrated. Set once in `main`; null in tests.
@@ -131,6 +132,11 @@ class AppDatabase extends _$AppDatabase {
         if (!cols.any((c) => c.read<String>('name') == 'run_days')) {
           await m.addColumn(preferences, preferences.runDays);
         }
+      }
+      // v12 (D117): the caller's follow / auto / hide per series. A new table
+      // only: existing rows are untouched, the first refresh fills it.
+      if (from < 12) {
+        await m.createTable(seriesFollows);
       }
     },
   );

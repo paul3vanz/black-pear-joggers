@@ -276,31 +276,25 @@ void main() {
       await finish(tester);
     });
 
-    testWidgets('with no lead days, the run days narrow it and start ticked', (
+    testWidgets('old run days no longer narrow it or tick chips (D117)', (
       tester,
     ) async {
       await pumpRoster(tester, serverRunDays: [1, 3]);
       expect(find.text('Which days could you lead?'), findsOneWidget);
-      expect(tester.widget<FilterChip>(chip('Mon')).selected, isTrue);
-      expect(tester.widget<FilterChip>(chip('Wed')).selected, isTrue);
-      expect(tester.widget<FilterChip>(chip('Tue')).selected, isFalse);
+      expect(tester.widget<FilterChip>(chip('Mon')).selected, isFalse);
       expect(card('mon'), findsOneWidget);
-      expect(card('wed'), findsOneWidget);
-      expect(card('tue1'), findsNothing);
-      expect(find.text('Show 2 more'), findsOneWidget);
+      expect(card('tue1'), findsOneWidget);
+      expect(find.textContaining('more'), findsNothing);
       await finish(tester);
     });
 
-    testWidgets('a lead day outside the run days says it will be added', (
-      tester,
-    ) async {
+    testWidgets('saving lead days says nothing about run days', (tester) async {
       await pumpRoster(tester, serverDays: [1], serverRunDays: [1, 3]);
       await tester.tap(change());
       await settle(tester);
-      expect(find.textContaining('added to your run days'), findsNothing);
       await tester.tap(chip('Tue'));
       await tester.pump();
-      expect(find.text('Tue will be added to your run days.'), findsOneWidget);
+      expect(find.textContaining('run days'), findsNothing);
       await tester.tap(save());
       await settle(tester);
       expect(find.text('Lead days: Mon, Tue'), findsOneWidget);
@@ -448,14 +442,11 @@ void main() {
     await finish(tester);
   });
 
-  group('day helpers (D115)', () {
-    test('the Runs tab adds lead days; Lead a run falls back to run days', () {
-      expect(runTabDays(), isNull);
-      expect(runTabDays(leadDays: [1]), isNull); // no run days: every day
-      expect(runTabDays(runDays: [3], leadDays: [1]), {1, 3});
+  group('day helpers (D117)', () {
+    test('Lead a run shows the lead days, else every day', () {
       expect(leadRosterDays(), isNull);
-      expect(leadRosterDays(runDays: [1, 3]), {1, 3});
-      expect(leadRosterDays(runDays: [1, 3], leadDays: []), isEmpty);
+      expect(leadRosterDays(leadDays: [1, 3]), {1, 3});
+      expect(leadRosterDays(leadDays: []), isEmpty);
     });
   });
 

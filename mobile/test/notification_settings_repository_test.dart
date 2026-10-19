@@ -30,7 +30,7 @@ Map<String, Object?> settingsJson({
 };
 
 void main() {
-  test('fetch parses the cap and series', () async {
+  test('fetch parses the cap (the old per-series list is ignored)', () async {
     final adapter = FakeAdapter({
       'GET /app/clubs/1/notification-settings': FakeResponse(
         200,
@@ -40,26 +40,21 @@ void main() {
     final s = await NotificationSettingsRepository(fakeDio(adapter)).fetch(1);
     expect(s.dailyPushCap, 6);
     expect(s.defaultDailyPushCap, 6);
-    expect(s.series.map((r) => r.seriesId), ['s-tue', 's-thu']);
-    expect(s.series.first.weekday, 2);
-    expect(s.series.first.localStartTime, '19:00');
-    expect(s.series.first.reminders, ReminderMode.auto);
-    expect(s.series.last.reminders, ReminderMode.off);
   });
 
-  test('unknown reminder values fall back to automatic; 0 cap is kept', () {
-    final s = NotificationSettings.fromJson({
-      ...settingsJson(cap: 0, tuesday: 'weird'),
-    });
-    expect(s.dailyPushCap, 0);
-    expect(s.series.first.reminders, ReminderMode.auto);
+  test('a 0 cap is kept; a missing cap falls back to the default', () {
+    expect(NotificationSettings.fromJson(settingsJson(cap: 0)).dailyPushCap, 0);
+    expect(
+      NotificationSettings.fromJson({'defaultDailyPushCap': 6}).dailyPushCap,
+      6,
+    );
   });
 
-  test('update sends only the cap, or only the changed series', () async {
+  test('update sends only the cap', () async {
     final adapter = FakeAdapter({
       'PUT /app/clubs/1/notification-settings': FakeResponse(
         200,
-        settingsJson(cap: 12, tuesday: 'on'),
+        settingsJson(cap: 12),
       ),
     });
     final repo = NotificationSettingsRepository(fakeDio(adapter));
@@ -67,12 +62,6 @@ void main() {
     final first = await repo.update(1, dailyPushCap: 12);
     expect(adapter.requests.last.data, {'dailyPushCap': 12});
     expect(first.dailyPushCap, 12);
-
-    final second = await repo.update(1, series: {'s-tue': ReminderMode.on});
-    expect(adapter.requests.last.data, {
-      'series': {'s-tue': 'on'},
-    });
-    expect(second.series.first.reminders, ReminderMode.on);
 
     await repo.update(1, dailyPushCap: 0);
     expect(adapter.requests.last.data, {'dailyPushCap': 0});
@@ -84,13 +73,5 @@ void main() {
       repo.fetch(1),
       throwsA(isA<ApiException>().having((e) => e.isNetworkError, 'net', true)),
     );
-  });
-
-  test('copyWith changes only the named series', () {
-    final s = NotificationSettings.fromJson(settingsJson())
-        .copyWith(dailyPushCap: 3, series: {'s-thu': ReminderMode.on});
-    expect(s.dailyPushCap, 3);
-    expect(s.series.first.reminders, ReminderMode.auto);
-    expect(s.series.last.reminders, ReminderMode.on);
   });
 }

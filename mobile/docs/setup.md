@@ -134,6 +134,21 @@ For "days I may lead" and the new leaders-needed audience, run `api/database/man
 the `2026_10_17_*` migration as run. Run it once only (ADD COLUMN fails the second time). Existing rows are untouched
 (`NULL` = the member never chose days). Deploy the API before the app version that sends `leadDays`.
 
+### Runs I follow (manual SQL and data migration, D117)
+
+Order of work, from the build plan:
+1. Deploy the API (FTP on push), then run `api/database/manual/2026_10_follows.sql` **after** `2026_10_run_days.sql`.
+   It makes `member_series_prefs.reminders` nullable, adds `member_series_prefs.mode` and
+   `member_preferences.follows_migrated_at`, and records the `2026_10_19_*` migration as run. Run it once only.
+   From this point the feed endpoint, reminders, group-match notices and the leaders-needed audience all read the new
+   modes. Members not migrated yet are read through the migration mapping, so nothing changes for them until step 2.
+2. On the host: `php artisan app:migrate-follows --dry-run` prints how many member/series pairs each mapping rule
+   covers and writes nothing. When the counts look right, run `php artisan app:migrate-follows`. It is safe to run
+   twice: migrated members are skipped. The old `reminders` values and `run_days` stay in place.
+3. Ship the app version with My runs / All runs and Runs I follow. Release note: members who chose days now get
+   reminders for every run of the series on those days (they were only reminded about runs they usually went to).
+4. Later, once older app versions are rare, remove the old `runDays` handling and the `run_days` column (not done yet).
+
 ## Sharing test APKs
 
 1. **Create an upload keystore once and back it up.** If it's lost, updates can't be signed.

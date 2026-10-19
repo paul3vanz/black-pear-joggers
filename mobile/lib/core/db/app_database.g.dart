@@ -10425,6 +10425,584 @@ class StandardsCacheCompanion extends UpdateCompanion<StandardsCacheRow> {
   }
 }
 
+class $SeriesFollowsTable extends SeriesFollows
+    with TableInfo<$SeriesFollowsTable, SeriesFollowRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SeriesFollowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _seriesIdMeta = const VerificationMeta(
+    'seriesId',
+  );
+  @override
+  late final GeneratedColumn<String> seriesId = GeneratedColumn<String>(
+    'series_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clubIdMeta = const VerificationMeta('clubId');
+  @override
+  late final GeneratedColumn<int> clubId = GeneratedColumn<int>(
+    'club_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _weekdayMeta = const VerificationMeta(
+    'weekday',
+  );
+  @override
+  late final GeneratedColumn<int> weekday = GeneratedColumn<int>(
+    'weekday',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localStartTimeMeta = const VerificationMeta(
+    'localStartTime',
+  );
+  @override
+  late final GeneratedColumn<String> localStartTime = GeneratedColumn<String>(
+    'local_start_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupModeMeta = const VerificationMeta(
+    'groupMode',
+  );
+  @override
+  late final GeneratedColumn<String> groupMode = GeneratedColumn<String>(
+    'group_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _usuallyComesMeta = const VerificationMeta(
+    'usuallyComes',
+  );
+  @override
+  late final GeneratedColumn<bool> usuallyComes = GeneratedColumn<bool>(
+    'usually_comes',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("usually_comes" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fetchedAt = GeneratedColumn<DateTime>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    seriesId,
+    clubId,
+    title,
+    weekday,
+    localStartTime,
+    groupMode,
+    mode,
+    usuallyComes,
+    fetchedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'series_follows';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SeriesFollowRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('series_id')) {
+      context.handle(
+        _seriesIdMeta,
+        seriesId.isAcceptableOrUnknown(data['series_id']!, _seriesIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_seriesIdMeta);
+    }
+    if (data.containsKey('club_id')) {
+      context.handle(
+        _clubIdMeta,
+        clubId.isAcceptableOrUnknown(data['club_id']!, _clubIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clubIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('weekday')) {
+      context.handle(
+        _weekdayMeta,
+        weekday.isAcceptableOrUnknown(data['weekday']!, _weekdayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weekdayMeta);
+    }
+    if (data.containsKey('local_start_time')) {
+      context.handle(
+        _localStartTimeMeta,
+        localStartTime.isAcceptableOrUnknown(
+          data['local_start_time']!,
+          _localStartTimeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_localStartTimeMeta);
+    }
+    if (data.containsKey('group_mode')) {
+      context.handle(
+        _groupModeMeta,
+        groupMode.isAcceptableOrUnknown(data['group_mode']!, _groupModeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupModeMeta);
+    }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modeMeta);
+    }
+    if (data.containsKey('usually_comes')) {
+      context.handle(
+        _usuallyComesMeta,
+        usuallyComes.isAcceptableOrUnknown(
+          data['usually_comes']!,
+          _usuallyComesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {seriesId};
+  @override
+  SeriesFollowRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SeriesFollowRow(
+      seriesId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}series_id'],
+      )!,
+      clubId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}club_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      weekday: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}weekday'],
+      )!,
+      localStartTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_start_time'],
+      )!,
+      groupMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_mode'],
+      )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
+      usuallyComes: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}usually_comes'],
+      )!,
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SeriesFollowsTable createAlias(String alias) {
+    return $SeriesFollowsTable(attachedDatabase, alias);
+  }
+}
+
+class SeriesFollowRow extends DataClass implements Insertable<SeriesFollowRow> {
+  final String seriesId;
+  final int clubId;
+  final String title;
+
+  /// ISO weekday, 1 = Monday ... 7 = Sunday.
+  final int weekday;
+
+  /// Club-local `HH:MM`.
+  final String localStartTime;
+  final String groupMode;
+
+  /// `follow` | `auto` | `hide`.
+  final String mode;
+
+  /// Went to one of the series' last 6 runs (the server decides).
+  final bool usuallyComes;
+  final DateTime fetchedAt;
+  const SeriesFollowRow({
+    required this.seriesId,
+    required this.clubId,
+    required this.title,
+    required this.weekday,
+    required this.localStartTime,
+    required this.groupMode,
+    required this.mode,
+    required this.usuallyComes,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['series_id'] = Variable<String>(seriesId);
+    map['club_id'] = Variable<int>(clubId);
+    map['title'] = Variable<String>(title);
+    map['weekday'] = Variable<int>(weekday);
+    map['local_start_time'] = Variable<String>(localStartTime);
+    map['group_mode'] = Variable<String>(groupMode);
+    map['mode'] = Variable<String>(mode);
+    map['usually_comes'] = Variable<bool>(usuallyComes);
+    map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    return map;
+  }
+
+  SeriesFollowsCompanion toCompanion(bool nullToAbsent) {
+    return SeriesFollowsCompanion(
+      seriesId: Value(seriesId),
+      clubId: Value(clubId),
+      title: Value(title),
+      weekday: Value(weekday),
+      localStartTime: Value(localStartTime),
+      groupMode: Value(groupMode),
+      mode: Value(mode),
+      usuallyComes: Value(usuallyComes),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory SeriesFollowRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SeriesFollowRow(
+      seriesId: serializer.fromJson<String>(json['seriesId']),
+      clubId: serializer.fromJson<int>(json['clubId']),
+      title: serializer.fromJson<String>(json['title']),
+      weekday: serializer.fromJson<int>(json['weekday']),
+      localStartTime: serializer.fromJson<String>(json['localStartTime']),
+      groupMode: serializer.fromJson<String>(json['groupMode']),
+      mode: serializer.fromJson<String>(json['mode']),
+      usuallyComes: serializer.fromJson<bool>(json['usuallyComes']),
+      fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'seriesId': serializer.toJson<String>(seriesId),
+      'clubId': serializer.toJson<int>(clubId),
+      'title': serializer.toJson<String>(title),
+      'weekday': serializer.toJson<int>(weekday),
+      'localStartTime': serializer.toJson<String>(localStartTime),
+      'groupMode': serializer.toJson<String>(groupMode),
+      'mode': serializer.toJson<String>(mode),
+      'usuallyComes': serializer.toJson<bool>(usuallyComes),
+      'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+    };
+  }
+
+  SeriesFollowRow copyWith({
+    String? seriesId,
+    int? clubId,
+    String? title,
+    int? weekday,
+    String? localStartTime,
+    String? groupMode,
+    String? mode,
+    bool? usuallyComes,
+    DateTime? fetchedAt,
+  }) => SeriesFollowRow(
+    seriesId: seriesId ?? this.seriesId,
+    clubId: clubId ?? this.clubId,
+    title: title ?? this.title,
+    weekday: weekday ?? this.weekday,
+    localStartTime: localStartTime ?? this.localStartTime,
+    groupMode: groupMode ?? this.groupMode,
+    mode: mode ?? this.mode,
+    usuallyComes: usuallyComes ?? this.usuallyComes,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  SeriesFollowRow copyWithCompanion(SeriesFollowsCompanion data) {
+    return SeriesFollowRow(
+      seriesId: data.seriesId.present ? data.seriesId.value : this.seriesId,
+      clubId: data.clubId.present ? data.clubId.value : this.clubId,
+      title: data.title.present ? data.title.value : this.title,
+      weekday: data.weekday.present ? data.weekday.value : this.weekday,
+      localStartTime: data.localStartTime.present
+          ? data.localStartTime.value
+          : this.localStartTime,
+      groupMode: data.groupMode.present ? data.groupMode.value : this.groupMode,
+      mode: data.mode.present ? data.mode.value : this.mode,
+      usuallyComes: data.usuallyComes.present
+          ? data.usuallyComes.value
+          : this.usuallyComes,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SeriesFollowRow(')
+          ..write('seriesId: $seriesId, ')
+          ..write('clubId: $clubId, ')
+          ..write('title: $title, ')
+          ..write('weekday: $weekday, ')
+          ..write('localStartTime: $localStartTime, ')
+          ..write('groupMode: $groupMode, ')
+          ..write('mode: $mode, ')
+          ..write('usuallyComes: $usuallyComes, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    seriesId,
+    clubId,
+    title,
+    weekday,
+    localStartTime,
+    groupMode,
+    mode,
+    usuallyComes,
+    fetchedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SeriesFollowRow &&
+          other.seriesId == this.seriesId &&
+          other.clubId == this.clubId &&
+          other.title == this.title &&
+          other.weekday == this.weekday &&
+          other.localStartTime == this.localStartTime &&
+          other.groupMode == this.groupMode &&
+          other.mode == this.mode &&
+          other.usuallyComes == this.usuallyComes &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class SeriesFollowsCompanion extends UpdateCompanion<SeriesFollowRow> {
+  final Value<String> seriesId;
+  final Value<int> clubId;
+  final Value<String> title;
+  final Value<int> weekday;
+  final Value<String> localStartTime;
+  final Value<String> groupMode;
+  final Value<String> mode;
+  final Value<bool> usuallyComes;
+  final Value<DateTime> fetchedAt;
+  final Value<int> rowid;
+  const SeriesFollowsCompanion({
+    this.seriesId = const Value.absent(),
+    this.clubId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.weekday = const Value.absent(),
+    this.localStartTime = const Value.absent(),
+    this.groupMode = const Value.absent(),
+    this.mode = const Value.absent(),
+    this.usuallyComes = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SeriesFollowsCompanion.insert({
+    required String seriesId,
+    required int clubId,
+    required String title,
+    required int weekday,
+    required String localStartTime,
+    required String groupMode,
+    required String mode,
+    this.usuallyComes = const Value.absent(),
+    required DateTime fetchedAt,
+    this.rowid = const Value.absent(),
+  }) : seriesId = Value(seriesId),
+       clubId = Value(clubId),
+       title = Value(title),
+       weekday = Value(weekday),
+       localStartTime = Value(localStartTime),
+       groupMode = Value(groupMode),
+       mode = Value(mode),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<SeriesFollowRow> custom({
+    Expression<String>? seriesId,
+    Expression<int>? clubId,
+    Expression<String>? title,
+    Expression<int>? weekday,
+    Expression<String>? localStartTime,
+    Expression<String>? groupMode,
+    Expression<String>? mode,
+    Expression<bool>? usuallyComes,
+    Expression<DateTime>? fetchedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (seriesId != null) 'series_id': seriesId,
+      if (clubId != null) 'club_id': clubId,
+      if (title != null) 'title': title,
+      if (weekday != null) 'weekday': weekday,
+      if (localStartTime != null) 'local_start_time': localStartTime,
+      if (groupMode != null) 'group_mode': groupMode,
+      if (mode != null) 'mode': mode,
+      if (usuallyComes != null) 'usually_comes': usuallyComes,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SeriesFollowsCompanion copyWith({
+    Value<String>? seriesId,
+    Value<int>? clubId,
+    Value<String>? title,
+    Value<int>? weekday,
+    Value<String>? localStartTime,
+    Value<String>? groupMode,
+    Value<String>? mode,
+    Value<bool>? usuallyComes,
+    Value<DateTime>? fetchedAt,
+    Value<int>? rowid,
+  }) {
+    return SeriesFollowsCompanion(
+      seriesId: seriesId ?? this.seriesId,
+      clubId: clubId ?? this.clubId,
+      title: title ?? this.title,
+      weekday: weekday ?? this.weekday,
+      localStartTime: localStartTime ?? this.localStartTime,
+      groupMode: groupMode ?? this.groupMode,
+      mode: mode ?? this.mode,
+      usuallyComes: usuallyComes ?? this.usuallyComes,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (seriesId.present) {
+      map['series_id'] = Variable<String>(seriesId.value);
+    }
+    if (clubId.present) {
+      map['club_id'] = Variable<int>(clubId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (weekday.present) {
+      map['weekday'] = Variable<int>(weekday.value);
+    }
+    if (localStartTime.present) {
+      map['local_start_time'] = Variable<String>(localStartTime.value);
+    }
+    if (groupMode.present) {
+      map['group_mode'] = Variable<String>(groupMode.value);
+    }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
+    if (usuallyComes.present) {
+      map['usually_comes'] = Variable<bool>(usuallyComes.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SeriesFollowsCompanion(')
+          ..write('seriesId: $seriesId, ')
+          ..write('clubId: $clubId, ')
+          ..write('title: $title, ')
+          ..write('weekday: $weekday, ')
+          ..write('localStartTime: $localStartTime, ')
+          ..write('groupMode: $groupMode, ')
+          ..write('mode: $mode, ')
+          ..write('usuallyComes: $usuallyComes, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -10445,6 +11023,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MemberProfilesTable memberProfiles = $MemberProfilesTable(this);
   late final $EventLocationsTable eventLocations = $EventLocationsTable(this);
   late final $StandardsCacheTable standardsCache = $StandardsCacheTable(this);
+  late final $SeriesFollowsTable seriesFollows = $SeriesFollowsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -10467,6 +11046,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     memberProfiles,
     eventLocations,
     standardsCache,
+    seriesFollows,
   ];
 }
 
@@ -15651,6 +16231,295 @@ typedef $$StandardsCacheTableProcessedTableManager =
       StandardsCacheRow,
       PrefetchHooks Function()
     >;
+typedef $$SeriesFollowsTableCreateCompanionBuilder =
+    SeriesFollowsCompanion Function({
+      required String seriesId,
+      required int clubId,
+      required String title,
+      required int weekday,
+      required String localStartTime,
+      required String groupMode,
+      required String mode,
+      Value<bool> usuallyComes,
+      required DateTime fetchedAt,
+      Value<int> rowid,
+    });
+typedef $$SeriesFollowsTableUpdateCompanionBuilder =
+    SeriesFollowsCompanion Function({
+      Value<String> seriesId,
+      Value<int> clubId,
+      Value<String> title,
+      Value<int> weekday,
+      Value<String> localStartTime,
+      Value<String> groupMode,
+      Value<String> mode,
+      Value<bool> usuallyComes,
+      Value<DateTime> fetchedAt,
+      Value<int> rowid,
+    });
+
+class $$SeriesFollowsTableFilterComposer
+    extends Composer<_$AppDatabase, $SeriesFollowsTable> {
+  $$SeriesFollowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get seriesId => $composableBuilder(
+    column: $table.seriesId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get weekday => $composableBuilder(
+    column: $table.weekday,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localStartTime => $composableBuilder(
+    column: $table.localStartTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupMode => $composableBuilder(
+    column: $table.groupMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get usuallyComes => $composableBuilder(
+    column: $table.usuallyComes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SeriesFollowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SeriesFollowsTable> {
+  $$SeriesFollowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get seriesId => $composableBuilder(
+    column: $table.seriesId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get clubId => $composableBuilder(
+    column: $table.clubId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get weekday => $composableBuilder(
+    column: $table.weekday,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localStartTime => $composableBuilder(
+    column: $table.localStartTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupMode => $composableBuilder(
+    column: $table.groupMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get usuallyComes => $composableBuilder(
+    column: $table.usuallyComes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SeriesFollowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SeriesFollowsTable> {
+  $$SeriesFollowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get seriesId =>
+      $composableBuilder(column: $table.seriesId, builder: (column) => column);
+
+  GeneratedColumn<int> get clubId =>
+      $composableBuilder(column: $table.clubId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<int> get weekday =>
+      $composableBuilder(column: $table.weekday, builder: (column) => column);
+
+  GeneratedColumn<String> get localStartTime => $composableBuilder(
+    column: $table.localStartTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get groupMode =>
+      $composableBuilder(column: $table.groupMode, builder: (column) => column);
+
+  GeneratedColumn<String> get mode =>
+      $composableBuilder(column: $table.mode, builder: (column) => column);
+
+  GeneratedColumn<bool> get usuallyComes => $composableBuilder(
+    column: $table.usuallyComes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$SeriesFollowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SeriesFollowsTable,
+          SeriesFollowRow,
+          $$SeriesFollowsTableFilterComposer,
+          $$SeriesFollowsTableOrderingComposer,
+          $$SeriesFollowsTableAnnotationComposer,
+          $$SeriesFollowsTableCreateCompanionBuilder,
+          $$SeriesFollowsTableUpdateCompanionBuilder,
+          (
+            SeriesFollowRow,
+            BaseReferences<_$AppDatabase, $SeriesFollowsTable, SeriesFollowRow>,
+          ),
+          SeriesFollowRow,
+          PrefetchHooks Function()
+        > {
+  $$SeriesFollowsTableTableManager(_$AppDatabase db, $SeriesFollowsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SeriesFollowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SeriesFollowsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SeriesFollowsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> seriesId = const Value.absent(),
+                Value<int> clubId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<int> weekday = const Value.absent(),
+                Value<String> localStartTime = const Value.absent(),
+                Value<String> groupMode = const Value.absent(),
+                Value<String> mode = const Value.absent(),
+                Value<bool> usuallyComes = const Value.absent(),
+                Value<DateTime> fetchedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SeriesFollowsCompanion(
+                seriesId: seriesId,
+                clubId: clubId,
+                title: title,
+                weekday: weekday,
+                localStartTime: localStartTime,
+                groupMode: groupMode,
+                mode: mode,
+                usuallyComes: usuallyComes,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String seriesId,
+                required int clubId,
+                required String title,
+                required int weekday,
+                required String localStartTime,
+                required String groupMode,
+                required String mode,
+                Value<bool> usuallyComes = const Value.absent(),
+                required DateTime fetchedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SeriesFollowsCompanion.insert(
+                seriesId: seriesId,
+                clubId: clubId,
+                title: title,
+                weekday: weekday,
+                localStartTime: localStartTime,
+                groupMode: groupMode,
+                mode: mode,
+                usuallyComes: usuallyComes,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SeriesFollowsTable, SeriesFollowRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $SeriesFollowsTable,
+                    SeriesFollowRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SeriesFollowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SeriesFollowsTable,
+      SeriesFollowRow,
+      $$SeriesFollowsTableFilterComposer,
+      $$SeriesFollowsTableOrderingComposer,
+      $$SeriesFollowsTableAnnotationComposer,
+      $$SeriesFollowsTableCreateCompanionBuilder,
+      $$SeriesFollowsTableUpdateCompanionBuilder,
+      (
+        SeriesFollowRow,
+        BaseReferences<_$AppDatabase, $SeriesFollowsTable, SeriesFollowRow>,
+      ),
+      SeriesFollowRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -15689,6 +16558,8 @@ class $AppDatabaseManager {
       $$EventLocationsTableTableManager(_db, _db.eventLocations);
   $$StandardsCacheTableTableManager get standardsCache =>
       $$StandardsCacheTableTableManager(_db, _db.standardsCache);
+  $$SeriesFollowsTableTableManager get seriesFollows =>
+      $$SeriesFollowsTableTableManager(_db, _db.seriesFollows);
 }
 
 // **************************************************************************

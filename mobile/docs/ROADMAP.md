@@ -320,6 +320,19 @@ Contract: "Update (2026-10-18)" in [api-contract.md](api-contract.md). D115, D11
 - [x] App: shared `MyDaysPanel` on Runs (run days) and Lead a run (lead days) with Show N more; Drift schema v11
 - [ ] Real-device check
 
+## Tweaks (2026-10-19): Runs I follow
+
+Contract: "Update (2026-10-19)" in [api-contract.md](api-contract.md). D117, D118. Replaces the days I run panel.
+- [x] API: `member_series_prefs.mode` (follow/auto/hide), one `FollowResolver` for reminders, group matches and the
+      leaders-needed fallback; `GET/PUT /follows` with bulk set and restore; old notification settings and `runDays`
+      saves write modes (manual SQL `2026_10_follows.sql`)
+- [x] API: `app:migrate-follows` with `--dry-run` counts per rule, safe to run twice
+- [x] App: My runs | All runs on the Runs tab, status chips, inline Follow, Runs I follow screen with Undo;
+      Notification settings links to it; Drift schema v12
+- [ ] Host: run `2026_10_follows.sql`, then `app:migrate-follows --dry-run`, check the counts, then run it
+- [ ] Real-device check (TalkBack on the three-way control)
+- [ ] Later: remove `runDays` handling and `member_preferences.run_days` once older app versions are rare
+
 ## Phase 9: Club standards
 
 Contract: [api-contract.md](api-contract.md#phase-9-club-standards). The BPJ Bronze/Silver/Gold/Platinum

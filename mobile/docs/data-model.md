@@ -181,8 +181,11 @@ leaders whose pace fits to step in. Route groups never need leaders.
 
 ```
 member_preferences        member_id, club_id, pace_unit, distance_unit, pace_from_s?, pace_to_s?,
-                          push_daily_cap, lead_days?, run_days?   (ISO weekdays "1,3"; lead ⊆ run, D115)
-member_series_optouts     member_id, club_id, series_id          ("never Wednesdays")
+                          push_daily_cap, lead_days?, run_days?   (ISO weekdays "1,3"; lead ⊆ run, D115),
+                          follows_migrated_at?   (run_days is kept only for older apps, D117)
+member_series_prefs       member_id, club_id, series_id, mode('follow','auto','hide')?, reminders?
+                          (one choice per series for My runs AND reminders, D117; no row = auto;
+                          `reminders` on/off is the pre-D117 value, read only for unmigrated members)
 notification_preferences  member_id, club_id, category, push_enabled
 devices                   id, user_id, fcm_token unique, platform, app_version, last_seen_at
 notifications             id, club_id, member_id, category, title, body, data json (deep link),

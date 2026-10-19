@@ -268,6 +268,33 @@ class Preferences extends Table {
   Set<Column<Object>> get primaryKey => {clubId};
 }
 
+/// "Runs I follow" (D117): the caller's choice per weekly series from
+/// `GET /app/clubs/{clubId}/follows`, cached so My runs works offline. The
+/// series' own fields are copied in so the settings screen needs nothing else.
+@DataClassName('SeriesFollowRow')
+class SeriesFollows extends Table {
+  TextColumn get seriesId => text()();
+  IntColumn get clubId => integer()();
+  TextColumn get title => text()();
+
+  /// ISO weekday, 1 = Monday ... 7 = Sunday.
+  IntColumn get weekday => integer()();
+
+  /// Club-local `HH:MM`.
+  TextColumn get localStartTime => text()();
+  TextColumn get groupMode => text()();
+
+  /// `follow` | `auto` | `hide`.
+  TextColumn get mode => text()();
+
+  /// Went to one of the series' last 6 runs (the server decides).
+  BoolColumn get usuallyComes => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get fetchedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {seriesId};
+}
+
 /// Cached group chat messages (`GET …/groups/{groupId}/messages`), including
 /// the caller's own unsent ones (D43). A deleted message stays as a tombstone
 /// (`deletedAt` set, empty body) so it can show "Message deleted".

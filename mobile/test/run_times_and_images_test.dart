@@ -8,6 +8,7 @@ import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
 import 'package:bpj/features/messages/data/messages_repository.dart';
 import 'package:bpj/features/runs/data/run_dtos.dart';
+import 'package:bpj/features/runs/data/follows_repository.dart';
 import 'package:bpj/features/runs/data/runs_repository.dart';
 import 'package:bpj/features/runs/ui/runs_screen.dart';
 import 'package:bpj/features/runs/ui/series_image.dart';
@@ -165,6 +166,9 @@ void main() {
             _imageOverride,
             membershipRepositoryProvider.overrideWithValue(
               MembershipRepository(db, dio),
+            ),
+            followsRepositoryProvider.overrideWithValue(
+              FollowsRepository(db, dio),
             ),
             runsRepositoryProvider.overrideWithValue(RunsRepository(db, dio)),
             messagesRepositoryProvider.overrideWithValue(

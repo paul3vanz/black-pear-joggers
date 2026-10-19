@@ -6,6 +6,7 @@ import 'package:bpj/features/groups/data/run_preferences_repository.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
 import 'package:bpj/features/messages/data/messages_repository.dart';
+import 'package:bpj/features/runs/data/follows_repository.dart';
 import 'package:bpj/features/runs/data/runs_repository.dart';
 import 'package:bpj/features/runs/ui/runs_screen.dart';
 import 'package:flutter/material.dart';
@@ -181,6 +182,9 @@ void main() {
           more: [
             membershipRepositoryProvider.overrideWithValue(
               MembershipRepository(db, dio),
+            ),
+            followsRepositoryProvider.overrideWithValue(
+              FollowsRepository(db, dio),
             ),
             // The repository's own clock only prunes very old rows.
             runsRepositoryProvider.overrideWithValue(

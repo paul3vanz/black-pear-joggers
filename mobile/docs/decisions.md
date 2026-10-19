@@ -839,3 +839,48 @@ Someone who leads Mondays and runs Wednesdays sees both days on Runs and only Mo
 - **The Runs tab** hides "can't come" runs on other days, but runs you are going to, might go to or lead always show.
   The old "N runs hidden by the days you chose" note and the "Only runs you already lead" hint are folded into the
   Show N more button.
+
+**D117 — One saved choice per series drives My runs and reminders; days become a shortcut (2026-10-19). Replaces
+D115's "days I run" and D35's reminder-only override.**
+Members could not tell which controls saved and which only changed the view, and the feed (days) and reminders (per
+series Always/Automatic/Never) disagreed: Perdiswell on Never still showed, and a day filter could not show "only the
+runs I picked".
+- **The series is the unit:** `member_series_prefs.mode` is `follow`, `auto` or `hide` (no row = `auto`). The old
+  `reminders` value maps to it (Always = follow, Automatic = auto, Never = hide); there is no second copy.
+- **One resolver**, written twice and pinned by one shared case table: RSVP yes shows; hide never; follow always; auto
+  when the member usually comes (D35's history rule, still off for events and races, D79). One-off runs always show
+  but are never followed. The reminder job, the group-match notice and the leaders-needed fallback use it on the
+  server; the Runs tab uses the Dart copy.
+- **The feed stays on the device.** The plan suggested a `view` parameter on the sessions feed; the app is
+  offline-first (it renders the Drift cache), so it caches `GET /follows` and resolves locally. The shared table is
+  what keeps the two sides equal.
+- **Open questions, answered with the plan's assumptions:** (1) an RSVP beats Hide, in the feed and for that run's
+  reminder; (2) the view resets to My runs on every start; (3) members who never chose days get auto everywhere and
+  start on All runs until they make any choice; (4) "usually comes" is D35's rule, exposed per series as
+  `usuallyComes`; (5) one-off runs always show in both views; (6) Maybe gets a tonal chip with a question-mark icon;
+  (7) the empty state uses the suggested copy. Change any of these if the testers disagree.
+- **Migration** (`app:migrate-follows`, dry run first): Never = hide even on a selected day, Always = follow,
+  Automatic on a selected day (run or lead day) = follow, otherwise auto. Unmigrated members are read through the same
+  mapping and any write migrates them first, so deploying the server before running the command changes nothing.
+  It keeps the old data and skips migrated members, so it is safe to run twice. Side effect worth a release note:
+  members who chose days now get reminders for every run of those series, not just ones they usually attend.
+- **Older apps keep working:** notification settings read and write the mode, and saving run days follows the auto
+  series on those days (hide is left alone, like the migration).
+
+**D118 — Settings look like settings, views look temporary (2026-10-19).**
+- **My runs | All runs** is a 48dp pill with the selected side orange and checked; switching is instant, writes
+  nothing and is not stored. All runs carries a dashed "Just looking" banner; dashes mean temporary.
+- **Runs I follow** (`/follows`, above the shell like a member profile) is the only place modes are edited: a
+  Follow | Auto | Hide control per series with a status line that makes Auto readable, Follow all per day and Follow
+  everything. Every tap saves; the two bulk buttons offer Undo through the restore form of `PUT /follows`, and any
+  later change dismisses it. The cache is updated optimistically and put back on failure, with a snackbar.
+- **The three-way control is 44dp**, not the 42dp the mockup drew, because the plan also requires every control to
+  be at least 44dp. Its outline (and the view switch's) is painted as a foreground decoration so each segment's tap
+  area is the full height. Each segment is a selectable button in a mutually exclusive group for screen readers.
+- **Cards** carry one status chip (Going, Maybe, Can't come, Following, Not following, Hidden) and a trailing
+  **Manage** or **Follow**. "Can't come" stays (the old Runs tab showed it). The response chip moved out of the
+  summary row; "You're leading" stays there. Hidden cards in All runs use the dimmed fill and border.
+- **Feed colours** that the `ColorScheme` has no slot for live in a `RunFeedColors` theme extension, with the plan's
+  dark values and matching light ones.
+- The days-I-run panel and its Show N more / Just my days peek are gone; `MyDaysPanel` remains for Lead a run, which
+  now falls back to every day instead of the run days.

@@ -1,10 +1,11 @@
 import '../../../core/db/app_database.dart';
 import '../ui/run_format.dart';
 
-/// The two day choices a member makes (D115): the days they run, which narrow
-/// the Runs tab, and the days they may lead, which narrow Lead a run. Both are
-/// ISO weekdays (Dart's `DateTime.weekday`, Monday = 1) held by the server,
-/// which keeps lead days inside run days.
+/// The day lists a member can save on `PUT /preferences`, as ISO weekdays
+/// (Dart's `DateTime.weekday`, Monday = 1). Only "days I may lead" is still
+/// chosen in the app (Lead a run). "Days I run" (D115) was replaced by Runs I
+/// follow (D117); the server keeps it for older app versions, so it stays
+/// readable here.
 enum DayKind {
   run('runDays'),
   lead('leadDays');
@@ -38,35 +39,5 @@ Set<int> weekdaysOf(Iterable<Session> sessions) => {
   for (final s in sessions) sessionWeekday(s),
 };
 
-/// The runs left after a day filter, and how many it hid.
-typedef DayFilterResult = ({List<Session> kept, int hidden});
-
-/// Keeps the runs on one of [days] plus every run for which [always] is true
-/// (one you lead or said you're coming to never disappears). Null [days] keeps
-/// everything; an empty set keeps only the [always] runs. Order is kept.
-DayFilterResult filterByDays(
-  Iterable<Session> sessions,
-  Set<int>? days,
-  bool Function(Session session) always,
-) {
-  final kept = <Session>[];
-  var hidden = 0;
-  for (final s in sessions) {
-    if (days == null || days.contains(sessionWeekday(s)) || always(s)) {
-      kept.add(s);
-    } else {
-      hidden++;
-    }
-  }
-  return (kept: kept, hidden: hidden);
-}
-
-/// The days the Runs tab shows: the run days plus any lead day (you're there
-/// when you lead). Null while no run days are chosen.
-Set<int>? runTabDays({List<int>? runDays, List<int>? leadDays}) =>
-    runDays == null ? null : {...runDays, ...?leadDays};
-
-/// The days Lead a run shows: the lead days, else the run days (nobody leads
-/// on a day they don't run), else everything.
-Set<int>? leadRosterDays({List<int>? runDays, List<int>? leadDays}) =>
-    (leadDays ?? runDays)?.toSet();
+/// The days Lead a run shows: the lead days, else everything (null).
+Set<int>? leadRosterDays({List<int>? leadDays}) => leadDays?.toSet();

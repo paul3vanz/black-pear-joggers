@@ -21,6 +21,7 @@ import '../features/profile/ui/delete_account_screen.dart';
 import '../features/profile/ui/diagnostics_screen.dart';
 import '../features/profile/ui/recover_screen.dart';
 import '../features/profile/ui/profile_screen.dart';
+import '../features/runs/ui/runs_i_follow_screen.dart';
 import '../features/runs/ui/runs_screen.dart';
 import '../features/runs/ui/series_screens.dart';
 import '../features/runs/ui/session_detail_screen.dart';
@@ -285,6 +286,13 @@ GoRouter router(Ref ref) {
             ],
           ),
         ],
+      ),
+      // Runs I follow (D117), opened from the Runs tab and from Notification
+      // settings, so it sits above both tabs like a member profile.
+      GoRoute(
+        path: '/follows',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (_, _) => const RunsIFollowScreen(),
       ),
       // A member's profile, pushed above whatever screen opened it (D62).
       GoRoute(
