@@ -3,3 +3,11 @@
 **/*.pem
 **/*.bak
 .phpunit.result.cache
+
+# Firebase / Google service-account keys (FCM). Never commit.
+*-firebase-adminsdk-*.json
+service-account*.json
+
+bruno/**/*
+
+database/manual/**
