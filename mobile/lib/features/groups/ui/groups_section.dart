@@ -166,16 +166,22 @@ class GroupsSection extends ConsumerWidget {
           : 'Join this group',
       // Leaders are already in the group they lead (the server marks them
       // going), so they get no Join / Leave.
+      // Someone leading another group of this run is held back until they step
+      // down from it (D108).
       onJoin: open && !mine && !leading
-          ? () => unawaited(
-              respondToRun(
-                context,
-                ref,
-                session: session,
-                status: 'going',
-                groupId: g.id,
-              ),
-            )
+          ? () => ledByMe != null
+                ? unawaited(
+                    showLeadingElsewhere(context, ref, session, ledByMe, units),
+                  )
+                : unawaited(
+                    respondToRun(
+                      context,
+                      ref,
+                      session: session,
+                      status: 'going',
+                      groupId: g.id,
+                    ),
+                  )
           : null,
       onLeave: open && mine && !leading
           ? () => unawaited(
@@ -185,10 +191,6 @@ class GroupsSection extends ConsumerWidget {
       // Not offered on other groups of a run you already lead in (D108).
       onLeadToo: open && !leading && ledByMe == null
           ? () => unawaited(joinAsLeaderWithRole(context, ref, session, g))
-          : null,
-      leadHint: open && !leading && ledByMe != null
-          ? "You're already leading the ${groupHeading(ledByMe, units).title} "
-                'group'
           : null,
       onStepDown: open && leading
           ? () => unawaited(stepDownFrom(context, ref, session, g))

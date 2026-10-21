@@ -123,8 +123,9 @@ void main() {
     expect(find.text('Led by'), findsNWidgets(2));
     expect(find.text('Jo Bloggs'), findsOneWidget);
     expect(find.text('Sam Lapsed'), findsOneWidget);
-    expect(find.text('Pat Back'), findsOneWidget);
-    expect(find.text('(backmarker)'), findsOneWidget);
+    // A backmarker is not on the card; the leader and co-leaders are.
+    expect(find.text('Pat Back'), findsNothing);
+    expect(find.text('(backmarker)'), findsNothing);
     expect(find.text('5 going, 1 maybe'), findsOneWidget);
     expect(find.text('Needs a leader'), findsOneWidget);
     expect(find.text('No leader yet'), findsOneWidget);
@@ -374,24 +375,34 @@ void main() {
       await unmount(tester);
     });
 
-    testWidgets('other groups of the run offer nothing, and say why (D108)', (
-      tester,
-    ) async {
-      await pumpDetail(
-        tester,
-        groups: [mineLed, fast],
-        summary: summaryJson(
-          groupCount: 2,
-          myStatus: 'going',
-          myGroupId: 'mine',
-          myLeading: true,
-        ),
-      );
-      expect(find.text("I'll lead this group too"), findsNothing);
-      expect(find.textContaining("You're already leading the"), findsOneWidget);
-      expect(find.text('Lead a group'), findsNothing);
-      await unmount(tester);
-    });
+    testWidgets(
+      'other groups of the run only offer Join, and block it (D108)',
+      (tester) async {
+        await pumpDetail(
+          tester,
+          groups: [mineLed, fast],
+          summary: summaryJson(
+            groupCount: 2,
+            myStatus: 'going',
+            myGroupId: 'mine',
+            myLeading: true,
+          ),
+        );
+        expect(find.text("I'll lead this group too"), findsNothing);
+        // No note against the other groups any more...
+        expect(find.textContaining("You're already leading"), findsNothing);
+        expect(find.text('Lead a group'), findsNothing);
+        // ...but joining one is blocked until they step down from their own.
+        await tester.tap(find.text('Join this group'));
+        await tester.pumpAndSettle();
+        expect(find.text("You're leading another group"), findsOneWidget);
+        expect(find.textContaining('Step down from it before'), findsOneWidget);
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+        expect(find.text("You're leading another group"), findsNothing);
+        await unmount(tester);
+      },
+    );
 
     testWidgets('someone not leading still sees the offers', (tester) async {
       await pumpDetail(tester, groups: [fast]);

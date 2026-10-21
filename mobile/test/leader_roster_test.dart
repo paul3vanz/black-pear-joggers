@@ -152,37 +152,45 @@ void main() {
       await unmount(tester);
     });
 
-    testWidgets('on a run I lead, other groups offer nothing (D108)', (
-      tester,
-    ) async {
-      await pumpRoster(
-        tester,
-        seed: () => SessionLocalStore(db).mergeGroup(
-          Group.fromJson(
-            groupJson(
-              'g-other',
-              sessionId: 'a',
-              label: 'Theirs',
-              leaders: [other],
-              paceFromS: 540,
-              paceToS: null,
+    testWidgets(
+      'on a run I lead, other groups have no note and joining is blocked (D108)',
+      (tester) async {
+        await pumpRoster(
+          tester,
+          seed: () => SessionLocalStore(db).mergeGroup(
+            Group.fromJson(
+              groupJson(
+                'g-other',
+                sessionId: 'a',
+                label: 'Theirs',
+                leaders: [other],
+                paceFromS: 540,
+                paceToS: null,
+              ),
             ),
+            myMemberId: 'me',
           ),
-          myMemberId: 'me',
-        ),
-      );
-      expect(inCard('a', find.text('Edit')), findsOneWidget);
-      expect(inCard('a', find.text('Join as co-leader')), findsNothing);
-      expect(inCard('a', find.text('Lead this group')), findsNothing);
-      expect(inCard('a', find.text('Offer to lead')), findsNothing);
-      expect(
-        inCard('a', find.textContaining("You're already leading the")),
-        findsOneWidget,
-      );
-      // Other runs are unaffected.
-      expect(inCard('b', find.text('Join as co-leader')), findsOneWidget);
-      await finish(tester);
-    });
+        );
+        expect(inCard('a', find.text('Edit')), findsOneWidget);
+        expect(inCard('a', find.text('Lead this group')), findsNothing);
+        expect(inCard('a', find.text('Offer to lead')), findsNothing);
+        expect(
+          inCard('a', find.textContaining("You're already leading the")),
+          findsNothing,
+        );
+        // Joining the other group is blocked, pointing at my own.
+        await tester.tap(inCard('a', find.text('Join as co-leader')));
+        await tester.pump();
+        expect(
+          find.text("You're already leading a group on this run"),
+          findsOneWidget,
+        );
+        await tester.pump(const Duration(seconds: 7));
+        // Other runs are unaffected.
+        expect(inCard('b', find.text('Join as co-leader')), findsOneWidget);
+        await finish(tester);
+      },
+    );
 
     testWidgets('Offer to lead opens the editor with the lead intent', (
       tester,

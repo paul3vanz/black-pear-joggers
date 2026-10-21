@@ -124,12 +124,6 @@ class RosterRunCard extends ConsumerWidget {
                   group: g,
                   units: units,
                   mine: myId != null && g.isLedBy(myId),
-                  // One group per leader per run (D108): no offers on the
-                  // other groups once you lead one; say why instead.
-                  leadHint: leading.isNotEmpty && !g.isLedBy(myId ?? '')
-                      ? "You're already leading the "
-                            '${groupHeading(leading.first, units).title} group'
-                      : null,
                   onEdit: () => unawaited(
                     context.push('/runs/${session.id}/groups/${g.id}/edit'),
                   ),
@@ -244,7 +238,6 @@ class _GroupLine extends StatelessWidget {
     required this.group,
     required this.units,
     required this.mine,
-    required this.leadHint,
     required this.onEdit,
     required this.onStepDown,
     required this.onJoin,
@@ -254,8 +247,6 @@ class _GroupLine extends StatelessWidget {
   final UnitPrefs units;
   final bool mine;
 
-  /// Replaces the join button when the viewer already leads another group.
-  final String? leadHint;
   final VoidCallback onEdit;
   final VoidCallback onStepDown;
   final VoidCallback onJoin;
@@ -301,14 +292,9 @@ class _GroupLine extends StatelessWidget {
                   onPressed: onStepDown,
                   child: const Text('Step down'),
                 ),
-              ] else if (leadHint != null)
-                Text(
-                  leadHint!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                )
-              else
+              ] else
+                // Already leading another group of this run: joinAsLeaderWithRole
+                // blocks it and points at that group (D108).
                 TextButton(
                   onPressed: onJoin,
                   child: Text(
