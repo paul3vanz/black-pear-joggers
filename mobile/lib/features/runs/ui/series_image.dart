@@ -15,7 +15,10 @@ ImageProvider Function(String url) seriesImageFactory(Ref ref) =>
 /// Height of the banner above a run card / on the run page.
 const seriesImageHeight = 150.0;
 
-/// The series banner (D49): full width, [seriesImageHeight] tall, `BoxFit.cover`, top
+/// Height of the banner on a Runs-tab card: half, so more runs fit on screen.
+const runCardImageHeight = seriesImageHeight / 2;
+
+/// The series banner (D49): full width, [height] tall (150 by default), `BoxFit.cover`, top
 /// corners rounded to match the card, fading in once loaded.
 ///
 /// Renders **nothing** (zero height, no placeholder or error icon) when [url] is null or
@@ -28,6 +31,7 @@ class SeriesImage extends ConsumerStatefulWidget {
     this.radius = 12,
     this.roundBottom = false,
     this.gapBelow = 0,
+    this.height = seriesImageHeight,
   });
 
   final String? url;
@@ -40,6 +44,9 @@ class SeriesImage extends ConsumerStatefulWidget {
 
   /// Space under the image, only added while the image is shown.
   final double gapBelow;
+
+  /// Banner height; the Runs-tab cards use [runCardImageHeight].
+  final double height;
 
   @override
   ConsumerState<SeriesImage> createState() => _SeriesImageState();
@@ -107,7 +114,7 @@ class _SeriesImageState extends ConsumerState<SeriesImage> {
         child: Image(
           image: provider,
           width: double.infinity,
-          height: seriesImageHeight,
+          height: widget.height,
           fit: BoxFit.cover,
           // Already decoded and cached by now; never show an error widget.
           errorBuilder: (context, error, stack) => const SizedBox.shrink(),

@@ -568,7 +568,10 @@ class _RunCard extends StatelessWidget {
           children: [
             Opacity(
               opacity: dimmed ? 0.5 : 1,
-              child: SeriesImage(url: session.imageUrl),
+              child: SeriesImage(
+                url: session.imageUrl,
+                height: runCardImageHeight,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(16),

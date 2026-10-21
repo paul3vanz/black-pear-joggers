@@ -203,7 +203,7 @@ void main() {
       tester,
     ) async {
       await pumpRuns(tester);
-      // One banner (run a): 150 high, as wide as the card.
+      // One banner (run a): half height, as wide as the card.
       expect(find.byType(Image), findsOneWidget);
       expect(
         find.descendant(
@@ -213,7 +213,7 @@ void main() {
         findsOneWidget,
       );
       final image = tester.getSize(find.byType(Image));
-      expect(image.height, seriesImageHeight);
+      expect(image.height, runCardImageHeight);
       expect(image.width, tester.getSize(cardOf('With end and image')).width);
 
       // No image: nothing. Broken image: nothing either (no error icon).

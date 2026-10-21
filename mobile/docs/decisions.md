@@ -889,3 +889,5 @@ runs I picked".
 - **"Can't come" leaves My runs.** A run the member has answered "can't come" to (series or one-off) drops out of My
   runs and stays in All runs, always badged "Can't come" (never "Following"). This is client-side only in `feedRun`:
   `resolveFollow` is shared with the server's reminders and its case table is unchanged.
+- **Runs-tab banners are half height** (75dp, `runCardImageHeight`) so more runs fit on screen. The run page and
+  series preview keep the full 150dp.
