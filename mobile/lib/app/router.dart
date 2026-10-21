@@ -15,6 +15,7 @@ import '../features/membership/ui/membership_providers.dart';
 import '../features/membership/ui/unavailable_screen.dart';
 import '../features/members/ui/member_profile_screen.dart';
 import '../features/members/ui/my_profile_card_screen.dart';
+import '../features/messages/data/message_dtos.dart' show leadersThreadId;
 import '../features/messages/ui/chat_screen.dart';
 import '../features/profile/ui/about_screen.dart';
 import '../features/profile/ui/delete_account_screen.dart';
@@ -185,6 +186,16 @@ GoRouter router(Ref ref) {
                         builder: (_, state) => GroupEditorScreen(
                           sessionId: state.pathParameters['id']!,
                           groupId: state.pathParameters['groupId'],
+                        ),
+                      ),
+                      // The run's leaders thread (D125): the committee, its
+                      // leaders and anyone asked to lead. The target of its pushes.
+                      GoRoute(
+                        path: 'leaders-chat',
+                        parentNavigatorKey: rootNavigatorKey,
+                        builder: (_, state) => ChatScreen(
+                          sessionId: state.pathParameters['id']!,
+                          groupId: leadersThreadId(state.pathParameters['id']!),
                         ),
                       ),
                       // Also the target of a group-message push (D42).

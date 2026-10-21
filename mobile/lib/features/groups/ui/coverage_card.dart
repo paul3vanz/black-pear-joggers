@@ -12,6 +12,8 @@ import '../data/plan_dtos.dart';
 import '../logic/coverage_report.dart';
 import '../logic/gap_report.dart';
 import '../logic/pace_spread.dart';
+import '../../runs/ui/runs_providers.dart';
+import 'ask_leaders_sheet.dart';
 import 'group_access.dart';
 import 'group_format.dart';
 import 'groups_providers.dart';
@@ -81,6 +83,8 @@ class CoverageCard extends ConsumerWidget {
     final unit = units.paceUnit;
     final report = buildCoverage(groups: groups, unit: unit);
     final open = isRunOpen(session, ref.watch(nowProvider));
+    final isCommittee = ref.watch(canManageRunsProvider);
+    final canAsk = isCommittee && open;
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -110,18 +114,42 @@ class CoverageCard extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _Ladder(report: report, units: units),
-            if (open)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: () => unawaited(
-                    context.push('/runs/${session.id}/groups/new?intent=add'),
+            _Ladder(
+              report: report,
+              units: units,
+              // Committee only (the server agrees), while the run is open.
+              onAsk: canAsk
+                  ? (target) => unawaited(
+                      showAskLeadersSheet(
+                        context,
+                        ref,
+                        session: session,
+                        target: target,
+                      ),
+                    )
+                  : null,
+            ),
+            Wrap(
+              children: [
+                if (open)
+                  TextButton.icon(
+                    onPressed: () => unawaited(
+                      context.push('/runs/${session.id}/groups/new?intent=add'),
+                    ),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add a group'),
                   ),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add a group'),
-                ),
-              ),
+                if (isCommittee)
+                  TextButton.icon(
+                    key: const ValueKey('open-leaders-chat'),
+                    onPressed: () => unawaited(
+                      context.push('/runs/${session.id}/leaders-chat'),
+                    ),
+                    icon: const Icon(Icons.forum_outlined),
+                    label: const Text('Leaders thread'),
+                  ),
+              ],
+            ),
             _People(plan: plan, report: report, units: units),
           ],
         ),
@@ -168,10 +196,13 @@ class _StatusChip extends StatelessWidget {
 /// The pace ladder: every group (led or not) and every uncovered stretch,
 /// fastest first, then the groups with no pace.
 class _Ladder extends StatelessWidget {
-  const _Ladder({required this.report, required this.units});
+  const _Ladder({required this.report, required this.units, this.onAsk});
 
   final CoverageReport report;
   final UnitPrefs units;
+
+  /// Opens the ask-leaders sheet for a pace range; null hides the buttons.
+  final void Function(AskTarget target)? onAsk;
 
   @override
   Widget build(BuildContext context) {
@@ -185,10 +216,39 @@ class _Ladder extends StatelessWidget {
       ])
         (
           key: g.pace.fastest!.secondsPerKm,
-          row: _GroupRow(group: g, units: units),
+          row: _GroupRow(
+            group: g,
+            units: units,
+            // An unled group with a pace can be asked about by its pace.
+            onAsk: onAsk == null || g.leaders.isNotEmpty
+                ? null
+                : () {
+                    final band = g.pace.band()!;
+                    onAsk!((
+                      fastSPerKm: band.fast.round(),
+                      slowSPerKm: band.slow.round(),
+                      paceLabel: paceText(g.pace, units),
+                    ));
+                  },
+          ),
         ),
       for (final gap in report.gaps)
-        (key: gap.fastS, row: _GapRow(gap: gap, unit: unit)),
+        (
+          key: gap.fastS,
+          row: _GapRow(
+            gap: gap,
+            unit: unit,
+            // Only real gaps (between two led groups), not the window ends.
+            onAsk: onAsk == null || gap.softened
+                ? null
+                : () => onAsk!((
+                    fastSPerKm: gap.fastS.round(),
+                    slowSPerKm: gap.slowS.round(),
+                    paceLabel:
+                        '${mmss(gap.fromIn(unit))}-${mmss(gap.toIn(unit))}/${unit.code}',
+                  )),
+          ),
+        ),
     ]..sort((a, b) => a.key.compareTo(b.key));
     final unpaced = [
       ...report.noPaceLed,
@@ -239,10 +299,11 @@ class _SectionLabel extends StatelessWidget {
 
 /// One group on the ladder. A coloured edge says whether it is led.
 class _GroupRow extends StatelessWidget {
-  const _GroupRow({required this.group, required this.units});
+  const _GroupRow({required this.group, required this.units, this.onAsk});
 
   final Group group;
   final UnitPrefs units;
+  final VoidCallback? onAsk;
 
   @override
   Widget build(BuildContext context) {
@@ -307,6 +368,19 @@ class _GroupRow extends StatelessWidget {
                         ),
                         if (subtitle != null) Text(subtitle, style: muted),
                         if (!needs) LeadersLine(leaders: group.leaders),
+                        if (needs && onAsk != null)
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton(
+                              key: ValueKey('ask-group-${group.id}'),
+                              style: TextButton.styleFrom(
+                                minimumSize: const Size(0, 40),
+                                padding: EdgeInsets.zero,
+                              ),
+                              onPressed: onAsk,
+                              child: const Text('Ask leaders'),
+                            ),
+                          ),
                         if (group.goingCount + group.maybeCount > 0)
                           Text(
                             goingText(group.goingCount, group.maybeCount),
@@ -328,10 +402,11 @@ class _GroupRow extends StatelessWidget {
 /// An uncovered stretch between (or beyond) the groups: red for a problem,
 /// grey for information (a slow-end tail a jog/walk group softens).
 class _GapRow extends StatelessWidget {
-  const _GapRow({required this.gap, required this.unit});
+  const _GapRow({required this.gap, required this.unit, this.onAsk});
 
   final CoverageGap gap;
   final DistUnit unit;
+  final VoidCallback? onAsk;
 
   @override
   Widget build(BuildContext context) {
@@ -357,6 +432,13 @@ class _GapRow extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(child: Text(coverageGapText(gap, unit))),
+              if (onAsk != null)
+                TextButton(
+                  key: ValueKey('ask-gap-${gap.fastS.round()}'),
+                  style: TextButton.styleFrom(minimumSize: const Size(0, 40)),
+                  onPressed: onAsk,
+                  child: const Text('Ask leaders'),
+                ),
             ],
           ),
         ),

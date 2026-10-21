@@ -8,18 +8,33 @@ import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/run_format.dart';
+import '../data/message_dtos.dart' show isLeadersThread;
 import 'messages_providers.dart';
 
 /// "Group chats" at the top of the Inbox tab: the caller's threads (from
 /// `GET …/threads`, cached) with the run date, the last message, an unread
 /// badge and a muted icon. Renders nothing while there are none.
+///
+/// [include] picks which threads (a group's chat or a run's leaders thread,
+/// D125) are listed, for the Inbox's views; [title] names the list.
 class GroupChatsSection extends ConsumerWidget {
-  const GroupChatsSection({super.key});
+  const GroupChatsSection({
+    super.key,
+    this.include,
+    this.title = 'Group chats',
+  });
+
+  final bool Function(String threadId)? include;
+  final String title;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final clubId = ref.watch(activeClubIdProvider);
-    final threads = ref.watch(threadsProvider(clubId)).value ?? const [];
+    final threads = <ThreadState>[
+      for (final t
+          in ref.watch(threadsProvider(clubId)).value ?? const <ThreadState>[])
+        if (include?.call(t.groupId) ?? true) t,
+    ];
     if (threads.isEmpty) return const SizedBox.shrink();
     final now = ref.watch(clubTodayProvider).now;
     final theme = Theme.of(context);
@@ -29,7 +44,7 @@ class GroupChatsSection extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
           child: Text(
-            'Group chats',
+            title,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -61,7 +76,11 @@ class _ThreadTile extends StatelessWidget {
               '${thread.lastBody}';
     return ListTile(
       key: ValueKey('thread-${thread.groupId}'),
-      leading: const Icon(Icons.forum_outlined),
+      leading: Icon(
+        isLeadersThread(thread.groupId)
+            ? Icons.groups_outlined
+            : Icons.forum_outlined,
+      ),
       title: Text(
         [thread.label ?? 'Group chat', ?date].join(' · '),
         style: TextStyle(fontWeight: unread > 0 ? FontWeight.w700 : null),
@@ -89,7 +108,9 @@ class _ThreadTile extends StatelessWidget {
           ? null
           : () => unawaited(
               context.push(
-                '/runs/${thread.sessionId}/groups/${thread.groupId}/chat',
+                isLeadersThread(thread.groupId)
+                    ? '/runs/${thread.sessionId}/leaders-chat'
+                    : '/runs/${thread.sessionId}/groups/${thread.groupId}/chat',
               ),
             ),
     );

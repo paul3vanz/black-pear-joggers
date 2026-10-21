@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../messages/ui/messages_providers.dart';
+import '../../runs/logic/run_modes.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../../runs/ui/session_actions.dart';
 import '../data/group_dtos.dart';
@@ -100,6 +101,18 @@ class GroupsSection extends ConsumerWidget {
             ),
           ),
         ],
+        // A leader of this run can talk to the committee and the other leaders (D125).
+        if (ledByMe != null && !isEventLikeMode(session.groupMode))
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              key: const ValueKey('leaders-thread-link'),
+              onPressed: () =>
+                  unawaited(context.push('/runs/${session.id}/leaders-chat')),
+              icon: const Icon(Icons.groups_outlined),
+              label: const Text('Leaders thread'),
+            ),
+          ),
         if (routes && open) MyPaceTile(session: session),
         const SizedBox(height: 8),
         if (groups.isEmpty)

@@ -105,7 +105,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
     final folder = _folder;
     final inFolder = [
       for (final i in items ?? const <InboxItem>[])
-        if (folder.holds(i.category)) i,
+        if (folder.holds(i.category, route: routeOf(i))) i,
     ];
     final unreadHere = [
       for (final i in inFolder)
@@ -114,9 +114,9 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
     // A dot on a tab with anything unread in it (chats also count threads).
     bool unreadIn(InboxFolder f) =>
         (items ?? const <InboxItem>[]).any(
-          (i) => i.readAt == null && f.holds(i.category),
+          (i) => i.readAt == null && f.holds(i.category, route: routeOf(i)),
         ) ||
-        (f.showsThreads && threads.any((t) => t.unreadCount > 0));
+        threads.any((t) => t.unreadCount > 0 && f.holdsThread(t.groupId));
 
     return Scaffold(
       appBar: AppBar(
@@ -165,7 +165,13 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
             children: [
               if (_refreshing && (items?.isEmpty ?? true))
                 const LinearProgressIndicator(),
-              if (folder.showsThreads) const GroupChatsSection(),
+              if (folder.showsThreads)
+                GroupChatsSection(
+                  include: folder.holdsThread,
+                  title: folder == InboxFolder.leaders
+                      ? 'Leaders threads'
+                      : 'Group chats',
+                ),
               if (showBanner)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -176,7 +182,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
                   !_refreshing &&
                   !showBanner &&
                   // Chats shows the threads above even with no notifications.
-                  !(folder.showsThreads && threads.isNotEmpty))
+                  !threads.any((t) => folder.holdsThread(t.groupId)))
                 _EmptyInbox(text: folder.emptyText),
               for (final item in inFolder)
                 _InboxTile(item: item, onTap: () => _open(item)),

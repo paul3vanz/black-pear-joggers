@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/db/app_database.dart';
+import '../../../core/units/pace_spec.dart';
+import '../../groups/ui/group_format.dart';
+import '../../groups/ui/groups_providers.dart';
 import '../../members/ui/member_avatar.dart';
 import '../../runs/data/runs_repository.dart';
 import '../data/message_dtos.dart';
@@ -112,6 +115,8 @@ class MessageBubble extends StatelessWidget {
     this.showAvatar = false,
     this.onTap,
     this.onLongPress,
+    this.units = const UnitPrefs(),
+    this.onLead,
   });
 
   final GroupMessage message;
@@ -124,11 +129,18 @@ class MessageBubble extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
+  /// The viewer's units, for the pace of a leaders-thread ask.
+  final UnitPrefs units;
+
+  /// "I can lead" on an ask (null: not offered, e.g. your own ask).
+  final VoidCallback? onLead;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final m = message;
+    final ask = m.ask;
     final deleted = m.isDeleted;
     final badge = roleBadge(m.authorRole);
     final background = m.isFailed
@@ -184,13 +196,21 @@ class MessageBubble extends StatelessWidget {
                       ],
                     ),
                   ),
-                Text(
-                  deleted ? 'Message deleted' : m.body,
-                  style: TextStyle(
+                if (ask != null)
+                  AskContent(
+                    ask: ask,
+                    units: units,
                     color: foreground,
-                    fontStyle: deleted ? FontStyle.italic : null,
+                    onLead: onLead,
+                  )
+                else
+                  Text(
+                    deleted ? 'Message deleted' : m.body,
+                    style: TextStyle(
+                      color: foreground,
+                      fontStyle: deleted ? FontStyle.italic : null,
+                    ),
                   ),
-                ),
                 const SizedBox(height: 2),
                 Text(
                   status,
@@ -258,6 +278,75 @@ class _RoleBadge extends StatelessWidget {
           fontWeight: FontWeight.w700,
         ),
       ),
+    );
+  }
+}
+
+/// "8:25-10:05/mi" for an ask's range in [units], or null for any pace.
+String? askPaceText(AskBody ask, UnitPrefs units) {
+  if (!ask.hasPace) return null;
+  return paceText(
+    PaceSpec.fromFields(unit: 'km', fromS: ask.fastSPerKm, toS: ask.slowSPerKm),
+    units,
+  );
+}
+
+/// The inside of a leaders-thread ask bubble: what is wanted, the committee's
+/// note and, for someone who could answer, **I can lead**.
+class AskContent extends StatelessWidget {
+  const AskContent({
+    super.key,
+    required this.ask,
+    required this.units,
+    required this.color,
+    this.onLead,
+  });
+
+  final AskBody ask;
+  final UnitPrefs units;
+  final Color color;
+  final VoidCallback? onLead;
+
+  @override
+  Widget build(BuildContext context) {
+    final pace = askPaceText(ask, units);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.flag_outlined, size: 18, color: color),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                pace == null ? 'Can anyone lead?' : 'Can anyone lead $pace?',
+                key: const ValueKey('ask-title'),
+                style: TextStyle(color: color, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        if (ask.note.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(ask.note, style: TextStyle(color: color)),
+          ),
+        if (onLead != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: FilledButton.tonal(
+              key: const ValueKey('ask-lead'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(0, 40),
+                visualDensity: VisualDensity.compact,
+              ),
+              onPressed: onLead,
+              child: const Text('I can lead'),
+            ),
+          ),
+      ],
     );
   }
 }

@@ -935,3 +935,21 @@ notes. They no longer count towards "N to fill" and no longer say "down to 12:00
 says "Covered". Real gaps (between two led groups) and unled groups still count, and anyone actually waiting at an
 uncovered pace is listed under "People coming with no matching group". A leader's **Step down** now sits beside
 **Group chat** on the group card, like Leave group does for a member.
+
+**D125 — Leaders thread and "Can anyone lead?" (2026-10-21).** One chat per run between the committee and the people
+who lead, or have been asked to lead, it, so a reply never depends on which committee member asked.
+- **Same screens, no new local tables.** The app addresses it as `leaders:<sessionId>` where a group id goes, so the
+  message and thread caches, `ChatScreen` and the repository serve both (the repository only switches its base path,
+  `/sessions/<id>/leaders-chat`). Route `/runs/:id/leaders-chat`; every push for it opens that.
+- **An ask** (committee only, "Ask leaders" on a coverage gap or an unled group) is a message of kind `ask` with a pace
+  range in seconds per km. It goes by `leaders_needed` push to the members who may lead at that pace (the
+  leaders-needed audience, so the same days, history and pace-fit rules) and adds them to the thread. Members see
+  "Can anyone lead 8:25-10:05/mi?" in their own units and **I can lead** opens the group editor with the lead intent.
+- **Repeat:** a day on, once, to the people asked who haven't posted and aren't leading, while the run is 2+ hours
+  away, nobody leads a group at that pace and it is between 08:00 and 21:00 local.
+- **Local storage shortcut:** the local message table has no columns for an ask, so it is stored in `body` behind a
+  U+241E mark (`AskBody`) rather than adding columns. This avoids a schema bump and its upgrade fixture; do it
+  properly at the next bump.
+- **Inbox:** a **Leaders** tab holds the thread and its notifications (by `/leaders-chat` route, so an ask's
+  `leaders_needed` category doesn't put it under Runs).
+- Only the committee moderates it (deletes others' messages); the author can delete their own.

@@ -67,8 +67,11 @@ class MessagesRepository {
   /// Key (in the small key/value table) remembering the dismissed info line.
   static const infoDismissedKey = 'chatInfoDismissed';
 
-  String _base(int clubId, String groupId) =>
-      '/app/clubs/$clubId/groups/$groupId';
+  /// A group's thread, or a run's leaders thread (D125), which has the same
+  /// endpoints under the session.
+  String _base(int clubId, String groupId) => isLeadersThread(groupId)
+      ? '/app/clubs/$clubId/sessions/${leadersSessionId(groupId)}/leaders-chat'
+      : '/app/clubs/$clubId/groups/$groupId';
 
   // --- Reads -----------------------------------------------------------
 
@@ -194,7 +197,7 @@ class MessagesRepository {
           memberId: dto.memberId,
           authorName: dto.authorName,
           authorRole: Value(dto.authorRole),
-          body: dto.body,
+          body: dto.storedBody,
           createdAt: dto.createdAt,
           deletedAt: Value(dto.deletedAt),
           sendState: const Value('sent'),
@@ -382,6 +385,44 @@ class MessagesRepository {
           .write(const GroupMessagesCompanion(sendState: Value('failed')));
       return SendResult(SendOutcome.failed, e);
     }
+  }
+
+  // --- Asking leaders (committee, online) ----------------------------------
+
+  /// Asks for someone to lead a pace range on [sessionId] (D125): posts an ask
+  /// in the run's leaders thread and notifies the members who could lead it.
+  /// Needs a connection and the committee role (403 otherwise). Returns how many
+  /// members were asked, which is 0 when nobody could be.
+  Future<int> askForLeader(
+    int clubId,
+    String sessionId, {
+    int? fastSPerKm,
+    int? slowSPerKm,
+    String note = '',
+  }) async {
+    final threadId = leadersThreadId(sessionId);
+    final text = note.trim();
+    final response = await guardApi(
+      () => _dio.post<Object?>(
+        '${_base(clubId, threadId)}/ask',
+        data: {
+          'id': _newId(),
+          'fastSPerKm': ?fastSPerKm,
+          'slowSPerKm': ?slowSPerKm,
+          if (text.isNotEmpty) 'note': text,
+        },
+      ),
+    );
+    final body = jsonObject(response);
+    final message = body['message'];
+    if (message is Map) {
+      await _storeServerMessage(
+        clubId,
+        threadId,
+        MessageDto.fromJson(Map<String, Object?>.from(message)),
+      );
+    }
+    return (body['notified'] as num?)?.toInt() ?? 0;
   }
 
   // --- Moderation, read state, mute (online) -----------------------------

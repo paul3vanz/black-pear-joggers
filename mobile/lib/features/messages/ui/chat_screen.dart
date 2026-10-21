@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/util/clock.dart';
 import '../../../core/api/api_exception.dart';
@@ -63,6 +64,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _infoHidden = false;
 
   String get _groupId => widget.groupId;
+
+  /// The run's leaders thread (D125) rather than a pace group's chat.
+  bool get _leaders => isLeadersThread(_groupId);
   int get _clubId => ref.read(activeClubIdProvider);
 
   @override
@@ -131,7 +135,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _timer?.cancel();
     setState(() => _gone = true);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("You're no longer in this group")),
+      SnackBar(
+        content: Text(
+          _leaders
+              ? "You're no longer in this thread"
+              : "You're no longer in this group",
+        ),
+      ),
     );
     unawaited(Navigator.of(context).maybePop());
   }
@@ -166,7 +176,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final ok = await confirm(
       context,
       title: 'Delete this message?',
-      message: 'It will show as "Message deleted" for everyone in the group.',
+      message:
+          'It will show as "Message deleted" for everyone in the '
+          '${_leaders ? 'thread' : 'group'}.',
       action: 'Delete',
     );
     if (!ok || !mounted) return;
@@ -292,19 +304,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
     });
 
-    final canModerate =
-        ref.watch(canManageRunsProvider) ||
-        (me != null &&
-            ((group?.isLedBy(me) ?? false) ||
-                session?.coordinatorMemberId == me));
-    final subtitle = _subtitle(thread, group, session, units);
+    // In the leaders thread only the committee moderates (the server agrees).
+    final canModerate = _leaders
+        ? ref.watch(canManageRunsProvider)
+        : ref.watch(canManageRunsProvider) ||
+              (me != null &&
+                  ((group?.isLedBy(me) ?? false) ||
+                      session?.coordinatorMemberId == me));
+    final subtitle = _leaders
+        ? (session?.title ?? '')
+        : _subtitle(thread, group, session, units);
 
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Group chat'),
+            Text(_leaders ? 'Leaders' : 'Group chat'),
             if (subtitle.isNotEmpty)
               Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
           ],
@@ -330,10 +346,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
       body: SafeArea(
         child: _gone
-            ? const Center(
+            ? Center(
                 child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text("You're no longer in this group"),
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    _leaders
+                        ? "You're no longer in this thread"
+                        : "You're no longer in this group",
+                  ),
                 ),
               )
             : Column(
@@ -347,10 +367,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ),
                     ),
                   if (!dismissed && !_infoHidden)
-                    _InfoLine(onDismiss: () => unawaited(_dismissInfo())),
+                    _InfoLine(
+                      leaders: _leaders,
+                      onDismiss: () => unawaited(_dismissInfo()),
+                    ),
                   Expanded(
                     child: _MessageList(
                       messages: messages,
+                      leaders: _leaders,
+                      units: units,
+                      // Someone who could answer an ask can start leading from it.
+                      onLead: (m) => _leaders && m.memberId != me && !closed
+                          ? () => unawaited(
+                              context.push(
+                                '/runs/${widget.sessionId}/groups/new?intent=lead',
+                              ),
+                            )
+                          : null,
                       controller: _scroll,
                       now: ref.watch(clubTodayProvider).now,
                       isMine: (m) => m.memberId == me,
@@ -367,6 +400,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     const _ClosedBar()
                   else
                     _InputBar(
+                      hint: _leaders
+                          ? 'Message the leaders'
+                          : 'Message your group',
                       controller: _input,
                       onSend: () => unawaited(_send()),
                     ),
@@ -378,9 +414,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 }
 
 class _InfoLine extends StatelessWidget {
-  const _InfoLine({required this.onDismiss});
+  const _InfoLine({required this.onDismiss, this.leaders = false});
 
   final VoidCallback onDismiss;
+  final bool leaders;
 
   @override
   Widget build(BuildContext context) {
@@ -392,8 +429,11 @@ class _InfoLine extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Everyone in this group can see your name. Committee can read '
-              'group chats.',
+              leaders
+                  ? "This thread is for the committee and the run's leaders, and "
+                        'anyone asked to lead it. Everyone in it can see your name.'
+                  : 'Everyone in this group can see your name. Committee can read '
+                        'group chats.',
               style: TextStyle(color: scheme.onSecondaryContainer),
             ),
           ),
@@ -411,6 +451,9 @@ class _InfoLine extends StatelessWidget {
 class _MessageList extends StatelessWidget {
   const _MessageList({
     required this.messages,
+    required this.leaders,
+    required this.units,
+    required this.onLead,
     required this.controller,
     required this.now,
     required this.isMine,
@@ -420,6 +463,9 @@ class _MessageList extends StatelessWidget {
   });
 
   final List<GroupMessage>? messages;
+  final bool leaders;
+  final UnitPrefs units;
+  final VoidCallback? Function(GroupMessage) onLead;
   final ScrollController controller;
   final DateTime now;
   final bool Function(GroupMessage) isMine;
@@ -436,7 +482,10 @@ class _MessageList extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'No messages yet. Say hello to your group!',
+            leaders
+                ? 'No messages yet. Use Ask leaders on the coverage card, or say '
+                      'something here.'
+                : 'No messages yet. Say hello to your group!',
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
@@ -455,6 +504,8 @@ class _MessageList extends StatelessWidget {
           message: message,
           isMine: isMine(message),
           showAvatar: !isMine(message) && endsAuthorRun(items, i),
+          units: units,
+          onLead: onLead(message),
           onTap: message.isFailed ? () => onFailedTap(message) : null,
           onLongPress: message.isFailed
               ? () => onFailedTap(message)
@@ -468,8 +519,13 @@ class _MessageList extends StatelessWidget {
 }
 
 class _InputBar extends StatelessWidget {
-  const _InputBar({required this.controller, required this.onSend});
+  const _InputBar({
+    required this.controller,
+    required this.onSend,
+    required this.hint,
+  });
 
+  final String hint;
   final TextEditingController controller;
   final VoidCallback onSend;
 
@@ -490,8 +546,8 @@ class _InputBar extends StatelessWidget {
                 minLines: 1,
                 maxLines: 5,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  hintText: 'Message your group',
+                decoration: InputDecoration(
+                  hintText: hint,
                   border: OutlineInputBorder(),
                   isDense: true,
                 ),

@@ -43,6 +43,10 @@ void main() {
       readAt: '2026-10-05T11:00:00.000Z',
     ),
     inboxJson('c1', category: 'group_messages'),
+    // The leaders thread (D125): an ask (leaders_needed) and a message
+    // (group_messages) both open its chat, so they belong to Leaders only.
+    inboxJson('l1', category: 'leaders_needed', route: '/runs/a/leaders-chat'),
+    inboxJson('l2', category: 'group_messages', route: '/runs/a/leaders-chat'),
   ];
 
   Future<FakeAdapter> pumpInbox(
@@ -74,7 +78,7 @@ void main() {
 
   testWidgets('All shows everything; each tab filters', (tester) async {
     await pumpInbox(tester);
-    for (final id in ['u1', 'r1', 'r2', 'c1']) {
+    for (final id in ['u1', 'r1', 'r2', 'c1', 'l1', 'l2']) {
       expect(tile(id), findsOneWidget, reason: id);
     }
 
@@ -88,11 +92,66 @@ void main() {
     expect(tile('u1'), findsNothing);
     expect(tile('c1'), findsNothing);
 
+    expect(tile('l1'), findsNothing); // an ask for leaders is not a run notice
+
     await openTab(tester, InboxFolder.chats);
     expect(tile('c1'), findsOneWidget);
     expect(tile('u1'), findsNothing);
+    expect(tile('l2'), findsNothing);
+
+    await openTab(tester, InboxFolder.leaders);
+    expect(tile('l1'), findsOneWidget);
+    expect(tile('l2'), findsOneWidget);
+    expect(tile('c1'), findsNothing);
     await unmount(tester);
   });
+
+  testWidgets(
+    'leaders threads are listed under Leaders, group chats under Chats',
+    (tester) async {
+      final adapter = await prepareMember(
+        tester,
+        db,
+        routes: {
+          'GET /app/clubs/1/notifications': const FakeResponse(200, {
+            'items': <Object?>[],
+            'serverTime': '2026-10-07T12:00:00.000Z',
+          }),
+          'GET /app/clubs/1/threads': FakeResponse(
+            200,
+            threadsBody([
+              threadJson('g1', label: '9:00-9:30/mi', lastBody: 'Group hello'),
+              threadJson(
+                'leaders:s1',
+                label: 'Leaders',
+                lastBody: 'Who can lead?',
+                unreadCount: 2,
+              ),
+            ]),
+          ),
+        },
+      );
+      await pumpGroupsApp(tester, db, adapter, const InboxScreen());
+
+      // Both in All; the dot is on Leaders and All (unread there).
+      expect(find.textContaining('Group hello'), findsOneWidget);
+      expect(find.textContaining('Who can lead?'), findsOneWidget);
+      bool dot(InboxFolder f) => tester
+          .widget<Badge>(find.byKey(ValueKey('inbox-tab-dot-${f.name}')))
+          .isLabelVisible;
+      expect(dot(InboxFolder.leaders), isTrue);
+      expect(dot(InboxFolder.chats), isFalse);
+
+      await openTab(tester, InboxFolder.chats);
+      expect(find.textContaining('Group hello'), findsOneWidget);
+      expect(find.textContaining('Who can lead?'), findsNothing);
+
+      await openTab(tester, InboxFolder.leaders);
+      expect(find.textContaining('Who can lead?'), findsOneWidget);
+      expect(find.textContaining('Group hello'), findsNothing);
+      await unmount(tester);
+    },
+  );
 
   testWidgets('a dot marks only the tabs with something unread', (
     tester,

@@ -368,13 +368,14 @@ migration is written. Suggested order: 1, 3, 2 (3 reuses the chat screen from 2)
      questions, members who've posted or opened the thread get one for replies. A per-post mute, and committee can
      close comments on a post.
    - Inbox: a "Chats" tab entry per update thread, using the tabs added in D121.
-3. **Committee ↔ leaders threads and "Can you lead?"**
-   - A thread per run with kind `leaders` (all of that run's leaders plus every committee member, not one
-     committee member), so replies don't depend on who asked. Messages from the coverage card's gap rows:
-     "Ask leaders" posts a templated "We need someone at 8:25-10:05/mi on Thursday, can you lead?" and pushes the
-     members `LeaderAudience` already picks (`leaders_needed`). Replies of "I can" can create the group in one tap.
-   - Inbox gets a **Leaders** tab for these threads.
-   - An unanswered ask re-nudges the next day (decided), then stops.
+3. **Committee ↔ leaders threads and "Can you lead?"**: **built (D125)**.
+   - One thread per run for the committee, the run's leaders and anyone asked; the coverage card's gaps and unled
+     groups have **Ask leaders**, the ask is a `leaders_needed` push and repeats once after a day if still uncovered.
+   - Inbox has a **Leaders** tab; leaders get a **Leaders thread** link on the run page.
+   - [ ] Host: run `api/database/manual/2026_10_leader_threads.sql` before deploying the API.
+   - [ ] Later: **I can lead** could pre-fill the pace in the group editor, and a leader signing up could post "Sam is
+     now leading 9:00/mi" into the thread automatically. Move the ask's pace/note out of `body` into columns at the
+     next schema bump.
 
 ## Backlog
 

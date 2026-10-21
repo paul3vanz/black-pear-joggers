@@ -11,13 +11,20 @@ Map<String, Object?> messageJson(
   String body = 'Hello',
   String createdAt = '2026-10-12T17:30:00.000Z',
   String? deletedAt,
+  // A leaders-thread ask (D125): kind 'ask' with its pace in seconds per km.
+  String kind = 'message',
+  int? askFast,
+  int? askSlow,
 }) => {
   'id': id,
   'groupId': groupId,
   'memberId': memberId,
   'authorName': authorName,
   'authorRole': authorRole,
+  'kind': kind,
   'body': deletedAt == null ? body : '',
+  'askFastSPerKm': askFast,
+  'askSlowSPerKm': askSlow,
   'createdAt': createdAt,
   'deletedAt': deletedAt,
 };
