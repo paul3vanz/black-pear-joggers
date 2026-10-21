@@ -589,6 +589,20 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('detail screen'), findsNothing);
+      // The snackbar times out rather than sitting over the next screen's
+      // buttons (it used to hide the editor's Save button).
+      await tester.pump(const Duration(seconds: 7));
+      await tester.pump(const Duration(seconds: 1));
+      expect(
+        find.text("You're already leading a group on this run"),
+        findsNothing,
+      );
+      await tester.enterText(field('Label (required)'), 'Another');
+      await tapSave(tester);
+      expect(
+        find.text("You're already leading a group on this run"),
+        findsOneWidget,
+      );
       await tester.tap(find.text('Open it'));
       await tester.pumpAndSettle();
       expect(find.text('opened mine'), findsOneWidget);

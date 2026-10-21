@@ -213,6 +213,11 @@ class _GroupFormState extends ConsumerState<GroupForm> {
         prior?.kind ??
         (widget.session.groupMode == 'routes' ? 'route' : 'run');
     _lead = widget.initialLead ?? true;
+    // A snackbar from the previous screen (e.g. "already leading" with its
+    // Open it action) is app-wide and would sit over the Save button.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ScaffoldMessenger.of(context).clearSnackBars();
+    });
   }
 
   @override

@@ -10,6 +10,19 @@ import '../../../core/db/app_database.dart';
 import '../data/runs_repository.dart';
 import 'runs_providers.dart';
 
+/// A SnackBar for a failed write. One with an action (e.g. "Open it") would
+/// otherwise persist until dismissed, and it would stay on screen over the next
+/// screen's buttons (it hid the Save button of the group editor), so it times
+/// out like any other.
+SnackBar errorSnackBar(String message, {SnackBarAction? action}) => SnackBar(
+  content: Text(message),
+  action: action,
+  persist: false,
+  duration: action == null
+      ? const Duration(seconds: 4)
+      : const Duration(seconds: 6),
+);
+
 /// Runs a committee write: reports failures in a SnackBar with a friendly
 /// message (403, offline, 409) and returns whether it succeeded. A session
 /// expiry is handed to the shared handler (which signs the user out).
@@ -29,8 +42,8 @@ Future<bool> runWrite(
   } on Object catch (e) {
     if (sub != null && await handleExpiry(sub, e)) return false;
     messenger.showSnackBar(
-      SnackBar(
-        content: Text((errorMessage ?? runsErrorMessage)(e)),
+      errorSnackBar(
+        (errorMessage ?? runsErrorMessage)(e),
         action: errorAction?.call(e),
       ),
     );

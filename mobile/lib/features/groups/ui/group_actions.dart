@@ -71,8 +71,8 @@ void showAlreadyLeading(
 ) {
   final router = GoRouter.maybeOf(context);
   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: const Text(alreadyLeadingMessage),
+    errorSnackBar(
+      alreadyLeadingMessage,
       action: groupId == null || router == null
           ? null
           : SnackBarAction(
@@ -83,6 +83,39 @@ void showAlreadyLeading(
             ),
     ),
   );
+}
+
+/// Blocks a member who leads [led] from joining another group of the run
+/// (D108): they have to step down from [led] first, which the dialog offers.
+Future<void> showLeadingElsewhere(
+  BuildContext context,
+  WidgetRef ref,
+  Session session,
+  Group led,
+  UnitPrefs units,
+) async {
+  final stepDown = await showDialog<bool>(
+    context: context,
+    builder: (dialog) => AlertDialog(
+      title: const Text("You're leading another group"),
+      content: Text(
+        "You're leading the ${groupHeading(led, units).title} group on this "
+        'run. Step down from it before you join a different group.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(dialog).pop(false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(dialog).pop(true),
+          child: const Text('Step down'),
+        ),
+      ],
+    ),
+  );
+  if (stepDown != true || !context.mounted) return;
+  await stepDownFrom(context, ref, session, led);
 }
 
 /// What the "How will you help lead?" dialog hands back.
