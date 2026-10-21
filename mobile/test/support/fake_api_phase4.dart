@@ -191,6 +191,8 @@ Future<void> seedUnits(
         distanceUnit: distance.code,
         paceFromS: Value(usualFromS),
         paceToS: Value(usualToS),
+        // A stored row always has the time it was fetched.
+        updatedAt: Value(DateTime.utc(2026, 10, 1)),
       ),
     );
 

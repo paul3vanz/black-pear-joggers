@@ -31,6 +31,11 @@ class SmallKvStore {
   /// stored as `1,3` (Dart's `DateTime.weekday`, Monday is 1).
   static String leadDaysKey(int clubId) => 'leadRosterDays:$clubId';
 
+  /// `pacePromptSnoozedUntil:<club>`: an ISO time before which the Runs tab's
+  /// "Set your usual pace" card stays hidden (D120).
+  static String pacePromptSnoozeKey(int clubId) =>
+      'pacePromptSnoozedUntil:$clubId';
+
   /// `standardsShowPace`: `1` when the club standards screen shows paces
   /// instead of times (D91). Absent means times.
   static const standardsShowPaceKey = 'standardsShowPace';

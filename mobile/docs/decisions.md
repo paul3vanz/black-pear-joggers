@@ -891,3 +891,17 @@ runs I picked".
   `resolveFollow` is shared with the server's reminders and its case table is unchanged.
 - **Runs-tab banners are half height** (75dp, `runCardImageHeight`) so more runs fit on screen. The run page and
   series preview keep the full 150dp.
+- **Leader first on group cards (D69 follow-up).** `sortedLeaders` orders leader, co-leader, backmarker. The card's
+  "Led by" line shows the leader and co-leaders only; backmarkers show as "(backmarker)" against their name in the
+  "Who's in this group" list (`AttendeeList.roles`), where leaders also sort to the top.
+- **Join / Leave and Group chat share a row** on group cards.
+- **D108 reworked:** no "You're already leading…" note on the other groups. Joining one instead opens a dialog that
+  says so and offers **Step down** from the group they lead (`showLeadingElsewhere`).
+- **Error snackbars with an action time out** (`errorSnackBar`, 6s). Flutter keeps a snackbar with an action on
+  screen until dismissed, so the "already leading" one stayed over the group editor's Save button. The editor also
+  clears snackbars when it opens.
+
+**D120 — Nudge for a usual pace (2026-10-21).** Members with no usual pace see a "Set your usual pace" card at the top
+of the Runs tab (`PacePromptCard`): **Set pace** opens Profile, **Not now** hides it for 7 days (`SmallKvStore`
+`pacePromptSnoozedUntil:<club>`), then it returns. It waits for a cached preferences row (the Runs tab now refreshes
+them) so it never shows for someone whose pace is saved but not yet fetched. Paces drive group matching and leader planning.

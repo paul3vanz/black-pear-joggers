@@ -1,5 +1,6 @@
 import 'package:bpj/core/auth/accounts_controller.dart';
 import 'package:bpj/core/db/app_database.dart';
+import 'package:bpj/features/groups/data/run_preferences_repository.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
 import 'package:bpj/features/messages/data/messages_repository.dart';
@@ -81,6 +82,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          runPreferencesRepositoryProvider.overrideWithValue(
+            RunPreferencesRepository(db, dio),
+          ),
           membershipRepositoryProvider.overrideWithValue(
             MembershipRepository(db, dio),
           ),

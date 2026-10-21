@@ -180,6 +180,7 @@ void main() {
         scope(
           const RunsScreen(),
           more: [
+            appDatabaseProvider.overrideWithValue(db),
             membershipRepositoryProvider.overrideWithValue(
               MembershipRepository(db, dio),
             ),

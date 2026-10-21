@@ -14,6 +14,7 @@ import '../../../core/util/clock.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../events/logic/event_summary.dart';
 import '../../groups/data/group_dtos.dart';
+import '../../groups/data/run_preferences_repository.dart';
 import '../../groups/data/summary_dtos.dart';
 import '../../groups/ui/group_format.dart';
 import '../../messages/data/messages_repository.dart';
@@ -24,6 +25,7 @@ import '../logic/follow_resolver.dart';
 import '../logic/run_feed.dart';
 import '../logic/run_modes.dart';
 import 'follow_widgets.dart';
+import 'pace_prompt_card.dart';
 import 'run_format.dart';
 import 'series_image.dart';
 import 'runs_providers.dart';
@@ -69,6 +71,18 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
     }
   }
 
+  /// Pulls the running preferences so the "Set your usual pace" card knows
+  /// whether a pace is already saved; a failure keeps the cache.
+  Future<void> _refreshPreferences() async {
+    try {
+      await ref
+          .read(runPreferencesRepositoryProvider)
+          .refresh(ref.read(activeClubIdProvider));
+    } on Object {
+      // Offline: the cached preferences are used.
+    }
+  }
+
   Future<void> _refresh() async {
     final clubId = ref.read(activeClubIdProvider);
     final repo = ref.read(runsRepositoryProvider);
@@ -76,6 +90,7 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
     final handleExpiry = ref.read(sessionExpiryHandlerProvider);
     if (!_refreshing && mounted) setState(() => _refreshing = true);
     unawaited(_refreshFollows());
+    unawaited(_refreshPreferences());
     var failed = false;
     try {
       await repo.refresh(clubId);
@@ -230,6 +245,7 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
                   : 'Offline — showing saved runs',
             ),
           ),
+        const PacePromptCard(),
         if (view == RunsView.mine)
           const _MyRunsCaption()
         else
