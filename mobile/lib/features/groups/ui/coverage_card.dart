@@ -15,7 +15,7 @@ import '../logic/pace_spread.dart';
 import 'group_access.dart';
 import 'group_format.dart';
 import 'groups_providers.dart';
-import 'pace_strip.dart';
+import 'leaders_line.dart';
 
 /// One uncovered stretch as a sentence, in [unit], e.g. "No led group between
 /// 8:45 and 9:30/mi".
@@ -48,12 +48,18 @@ String _groupName(Group g) {
   return g.kind == 'run' ? 'Pace group' : '${groupKindLabel(g.kind)} group';
 }
 
-/// The committee's coverage view of one run: how the groups that have a
-/// confirmed leader spread over the pace axis, and where the gaps are (D28).
-/// It looks at leaders, not RSVPs, so it works weeks ahead. Below it, when
-/// there is something to say, the people who have said they're coming and no
-/// led group covers. Rendered for committee, admin and the coordinator only
-/// (the caller decides; the people part also needs names in the plan).
+/// How many things the committee still has to sort out: uncovered stretches
+/// that matter and groups waiting for a leader.
+int coverageToFill(CoverageReport report) =>
+    report.problems.length + report.needsLeader.length;
+
+/// The committee's coverage view of one run: the groups in pace order, fastest
+/// first, with each uncovered stretch of the pace axis shown as a row between
+/// them (D28, reworked as a ladder in D122). Only groups with a confirmed
+/// leader cover a pace, so it works weeks ahead. Below it, when there is
+/// something to say, the people who have said they're coming and no led group
+/// covers. Rendered for committee, admin and the coordinator only (the caller
+/// decides; the people part also needs names in the plan).
 class CoverageCard extends ConsumerWidget {
   const CoverageCard({
     super.key,
@@ -83,21 +89,29 @@ class CoverageCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Group coverage',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Group coverage',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                if (!report.isEmpty) _StatusChip(report: report),
+              ],
             ),
             const SizedBox(height: 4),
             Text(
-              'Groups with a leader, across the paces runners may need.',
+              'Groups with a leader, fastest first. Gaps are paces nobody '
+              'is leading.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 12),
-            _Coverage(report: report, unit: unit),
+            _Ladder(report: report, units: units),
             if (open)
               Align(
                 alignment: Alignment.centerLeft,
@@ -111,6 +125,241 @@ class CoverageCard extends ConsumerWidget {
               ),
             _People(plan: plan, report: report, units: units),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// "Covered" or "2 to fill", the answer at a glance.
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.report});
+
+  final CoverageReport report;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final fill = coverageToFill(report);
+    final covered = fill == 0 && report.ledCount > 0;
+    final bg = covered ? scheme.primaryContainer : scheme.errorContainer;
+    final fg = covered ? scheme.onPrimaryContainer : scheme.onErrorContainer;
+    return Chip(
+      key: const ValueKey('coverage-status'),
+      visualDensity: VisualDensity.compact,
+      avatar: Icon(
+        covered ? Icons.check_circle_outline : Icons.warning_amber_rounded,
+        size: 18,
+        color: fg,
+      ),
+      label: Text(
+        covered
+            ? 'Covered'
+            : report.ledCount == 0
+            ? 'No leaders yet'
+            : '$fill to fill',
+        style: TextStyle(color: fg),
+      ),
+      backgroundColor: bg,
+      side: BorderSide.none,
+    );
+  }
+}
+
+/// The pace ladder: every group (led or not) and every uncovered stretch,
+/// fastest first, then the groups with no pace.
+class _Ladder extends StatelessWidget {
+  const _Ladder({required this.report, required this.units});
+
+  final CoverageReport report;
+  final UnitPrefs units;
+
+  @override
+  Widget build(BuildContext context) {
+    if (report.isEmpty) return const Text('No groups yet');
+    final unit = units.paceUnit;
+    // Paced groups with and without a leader, by their fastest pace.
+    final steps = <({double key, Widget row})>[
+      for (final g in [
+        ...report.pacedLed,
+        ...report.needsLeader.where((g) => g.pace.fastest != null),
+      ])
+        (
+          key: g.pace.fastest!.secondsPerKm,
+          row: _GroupRow(group: g, units: units),
+        ),
+      for (final gap in report.gaps)
+        (key: gap.fastS, row: _GapRow(gap: gap, unit: unit)),
+    ]..sort((a, b) => a.key.compareTo(b.key));
+    final unpaced = [
+      ...report.noPaceLed,
+      ...report.needsLeader.where((g) => g.pace.fastest == null),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (report.ledCount == 0)
+          const Padding(
+            padding: EdgeInsets.only(bottom: 6),
+            child: Text('No groups with a leader yet'),
+          )
+        else if (!report.hasBands)
+          const Padding(
+            padding: EdgeInsets.only(bottom: 6),
+            child: Text('No pace group has a leader yet'),
+          ),
+        for (final s in steps) s.row,
+        if (unpaced.isNotEmpty) ...[
+          const _SectionLabel('No set pace'),
+          for (final g in unpaced) _GroupRow(group: g, units: units),
+        ],
+      ],
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 6, bottom: 6),
+      child: Text(
+        text,
+        style: theme.textTheme.labelLarge?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+}
+
+/// One group on the ladder. A coloured edge says whether it is led.
+class _GroupRow extends StatelessWidget {
+  const _GroupRow({required this.group, required this.units});
+
+  final Group group;
+  final UnitPrefs units;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final needs = group.leaders.isEmpty;
+    final muted = theme.textTheme.bodyMedium?.copyWith(
+      color: scheme.onSurfaceVariant,
+    );
+    final heading = group.pace.isNone
+        ? _groupName(group)
+        : groupHeading(group, units).title;
+    final subtitle = group.pace.isNone
+        ? null
+        : groupHeading(group, units).subtitle;
+    return Padding(
+      key: ValueKey('coverage-group-${group.id}'),
+      padding: const EdgeInsets.only(bottom: 6),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: DecoratedBox(
+          decoration: BoxDecoration(color: scheme.surfaceContainerHighest),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  width: 4,
+                  child: ColoredBox(
+                    color: needs ? scheme.error : scheme.primary,
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                heading,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            if (needs)
+                              Chip(
+                                visualDensity: VisualDensity.compact,
+                                label: Text(
+                                  'Needs a leader',
+                                  style: TextStyle(
+                                    color: scheme.onErrorContainer,
+                                  ),
+                                ),
+                                backgroundColor: scheme.errorContainer,
+                                side: BorderSide.none,
+                              ),
+                          ],
+                        ),
+                        if (subtitle != null) Text(subtitle, style: muted),
+                        if (!needs) LeadersLine(leaders: group.leaders),
+                        if (group.goingCount + group.maybeCount > 0)
+                          Text(
+                            goingText(group.goingCount, group.maybeCount),
+                            style: muted,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// An uncovered stretch between (or beyond) the groups: red for a problem,
+/// grey for information (a slow-end tail a jog/walk group softens).
+class _GapRow extends StatelessWidget {
+  const _GapRow({required this.gap, required this.unit});
+
+  final CoverageGap gap;
+  final DistUnit unit;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final color = gap.softened ? scheme.outline : scheme.error;
+    return Padding(
+      key: ValueKey('coverage-gap-${gap.fastS.round()}'),
+      padding: const EdgeInsets.only(bottom: 6),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          border: Border.all(color: color),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            children: [
+              Icon(
+                gap.softened ? Icons.info_outline : Icons.warning_amber_rounded,
+                size: 20,
+                color: color,
+              ),
+              const SizedBox(width: 8),
+              Expanded(child: Text(coverageGapText(gap, unit))),
+            ],
+          ),
         ),
       ),
     );
@@ -136,81 +385,6 @@ class _Line extends StatelessWidget {
       ],
     ),
   );
-}
-
-class _Coverage extends StatelessWidget {
-  const _Coverage({required this.report, required this.unit});
-
-  final CoverageReport report;
-  final DistUnit unit;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    if (report.isEmpty) return const Text('No groups yet');
-    final needs = report.needsLeader;
-    final fast = report.fastestLed;
-    final slow = report.slowestLed;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (report.ledCount == 0)
-          const Padding(
-            padding: EdgeInsets.only(bottom: 6),
-            child: Text('No groups with a leader yet'),
-          )
-        else if (!report.hasBands)
-          const Padding(
-            padding: EdgeInsets.only(bottom: 6),
-            child: Text('No pace group has a leader yet'),
-          )
-        else ...[
-          CoverageStrip(report: report),
-          const SizedBox(height: 8),
-          if (fast != null)
-            Text('Fastest led group: ${fast.pace.display(unit)}'),
-          if (slow != null)
-            Text('Slowest led group: ${slow.pace.display(unit)}'),
-          const SizedBox(height: 8),
-          for (final gap in report.gaps)
-            _Line(
-              icon: gap.softened
-                  ? Icons.info_outline
-                  : Icons.warning_amber_rounded,
-              color: gap.softened ? scheme.onSurfaceVariant : scheme.error,
-              text: coverageGapText(gap, unit),
-            ),
-        ],
-        if (report.hasJogWalk)
-          _Line(
-            icon: Icons.directions_walk,
-            color: scheme.onSurfaceVariant,
-            text: 'Jog/walk group on offer',
-          ),
-        if (report.noPaceLed.isNotEmpty)
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: [
-              for (final g in report.noPaceLed)
-                Chip(
-                  avatar: Icon(groupKindIcon(g.kind), size: 18),
-                  label: Text(
-                    '${_groupName(g)} led by ${leadersText(g.leaders)}',
-                  ),
-                ),
-            ],
-          ),
-        if (needs.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Text(
-              'Needs a leader: ${[for (final g in needs) g.pace.isNone ? _groupName(g) : g.pace.display(unit)].join(', ')}',
-            ),
-          ),
-      ],
-    );
-  }
 }
 
 /// "People coming with no matching group": the attendee-based view. Shown

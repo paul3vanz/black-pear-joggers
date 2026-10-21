@@ -1,6 +1,8 @@
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/units/dist_unit.dart';
+import 'package:bpj/features/groups/ui/coverage_card.dart';
 import 'package:bpj/features/runs/ui/session_detail_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/fake_api.dart';
@@ -11,6 +13,10 @@ const _plan = '/app/clubs/1/sessions/a/plan';
 
 void main() {
   late AppDatabase db;
+
+  // The detail screen lists the groups too; look inside the coverage card.
+  Finder inCard(Finder f) =>
+      find.descendant(of: find.byType(CoverageCard), matching: f);
 
   setUp(() => db = memoryDb());
   tearDown(() => db.close());
@@ -70,14 +76,23 @@ void main() {
     await unmount(tester);
   }
 
-  testWidgets('committee sees the coverage card with gaps and extremes', (
+  testWidgets('committee sees the pace ladder with groups and gaps in order', (
     tester,
   ) async {
     await pump(tester, groups: [led('a', from: 480), led('b', from: 630)]);
     expect(find.text('Group coverage'), findsOneWidget);
-    expect(find.text('Fastest led group: 8:00/mi'), findsOneWidget);
-    expect(find.text('Slowest led group: 10:30/mi'), findsOneWidget);
-    expect(find.text('No led group between 8:25 and 10:05/mi'), findsOneWidget);
+    // Groups are rows, fastest first, with the gap between them.
+    expect(inCard(find.text('8:00/mi')), findsOneWidget);
+    expect(inCard(find.text('10:30/mi')), findsOneWidget);
+    expect(inCard(find.text('Jo Bloggs')), findsNWidgets(2));
+    final gap = find.text('No led group between 8:25 and 10:05/mi');
+    expect(gap, findsOneWidget);
+    double top(Finder f) => tester.getTopLeft(f).dy;
+    expect(top(inCard(find.text('8:00/mi'))), lessThan(top(gap)));
+    expect(top(gap), lessThan(top(inCard(find.text('10:30/mi')))));
+    // The header says how much is left to fill (two gaps and a slow tail).
+    expect(find.byKey(const ValueKey('coverage-status')), findsOneWidget);
+    expect(find.textContaining('to fill'), findsOneWidget);
     expect(
       find.text('Nobody leading slower than 10:55/mi (down to 12:00/mi)'),
       findsOneWidget,
@@ -92,21 +107,22 @@ void main() {
     await finish(tester);
   });
 
-  testWidgets('a jog/walk group softens the slow end and shows as a chip', (
-    tester,
-  ) async {
-    await pump(
-      tester,
-      groups: [
-        led('a', from: 480),
-        led('j', from: null, kind: 'jog_walk'),
-      ],
-    );
-    expect(find.text('Jog/walk group on offer'), findsOneWidget);
-    expect(find.text('Jog/walk group led by Jo Bloggs'), findsOneWidget);
-    expect(find.textContaining('Nobody leading slower than'), findsOneWidget);
-    await finish(tester);
-  });
+  testWidgets(
+    'a jog/walk group softens the slow end and sits under No set pace',
+    (tester) async {
+      await pump(
+        tester,
+        groups: [
+          led('a', from: 480),
+          led('j', from: null, kind: 'jog_walk'),
+        ],
+      );
+      expect(find.text('No set pace'), findsOneWidget);
+      expect(inCard(find.text('Jog/walk group')), findsOneWidget);
+      expect(find.textContaining('Nobody leading slower than'), findsOneWidget);
+      await finish(tester);
+    },
+  );
 
   testWidgets('groups without a leader are listed as needing one', (
     tester,
@@ -118,8 +134,13 @@ void main() {
         groupJson('x', paceFromS: 660, paceToS: null, status: 'needs_leader'),
       ],
     );
-    expect(find.text('Needs a leader: 11:00/mi'), findsOneWidget);
-    expect(find.text('Slowest led group: 9:00/mi'), findsOneWidget);
+    // On the ladder at its pace, flagged, and not counted as covered.
+    expect(inCard(find.text('Needs a leader')), findsOneWidget);
+    expect(inCard(find.text('11:00/mi')), findsOneWidget);
+    expect(
+      find.textContaining('Nobody leading slower than'),
+      findsOneWidget,
+    );
     await finish(tester);
   });
 

@@ -910,3 +910,9 @@ them) so it never shows for someone whose pace is saved but not yet fetched. Pac
 notifications), **Updates** (`club_updates`) and **Runs** (reminders, group matches, group changes, leaders needed).
 They filter the notifications the server already sends by category (`InboxFolder`); nothing is stored and the choice
 isn't remembered. A tab shows a dot when anything in it is unread, and **Mark all read** only marks the open tab.
+
+**D122 — Coverage as a pace ladder (2026-10-21).** The committee's coverage card is a list in pace order, fastest first:
+a row per group (pace, label, leaders, going count; red edge and "Needs a leader" when unled) with each uncovered
+stretch as a dashed row between them, and the groups with no pace under "No set pace". A header chip says "Covered"
+or "N to fill" (`coverageToFill`: problem gaps plus unled groups). It replaces the bar chart and the fastest/slowest
+lines; `buildCoverage` is unchanged. Messaging leaders from a gap needs server work and is in the ROADMAP.
