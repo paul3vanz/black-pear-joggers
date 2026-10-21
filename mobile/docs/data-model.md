@@ -221,6 +221,16 @@ post_receipts   id, club_id, post_id, member_id, delivered_at?, read_at?   (uniq
 One row per member per update, written by the member's own app (D123). No row means neither has happened. The
 committee reads them back; members only ever write their own.
 
+## Update comments
+
+```
+post_comments       id, club_id, post_id, member_id, body, created_at, updated_at, deleted_at?
+post_thread_states  id, club_id, post_id, member_id, last_read_at?, muted   (unique post + member; a row = opened the thread)
+posts.comments_closed_at  timestamp?  (the committee closed comments)
+```
+
+A Q&A thread under each club update (D126), reusing the group chat's shapes.
+
 ## Leaders threads
 
 ```

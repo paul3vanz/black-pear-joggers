@@ -138,6 +138,13 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         // D123: delivered / read receipts (members report their own, the committee reads them).
         $router->post('posts/receipts', 'AppPostReceiptController@report');
         $router->get('posts/{id}/receipts', 'AppPostReceiptController@show');
+
+        // D126: comments on a club update (a Q&A thread under each post).
+        $router->get('posts/{postId}/comments/messages', 'AppPostCommentController@index');
+        $router->post('posts/{postId}/comments/messages', 'AppPostCommentController@store');
+        $router->post('posts/{postId}/comments/messages/read', 'AppPostCommentController@markRead');
+        $router->delete('posts/{postId}/comments/messages/{id}', 'AppPostCommentController@destroy');
+        $router->put('posts/{postId}/comments/thread', 'AppPostCommentController@updateThread');
         $router->patch('posts/{id}', 'AppPostController@update');
         $router->delete('posts/{id}', 'AppPostController@destroy');
 

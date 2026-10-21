@@ -31,6 +31,7 @@ class AppPostController extends Controller
             'audience' => 'nullable|in:' . implode(',', Post::AUDIENCES),
             'pinnedUntil' => 'nullable|date',
             'notify' => 'nullable|boolean',
+            'commentsClosed' => 'nullable|boolean',
         ];
     }
 
@@ -195,6 +196,17 @@ class AppPostController extends Controller
 
         if ($request->has('pinnedUntil')) {
             $post->pinned_until = $request->input('pinnedUntil') ? Carbon::parse($request->input('pinnedUntil')) : null;
+        }
+
+        // D126: close or reopen comments on this update (the committee's switch).
+        if ($request->has('commentsClosed') && $request->input('commentsClosed') !== null) {
+            $closed = $request->boolean('commentsClosed');
+
+            if ($closed && !$post->commentsClosed()) {
+                $post->comments_closed_at = Carbon::now();
+            } elseif (!$closed) {
+                $post->comments_closed_at = null;
+            }
         }
 
         $post->save();

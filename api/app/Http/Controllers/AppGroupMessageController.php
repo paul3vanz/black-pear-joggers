@@ -12,6 +12,7 @@ use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
 use App\Services\GroupMessageNotifier;
 use App\Services\LeaderThreadAccess;
+use App\Services\PostThreadAccess;
 use App\Services\NotificationPresenter;
 use App\Services\ThreadAccess;
 use Illuminate\Http\Request;
@@ -441,6 +442,8 @@ class AppGroupMessageController extends Controller
 
         // D125: the run's leaders threads this member is in, listed with the group chats.
         $items = array_merge($items, LeaderThreadAccess::listFor($club, $member));
+        // D126: the update comment threads this member wrote in, opened, or moderates.
+        $items = array_merge($items, PostThreadAccess::listFor($club, $member));
 
         usort($items, function ($a, $b) {
             return $b['sort'] <=> $a['sort'];

@@ -27,12 +27,20 @@ final class Post extends Model
         'audience',
         'published_at',
         'pinned_until',
+        'comments_closed_at',
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
         'pinned_until' => 'datetime',
+        'comments_closed_at' => 'datetime',
     ];
+
+    /** The committee closed comments on this update (D126). */
+    public function commentsClosed(): bool
+    {
+        return $this->comments_closed_at !== null;
+    }
 
     public function author()
     {

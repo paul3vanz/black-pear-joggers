@@ -172,6 +172,30 @@ Base path `/app/clubs/{clubId}/sessions/{sessionId}/leaders-chat`.
   All carry `route: /runs/<id>/leaders-chat`.
 - Tables `leader_messages`, `leader_thread_states`, `leader_thread_members` are in `AccountDeletion`. Host SQL:
   `api/database/manual/2026_10_leader_threads.sql`.
+### Update comments (D126)
+A Q&A thread under each club update: members ask, the committee replies. The shapes and rules are the group chat's;
+the thread id the app uses where a group id would go is `post:<postId>`. Base path
+`/app/clubs/{clubId}/posts/{postId}/comments`.
+- **Who:** everyone the update is for (its audience) can read and write. An update the caller can't see, or an
+  unknown or deleted one, is 404. The committee (`committee`/`admin`) moderates.
+- `GET /messages?since=` → `{ items, serverTime, closed, muted }`, like a group thread. `authorRole` is `committee`
+  (committee and admin, whether or not they wrote the update) or `member`; the app badges committee replies.
+  `closed` is true when comments are closed and the caller is not committee.
+- `POST /messages { id?, body }` (1-1000 characters, idempotent on `id`, 429 over 20 a minute), `DELETE /messages/{id}`
+  (author or committee), `POST /messages/read`, `PUT /thread { muted }`: as for a group chat.
+- **Closing:** `PATCH /posts/{id} { commentsClosed: true|false }` (committee only, like any post edit) sets or clears
+  `posts.comments_closed_at`. While closed, `POST /messages` is 409 `comments_closed` for everyone except the
+  committee, who can still reply. Reading and deleting still work.
+- **Notifications:** category `club_updates`, route `/updates/<postId>/comments`, key `post_comment:<postId>` (one
+  inbox row per member, replaced by the latest; at most one push per 5 minutes). The audience is the committee,
+  everyone who has commented and everyone who has opened the thread (`POST /messages/read` creates their
+  `post_thread_states` row), minus the author and anyone who muted it. Just reading `GET /messages` doesn't count
+  as opening it.
+- **`GET /threads`** also lists the update threads the caller has a recent (14 days) comment in: committee all of
+  them, others the ones they wrote in or opened. `kind: "post"`, `groupId: "post:<postId>"`, `label` is the
+  update's title, `sessionId` is null, `closed` as above. Group threads have no `kind`.
+- Tables `post_comments`, `post_thread_states` (and `posts.comments_closed_at`) are in `AccountDeletion`. Host SQL:
+  `api/database/manual/2026_10_post_comments.sql`.
 ### Notifications (inbox)
 - `GET /app/clubs/{clubId}/notifications?since=` returns:
   ```json

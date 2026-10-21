@@ -113,6 +113,9 @@ class AppAccountDeletionTest extends AppProfilesBase
         \App\Models\LeaderThreadMember::create(['club_id' => $c, 'session_id' => $session->id, 'member_id' => $m->id]);
 
         $post = Post::create(['club_id' => $c, 'author_member_id' => $m->id, 'title' => 'News', 'body_md' => 'x', 'published_at' => Carbon::now()]);
+        \App\Models\PostComment::create(['club_id' => $c, 'post_id' => $post->id, 'member_id' => $m->id, 'body' => 'a question']);
+        \App\Models\PostComment::create(['club_id' => $c, 'post_id' => $post->id, 'member_id' => $m->id, 'body' => 'oops'])->delete(); // tombstones hold the key too
+        \App\Models\PostThreadState::create(['club_id' => $c, 'post_id' => $post->id, 'member_id' => $m->id, 'muted' => true]);
         \App\Models\PostReceipt::create(['club_id' => $c, 'post_id' => $post->id, 'member_id' => $m->id, 'delivered_at' => Carbon::now()]);
     }
 
@@ -232,7 +235,7 @@ class AppAccountDeletionTest extends AppProfilesBase
         $this->assertSame('', (string) $this->response->getContent());
 
         foreach (['member_preferences', 'member_series_prefs', 'notification_preferences', 'notifications', 'member_profiles',
-            'member_photos', 'post_receipts', 'leader_messages', 'leader_thread_states', 'leader_thread_members', 'group_messages', 'group_thread_states', 'session_attendees', 'session_group_leaders'] as $table) {
+            'member_photos', 'post_receipts', 'post_comments', 'post_thread_states', 'leader_messages', 'leader_thread_states', 'leader_thread_members', 'group_messages', 'group_thread_states', 'session_attendees', 'session_group_leaders'] as $table) {
             $this->assertSame(0, $this->rowsFor($table, 'member_id', $id), $table);
         }
 
@@ -283,11 +286,12 @@ class AppAccountDeletionTest extends AppProfilesBase
         $this->assertSame(1, Device::where('user_id', 'victim-phone2')->count());
 
         foreach (['member_preferences', 'member_series_prefs', 'notification_preferences', 'notifications', 'member_profiles',
-            'member_photos', 'post_receipts', 'leader_thread_states', 'leader_thread_members', 'group_thread_states', 'session_attendees', 'session_group_leaders'] as $table) {
+            'member_photos', 'post_receipts', 'post_thread_states', 'leader_thread_states', 'leader_thread_members', 'group_thread_states', 'session_attendees', 'session_group_leaders'] as $table) {
             $this->assertSame(1, $this->rowsFor($table, 'member_id', $id), $table);
         }
         $this->assertSame(2, $this->rowsFor('group_messages', 'member_id', $id));
         $this->assertSame(2, $this->rowsFor('leader_messages', 'member_id', $id));
+        $this->assertSame(2, $this->rowsFor('post_comments', 'member_id', $id));
         $this->assertSame($id, Post::first()->author_member_id);
         $this->assertSame('active', SessionGroup::find($group->id)->status);
 
@@ -297,6 +301,7 @@ class AppAccountDeletionTest extends AppProfilesBase
         $this->assertSame(0, ClubMember::withTrashed()->where('id', $id)->count());
         $this->assertSame(0, $this->rowsFor('group_messages', 'member_id', $id));
         $this->assertSame(0, $this->rowsFor('leader_messages', 'member_id', $id));
+        $this->assertSame(0, $this->rowsFor('post_comments', 'member_id', $id));
         $this->assertSame(0, $this->rowsFor('session_attendees', 'member_id', $id));
         $this->assertSame(0, Device::count());
     }
