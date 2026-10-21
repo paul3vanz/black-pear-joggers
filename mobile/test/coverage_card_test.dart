@@ -90,14 +90,21 @@ void main() {
     double top(Finder f) => tester.getTopLeft(f).dy;
     expect(top(inCard(find.text('8:00/mi'))), lessThan(top(gap)));
     expect(top(gap), lessThan(top(inCard(find.text('10:30/mi')))));
-    // The header says how much is left to fill (two gaps and a slow tail).
+    // The header says how much is left to fill (just the middle gap; the window ends are only noted).
     expect(find.byKey(const ValueKey('coverage-status')), findsOneWidget);
-    expect(find.textContaining('to fill'), findsOneWidget);
-    expect(
-      find.text('Nobody leading slower than 10:55/mi (down to 12:00/mi)'),
-      findsOneWidget,
-    );
+    expect(find.text('1 to fill'), findsOneWidget);
+    expect(find.text('No group slower than 10:55/mi'), findsOneWidget);
     expect(find.textContaining('Every pace has a group'), findsNothing);
+    await finish(tester);
+  });
+
+  testWidgets('one group at 8:45 leaves nothing to fill', (tester) async {
+    await pump(tester, groups: [led('a', from: 525)]);
+    expect(find.text('Covered'), findsOneWidget);
+    // The ends are only noted, in plain words.
+    expect(find.textContaining('No group faster than'), findsOneWidget);
+    expect(find.textContaining('No group slower than'), findsOneWidget);
+    expect(find.textContaining('to fill'), findsNothing);
     await finish(tester);
   });
 
@@ -119,7 +126,7 @@ void main() {
       );
       expect(find.text('No set pace'), findsOneWidget);
       expect(inCard(find.text('Jog/walk group')), findsOneWidget);
-      expect(find.textContaining('Nobody leading slower than'), findsOneWidget);
+      expect(find.textContaining('No group slower than'), findsOneWidget);
       await finish(tester);
     },
   );
@@ -137,7 +144,7 @@ void main() {
     // On the ladder at its pace, flagged, and not counted as covered.
     expect(inCard(find.text('Needs a leader')), findsOneWidget);
     expect(inCard(find.text('11:00/mi')), findsOneWidget);
-    expect(find.textContaining('Nobody leading slower than'), findsOneWidget);
+    expect(find.textContaining('No group slower than'), findsOneWidget);
     await finish(tester);
   });
 
@@ -166,10 +173,7 @@ void main() {
         ),
       ],
     );
-    expect(
-      find.text('Nobody leading slower than 6:15/km (down to 7:30/km)'),
-      findsOneWidget,
-    );
+    expect(find.text('No group slower than 6:15/km'), findsOneWidget);
     await finish(tester);
   });
 

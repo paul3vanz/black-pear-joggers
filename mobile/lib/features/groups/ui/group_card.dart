@@ -154,37 +154,16 @@ class _GroupCardState extends State<GroupCard> {
             ),
             ?widget.footer,
             if (widget.isLeading)
-              // The leader's note and "Step down" share a row; the button is
-              // outlined in the error colour so it reads as a different kind
-              // of control from the info text and from Join.
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Row(
                   children: [
                     Icon(Icons.flag_outlined, size: 20, color: scheme.primary),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        "You're leading this group",
-                        style: theme.textTheme.labelLarge,
-                      ),
+                    Text(
+                      "You're leading this group",
+                      style: theme.textTheme.labelLarge,
                     ),
-                    if (widget.onStepDown != null)
-                      OutlinedButton.icon(
-                        onPressed: widget.onStepDown,
-                        icon: const Icon(
-                          Icons.person_remove_outlined,
-                          size: 18,
-                        ),
-                        label: const Text('Step down'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: scheme.error,
-                          side: BorderSide(color: scheme.error),
-                          minimumSize: const Size(0, 40),
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      ),
                   ],
                 ),
               )
@@ -209,6 +188,7 @@ class _GroupCardState extends State<GroupCard> {
             if (widget.onJoin != null ||
                 widget.onLeave != null ||
                 widget.onLeadToo != null ||
+                widget.onStepDown != null ||
                 widget.onChat != null)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
@@ -219,9 +199,30 @@ class _GroupCardState extends State<GroupCard> {
                     // card short.
                     if (widget.onJoin != null ||
                         widget.onLeave != null ||
+                        widget.onStepDown != null ||
                         widget.onChat != null)
                       Row(
                         children: [
+                          // A leader's "Step down" sits where members have Leave
+                          // group, in the error colour so it reads as different
+                          // from Join.
+                          if (widget.onStepDown != null)
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                style: _rowButtonStyle.merge(
+                                  OutlinedButton.styleFrom(
+                                    foregroundColor: scheme.error,
+                                    side: BorderSide(color: scheme.error),
+                                  ),
+                                ),
+                                onPressed: widget.onStepDown,
+                                icon: const Icon(
+                                  Icons.person_remove_outlined,
+                                  size: 18,
+                                ),
+                                label: const Text('Step down'),
+                              ),
+                            ),
                           if (widget.onJoin != null)
                             Expanded(
                               child: FilledButton.tonal(
@@ -242,7 +243,8 @@ class _GroupCardState extends State<GroupCard> {
                               ),
                             ),
                           if ((widget.onJoin != null ||
-                                  widget.onLeave != null) &&
+                                  widget.onLeave != null ||
+                                  widget.onStepDown != null) &&
                               widget.onChat != null)
                             const SizedBox(width: 8),
                           if (widget.onChat != null)

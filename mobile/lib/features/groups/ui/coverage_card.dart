@@ -26,10 +26,9 @@ String coverageGapText(CoverageGap gap, DistUnit unit) {
       'No led group between ${mmss(gap.fromIn(unit))} and '
           '${mmss(gap.toIn(unit))}/$code',
     CoverageGapKind.fasterEnd =>
-      'Nobody leading faster than ${mmss(gap.toIn(unit))}/$code',
+      'No group faster than ${mmss(gap.toIn(unit))}/$code',
     CoverageGapKind.slowerEnd =>
-      'Nobody leading slower than ${mmss(gap.fromIn(unit))}/$code '
-          '(down to ${mmss(gap.toIn(unit))}/$code)',
+      'No group slower than ${mmss(gap.fromIn(unit))}/$code',
   };
 }
 

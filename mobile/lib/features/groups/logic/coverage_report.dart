@@ -34,8 +34,10 @@ class CoverageGap {
   final double fastS;
   final double slowS;
 
-  /// A slower-end tail that a jog/walk group makes less of a problem. Shown
-  /// as information, not a warning.
+  /// Information, not a warning: the stretch beyond the fastest or slowest
+  /// led group. The window ends are an arbitrary range, so having no group
+  /// there isn't a problem by itself; people who are actually waiting at those
+  /// paces are reported separately (the "people coming" view).
   final bool softened;
 
   double get width => slowS - fastS;
@@ -176,6 +178,7 @@ CoverageReport buildCoverage({
           kind: CoverageGapKind.fasterEnd,
           fastS: windowFast,
           slowS: bands.first.fastS,
+          softened: true,
         ),
       );
     }
@@ -194,7 +197,7 @@ CoverageReport buildCoverage({
           kind: CoverageGapKind.slowerEnd,
           fastS: bands.last.slowS,
           slowS: windowSlow,
-          softened: hasJogWalk,
+          softened: true,
         ),
       );
     }

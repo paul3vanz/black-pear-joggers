@@ -60,8 +60,7 @@ void main() {
     ]);
     expect(
       text(r),
-      'Nobody leading faster than 8:35/mi | '
-      'Nobody leading slower than 9:25/mi (down to 12:00/mi)',
+      'No group faster than 8:35/mi | No group slower than 9:25/mi',
     );
   });
 
@@ -89,13 +88,30 @@ void main() {
     );
   });
 
-  test('nobody slower than X, and not a problem with a jog/walk group', () {
-    final plain = mi([led('a', 480), led('b', 570)]);
-    final tail = plain.gaps.last;
-    expect(tail.kind, CoverageGapKind.slowerEnd);
-    expect(tail.softened, isFalse);
-    expect(plain.problems, contains(tail));
+  test(
+    'the ends of the window are information, a gap in the middle is not',
+    () {
+      final r = mi([led('a', 480), led('b', 630)]);
+      final kinds = {for (final g in r.gaps) g.kind: g};
+      expect(kinds[CoverageGapKind.fasterEnd]!.softened, isTrue);
+      expect(kinds[CoverageGapKind.slowerEnd]!.softened, isTrue);
+      expect(kinds[CoverageGapKind.between]!.softened, isFalse);
+      // Only the middle gap is something to fill.
+      expect(r.problems.map((g) => g.kind), [CoverageGapKind.between]);
+      expect(
+        coverageGapText(kinds[CoverageGapKind.slowerEnd]!, DistUnit.mi),
+        startsWith('No group slower than'),
+      );
+    },
+  );
 
+  test('a single group leaves nothing to fill, only the two ends to note', () {
+    final r = mi([led('a', 525)]); // 8:45/mi
+    expect(r.problems, isEmpty);
+    expect(r.gaps, hasLength(2));
+  });
+
+  test('a jog/walk group is listed apart and does not use the pace axis', () {
     final withJog = mi([
       led('a', 480),
       led('b', 570),
@@ -103,13 +119,6 @@ void main() {
     ]);
     expect(withJog.hasJogWalk, isTrue);
     expect(withJog.noPaceLed.single.id, 'j');
-    final softTail = withJog.gaps.last;
-    expect(softTail.softened, isTrue);
-    expect(withJog.problems, isNot(contains(softTail)));
-    expect(
-      coverageGapText(softTail, DistUnit.mi),
-      startsWith('Nobody leading slower than'),
-    );
   });
 
   test('groups without a leader are listed apart and cover nothing', () {
@@ -145,8 +154,7 @@ void main() {
     expect([r.windowFastS, r.windowSlowS], [255, 450]);
     expect(
       text(r, DistUnit.km),
-      'Nobody leading faster than 5:45/km | '
-      'Nobody leading slower than 6:15/km (down to 7:30/km)',
+      'No group faster than 5:45/km | No group slower than 6:15/km',
     );
   });
 

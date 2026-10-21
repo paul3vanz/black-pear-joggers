@@ -123,7 +123,7 @@ void main() {
   });
 
   group('leading row', () {
-    testWidgets('Step down sits on the same row as the leading note', (
+    testWidgets('Step down sits beside Group chat, under the leading note', (
       tester,
     ) async {
       var steppedDown = 0;
@@ -139,9 +139,14 @@ void main() {
       final button = find.widgetWithText(OutlinedButton, 'Step down');
       expect(note, findsOneWidget);
       expect(button, findsOneWidget);
+      // Same row as Group chat (like Leave group for a member), below the note.
       expect(
-        (tester.getCenter(note).dy - tester.getCenter(button).dy).abs(),
-        lessThan(8),
+        tester.getCenter(button).dy,
+        tester.getCenter(find.text('Group chat')).dy,
+      );
+      expect(
+        tester.getCenter(button).dy,
+        greaterThan(tester.getCenter(note).dy),
       );
       expect(tester.getSize(button).height, greaterThanOrEqualTo(40));
       // Not the same style as the primary Join button.

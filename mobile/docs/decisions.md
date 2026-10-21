@@ -928,3 +928,10 @@ committee can see who; members never see each other's state, and it is in the pr
 - The phone remembers per update what the server has already been told (`SmallKvStore`, `postReceipt:`/`postReadAt:`),
   so an offline phone sends the rest after the next refresh. No new local table.
 - The committee card (`PostReceiptsCard`) is fetched live on the update's page, not cached.
+
+**D124 — Coverage: window ends are information (2026-10-21).** "No group faster than X" / "No group slower than Y"
+(the stretch beyond the fastest and slowest led group, inside the arbitrary 7:00-12:00/mi window) are always grey
+notes. They no longer count towards "N to fill" and no longer say "down to 12:00". With one 8:45/mi group the card
+says "Covered". Real gaps (between two led groups) and unled groups still count, and anyone actually waiting at an
+uncovered pace is listed under "People coming with no matching group". A leader's **Step down** now sits beside
+**Group chat** on the group card, like Leave group does for a member.
