@@ -84,7 +84,7 @@ class FeedRun {
   final Session session;
   final RunStatus status;
 
-  /// Shows in My runs ([resolveFollow]).
+  /// Shows in My runs ([resolveFollow], minus runs answered "can't come").
   final bool inMine;
 
   /// Has a series the member does not follow and no RSVP yes: the card
@@ -108,17 +108,19 @@ FeedRun feedRun(Session session, Map<String, SeriesFollow> follows) {
   final status = switch (rsvp) {
     'going' => RunStatus.going,
     'maybe' => RunStatus.maybe,
-    'not_going' when mode == null => RunStatus.cantCome,
+    // An explicit "can't come" beats whatever the follow choice says.
+    'not_going' => RunStatus.cantCome,
     _ when mode == null => RunStatus.oneOff,
     _ when mode == FollowMode.hide => RunStatus.hidden,
-    'not_going' when !result.followed => RunStatus.cantCome,
     _ when result.followed => RunStatus.following,
     _ => RunStatus.notFollowing,
   };
   return FeedRun(
     session: session,
     status: status,
-    inMine: result.inMine,
+    // A run they've said they can't do drops out of My runs but stays in All
+    // runs. The resolver is shared with the server, so this stays client-side.
+    inMine: result.inMine && rsvp != 'not_going',
     canFollow:
         mode != null && !result.followed && rsvp != 'going' && rsvp != 'maybe',
   );

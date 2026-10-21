@@ -123,6 +123,21 @@ void main() {
         follow(FollowMode.auto),
       );
       expect((cantCome.status, cantCome.canFollow), (RunStatus.cantCome, true));
+      // Can't come on a followed run shows that, not Following, and the run
+      // leaves My runs.
+      final cantFollowed = run(
+        session(myStatus: 'not_going'),
+        follow(FollowMode.follow),
+      );
+      expect(
+        (cantFollowed.status, cantFollowed.inMine),
+        (RunStatus.cantCome, false),
+      );
+      final cantOneOff = run(session(myStatus: 'not_going', seriesId: null));
+      expect(
+        (cantOneOff.status, cantOneOff.inMine),
+        (RunStatus.cantCome, false),
+      );
       // A series missing from the cache counts as auto with no history.
       expect(run(session()).status, RunStatus.notFollowing);
       // A one-off run always shows and has nothing to follow.

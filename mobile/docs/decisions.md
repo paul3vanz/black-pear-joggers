@@ -884,3 +884,8 @@ runs I picked".
   dark values and matching light ones.
 - The days-I-run panel and its Show N more / Just my days peek are gone; `MyDaysPanel` remains for Lead a run, which
   now falls back to every day instead of the run days.
+
+**D119 — Review tweaks, round 1 (2026-10-21).**
+- **"Can't come" leaves My runs.** A run the member has answered "can't come" to (series or one-off) drops out of My
+  runs and stays in All runs, always badged "Can't come" (never "Following"). This is client-side only in `feedRun`:
+  `resolveFollow` is shared with the server's reminders and its case table is unchanged.
