@@ -180,7 +180,8 @@ the thread id the app uses where a group id would go is `post:<postId>`. Base pa
   unknown or deleted one, is 404. The committee (`committee`/`admin`) moderates.
 - `GET /messages?since=` → `{ items, serverTime, closed, muted }`, like a group thread. `authorRole` is `committee`
   (committee and admin, whether or not they wrote the update) or `member`; the app badges committee replies.
-  `closed` is true when comments are closed and the caller is not committee.
+  `closed` is true once the committee closed comments, for everyone; the committee can still post, the app just
+  shows them a notice.
 - `POST /messages { id?, body }` (1-1000 characters, idempotent on `id`, 429 over 20 a minute), `DELETE /messages/{id}`
   (author or committee), `POST /messages/read`, `PUT /thread { muted }`: as for a group chat.
 - **Closing:** `PATCH /posts/{id} { commentsClosed: true|false }` (committee only, like any post edit) sets or clears

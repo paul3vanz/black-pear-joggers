@@ -97,7 +97,7 @@ class AppPostCommentController extends Controller
      *   path="/app/clubs/{clubId}/posts/{postId}/comments/messages",
      *   summary="The comments on an update: the first page, or with since the changes and tombstones. Anyone the update is for; 404 otherwise.",
      *   security={{"bearerAuth":{}}},
-     *   @OA\Response(response=200, description="{ items: Comment[], serverTime, closed, muted }; closed is true when the committee closed comments and the caller is not committee"),
+     *   @OA\Response(response=200, description="{ items: Comment[], serverTime, closed, muted }; closed is true once the committee closed comments (the committee can still post)"),
      *   @OA\Response(response=404, description="No such update"),
      * )
      */
@@ -130,7 +130,7 @@ class AppPostCommentController extends Controller
         return response()->json([
             'items' => $this->messages($thread, $items),
             'serverTime' => NotificationPresenter::time($serverTime),
-            'closed' => $thread->isClosedFor($member),
+            'closed' => $thread->post->commentsClosed(), // the committee can still post (they see it as a notice)
             'muted' => $state ? (bool) $state->muted : false,
         ]);
     }

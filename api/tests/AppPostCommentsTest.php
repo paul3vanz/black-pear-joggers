@@ -148,9 +148,9 @@ class AppPostCommentsTest extends AppApiTestCase
         $this->assertSame('comments_closed', $body['error']);
         [, $read] = $this->read('u|abi', $id);
         $this->assertTrue($read['closed']);
-        // The committee can still reply, and sees the thread as open.
+        // The committee can still reply.
         $this->assertSame(201, $this->say('u|c', $id, 'Closing this now')[0]);
-        $this->assertFalse($this->read('u|c', $id)[1]['closed']);
+        $this->assertTrue($this->read('u|c', $id)[1]['closed']); // the flag is the same for all
 
         $this->call_('PATCH', "/app/clubs/1/posts/$id", 'u|c', ['commentsClosed' => false]);
         $this->assertSame(201, $this->say('u|abi', $id, 'Reopened')[0]);
@@ -273,7 +273,7 @@ class AppPostCommentsTest extends AppApiTestCase
         $this->assertSame(1, PostThreadState::where('member_id', $this->ben->id)->count());
     }
 
-    public function testClosedShowsInTheListForMembersButNotTheCommittee()
+    public function testClosedShowsInTheListForEveryone()
     {
         $id = $this->publish();
         $this->say('u|abi', $id, 'q');
@@ -283,7 +283,7 @@ class AppPostCommentsTest extends AppApiTestCase
         $cass = collect($this->call_('GET', '/app/clubs/1/threads', 'u|c')[1]['items'])->firstWhere('kind', 'post');
 
         $this->assertTrue($abi['closed']);
-        $this->assertFalse($cass['closed']);
+        $this->assertTrue($cass['closed']);
     }
 
     public function testMuteReturnsTheState()

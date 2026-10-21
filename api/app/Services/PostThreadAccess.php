@@ -209,7 +209,7 @@ class PostThreadAccess
                     ],
                     'unreadCount' => $thread->unreadCount($member, $state),
                     'muted' => $state ? (bool) $state->muted : false,
-                    'closed' => $thread->isClosedFor($member),
+                    'closed' => $post->commentsClosed(),
                 ],
             ];
         }
