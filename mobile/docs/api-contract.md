@@ -121,6 +121,29 @@ The shapes below are the same as Phase 1. `?since=` lists return
 - `PATCH /app/clubs/{clubId}/posts/{id}` updates the same fields (except
   `notify`). `DELETE` soft-deletes and returns 204. Both are for `committee`/`admin` only.
 
+### Post receipts (D123)
+Every member's app reports, always on and not a setting, when an update reached the phone and when it was read.
+Only the committee can read them back.
+- `POST /app/clubs/{clubId}/posts/receipts` with `{ "items": [ { "postId", "state": "delivered|read", "at?" } ] }`
+  (1 to 100 items) → 204.
+  - Reports the caller's own state. It's idempotent, never goes backwards (the earliest `at` wins) and a future
+    `at` is clamped to now. `read` implies `delivered`.
+  - Posts the caller can't see, or wrote, and unknown ids are ignored (still 204). A malformed item is 422.
+- `GET /app/clubs/{clubId}/posts/{id}/receipts` (`committee`/`admin`, else 403; unknown post 404) returns:
+  ```json
+  { "postId": "uuid", "audienceCount": 40, "deliveredCount": 31, "readCount": 22,
+    "members": [ { "memberId": "uuid", "displayName": "Sam B.", "state": "none|delivered|read",
+                   "deliveredAt": "…|null", "readAt": "…|null" } ] }
+  ```
+  - `members` is every active member the post was meant for, except its author, sorted by name.
+    `deliveredCount` includes the read ones.
+  - **Delivered** is the earlier of the app's report and the push being accepted by Firebase
+    (`notifications.pushed_at` of the `post:<id>` notification, which `POST /posts` with `notify` now sets as its
+    dedupe key). Updates published before D123 only have the app's report.
+  - **Read** means the member opened the update and read to the end (the app waits about 2 seconds on a short
+    update, or until the end of a long one).
+- Table `post_receipts(id, club_id, post_id, member_id, delivered_at?, read_at?)`, unique on (post, member). It's
+  in `AccountDeletion`. Host SQL: `api/database/manual/2026_10_post_receipts.sql`.
 ### Notifications (inbox)
 - `GET /app/clubs/{clubId}/notifications?since=` returns:
   ```json

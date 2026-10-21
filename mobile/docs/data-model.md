@@ -212,6 +212,15 @@ posts                     id, club_id, author_member_id, title, body_md,
 | `leaders_needed` | gaps on runs, for leaders only | on |
 | `group_messages` | new message in a group you've joined | on |
 
+## Update receipts
+
+```
+post_receipts   id, club_id, post_id, member_id, delivered_at?, read_at?   (unique post_id + member_id)
+```
+
+One row per member per update, written by the member's own app (D123). No row means neither has happened. The
+committee reads them back; members only ever write their own.
+
 ## Later: group messaging
 
 ```

@@ -247,7 +247,9 @@ class AppPostController extends Controller
             $post->title,
             Str::limit(trim(preg_replace('/[\s#*_`>\[\]]+/', ' ', $post->body_md)), 140),
             ['route' => '/updates/' . $post->id],
-            $post->priority === 'important'
+            $post->priority === 'important',
+            // Lets the receipts endpoint find each member's push (its pushed_at is "delivered", D123).
+            ['dedupeKey' => 'post:' . $post->id, 'onDuplicate' => 'skip']
         );
     }
 }

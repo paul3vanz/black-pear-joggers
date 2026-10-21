@@ -117,6 +117,9 @@ class AccountDeletion
         DB::table('group_messages')->where('member_id', $memberId)->delete();
         DB::table('group_thread_states')->where('member_id', $memberId)->delete();
 
+        // What they had and read of club updates.
+        DB::table('post_receipts')->where('member_id', $memberId)->delete();
+
         // Runs whose counts or leader lists change (their ?since= feed must see it).
         $sessionIds = DB::table('session_attendees')->where('member_id', $memberId)->pluck('session_id')->all();
         DB::table('session_attendees')->where('member_id', $memberId)->delete();

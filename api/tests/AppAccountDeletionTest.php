@@ -107,7 +107,8 @@ class AppAccountDeletionTest extends AppProfilesBase
         // References that stay behind with a null.
         DB::table('sessions')->where('id', $session->id)->update(['coordinator_member_id' => $m->id]);
         DB::table('session_groups')->where('id', $group->id)->update(['created_by_member_id' => $m->id]);
-        Post::create(['club_id' => $c, 'author_member_id' => $m->id, 'title' => 'News', 'body_md' => 'x', 'published_at' => Carbon::now()]);
+        $post = Post::create(['club_id' => $c, 'author_member_id' => $m->id, 'title' => 'News', 'body_md' => 'x', 'published_at' => Carbon::now()]);
+        \App\Models\PostReceipt::create(['club_id' => $c, 'post_id' => $post->id, 'member_id' => $m->id, 'delivered_at' => Carbon::now()]);
     }
 
     /** [table, column] pairs of every foreign key to club_members in the test schema. */
@@ -226,7 +227,7 @@ class AppAccountDeletionTest extends AppProfilesBase
         $this->assertSame('', (string) $this->response->getContent());
 
         foreach (['member_preferences', 'member_series_prefs', 'notification_preferences', 'notifications', 'member_profiles',
-            'member_photos', 'group_messages', 'group_thread_states', 'session_attendees', 'session_group_leaders'] as $table) {
+            'member_photos', 'post_receipts', 'group_messages', 'group_thread_states', 'session_attendees', 'session_group_leaders'] as $table) {
             $this->assertSame(0, $this->rowsFor($table, 'member_id', $id), $table);
         }
 
@@ -277,7 +278,7 @@ class AppAccountDeletionTest extends AppProfilesBase
         $this->assertSame(1, Device::where('user_id', 'victim-phone2')->count());
 
         foreach (['member_preferences', 'member_series_prefs', 'notification_preferences', 'notifications', 'member_profiles',
-            'member_photos', 'group_thread_states', 'session_attendees', 'session_group_leaders'] as $table) {
+            'member_photos', 'post_receipts', 'group_thread_states', 'session_attendees', 'session_group_leaders'] as $table) {
             $this->assertSame(1, $this->rowsFor($table, 'member_id', $id), $table);
         }
         $this->assertSame(2, $this->rowsFor('group_messages', 'member_id', $id));

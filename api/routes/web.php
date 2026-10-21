@@ -135,6 +135,9 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
     $router->group(['middleware' => 'club:required', 'prefix' => 'clubs/{clubId}'], function ($router) {
         $router->get('posts', 'AppPostController@index');
         $router->post('posts', 'AppPostController@store');
+        // D123: delivered / read receipts (members report their own, the committee reads them).
+        $router->post('posts/receipts', 'AppPostReceiptController@report');
+        $router->get('posts/{id}/receipts', 'AppPostReceiptController@show');
         $router->patch('posts/{id}', 'AppPostController@update');
         $router->delete('posts/{id}', 'AppPostController@destroy');
 
