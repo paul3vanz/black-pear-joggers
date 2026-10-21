@@ -2,6 +2,7 @@ import 'package:bpj/core/auth/accounts_controller.dart';
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/features/membership/data/membership_repository.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
+import 'package:bpj/features/updates/data/post_receipts_repository.dart';
 import 'package:bpj/features/updates/data/posts_repository.dart';
 import 'package:bpj/features/members/ui/member_providers.dart';
 import 'package:bpj/features/updates/ui/post_detail_screen.dart';
@@ -53,6 +54,9 @@ void main() {
             MembershipRepository(db, dio),
           ),
           postsRepositoryProvider.overrideWithValue(PostsRepository(db, dio)),
+          postReceiptsRepositoryProvider.overrideWithValue(
+            PostReceiptsRepository(db, dio),
+          ),
           activeClubIdProvider.overrideWithValue(1),
           activeSubProvider.overrideWithValue('test|sub'),
         ],
@@ -99,6 +103,9 @@ void main() {
             MembershipRepository(db, dio),
           ),
           postsRepositoryProvider.overrideWithValue(PostsRepository(db, dio)),
+          postReceiptsRepositoryProvider.overrideWithValue(
+            PostReceiptsRepository(db, dio),
+          ),
           activeClubIdProvider.overrideWithValue(1),
           activeSubProvider.overrideWithValue('test|sub'),
           memberCardsProvider.overrideWith(

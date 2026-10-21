@@ -17,6 +17,8 @@ import '../../features/membership/ui/membership_providers.dart';
 import '../../features/messages/data/messages_repository.dart';
 import '../../features/messages/ui/messages_providers.dart';
 import '../../features/runs/data/runs_repository.dart';
+import '../../features/groups/ui/group_access.dart';
+import '../../features/updates/data/post_receipts_repository.dart';
 import '../../features/updates/data/posts_repository.dart';
 import '../api/api_client.dart';
 import '../api/json.dart';
@@ -200,6 +202,11 @@ class PushService {
     try {
       await _ref.read(inboxRepositoryProvider).refresh(clubId);
       await _ref.read(postsRepositoryProvider).refresh(clubId);
+      unawaited(
+        _ref
+            .read(postReceiptsRepositoryProvider)
+            .syncQuietly(clubId, myMemberId: _ref.read(myMemberIdProvider)),
+      );
       // New chat message: update the unread dots and the Inbox chats list.
       if (isGroupMessagePush(data)) {
         await _ref

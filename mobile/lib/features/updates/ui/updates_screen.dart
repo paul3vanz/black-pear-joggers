@@ -10,6 +10,8 @@ import '../../../core/auth/session_expiry.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/ui/offline_banner.dart';
 import '../../../core/util/relative_time.dart';
+import '../../groups/ui/group_access.dart';
+import '../data/post_receipts_repository.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../data/post_dto.dart';
 import '../data/posts_repository.dart';
@@ -44,6 +46,12 @@ class _UpdatesScreenState extends ConsumerState<UpdatesScreen> {
     var failed = false;
     try {
       await repo.refresh(clubId);
+      // Tell the server these updates reached this phone (D123).
+      unawaited(
+        ref
+            .read(postReceiptsRepositoryProvider)
+            .syncQuietly(clubId, myMemberId: ref.read(myMemberIdProvider)),
+      );
     } on Object catch (e) {
       if (sub != null && await handleExpiry(sub, e)) return;
       failed = true;

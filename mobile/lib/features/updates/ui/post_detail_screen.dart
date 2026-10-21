@@ -1,24 +1,97 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/db/app_database.dart';
 import '../../../core/util/clock.dart';
 import '../../../core/util/open_link.dart';
 import '../../../core/util/relative_time.dart';
+import '../../groups/ui/group_access.dart';
 import '../../members/ui/member_avatar.dart';
+import '../data/post_receipts_repository.dart';
+import 'post_receipts_card.dart';
 import 'updates_providers.dart';
 
 /// `/updates/:id`: one post, with its Markdown body rendered. Links open in the
 /// browser or mail app. Reads the Drift cache only; a deep link to a post that
 /// isn't cached yet (push arrived, feed not refreshed) shows a friendly message.
-class PostDetailScreen extends ConsumerWidget {
+///
+/// Reading it to the end is reported to the server as a read receipt (D123):
+/// the update has to have been open for [readDwell] and scrolled to the end (or
+/// be short enough to fit on screen). The committee also sees who has read it.
+class PostDetailScreen extends ConsumerStatefulWidget {
   const PostDetailScreen({super.key, required this.postId});
 
   final String postId;
 
+  /// How long the update must have been open before it counts as read.
+  static const readDwell = Duration(seconds: 2);
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final post = ref.watch(postProvider(postId));
+  ConsumerState<PostDetailScreen> createState() => _PostDetailScreenState();
+}
+
+class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
+  final _scroll = ScrollController();
+  Timer? _dwell;
+  bool _tracking = false;
+  bool _dwelled = false;
+  bool _marked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scroll.addListener(_checkRead);
+  }
+
+  @override
+  void dispose() {
+    _dwell?.cancel();
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  /// Starts the dwell timer once the post is on screen (not for your own post).
+  void _startTracking(Post post) {
+    if (_tracking) return;
+    _tracking = true;
+    if (post.authorMemberId == ref.read(myMemberIdProvider)) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _dwell = Timer(PostDetailScreen.readDwell, () {
+        _dwelled = true;
+        _checkRead();
+      });
+    });
+  }
+
+  /// Read once the dwell has passed and the end is on screen.
+  void _checkRead() {
+    if (_marked || !_dwelled || !mounted || !_scroll.hasClients) return;
+    final p = _scroll.position;
+    if (p.maxScrollExtent - p.pixels > 24) return;
+    _marked = true;
+    final post = ref.read(postProvider(widget.postId)).value;
+    if (post == null) return;
+    final repo = ref.read(postReceiptsRepositoryProvider);
+    unawaited(
+      repo
+          .markRead(post.clubId, post.id)
+          .then(
+            (_) => repo.syncQuietly(
+              post.clubId,
+              myMemberId: ref.read(myMemberIdProvider),
+            ),
+          ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final post = ref.watch(postProvider(widget.postId));
+    final canSeeReceipts = ref.watch(canPostProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -41,7 +114,9 @@ class PostDetailScreen extends ConsumerWidget {
                 ),
               );
             }
+            _startTracking(post);
             return ListView(
+              controller: _scroll,
               padding: const EdgeInsets.all(16),
               children: [
                 if (post.priority == 'important')
@@ -107,6 +182,7 @@ class PostDetailScreen extends ConsumerWidget {
                     if (uri != null) openLink(context, ref, uri);
                   },
                 ),
+                if (canSeeReceipts) PostReceiptsCard(postId: post.id),
               ],
             );
           },

@@ -354,20 +354,17 @@ snackbar, usual-pace nudge, Inbox tabs, coverage as a pace ladder.
 Still to build. Each needs new server tables and endpoints, so they're designed here for review before any
 migration is written. Suggested order: 1, 3, 2 (3 reuses the chat screen from 2).
 
-1. **Read receipts on updates** (tick = delivered to a device, double tick = opened and read)
-   - `post_receipts(post_id, member_id, delivered_at?, read_at?)`, unique on (post, member).
-   - *Delivered*: the app reports it when it receives the push (foreground or background handler) or first loads the
-     post. `POST /posts/{id}/receipts {state: delivered|read}`, idempotent, offline-queued through the outbox.
-   - *Read*: the post screen was open and scrolled to the end (or short enough to fit) for ~2s, not just a list tap.
-   - Committee-only `GET /posts/{id}/receipts`: counts plus names (read / delivered / not yet), with a "nudge
-     those who haven't read it" later. Members never see each other's state, only their own.
-   - Question: show names to all committee, or only the author? And does a member opt out? (Privacy policy and
-     Play data-safety need a line either way.)
+1. **Read receipts on updates** (tick = delivered to a device, double tick = opened and read): **built (D123)**.
+   - Always on, not a setting. Only the committee sees who; members never see each other's state.
+   - API `post_receipts` + `POST /posts/receipts` + `GET /posts/{id}/receipts`; the app reports delivered after every
+     posts refresh and read when the update has been open 2s and scrolled to the end.
+   - [ ] Host: run `api/database/manual/2026_10_post_receipts.sql` before deploying the API.
+   - [ ] Later: a per-update summary on the committee's Updates list, and "nudge those who haven't read it".
 2. **Chat on updates** (members ask, committee replies)
    - Reuse the group-chat tables with a thread kind: `threads(id, kind: group|post|leaders, ref_id, club_id)` and
      move `group_messages` to `thread_messages`, or add `post_id` beside `group_id`. The second is a smaller
      migration; the first avoids a third copy of the thread code for item 3.
-   - Everyone sees the whole thread (it's a Q&A), committee replies are badged. Committee get a push for new
+   - Everyone sees the whole thread (it's a Q&A), committee replies carry a "Committee" badge (decided). Committee get a push for new
      questions, members who've posted or opened the thread get one for replies. A per-post mute, and committee can
      close comments on a post.
    - Inbox: a "Chats" tab entry per update thread, using the tabs added in D121.
@@ -377,7 +374,7 @@ migration is written. Suggested order: 1, 3, 2 (3 reuses the chat screen from 2)
      "Ask leaders" posts a templated "We need someone at 8:25-10:05/mi on Thursday, can you lead?" and pushes the
      members `LeaderAudience` already picks (`leaders_needed`). Replies of "I can" can create the group in one tap.
    - Inbox gets a **Leaders** tab for these threads.
-   - Question: should an unanswered ask re-nudge the next day?
+   - An unanswered ask re-nudges the next day (decided), then stops.
 
 ## Backlog
 

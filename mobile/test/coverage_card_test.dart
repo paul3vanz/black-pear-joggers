@@ -137,10 +137,7 @@ void main() {
     // On the ladder at its pace, flagged, and not counted as covered.
     expect(inCard(find.text('Needs a leader')), findsOneWidget);
     expect(inCard(find.text('11:00/mi')), findsOneWidget);
-    expect(
-      find.textContaining('Nobody leading slower than'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('Nobody leading slower than'), findsOneWidget);
     await finish(tester);
   });
 

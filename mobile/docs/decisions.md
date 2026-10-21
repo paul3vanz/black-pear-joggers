@@ -916,3 +916,15 @@ a row per group (pace, label, leaders, going count; red edge and "Needs a leader
 stretch as a dashed row between them, and the groups with no pace under "No set pace". A header chip says "Covered"
 or "N to fill" (`coverageToFill`: problem gaps plus unled groups). It replaces the bar chart and the fastest/slowest
 lines; `buildCoverage` is unchanged. Messaging leaders from a gap needs server work and is in the ROADMAP.
+
+**D123 — Read receipts on club updates (2026-10-21).** Every phone reports, with no setting to turn it off, when an
+update reached it (delivered, one tick) and when the member opened it and read to the end (read, two ticks). Only the
+committee can see who; members never see each other's state, and it is in the privacy policy and data-safety notes.
+- *Delivered* is the earlier of the app's report and the push being accepted by Firebase (`notifications.pushed_at`,
+  found through the `post:<id>` dedupe key). It is a weaker signal than a WhatsApp tick: the OS shows the push without
+  our code running, so the app can only report once it next opens.
+- *Read* needs the update open for 2s (`PostDetailScreen.readDwell`) and scrolled to the end (a short one counts after
+  the 2s). A member's own updates aren't tracked.
+- The phone remembers per update what the server has already been told (`SmallKvStore`, `postReceipt:`/`postReadAt:`),
+  so an offline phone sends the rest after the next refresh. No new local table.
+- The committee card (`PostReceiptsCard`) is fetched live on the update's page, not cached.
