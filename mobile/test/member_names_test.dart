@@ -192,7 +192,33 @@ void main() {
       );
       expect(tester.takeException(), isNull);
       expect(find.text('Alexandra Featherstone'), findsOneWidget);
-      expect(find.text('Cassandra Pemberton'), findsOneWidget);
+      // The backmarker is not on the card (the who's-going list shows them).
+      expect(find.text('Cassandra Pemberton'), findsNothing);
+    });
+
+    testWidgets('leader first, then co-leader, whatever order they arrive in', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        card(
+          group([
+            leaderJson('c', name: 'Cy Co', role: 'co_leader'),
+            leaderJson('b', name: 'Bea Back', role: 'backmarker'),
+            leaderJson('l', name: 'Lee Lead'),
+          ]),
+        ),
+      );
+      expect(find.text('Bea Back'), findsNothing);
+      expect(find.text('(backmarker)'), findsNothing);
+      expect(find.text('(co-leader)'), findsOneWidget);
+      // Reading order (the line can wrap on a narrow card).
+      double order(String name) {
+        final p = tester.getTopLeft(find.text(name));
+        return p.dy * 10000 + p.dx;
+      }
+
+      expect(order('Lee Lead'), lessThan(order('Cy Co')));
     });
   });
 
@@ -220,6 +246,29 @@ void main() {
       expect(find.text('PC'), findsOneWidget);
       expect(find.text('9:00-10:00/mi'), findsNWidgets(2));
       await tapNameAndBack(tester, 'Pat C.', 'pat');
+    });
+
+    testWidgets('leaders sort first, with role tags (backmarkers show here)', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        AttendeeList(
+          attendees: [
+            attendee('sam', 'Sam B.'),
+            attendee('bea', 'Bea K.'),
+            attendee('lee', 'Lee L.'),
+          ],
+          units: const UnitPrefs(),
+          roles: const {'bea': 'backmarker', 'lee': 'leader'},
+        ),
+      );
+      expect(find.text('(backmarker)'), findsOneWidget);
+      // A plain leader has no tag.
+      expect(find.text('(leader)'), findsNothing);
+      double y(String t) => tester.getTopLeft(find.text(t)).dy;
+      expect(y('Lee L.'), lessThan(y('Bea K.')));
+      expect(y('Bea K.'), lessThan(y('Sam B.')));
     });
 
     testWidgets('maybe label stays; no id is not tappable', (tester) async {

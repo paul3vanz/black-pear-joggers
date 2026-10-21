@@ -4,11 +4,13 @@ import '../../members/ui/member_avatar.dart';
 import '../data/group_dtos.dart';
 import 'group_format.dart';
 
-/// "Led by" followed by each leader as a small avatar + tappable name (D69),
-/// with their role tag ("co-leader") after the name. A [Wrap] so several
-/// leaders flow onto a second line on a narrow phone instead of overflowing
-/// (like `flex-wrap: wrap` in CSS). With no leaders it is the plain
-/// "No leader yet" text; a leader without a member id is not tappable.
+/// "Led by" followed by the leader and any co-leaders, each a small avatar +
+/// tappable name (D69), the leader first and "(co-leader)" after a co-leader's
+/// name. Backmarkers are left out here; they show against their name in the
+/// group's who's-going list. A [Wrap] so several leaders flow onto a second
+/// line on a narrow phone instead of overflowing (like `flex-wrap: wrap` in
+/// CSS). With no one to show it is the plain "No leader yet" text; a leader
+/// without a member id is not tappable.
 class LeadersLine extends StatelessWidget {
   const LeadersLine({super.key, required this.leaders, this.style});
 
@@ -25,14 +27,18 @@ class LeadersLine extends StatelessWidget {
         theme.textTheme.bodyMedium?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
         );
-    if (leaders.isEmpty) return Text('No leader yet', style: muted);
+    final shown = [
+      for (final l in sortedLeaders(leaders))
+        if (l.role != 'backmarker') l,
+    ];
+    if (shown.isEmpty) return Text('No leader yet', style: muted);
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 10,
       runSpacing: 2,
       children: [
         Text('Led by', style: muted),
-        for (final l in leaders)
+        for (final l in shown)
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -38,9 +38,26 @@ String leaderRoleTag(String role) => switch (role) {
   _ => '',
 };
 
-/// "Jo Bloggs, Sam Lapsed (co-leader)".
+/// Leaders in display order: the leader first, then co-leaders, then
+/// backmarkers (the server returns them in the order they signed up).
+List<GroupLeader> sortedLeaders(List<GroupLeader> leaders) {
+  int rank(String role) => switch (role) {
+    'leader' => 0,
+    'co_leader' => 1,
+    _ => 2,
+  };
+  // List.sort is not stable, so break ties on the original position.
+  final indexed = [for (var i = 0; i < leaders.length; i++) (i, leaders[i])]
+    ..sort((a, b) {
+      final byRole = rank(a.$2.role).compareTo(rank(b.$2.role));
+      return byRole != 0 ? byRole : a.$1.compareTo(b.$1);
+    });
+  return [for (final (_, l) in indexed) l];
+}
+
+/// "Jo Bloggs, Sam Lapsed (co-leader)", leader first.
 String leadersText(List<GroupLeader> leaders) => [
-  for (final l in leaders)
+  for (final l in sortedLeaders(leaders))
     leaderRoleTag(l.role).isEmpty
         ? l.displayName
         : '${l.displayName} (${leaderRoleTag(l.role)})',

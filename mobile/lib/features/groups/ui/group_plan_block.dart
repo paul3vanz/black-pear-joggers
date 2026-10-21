@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/group_dtos.dart';
 import '../data/plan_dtos.dart';
 import '../logic/pace_spread.dart';
 import 'attendee_list.dart';
@@ -34,6 +35,13 @@ class GroupPlanBlock extends ConsumerWidget {
     final entry = plan?.forGroup(groupId);
     if (entry == null) return const SizedBox.shrink();
     final units = ref.watch(unitPrefsProvider);
+    // Backmarkers are left off the group card, so their role shows against
+    // their name in the who's-in-this-group list instead.
+    final group = ref
+        .watch(sessionGroupsProvider(sessionId))
+        .value
+        ?.where((g) => g.id == groupId)
+        .firstOrNull;
     return PlanBlock(
       spread: buildPaceSpread(entry.paces, units.paceUnit),
       going: going,
@@ -42,6 +50,10 @@ class GroupPlanBlock extends ConsumerWidget {
       names: entry.attendees,
       namesTitle: "Who's in this group",
       units: units,
+      roles: {
+        for (final l in group?.leaders ?? const <GroupLeader>[])
+          if (l.memberId.isNotEmpty) l.memberId: l.role,
+      },
     );
   }
 }
@@ -57,6 +69,7 @@ class PlanBlock extends StatelessWidget {
     required this.names,
     required this.namesTitle,
     required this.units,
+    this.roles = const {},
   });
 
   final PaceSpread spread;
@@ -66,6 +79,9 @@ class PlanBlock extends StatelessWidget {
   final List<PlanAttendee>? names;
   final String namesTitle;
   final UnitPrefs units;
+
+  /// Member id => leader role, for the names list.
+  final Map<String, String> roles;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +111,9 @@ class PlanBlock extends StatelessWidget {
                 '$namesTitle (${names.length})',
                 style: theme.textTheme.labelLarge,
               ),
-              children: [AttendeeList(attendees: names, units: units)],
+              children: [
+                AttendeeList(attendees: names, units: units, roles: roles),
+              ],
             ),
           ),
       ],
