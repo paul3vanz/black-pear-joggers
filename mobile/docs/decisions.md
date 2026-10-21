@@ -905,3 +905,8 @@ runs I picked".
 of the Runs tab (`PacePromptCard`): **Set pace** opens Profile, **Not now** hides it for 7 days (`SmallKvStore`
 `pacePromptSnoozedUntil:<club>`), then it returns. It waits for a cached preferences row (the Runs tab now refreshes
 them) so it never shows for someone whose pace is saved but not yet fetched. Paces drive group matching and leader planning.
+
+**D121 — Inbox smart views (2026-10-21).** The Inbox has tabs, like Gmail's: **All**, **Chats** (group chats and their
+notifications), **Updates** (`club_updates`) and **Runs** (reminders, group matches, group changes, leaders needed).
+They filter the notifications the server already sends by category (`InboxFolder`); nothing is stored and the choice
+isn't remembered. A tab shows a dot when anything in it is unread, and **Mark all read** only marks the open tab.

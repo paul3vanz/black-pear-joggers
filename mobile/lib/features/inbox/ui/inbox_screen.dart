@@ -13,8 +13,10 @@ import '../../../core/ui/offline_banner.dart';
 import '../../../core/util/relative_time.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../messages/data/messages_repository.dart';
+import '../../messages/ui/messages_providers.dart';
 import '../../messages/ui/threads_section.dart';
 import '../data/inbox_repository.dart';
+import '../logic/inbox_folders.dart';
 import 'inbox_providers.dart';
 
 /// The Inbox tab (`/inbox`): every notification the server sent this member, so a
@@ -27,14 +29,30 @@ class InboxScreen extends ConsumerStatefulWidget {
   ConsumerState<InboxScreen> createState() => _InboxScreenState();
 }
 
-class _InboxScreenState extends ConsumerState<InboxScreen> {
+class _InboxScreenState extends ConsumerState<InboxScreen>
+    with SingleTickerProviderStateMixin {
   bool _refreshing = true;
   bool _refreshFailed = false;
+
+  /// The smart view (All, Chats, Updates, Runs). Screen state only, like the
+  /// My runs / All runs switch: not remembered.
+  late final TabController _tabs = TabController(
+    length: InboxFolder.values.length,
+    vsync: this,
+  )..addListener(() => setState(() {}));
+
+  InboxFolder get _folder => InboxFolder.values[_tabs.index];
 
   @override
   void initState() {
     super.initState();
     unawaited(_refresh());
+  }
+
+  @override
+  void dispose() {
+    _tabs.dispose();
+    super.dispose();
   }
 
   /// Runs [action]; a dead session is handled like everywhere else, other API
@@ -82,23 +100,61 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
   Widget build(BuildContext context) {
     final clubId = ref.watch(activeClubIdProvider);
     final items = ref.watch(inboxProvider(clubId)).value;
-    final unread = ref.watch(unreadCountProvider(clubId)).value ?? 0;
+    final threads = ref.watch(threadsProvider(clubId)).value ?? const [];
     final showBanner = _refreshFailed && !_refreshing;
+    final folder = _folder;
+    final inFolder = [
+      for (final i in items ?? const <InboxItem>[])
+        if (folder.holds(i.category)) i,
+    ];
+    final unreadHere = [
+      for (final i in inFolder)
+        if (i.readAt == null) i.id,
+    ];
+    // A dot on a tab with anything unread in it (chats also count threads).
+    bool unreadIn(InboxFolder f) =>
+        (items ?? const <InboxItem>[]).any(
+          (i) => i.readAt == null && f.holds(i.category),
+        ) ||
+        (f.showsThreads && threads.any((t) => t.unreadCount > 0));
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Inbox'),
         actions: [
           TextButton(
-            onPressed: unread == 0
+            onPressed: unreadHere.isEmpty
                 ? null
                 : () {
                     final repo = ref.read(inboxRepositoryProvider);
-                    unawaited(_guard(() => repo.markAllRead(clubId)));
+                    unawaited(
+                      _guard(
+                        () => folder == InboxFolder.all
+                            ? repo.markAllRead(clubId)
+                            : repo.markRead(clubId, unreadHere),
+                      ),
+                    );
                   },
             child: const Text('Mark all read'),
           ),
         ],
+        bottom: TabBar(
+          controller: _tabs,
+          tabs: [
+            for (final f in InboxFolder.values)
+              Tab(
+                key: ValueKey('inbox-tab-${f.name}'),
+                child: Badge(
+                  key: ValueKey('inbox-tab-dot-${f.name}'),
+                  smallSize: 8,
+                  isLabelVisible: unreadIn(f),
+                  alignment: AlignmentDirectional.topEnd,
+                  offset: const Offset(6, -2),
+                  child: Text(f.label),
+                ),
+              ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: RefreshIndicator(
@@ -109,17 +165,21 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
             children: [
               if (_refreshing && (items?.isEmpty ?? true))
                 const LinearProgressIndicator(),
-              const GroupChatsSection(),
+              if (folder.showsThreads) const GroupChatsSection(),
               if (showBanner)
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: OfflineBanner('Offline — showing saved notifications'),
                 ),
-              if (items != null && items.isEmpty && !_refreshing && !showBanner)
-                const _EmptyInbox(),
-              if (items != null)
-                for (final item in items)
-                  _InboxTile(item: item, onTap: () => _open(item)),
+              if (items != null &&
+                  inFolder.isEmpty &&
+                  !_refreshing &&
+                  !showBanner &&
+                  // Chats shows the threads above even with no notifications.
+                  !(folder.showsThreads && threads.isNotEmpty))
+                _EmptyInbox(text: folder.emptyText),
+              for (final item in inFolder)
+                _InboxTile(item: item, onTap: () => _open(item)),
             ],
           ),
         ),
@@ -165,7 +225,9 @@ class _InboxTile extends ConsumerWidget {
 }
 
 class _EmptyInbox extends StatelessWidget {
-  const _EmptyInbox();
+  const _EmptyInbox({required this.text});
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +242,7 @@ class _EmptyInbox extends StatelessWidget {
             color: theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 12),
-          Text('No notifications yet', style: theme.textTheme.titleMedium),
+          Text(text, style: theme.textTheme.titleMedium),
         ],
       ),
     );

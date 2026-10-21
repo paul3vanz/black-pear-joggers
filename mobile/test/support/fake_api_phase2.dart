@@ -24,9 +24,10 @@ Map<String, Object?> inboxJson(
   String createdAt = '2026-10-05T10:00:00.000Z',
   String? readAt,
   String route = '/updates/p1',
+  String category = 'club_updates',
 }) => {
   'id': id,
-  'category': 'club_updates',
+  'category': category,
   'title': 'Notification $id',
   'body': 'Body $id',
   'data': {'route': route},
