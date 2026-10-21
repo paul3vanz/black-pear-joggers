@@ -20,7 +20,6 @@ class GroupCard extends StatefulWidget {
     this.onJoin,
     this.onLeave,
     this.onLeadToo,
-    this.leadHint,
     this.onStepDown,
     this.onEdit,
     this.onDelete,
@@ -42,10 +41,6 @@ class GroupCard extends StatefulWidget {
   final VoidCallback? onLeave;
   final VoidCallback? onLeadToo;
 
-  /// Shown instead of "I'll lead this group too" when the caller already
-  /// leads another group of this run (D108), e.g. "You're already leading the
-  /// Tempo group".
-  final String? leadHint;
   final VoidCallback? onStepDown;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
@@ -211,46 +206,65 @@ class _GroupCardState extends State<GroupCard> {
                   ],
                 ),
               ),
-            if (widget.leadHint != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(widget.leadHint!, style: muted),
-              ),
             if (widget.onJoin != null ||
                 widget.onLeave != null ||
                 widget.onLeadToo != null ||
                 widget.onChat != null)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.onJoin != null)
-                      FilledButton.tonal(
-                        onPressed: widget.onJoin,
-                        child: Text(widget.joinLabel),
-                      ),
-                    if (widget.onLeave != null)
-                      OutlinedButton(
-                        onPressed: widget.onLeave,
-                        child: const Text('Leave group'),
+                    // Join / Leave and Group chat share one row to keep the
+                    // card short.
+                    if (widget.onJoin != null ||
+                        widget.onLeave != null ||
+                        widget.onChat != null)
+                      Row(
+                        children: [
+                          if (widget.onJoin != null)
+                            Expanded(
+                              child: FilledButton.tonal(
+                                style: _rowButtonStyle,
+                                onPressed: widget.onJoin,
+                                child: Text(
+                                  widget.joinLabel,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          if (widget.onLeave != null)
+                            Expanded(
+                              child: OutlinedButton(
+                                style: _rowButtonStyle,
+                                onPressed: widget.onLeave,
+                                child: const Text('Leave group'),
+                              ),
+                            ),
+                          if ((widget.onJoin != null ||
+                                  widget.onLeave != null) &&
+                              widget.onChat != null)
+                            const SizedBox(width: 8),
+                          if (widget.onChat != null)
+                            Expanded(
+                              child: FilledButton.tonalIcon(
+                                style: _rowButtonStyle,
+                                onPressed: widget.onChat,
+                                icon: Badge(
+                                  key: const ValueKey('chat-unread'),
+                                  smallSize: 9,
+                                  isLabelVisible: widget.chatUnread,
+                                  child: const Icon(Icons.chat_bubble_outline),
+                                ),
+                                label: const Text('Group chat'),
+                              ),
+                            ),
+                        ],
                       ),
                     if (widget.onLeadToo != null)
                       TextButton(
                         onPressed: widget.onLeadToo,
                         child: const Text("I'll lead this group too"),
-                      ),
-                    if (widget.onChat != null)
-                      FilledButton.tonalIcon(
-                        onPressed: widget.onChat,
-                        icon: Badge(
-                          key: const ValueKey('chat-unread'),
-                          smallSize: 9,
-                          isLabelVisible: widget.chatUnread,
-                          child: const Icon(Icons.chat_bubble_outline),
-                        ),
-                        label: const Text('Group chat'),
                       ),
                   ],
                 ),
@@ -261,6 +275,11 @@ class _GroupCardState extends State<GroupCard> {
     );
   }
 }
+
+/// Tighter padding so two buttons fit side by side on a narrow phone.
+final _rowButtonStyle = ButtonStyle(
+  padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 12)),
+);
 
 class _Menu extends StatelessWidget {
   const _Menu({this.onEdit, this.onDelete});

@@ -172,6 +172,26 @@ void main() {
       expect(find.text("You're leading this group"), findsNothing);
     });
 
+    testWidgets('Join and Group chat share a row', (tester) async {
+      await pumpCard(tester, mk(groupJson('g')), onJoin: () {}, onChat: () {});
+      expect(
+        tester.getCenter(find.text('Join this group')).dy,
+        tester.getCenter(find.text('Group chat')).dy,
+      );
+      // Leave and chat too.
+      await pumpCard(
+        tester,
+        mk(groupJson('g')),
+        isMine: true,
+        onLeave: () {},
+        onChat: () {},
+      );
+      expect(
+        tester.getCenter(find.text('Leave group')).dy,
+        tester.getCenter(find.text('Group chat')).dy,
+      );
+    });
+
     testWidgets('buttons are at least 40 px high', (tester) async {
       await pumpCard(tester, mk(groupJson('g')), onJoin: () {}, onChat: () {});
       for (final label in ['Join this group', 'Group chat']) {
