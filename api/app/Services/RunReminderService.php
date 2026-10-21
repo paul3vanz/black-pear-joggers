@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  *
  *  - morning-of reminders (`run_reminders`, with going / not-going buttons)
  *  - "leaders needed" for runs within 72 hours (`leaders_needed`)
+ *  - a repeat of a committee "can anyone lead" ask nobody has covered after a day (`leaders_needed`, once)
  *  - "pick your pace group" for going members with no group (`run_reminders`, D50): from 3 hours
  *    before the start, never before 08:00 local, only while the run has an active group
  *
@@ -44,12 +45,12 @@ class RunReminderService
     }
 
     /**
-     * @return array{reminders: int, leadersNeeded: int, pickGroup: int} notifications written
+     * @return array{reminders: int, leadersNeeded: int, pickGroup: int, askRepeats: int} notifications written
      */
     public function run(?Carbon $now = null): array
     {
         $now = $now ? $now->copy() : Carbon::now();
-        $stats = ['reminders' => 0, 'leadersNeeded' => 0, 'pickGroup' => 0];
+        $stats = ['reminders' => 0, 'leadersNeeded' => 0, 'pickGroup' => 0, 'askRepeats' => 0];
 
         foreach (Club::all() as $club) {
             $tz = $this->notifier->tz($club);
@@ -76,6 +77,10 @@ class RunReminderService
                 });
             }
         }
+
+        // A committee ask for a leader that is a day old and still not covered (D125). Not tied to the 72 hour
+        // window above: the ask itself says when it was made.
+        $stats['askRepeats'] = app(LeaderThreadNotifier::class)->renudge($now);
 
         return $stats;
     }

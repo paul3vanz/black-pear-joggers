@@ -221,6 +221,17 @@ post_receipts   id, club_id, post_id, member_id, delivered_at?, read_at?   (uniq
 One row per member per update, written by the member's own app (D123). No row means neither has happened. The
 committee reads them back; members only ever write their own.
 
+## Leaders threads
+
+```
+leader_messages         id, club_id, session_id, member_id, kind(message|ask), body, ask_fast_s_per_km?, ask_slow_s_per_km?, renudged_at?, created_at, updated_at, deleted_at?
+leader_thread_states    id, club_id, session_id, member_id, last_read_at?, muted   (unique session + member)
+leader_thread_members   id, club_id, session_id, member_id                         (unique session + member)
+```
+
+One thread per run for the committee and the people who lead or were asked to lead it (D125). It reuses the group
+chat's shapes; `leader_thread_members` is who an ask went to.
+
 ## Later: group messaging
 
 ```

@@ -144,6 +144,34 @@ Only the committee can read them back.
     update, or until the end of a long one).
 - Table `post_receipts(id, club_id, post_id, member_id, delivered_at?, read_at?)`, unique on (post, member). It's
   in `AccountDeletion`. Host SQL: `api/database/manual/2026_10_post_receipts.sql`.
+### Leaders thread (D125)
+One chat per run between the committee and the people who lead, or have been asked to lead, that run. The shapes
+and rules are the group chat's; the thread id the app uses where a group id would go is `leaders:<sessionId>`.
+Base path `/app/clubs/{clubId}/sessions/{sessionId}/leaders-chat`.
+- **Who is in it:** active `committee`/`admin` (always), confirmed leaders of any group of the run, and members an
+  ask went to (`leader_thread_members`). Anyone else: 403 `not_in_thread`; an unknown run: 404.
+- `GET /messages?since=` → `{ items, serverTime, closed, muted }`, like a group thread. A message adds
+  `kind: "message"|"ask"`, `askFastSPerKm`, `askSlowSPerKm` (an ask's pace range in seconds per km, null for "any
+  pace") and `groupId: "leaders:<sessionId>"`. `authorRole` is `committee`, `leader` (leads a group of the run) or `member`.
+- `POST /messages { id?, body }`, `DELETE /messages/{id}` (author or committee), `POST /messages/read`,
+  `PUT /thread { muted }`: as for a group chat. Closed (409 `thread_closed`) while the run is cancelled and 12
+  hours after it ends.
+- `POST /ask { id?, fastSPerKm?, slowSPerKm?, note? }` (`committee`/`admin` only, else 403) → `{ message, notified }`.
+  - Pace is 150-900 s/km, slow not faster than fast, and a pace needs both ends. None means any leader.
+  - Posts an `ask` message, adds everyone who may lead at that pace (`RunNotifier::availableLeaders`: the leaders-needed
+    audience, with the ask's pace instead of a group's) to the thread and sends them `leaders_needed` ("Can you lead
+    8:25-10:05/mi at 7pm on Thursday?", spoken in their units). `notified` is how many. The rest of the thread hears
+    it as a message. It's idempotent on `id` (replay: 200, `notified` 0).
+  - **Repeat:** a day later, `app:send-reminders` repeats it once, to the people asked who haven't posted and
+    aren't leading, only while a run still has 2+ hours to go, nobody leads a group at that pace, and between 08:00
+    and 21:00 local time (it waits for a sensible hour). `leader_messages.renudged_at` marks it done.
+- **`GET /threads`** also lists the leaders threads the caller is in that have a message in the last 14 days:
+  `kind: "leaders"`, `groupId: "leaders:<sessionId>"`, `label: "Leaders"`. Group threads have no `kind`.
+- **Notifications:** messages are `group_messages` (key `leader_msg:<sessionId>`, one inbox row per member, one push
+  per 5 minutes); asks are `leaders_needed` (key `leader_ask:<messageId>`, repeat `leader_ask_repeat:<messageId>`).
+  All carry `route: /runs/<id>/leaders-chat`.
+- Tables `leader_messages`, `leader_thread_states`, `leader_thread_members` are in `AccountDeletion`. Host SQL:
+  `api/database/manual/2026_10_leader_threads.sql`.
 ### Notifications (inbox)
 - `GET /app/clubs/{clubId}/notifications?since=` returns:
   ```json

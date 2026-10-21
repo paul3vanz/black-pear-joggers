@@ -11,6 +11,7 @@ use App\Models\SessionAttendee;
 use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
 use App\Services\GroupMessageNotifier;
+use App\Services\LeaderThreadAccess;
 use App\Services\NotificationPresenter;
 use App\Services\ThreadAccess;
 use Illuminate\Http\Request;
@@ -437,6 +438,9 @@ class AppGroupMessageController extends Controller
                 ],
             ];
         }
+
+        // D125: the run's leaders threads this member is in, listed with the group chats.
+        $items = array_merge($items, LeaderThreadAccess::listFor($club, $member));
 
         usort($items, function ($a, $b) {
             return $b['sort'] <=> $a['sort'];

@@ -354,16 +354,18 @@ class RunNotifier
      * have no pace, or whose group has none).
      *
      * @param array<int, string|null> $exclude member ids to leave out
+     * @param array{0: float, 1: float}|null $band [fast, slow] s/km to fit instead of the group's pace
      * @return string[]
      */
-    public function availableLeaders(Club $club, ClubSession $session, array $exclude, ?SessionGroup $group = null): array
+    public function availableLeaders(Club $club, ClubSession $session, array $exclude, ?SessionGroup $group = null, ?array $band = null): array
     {
         $leading = SessionGroupLeader::where('status', SessionGroupLeader::CONFIRMED)
             ->whereIn('group_id', SessionGroup::where('session_id', $session->id)->pluck('id'))
             ->pluck('member_id')->all();
         $answers = SessionAttendee::where('session_id', $session->id)->get()->keyBy('member_id');
         $prefs = MemberPreference::where('club_id', $club->id)->get()->keyBy('member_id');
-        $groupBand = $group ? PaceMatcher::groupBand($group) : null;
+        // $band is a committee ask's [fast, slow] s/km; otherwise the group's own pace.
+        $groupBand = $band ?? ($group ? PaceMatcher::groupBand($group) : null);
 
         $members = ClubMember::where('club_id', $club->id)->where('status', 'active')->get();
         $mayLead = array_flip(app(LeaderAudience::class)->candidates($session, $this->tz($club), $members));

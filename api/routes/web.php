@@ -199,6 +199,14 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->put('groups/{groupId}/thread', 'AppGroupMessageController@updateThread');
         $router->get('threads', 'AppGroupMessageController@threads');
 
+        // D125: the leaders thread of a run (committee, its leaders, people asked to lead).
+        $router->get('sessions/{sessionId}/leaders-chat/messages', 'AppLeaderThreadController@index');
+        $router->post('sessions/{sessionId}/leaders-chat/messages', 'AppLeaderThreadController@store');
+        $router->post('sessions/{sessionId}/leaders-chat/messages/read', 'AppLeaderThreadController@markRead');
+        $router->delete('sessions/{sessionId}/leaders-chat/messages/{id}', 'AppLeaderThreadController@destroy');
+        $router->put('sessions/{sessionId}/leaders-chat/thread', 'AppLeaderThreadController@updateThread');
+        $router->post('sessions/{sessionId}/leaders-chat/ask', 'AppLeaderThreadController@ask');
+
         $router->get('members', 'AppMemberController@index');
         $router->patch('members/{memberId}/roles', 'AppMemberController@updateRoles');
 

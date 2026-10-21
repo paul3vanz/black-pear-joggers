@@ -424,7 +424,7 @@ class AppRunRemindersTest extends AppGroupsBase
         Carbon::setTestNow(Carbon::parse('2026-10-12 08:00', 'UTC'));
 
         $this->assertSame(0, $this->artisan('app:send-reminders'));
-        $this->assertStringContainsString('1 reminders, 1 leaders-needed alerts, 0 pick-a-group nudges.', \Illuminate\Support\Facades\Artisan::output());
+        $this->assertStringContainsString('1 reminders, 1 leaders-needed alerts, 0 pick-a-group nudges, 0 leader-ask repeats.', \Illuminate\Support\Facades\Artisan::output());
 
         $this->assertSame(1, $this->total('run_reminders'));
     }

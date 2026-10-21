@@ -117,6 +117,11 @@ class AccountDeletion
         DB::table('group_messages')->where('member_id', $memberId)->delete();
         DB::table('group_thread_states')->where('member_id', $memberId)->delete();
 
+        // The leaders threads (messages, including soft-deleted ones, read markers, asks they received).
+        DB::table('leader_messages')->where('member_id', $memberId)->delete();
+        DB::table('leader_thread_states')->where('member_id', $memberId)->delete();
+        DB::table('leader_thread_members')->where('member_id', $memberId)->delete();
+
         // What they had and read of club updates.
         DB::table('post_receipts')->where('member_id', $memberId)->delete();
 

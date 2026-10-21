@@ -81,6 +81,7 @@ abstract class AppApiTestCase extends TestCase
             '2026_10_18_090000_add_run_days_to_member_preferences_table.php',
             '2026_10_19_090000_add_follow_mode_to_member_series_prefs_table.php',
             '2026_10_21_090000_create_post_receipts_table.php',
+            '2026_10_21_090100_create_leader_thread_tables.php',
         ]);
 
         // Stand in for the Auth0 verification: the sub comes from a header.
