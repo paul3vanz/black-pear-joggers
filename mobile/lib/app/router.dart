@@ -15,7 +15,8 @@ import '../features/membership/ui/membership_providers.dart';
 import '../features/membership/ui/unavailable_screen.dart';
 import '../features/members/ui/member_profile_screen.dart';
 import '../features/members/ui/my_profile_card_screen.dart';
-import '../features/messages/data/message_dtos.dart' show leadersThreadId;
+import '../features/messages/data/message_dtos.dart'
+    show leadersThreadId, postThreadId;
 import '../features/messages/ui/chat_screen.dart';
 import '../features/profile/ui/about_screen.dart';
 import '../features/profile/ui/delete_account_screen.dart';
@@ -232,6 +233,18 @@ GoRouter router(Ref ref) {
                     parentNavigatorKey: rootNavigatorKey,
                     builder: (_, state) =>
                         PostDetailScreen(postId: state.pathParameters['id']!),
+                    routes: [
+                      // The comments on an update (D126): a Q&A thread. The
+                      // target of its notifications.
+                      GoRoute(
+                        path: 'comments',
+                        parentNavigatorKey: rootNavigatorKey,
+                        builder: (_, state) => ChatScreen(
+                          sessionId: '',
+                          groupId: postThreadId(state.pathParameters['id']!),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

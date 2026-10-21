@@ -15,6 +15,16 @@ String leadersThreadId(String sessionId) => '$leadersThreadPrefix$sessionId';
 String leadersSessionId(String threadId) =>
     threadId.substring(leadersThreadPrefix.length);
 
+/// The thread id of the comments on a club update (D126): `post:<postId>`.
+const postThreadPrefix = 'post:';
+
+bool isPostThread(String threadId) => threadId.startsWith(postThreadPrefix);
+
+String postThreadId(String postId) => '$postThreadPrefix$postId';
+
+String postIdOfThread(String threadId) =>
+    threadId.substring(postThreadPrefix.length);
+
 /// A committee "can anyone lead 8:25-10:05/mi?" message. The local message
 /// table has no columns for it, so an ask is stored in `body` as
 /// `␞ask␞<fast>␞<slow>␞<note>` (seconds per km, empty for any pace) and

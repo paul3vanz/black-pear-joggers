@@ -360,14 +360,15 @@ migration is written. Suggested order: 1, 3, 2 (3 reuses the chat screen from 2)
      posts refresh and read when the update has been open 2s and scrolled to the end.
    - [ ] Host: run `api/database/manual/2026_10_post_receipts.sql` before deploying the API.
    - [ ] Later: a per-update summary on the committee's Updates list, and "nudge those who haven't read it".
-2. **Chat on updates** (members ask, committee replies)
-   - Reuse the group-chat tables with a thread kind: `threads(id, kind: group|post|leaders, ref_id, club_id)` and
-     move `group_messages` to `thread_messages`, or add `post_id` beside `group_id`. The second is a smaller
-     migration; the first avoids a third copy of the thread code for item 3.
-   - Everyone sees the whole thread (it's a Q&A), committee replies carry a "Committee" badge (decided). Committee get a push for new
-     questions, members who've posted or opened the thread get one for replies. A per-post mute, and committee can
-     close comments on a post.
-   - Inbox: a "Chats" tab entry per update thread, using the tabs added in D121.
+2. **Chat on updates** (members ask, committee replies): **built (D126)**.
+   - A Q&A thread under each update that everyone it is for can read and write; committee replies carry a
+     "Committee" badge; the committee gets a push for new questions and members who asked or opened it get one for
+     replies; per-update mute; the committee can close comments (members read only, the committee can still reply).
+   - Reached from a **Comments** card on the update, from its notifications, and from the Inbox's Chats tab.
+   - [ ] Host: run `api/database/manual/2026_10_post_comments.sql` (it also adds `posts.comments_closed_at`) before
+     deploying the API.
+   - [ ] Later: show a comment count on the Updates list, and let the committee close comments when publishing.
+
 3. **Committee ↔ leaders threads and "Can you lead?"**: **built (D125)**.
    - One thread per run for the committee, the run's leaders and anyone asked; the coverage card's gaps and unled
      groups have **Ask leaders**, the ask is a `leaders_needed` push and repeats once after a day if still uncovered.

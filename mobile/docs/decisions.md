@@ -953,3 +953,19 @@ who lead, or have been asked to lead, it, so a reply never depends on which comm
 - **Inbox:** a **Leaders** tab holds the thread and its notifications (by `/leaders-chat` route, so an ask's
   `leaders_needed` category doesn't put it under Runs).
 - Only the committee moderates it (deletes others' messages); the author can delete their own.
+
+**D126 — Comments on club updates (2026-10-21).** A Q&A thread under each update, where members ask and the committee replies.
+- **Same screens, no new local tables** (as D125): the thread id is `post:<postId>`, so the message and thread caches and
+  `ChatScreen` serve it, with its own title, hints and closed wording. Route `/updates/:id/comments`.
+- **Everyone it is for sees everything**; it is a Q&A, not private. Committee and admin replies are badged "Committee"
+  whether or not they wrote the update.
+- **Who hears:** the committee, everyone who has commented and everyone who has opened the thread (not merely the
+  update), minus the author and anyone who muted it. `club_updates` category, one inbox row per member per update,
+  one push per 5 minutes.
+- **Closing:** the committee's switch (`PATCH /posts/{id} { commentsClosed }`, menu item "Comments closed") stops
+  members posting; the committee can still reply and see a notice. The server reports the real flag to everyone and
+  the app decides who may post, so the committee's menu always shows the true state without a new local column.
+- A **Comments** card on the update shows the count from the cache (refreshed quietly on open) and hides itself on a
+  closed update with no comments, unless you are committee.
+- Privacy: comments are written by members and shown to everyone the update is for (privacy policy and data-safety
+  notes updated).

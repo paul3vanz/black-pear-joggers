@@ -17,6 +17,7 @@ import '../../groups/ui/groups_providers.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../../runs/ui/session_actions.dart' show confirm;
+import '../../updates/ui/updates_providers.dart';
 import '../data/message_dtos.dart';
 import '../data/messages_repository.dart';
 import 'chat_widgets.dart';
@@ -67,6 +68,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   /// The run's leaders thread (D125) rather than a pace group's chat.
   bool get _leaders => isLeadersThread(_groupId);
+
+  /// The comments on a club update (D126) rather than a group's chat.
+  bool get _post => isPostThread(_groupId);
+
+  String get _postId => postIdOfThread(_groupId);
   int get _clubId => ref.read(activeClubIdProvider);
 
   @override
@@ -137,7 +143,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          _leaders
+          _post
+              ? "This update isn't available any more"
+              : _leaders
               ? "You're no longer in this thread"
               : "You're no longer in this group",
         ),
@@ -178,7 +186,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       title: 'Delete this message?',
       message:
           'It will show as "Message deleted" for everyone in the '
-          '${_leaders ? 'thread' : 'group'}.',
+          '${_post || _leaders ? 'thread' : 'group'}.',
       action: 'Delete',
     );
     if (!ok || !mounted) return;
@@ -235,6 +243,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (message != null && result?.outcome != SendOutcome.queued) {
       messenger.showSnackBar(SnackBar(content: Text(message)));
     }
+  }
+
+  /// Committee: close or reopen comments on this update.
+  Future<void> _toggleClosed(bool closed) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final repo = ref.read(messagesRepositoryProvider);
+    final error = await _guard(
+      () => repo.setCommentsClosed(_clubId, _postId, closed: closed),
+    );
+    if (error == null || error.isSessionExpired) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          error.isNetworkError
+              ? 'You need a connection to change that.'
+              : error.statusCode == 403
+              ? 'Only the committee can do that.'
+              : error.message,
+        ),
+      ),
+    );
   }
 
   Future<void> _toggleMute(bool muted) async {
@@ -305,13 +334,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     // In the leaders thread only the committee moderates (the server agrees).
-    final canModerate = _leaders
+    final canModerate = _leaders || _post
         ? ref.watch(canManageRunsProvider)
         : ref.watch(canManageRunsProvider) ||
               (me != null &&
                   ((group?.isLedBy(me) ?? false) ||
                       session?.coordinatorMemberId == me));
-    final subtitle = _leaders
+    final subtitle = _post
+        ? (ref.watch(postProvider(_postId)).value?.title ?? '')
+        : _leaders
         ? (session?.title ?? '')
         : _subtitle(thread, group, session, units);
 
@@ -320,7 +351,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(_leaders ? 'Leaders' : 'Group chat'),
+            Text(
+              _post
+                  ? 'Comments'
+                  : _leaders
+                  ? 'Leaders'
+                  : 'Group chat',
+            ),
             if (subtitle.isNotEmpty)
               Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
           ],
@@ -331,15 +368,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               Icons.notifications_off_outlined,
               semanticLabel: 'Muted',
             ),
-          PopupMenuButton<bool>(
+          PopupMenuButton<String>(
             tooltip: 'Chat options',
-            onSelected: (value) => unawaited(_toggleMute(value)),
+            onSelected: (value) => unawaited(
+              value == 'mute' ? _toggleMute(!muted) : _toggleClosed(!closed),
+            ),
             itemBuilder: (_) => [
               CheckedPopupMenuItem(
-                value: !muted,
+                value: 'mute',
                 checked: muted,
                 child: const Text('Mute notifications'),
               ),
+              // The committee closes comments on an update (D126).
+              if (_post && canModerate)
+                CheckedPopupMenuItem(
+                  value: 'close',
+                  checked: closed,
+                  child: const Text('Comments closed'),
+                ),
             ],
           ),
         ],
@@ -396,11 +442,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       onDelete: _delete,
                     ),
                   ),
-                  if (closed)
-                    const _ClosedBar()
+                  // Comments closed (D126): members can only read; the committee
+                  // can still reply and are told it is closed.
+                  if (closed && _post && canModerate) const _ClosedNotice(),
+                  if (closed && !(_post && canModerate))
+                    _ClosedBar(post: _post)
                   else
                     _InputBar(
-                      hint: _leaders
+                      hint: _post
+                          ? (canModerate
+                                ? 'Reply to the comments'
+                                : 'Ask a question or comment')
+                          : _leaders
                           ? 'Message the leaders'
                           : 'Message your group',
                       controller: _input,
@@ -583,7 +636,10 @@ class _InputBar extends StatelessWidget {
 }
 
 class _ClosedBar extends StatelessWidget {
-  const _ClosedBar();
+  const _ClosedBar({this.post = false});
+
+  /// The comments on an update, closed by the committee, not a finished run.
+  final bool post;
 
   @override
   Widget build(BuildContext context) {
@@ -602,20 +658,55 @@ class _ClosedBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Chat closed',
+                    post ? 'Comments closed' : 'Chat closed',
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const Text(
-                    'Posting stops 12 hours after the run, or when it is '
-                    'cancelled. You can still read the messages.',
+                  Text(
+                    post
+                        ? 'The committee has closed comments on this update. '
+                              'You can still read them.'
+                        : 'Posting stops 12 hours after the run, or when it is '
+                              'cancelled. You can still read the messages.',
                   ),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Shown to the committee when comments are closed: members can't post, they can.
+class _ClosedNotice extends StatelessWidget {
+  const _ClosedNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      key: const ValueKey('comments-closed-notice'),
+      width: double.infinity,
+      color: scheme.secondaryContainer,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Icon(
+            Icons.lock_outline,
+            size: 18,
+            color: scheme.onSecondaryContainer,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Comments are closed for members. You can still reply.',
+              style: TextStyle(color: scheme.onSecondaryContainer),
+            ),
+          ),
+        ],
       ),
     );
   }

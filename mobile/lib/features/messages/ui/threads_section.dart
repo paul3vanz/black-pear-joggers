@@ -8,7 +8,8 @@ import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/run_format.dart';
-import '../data/message_dtos.dart' show isLeadersThread;
+import '../data/message_dtos.dart'
+    show isLeadersThread, isPostThread, postIdOfThread;
 import 'messages_providers.dart';
 
 /// "Group chats" at the top of the Inbox tab: the caller's threads (from
@@ -77,7 +78,9 @@ class _ThreadTile extends StatelessWidget {
     return ListTile(
       key: ValueKey('thread-${thread.groupId}'),
       leading: Icon(
-        isLeadersThread(thread.groupId)
+        isPostThread(thread.groupId)
+            ? Icons.chat_bubble_outline
+            : isLeadersThread(thread.groupId)
             ? Icons.groups_outlined
             : Icons.forum_outlined,
       ),
@@ -108,7 +111,9 @@ class _ThreadTile extends StatelessWidget {
           ? null
           : () => unawaited(
               context.push(
-                isLeadersThread(thread.groupId)
+                isPostThread(thread.groupId)
+                    ? '/updates/${postIdOfThread(thread.groupId)}/comments'
+                    : isLeadersThread(thread.groupId)
                     ? '/runs/${thread.sessionId}/leaders-chat'
                     : '/runs/${thread.sessionId}/groups/${thread.groupId}/chat',
               ),

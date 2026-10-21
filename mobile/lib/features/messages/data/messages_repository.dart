@@ -71,6 +71,8 @@ class MessagesRepository {
   /// endpoints under the session.
   String _base(int clubId, String groupId) => isLeadersThread(groupId)
       ? '/app/clubs/$clubId/sessions/${leadersSessionId(groupId)}/leaders-chat'
+      : isPostThread(groupId)
+      ? '/app/clubs/$clubId/posts/${postIdOfThread(groupId)}/comments'
       : '/app/clubs/$clubId/groups/$groupId';
 
   // --- Reads -----------------------------------------------------------
@@ -385,6 +387,24 @@ class MessagesRepository {
           .write(const GroupMessagesCompanion(sendState: Value('failed')));
       return SendResult(SendOutcome.failed, e);
     }
+  }
+
+  // --- Comments on an update (D126) ------------------------------------------
+
+  /// Closes or reopens comments on an update (committee only, needs a
+  /// connection), then refreshes the thread so `closed` is up to date.
+  Future<void> setCommentsClosed(
+    int clubId,
+    String postId, {
+    required bool closed,
+  }) async {
+    await guardApi(
+      () => _dio.patch<Object?>(
+        '/app/clubs/$clubId/posts/$postId',
+        data: {'commentsClosed': closed},
+      ),
+    );
+    await refresh(clubId, postThreadId(postId));
   }
 
   // --- Asking leaders (committee, online) ----------------------------------

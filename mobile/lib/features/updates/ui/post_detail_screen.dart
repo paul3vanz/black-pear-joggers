@@ -11,6 +11,7 @@ import '../../../core/util/relative_time.dart';
 import '../../groups/ui/group_access.dart';
 import '../../members/ui/member_avatar.dart';
 import '../data/post_receipts_repository.dart';
+import 'comments_card.dart';
 import 'post_receipts_card.dart';
 import 'updates_providers.dart';
 
@@ -182,6 +183,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                     if (uri != null) openLink(context, ref, uri);
                   },
                 ),
+                CommentsCard(post: post),
                 if (canSeeReceipts) PostReceiptsCard(postId: post.id),
               ],
             );
