@@ -372,6 +372,34 @@ Beta builds (Firebase App Distribution), the Google Play steps, version numbers 
 [docs/store/release-checklist.md](docs/store/release-checklist.md). Store text, the privacy policy draft and the Play
 Data safety answers live next to it in [docs/store/](docs/store/README.md). Quick beta: `scripts/distribute-android.sh`.
 
+### iOS (TestFlight)
+
+One-off setup, on the Mac you build from:
+- Xcode → Settings → Accounts: sign in with the Apple Developer account. In Manage Certificates, make sure an
+  **Apple Distribution** certificate exists (`security find-identity -v -p codesigning` should list it).
+- Open `ios/Runner.xcworkspace` → Runner → Signing & Capabilities: tick "Automatically manage signing" and pick the team.
+- In App Store Connect, create the app record for bundle id `uk.org.bpj.app` (the SKU is any internal string, e.g. `bpj-app`).
+- `config/prod.json` must be present (it is git-ignored, see docs/setup.md).
+- On a company network with Zscaler, point `SSL_CERT_FILE` at a CA bundle that includes the Zscaler root cert, or
+  `pod install` fails with an SSL error.
+
+Each release:
+```bash
+cd mobile
+bash scripts/build-ios.sh
+```
+It raises the build number in `pubspec.yaml` by one (like the Android scripts; `--no-bump` to skip, `--name 1.1.0` to
+change the visible version too), then runs `flutter pub get` and
+`flutter build ipa --release --dart-define-from-file=config/prod.json`. The IPA lands in `build/ios/ipa/`.
+
+Upload it with the **Transporter** app (drag the `.ipa` in, **Deliver**), or
+`xcrun altool --upload-app --type ios -f build/ios/ipa/*.ipa --apiKey <key> --apiIssuer <issuer>`. Apple processes it in a
+few minutes to half an hour, then it shows under the app's **TestFlight** tab. Internal testers can install straight
+away; external testers need a short Beta App Review first. Commit `pubspec.yaml` afterwards. TestFlight rejects a build
+number it has already uploaded for that version, which is why every build bumps it.
+
+The Auth0 application needs the iOS callback URL in Allowed Callback URLs (docs/setup.md, step 2).
+
 ## Upgrade testing
 
 Play users jump from whatever version they had straight to the latest, so every schema bump is tested against a real
