@@ -228,6 +228,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         if (ref.watch(canManageRunsProvider))
           ListTile(
+            key: const ValueKey('leader-cover-tile'),
+            leading: const Icon(Icons.groups_outlined),
+            title: const Text('Leader cover'),
+            subtitle: const Text('who leads the next 4 weeks of runs'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/profile/leader-cover'),
+          ),
+        if (ref.watch(canManageRunsProvider))
+          ListTile(
             leading: const Icon(Icons.flag_outlined),
             title: const Text('Event locations'),
             subtitle: const Text('parkruns, races and other events'),

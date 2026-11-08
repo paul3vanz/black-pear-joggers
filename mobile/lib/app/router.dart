@@ -6,6 +6,7 @@ import '../core/auth/accounts_controller.dart';
 import '../core/diagnostics/db_guard.dart';
 import '../features/auth/ui/sign_in_screen.dart';
 import '../features/events/ui/event_locations_screen.dart';
+import '../features/groups/ui/leader_cover_screen.dart';
 import '../features/groups/ui/group_editor_screen.dart';
 import '../features/groups/ui/leader_roster_screen.dart';
 import '../features/groups/ui/members_roles_screen.dart';
@@ -285,6 +286,11 @@ GoRouter router(Ref ref) {
                     path: 'event-locations',
                     parentNavigatorKey: rootNavigatorKey,
                     builder: (_, _) => const EventLocationsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'leader-cover',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (_, _) => const LeaderCoverScreen(),
                   ),
                   GoRoute(
                     path: 'about',

@@ -6,9 +6,11 @@ import 'package:uuid/uuid.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/api/json.dart';
 import '../../../core/db/app_database.dart';
+import '../../../core/units/dist_unit.dart';
 import '../../../core/units/distance.dart';
 import '../../../core/units/pace_spec.dart';
 import 'group_dtos.dart';
+import 'last_group_store.dart';
 import 'session_local.dart';
 import 'summary_dtos.dart';
 
@@ -66,6 +68,34 @@ class GroupsRepository {
     'distanceValue': distance?.value,
     'distanceUnit': distance?.unit.code,
   };
+
+  /// The group the caller most recently led (D127), for the lead form on a phone
+  /// that never saw them create one: a group of [seriesId] if they led one, else
+  /// their latest anywhere. Null when they never led. Needs a connection.
+  Future<LastGroupSpec?> lastLed(int clubId, {String? seriesId}) async {
+    final response = await guardApi(
+      () => _dio.get<Object?>(
+        '/app/clubs/$clubId/members/me/last-led',
+        queryParameters: {'seriesId': ?seriesId},
+      ),
+    );
+    final group = jsonObject(response)['group'];
+    if (group is! Map) return null;
+    final unit = DistUnit.fromCode(group['distanceUnit']);
+    final value = (group['distanceValue'] as num?)?.toDouble();
+    return LastGroupSpec(
+      kind: group['kind'] as String? ?? 'run',
+      label: group['label'] as String?,
+      description: group['description'] as String?,
+      pace: PaceSpec.fromFields(
+        unit: group['paceUnit'] as String?,
+        fromS: (group['paceFromS'] as num?)?.toInt(),
+        toS: (group['paceToS'] as num?)?.toInt(),
+      ),
+      distance: unit == null || value == null ? null : Distance(value, unit),
+      sourceTitle: group['sessionTitle'] as String?,
+    );
+  }
 
   Future<Group> _merge(int clubId, Response<Object?> response) async {
     final group = Group.fromJson(jsonObject(response));

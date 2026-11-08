@@ -213,8 +213,10 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->delete('sessions/{sessionId}/leaders-chat/messages/{id}', 'AppLeaderThreadController@destroy');
         $router->put('sessions/{sessionId}/leaders-chat/thread', 'AppLeaderThreadController@updateThread');
         $router->post('sessions/{sessionId}/leaders-chat/ask', 'AppLeaderThreadController@ask');
+        $router->get('sessions/{sessionId}/leaders-chat/pool', 'AppLeaderThreadController@pool');
 
         $router->get('members', 'AppMemberController@index');
+        $router->get('members/me/last-led', 'AppLastLedController@show');
         $router->patch('members/{memberId}/roles', 'AppMemberController@updateRoles');
 
         // Phase 6.5: member profile card (photo, bio, goals)

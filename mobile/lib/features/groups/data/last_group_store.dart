@@ -14,6 +14,7 @@ class LastGroupSpec {
     this.description,
     this.pace = const NoPace(),
     this.distance,
+    this.sourceTitle,
   });
 
   final String kind;
@@ -22,13 +23,19 @@ class LastGroupSpec {
   final PaceSpec pace;
   final Distance? distance;
 
-  factory LastGroupSpec.fromGroup(Group g) => LastGroupSpec(
-    kind: g.kind,
-    label: g.label,
-    description: g.description,
-    pace: g.pace,
-    distance: g.distance,
-  );
+  /// The title of the run it was led on ("Riverside Run"), for "Filled in from your
+  /// last group on ..." (D127). Not part of what makes two specs equal.
+  final String? sourceTitle;
+
+  factory LastGroupSpec.fromGroup(Group g, {String? sourceTitle}) =>
+      LastGroupSpec(
+        kind: g.kind,
+        label: g.label,
+        description: g.description,
+        pace: g.pace,
+        distance: g.distance,
+        sourceTitle: sourceTitle,
+      );
 
   Map<String, Object?> toJson() => {
     'kind': kind,
@@ -37,6 +44,7 @@ class LastGroupSpec {
     ...pace.toJson(),
     'distanceValue': distance?.value,
     'distanceUnit': distance?.unit.code,
+    if (sourceTitle != null) 'sourceTitle': sourceTitle,
   };
 
   static LastGroupSpec? tryDecode(String? json) {
@@ -56,6 +64,7 @@ class LastGroupSpec {
           toS: (m['paceToS'] as num?)?.toInt(),
         ),
         distance: unit == null || value == null ? null : Distance(value, unit),
+        sourceTitle: m['sourceTitle'] as String?,
       );
     } on Object {
       return null;

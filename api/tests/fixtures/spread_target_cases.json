@@ -1,0 +1,125 @@
+{
+  "about": "The one case table for the pace spread rule (D128). Read by api/tests/PaceSpreadTest.php (App\\Services\\PaceSpread) and mobile/test/spread_target_test.dart (buildSpreadTarget), so the committee's cover screen and the early nudge agree. Each case gives the viewer's unit and the groups on a run. A group has unit (mi|km), from and to in seconds per that unit (to null for a single pace, from null for a group with no pace), kind (default run) and led (default true; an unled group counts for nothing). Expected: empty (no led group with a pace), gaps as [from, to] whole 5 s in the viewer's unit (the stretch a new group would fit), fasterEnd and slowerEnd (the edge of the open stretch, nearest 5 s, or null when met) and jogWalk (a led jog/walk group with no pace). Constants per mile: targets 8:00 to 12:00, end flex 30 s, gap 45 s or more, fill margin 15 s.",
+  "cases": [
+    {
+      "name": "no groups at all",
+      "unit": "mi",
+      "groups": [],
+      "expect": { "empty": true, "gaps": [], "fasterEnd": null, "slowerEnd": null, "jogWalk": false }
+    },
+    {
+      "name": "only an unled group counts for nothing",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 540, "to": null, "led": false }],
+      "expect": { "empty": true, "gaps": [], "fasterEnd": null, "slowerEnd": null, "jogWalk": false }
+    },
+    {
+      "name": "9:15 and 10:30 leave a gap to fill with a 9:45 or a 10:00",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 555, "to": null }, { "unit": "mi", "from": 630, "to": null }],
+      "expect": { "empty": false, "gaps": [[570, 615]], "fasterEnd": 510, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "a 15 s range is treated like a single pace (its slow edge is 9:15)",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 540, "to": 555 }, { "unit": "mi", "from": 630, "to": null }],
+      "expect": { "empty": false, "gaps": [[570, 615]], "fasterEnd": 510, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "a range entered backwards is the same range",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 555, "to": 540 }, { "unit": "mi", "from": 630, "to": null }],
+      "expect": { "empty": false, "gaps": [[570, 615]], "fasterEnd": 510, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "8:00 and 8:40 are close enough",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 480, "to": null }, { "unit": "mi", "from": 520, "to": null }],
+      "expect": { "empty": false, "gaps": [], "fasterEnd": null, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "44 s apart is not a gap",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 480, "to": null }, { "unit": "mi", "from": 524, "to": null }],
+      "expect": { "empty": false, "gaps": [], "fasterEnd": null, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "45 s apart is a gap, 15 s wide",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 480, "to": null }, { "unit": "mi", "from": 525, "to": null }],
+      "expect": { "empty": false, "gaps": [[495, 510]], "fasterEnd": null, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "a range inside a wider group does not hide the next gap",
+      "unit": "mi",
+      "groups": [
+        { "unit": "mi", "from": 480, "to": 570 },
+        { "unit": "mi", "from": 540, "to": null },
+        { "unit": "mi", "from": 600, "to": null }
+      ],
+      "expect": { "empty": false, "gaps": [], "fasterEnd": null, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "a spread with no gap of 45 s or more, both ends met",
+      "unit": "mi",
+      "groups": [
+        { "unit": "mi", "from": 465, "to": 480 },
+        { "unit": "mi", "from": 520, "to": null },
+        { "unit": "mi", "from": 560, "to": null },
+        { "unit": "mi", "from": 600, "to": null },
+        { "unit": "mi", "from": 640, "to": null },
+        { "unit": "mi", "from": 680, "to": null },
+        { "unit": "mi", "from": 720, "to": null }
+      ],
+      "expect": { "empty": false, "gaps": [], "fasterEnd": null, "slowerEnd": null, "jogWalk": false }
+    },
+    {
+      "name": "the ends are met exactly at 8:30 and 11:30",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 510, "to": null }, { "unit": "mi", "from": 690, "to": null }],
+      "expect": { "empty": false, "gaps": [[525, 675]], "fasterEnd": null, "slowerEnd": null, "jogWalk": false }
+    },
+    {
+      "name": "a start a few seconds past 8:30 and an end a few before 11:30 miss the ends",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 515, "to": null }, { "unit": "mi", "from": 685, "to": null }],
+      "expect": { "empty": false, "gaps": [[530, 670]], "fasterEnd": 510, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "a single group in the middle misses both ends",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 600, "to": null }],
+      "expect": { "empty": false, "gaps": [], "fasterEnd": 510, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "a led jog/walk group with no pace is on offer",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 540, "to": null }, { "kind": "jog_walk", "from": null, "to": null }],
+      "expect": { "empty": false, "gaps": [], "fasterEnd": 510, "slowerEnd": 690, "jogWalk": true }
+    },
+    {
+      "name": "an unled jog/walk group is not on offer",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 540, "to": null }, { "kind": "jog_walk", "from": null, "to": null, "led": false }],
+      "expect": { "empty": false, "gaps": [], "fasterEnd": 510, "slowerEnd": 690, "jogWalk": false }
+    },
+    {
+      "name": "a jog/walk group that has a pace counts as a pace group",
+      "unit": "mi",
+      "groups": [{ "kind": "jog_walk", "unit": "mi", "from": 720, "to": null }],
+      "expect": { "empty": false, "gaps": [], "fasterEnd": 510, "slowerEnd": null, "jogWalk": false }
+    },
+    {
+      "name": "a km viewer sees the same rule in s/km",
+      "unit": "km",
+      "groups": [{ "unit": "km", "from": 340, "to": null }, { "unit": "km", "from": 390, "to": null }],
+      "expect": { "empty": false, "gaps": [[350, 380]], "fasterEnd": 315, "slowerEnd": 430, "jogWalk": false }
+    },
+    {
+      "name": "groups entered in km and mi mix on one axis",
+      "unit": "mi",
+      "groups": [{ "unit": "mi", "from": 555, "to": null }, { "unit": "km", "from": 390, "to": null }],
+      "expect": { "empty": false, "gaps": [[570, 610]], "fasterEnd": 510, "slowerEnd": 690, "jogWalk": false }
+    }
+  ]
+}

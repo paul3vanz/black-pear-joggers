@@ -7,6 +7,7 @@ import '../../../core/api/api_client.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/api/json.dart';
 import '../../../core/db/app_database.dart';
+import 'leader_pool_dtos.dart';
 import 'message_dtos.dart';
 
 part 'messages_repository.g.dart';
@@ -409,15 +410,52 @@ class MessagesRepository {
 
   // --- Asking leaders (committee, online) ----------------------------------
 
-  /// Asks for someone to lead a pace range on [sessionId] (D125): posts an ask
-  /// in the run's leaders thread and notifies the members who could lead it.
-  /// Needs a connection and the committee role (403 otherwise). Returns how many
-  /// members were asked, which is 0 when nobody could be.
-  Future<int> askForLeader(
+  /// The people the committee may ask to lead [sessionId] (D127): those who led
+  /// its series or weekday before, or chose the day, with how often and at what
+  /// pace. [fastSPerKm] and [slowSPerKm] (the stretch of the pace axis being
+  /// filled, 150 and 900 meaning open ended) or [jogWalk] set `fitsRange`.
+  /// Needs a connection and the committee role (403 otherwise).
+  Future<List<PoolMember>> leaderPool(
     int clubId,
     String sessionId, {
     int? fastSPerKm,
     int? slowSPerKm,
+    bool jogWalk = false,
+  }) async {
+    final response = await guardApi(
+      () => _dio.get<Object?>(
+        '${_base(clubId, leadersThreadId(sessionId))}/pool',
+        queryParameters: {
+          if (jogWalk) 'kind': 'jog_walk',
+          if (!jogWalk && fastSPerKm != null && slowSPerKm != null) ...{
+            'fastSPerKm': fastSPerKm,
+            'slowSPerKm': slowSPerKm,
+          },
+        },
+      ),
+    );
+    final items = jsonObject(response)['items'];
+    return [
+      if (items is List)
+        for (final item in items)
+          if (item is Map) PoolMember.fromJson(Map<String, Object?>.from(item)),
+    ];
+  }
+
+  /// Asks the people in [memberIds] (from [leaderPool]) to lead a stretch of the
+  /// pace axis on [sessionId] (D125, D127): [fastSPerKm] to [slowSPerKm], or a
+  /// jog/walk group with [jogWalk], or anything with neither. Posts an ask in the
+  /// run's leaders thread and notifies them. Without [memberIds] it goes to the
+  /// computed audience, as older apps did. Needs a connection and the committee
+  /// role (403 otherwise). Returns how many were asked, which is 0 when nobody
+  /// could be, and who was left out (leading, not going, asked in the last day).
+  Future<AskResult> askForLeader(
+    int clubId,
+    String sessionId, {
+    int? fastSPerKm,
+    int? slowSPerKm,
+    List<String>? memberIds,
+    bool jogWalk = false,
     String note = '',
   }) async {
     final threadId = leadersThreadId(sessionId);
@@ -427,8 +465,10 @@ class MessagesRepository {
         '${_base(clubId, threadId)}/ask',
         data: {
           'id': _newId(),
-          'fastSPerKm': ?fastSPerKm,
-          'slowSPerKm': ?slowSPerKm,
+          if (!jogWalk) 'fastSPerKm': ?fastSPerKm,
+          if (!jogWalk) 'slowSPerKm': ?slowSPerKm,
+          'memberIds': ?memberIds,
+          if (jogWalk) 'kind': 'jog_walk',
           if (text.isNotEmpty) 'note': text,
         },
       ),
@@ -442,7 +482,15 @@ class MessagesRepository {
         MessageDto.fromJson(Map<String, Object?>.from(message)),
       );
     }
-    return (body['notified'] as num?)?.toInt() ?? 0;
+    final skipped = body['skipped'];
+    return (
+      notified: (body['notified'] as num?)?.toInt() ?? 0,
+      skipped: [
+        if (skipped is List)
+          for (final s in skipped)
+            if (s is Map) AskSkipped.fromJson(Map<String, Object?>.from(s)),
+      ],
+    );
   }
 
   // --- Moderation, read state, mute (online) -----------------------------

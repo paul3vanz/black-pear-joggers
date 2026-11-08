@@ -172,6 +172,40 @@ Base path `/app/clubs/{clubId}/sessions/{sessionId}/leaders-chat`.
   All carry `route: /runs/<id>/leaders-chat`.
 - Tables `leader_messages`, `leader_thread_states`, `leader_thread_members` are in `AccountDeletion`. Host SQL:
   `api/database/manual/2026_10_leader_threads.sql`.
+#### Asking named people (D127)
+- `GET /sessions/{sessionId}/leaders-chat/pool?fastSPerKm&slowSPerKm|kind=jog_walk` (`committee`/`admin` only, else
+  403) → `{ items }`: the members who could lead the run, and nobody else. Each item:
+  `{ memberId, name, reason, ledCount, lastLedOn, lastLed, fitsRange, leadingThisRun, notGoing, askedAt, askedRecently }`.
+  - `reason`: `chose_day` | `led_series` | `led_day` | `new_leader` (see D127). `ledCount` counts runs they led (confirmed
+    rows); `lastLedOn` is the club-local `YYYY-MM-DD` of the latest, null if none. `lastLed` is the group they last led
+    (the latest confirmed, else the latest at all): `kind`, `label`, `paceUnit`, `paceFromS`, `paceToS`,
+    `paceFromSPerKm`, `paceToSPerKm`, `distanceValue`, `distanceUnit`, so the exact usual pace. Null for someone who
+    only chose the day.
+  - The query says what is being filled. `fastSPerKm` and `slowSPerKm` (150-900, 150 and 900 meaning open ended, both
+    or neither) give a stretch; `kind=jog_walk` a jog/walk group. `fitsRange` is true when their usual pace, widened
+    by 30 s/mi each side, overlaps the stretch (or their last group was jog/walk for `kind`). With neither it is false.
+  - Order: people who can be asked first, then `fitsRange`, then `ledCount` descending, then `lastLedOn` descending.
+    The caller is left out. `askedRecently` is an ask in the last 24 hours.
+- `POST /ask` gains `memberIds` (uuids, 1-30) and `kind` (`jog_walk`, needs `memberIds`; the pace is then ignored).
+  - With `memberIds` it goes to exactly those people, except the asker and anyone leading the run (`leading`), who
+    answered not going (`not_going`), was asked in the last 24 hours (`asked_recently`) or isn't an active member of the
+    club (`inactive`). Response: `{ message, notified, skipped: [{ memberId, reason }] }` (a replay: 200, `notified` 0,
+    `skipped` []). Everyone asked joins the thread and gets `leaders_needed` ("Committee asked you: can you lead a
+    group between 9:30 and 10:15/mi at 7pm on Thursday?"; "faster than 8:30/mi", "slower than 11:30/mi" and "a jog/walk
+    group" for the other forms; the stretch is in their units to the nearest 5 s).
+  - Without `memberIds` the older audience path runs unchanged (the app no longer sends it).
+  - A message gains `askKind` (`jog_walk` or null), `askedMemberIds` and `askedNames` (null for the older form; the ids
+    are who it really went to, names aligned). The one-day repeat goes to the named people who haven't answered; a
+    jog/walk ask is covered by a led jog/walk group, a stretch ask by a led group whose band overlaps it.
+  - `leader_messages.ask_member_ids` (JSON, null) and `ask_kind` (varchar 16, null). Host SQL:
+    `api/database/manual/2026_11_leader_ask_targets.sql`.
+- `GET /members/me/last-led?seriesId=` → `{ group: { kind, label, description, paceUnit, paceFromS, paceToS,
+  distanceValue, distanceUnit, sessionTitle, ledOn, sameSeries } | null }`: the group the caller most recently led
+  (confirmed rows, not event groups), preferring the series given, else any run (`sameSeries` false). For the lead
+  form on a device with no local history.
+- **Early nudge** (`app:send-reminders`, `EarlyLeaderNudge`): runs 3 to 7 days out with a hole in their spread of paces
+  (D128). `leaders_needed`, key `leaders_early:<sessionId>`, route `/runs/<id>/groups/new?intent=lead&fast=&slow=`
+  (or `&kind=jog_walk`). The command's summary line gains "N early leader nudges".
 ### Update comments (D126)
 A Q&A thread under each club update: members ask, the committee replies. The shapes and rules are the group chat's;
 the thread id the app uses where a group id would go is `post:<postId>`. Base path

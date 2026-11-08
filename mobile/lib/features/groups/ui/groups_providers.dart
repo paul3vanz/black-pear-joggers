@@ -136,6 +136,31 @@ final lastGroupSpecProvider = FutureProvider.autoDispose
           .read(session.clubId, session.seriesId);
     });
 
+/// What the "Lead a group" form starts from (D127): the member's last group on this
+/// device, else the last group they led according to the server (kept on the device
+/// for next time), which covers a new phone, a reinstall and groups they joined as
+/// co-leader. It never fails the form: offline, or any error, is just no history.
+final leadFormSpecProvider = FutureProvider.autoDispose
+    .family<LastGroupSpec?, String>((ref, sessionId) async {
+      final local = await ref.watch(lastGroupSpecProvider(sessionId).future);
+      if (local != null) return local;
+      final session = await ref.watch(sessionProvider(sessionId).future);
+      if (session == null) return null;
+      try {
+        final spec = await ref
+            .read(groupsRepositoryProvider)
+            .lastLed(session.clubId, seriesId: session.seriesId);
+        if (spec != null) {
+          await ref
+              .read(lastGroupStoreProvider)
+              .write(session.clubId, session.seriesId, spec);
+        }
+        return spec;
+      } on Object {
+        return null;
+      }
+    });
+
 /// Remembers [group] (just created by the member to lead) as their last one.
 Future<void> rememberLastGroup(
   LastGroupStore store,
@@ -144,7 +169,7 @@ Future<void> rememberLastGroup(
 ) => store.write(
   session.clubId,
   session.seriesId,
-  LastGroupSpec.fromGroup(group),
+  LastGroupSpec.fromGroup(group, sourceTitle: session.title),
 );
 
 /// Small remembered settings (D55): "already asked" flags and day filters.

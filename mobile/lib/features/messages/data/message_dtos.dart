@@ -26,16 +26,32 @@ String postIdOfThread(String threadId) =>
     threadId.substring(postThreadPrefix.length);
 
 /// A committee "can anyone lead 8:25-10:05/mi?" message. The local message
-/// table has no columns for it, so an ask is stored in `body` as
-/// `␞ask␞<fast>␞<slow>␞<note>` (seconds per km, empty for any pace) and
-/// decoded for display. The mark is U+241E, which nobody types. Move these into
-/// columns at the next schema bump.
+/// table has no columns for it, so an ask is stored in `body` and decoded for
+/// display. The mark is U+241E, which nobody types. Move these into columns at the
+/// next schema bump. Two forms, both read:
+///
+///  - v1 `␞ask␞<fast>␞<slow>␞<note>`, seconds per km, empty for any pace;
+///  - v2 `␞ask2␞<fast>␞<slow>␞<kind>␞<names>␞<note>` (D127): `kind` is `jog_walk` or
+///    empty, `names` the first names of the people it named joined with U+241F.
+///    Only written when there is a kind or a name, so older rows and caches stay v1.
 class AskBody {
-  const AskBody({this.fastSPerKm, this.slowSPerKm, this.note = ''});
+  const AskBody({
+    this.fastSPerKm,
+    this.slowSPerKm,
+    this.note = '',
+    this.jogWalk = false,
+    this.askedNames = const [],
+  });
 
   final int? fastSPerKm;
   final int? slowSPerKm;
   final String note;
+
+  /// An ask for a jog/walk group, not a pace.
+  final bool jogWalk;
+
+  /// Who a targeted ask named, as the server sent them (empty: it went to the audience).
+  final List<String> askedNames;
 
   /// An ask for a pace range (both ends), not "any pace".
   bool get hasPace => fastSPerKm != null && slowSPerKm != null;
@@ -43,12 +59,41 @@ class AskBody {
 
 const _askMark = '␞';
 
-String encodeAskBody(AskBody ask) =>
-    '${_askMark}ask$_askMark${ask.fastSPerKm ?? ''}$_askMark'
-    '${ask.slowSPerKm ?? ''}$_askMark${ask.note}';
+/// Separates the names of a targeted ask inside the v2 body (U+241F).
+const _nameMark = '␟';
+
+const _jogWalkKind = 'jog_walk';
+
+String encodeAskBody(AskBody ask) {
+  final pace =
+      '${ask.fastSPerKm ?? ''}$_askMark${ask.slowSPerKm ?? ''}$_askMark';
+  if (!ask.jogWalk && ask.askedNames.isEmpty) {
+    return '${_askMark}ask$_askMark$pace${ask.note}';
+  }
+  final names = [
+    for (final n in ask.askedNames)
+      n.replaceAll(_askMark, '').replaceAll(_nameMark, ''),
+  ].join(_nameMark);
+  return '${_askMark}ask2$_askMark$pace'
+      '${ask.jogWalk ? _jogWalkKind : ''}$_askMark$names$_askMark${ask.note}';
+}
 
 /// The ask a stored [body] holds, or null for an ordinary message.
 AskBody? decodeAskBody(String body) {
+  if (body.startsWith('${_askMark}ask2$_askMark')) {
+    final parts = body.split(_askMark);
+    if (parts.length < 7) return null;
+    return AskBody(
+      fastSPerKm: int.tryParse(parts[2]),
+      slowSPerKm: int.tryParse(parts[3]),
+      jogWalk: parts[4] == _jogWalkKind,
+      askedNames: [
+        for (final n in parts[5].split(_nameMark))
+          if (n.isNotEmpty) n,
+      ],
+      note: parts.sublist(6).join(_askMark),
+    );
+  }
   if (!body.startsWith('${_askMark}ask$_askMark')) return null;
   final parts = body.split(_askMark);
   if (parts.length < 5) return null;
@@ -106,6 +151,11 @@ class MessageDto {
             fastSPerKm: (json['askFastSPerKm'] as num?)?.toInt(),
             slowSPerKm: (json['askSlowSPerKm'] as num?)?.toInt(),
             note: json['body'] as String? ?? '',
+            jogWalk: json['askKind'] == _jogWalkKind,
+            askedNames: [
+              for (final n in json['askedNames'] as List? ?? const [])
+                if (n is String) n,
+            ],
           )
         : null,
   );

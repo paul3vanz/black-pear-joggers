@@ -234,7 +234,7 @@ A Q&A thread under each club update (D126), reusing the group chat's shapes.
 ## Leaders threads
 
 ```
-leader_messages         id, club_id, session_id, member_id, kind(message|ask), body, ask_fast_s_per_km?, ask_slow_s_per_km?, renudged_at?, created_at, updated_at, deleted_at?
+leader_messages         id, club_id, session_id, member_id, kind(message|ask), body, ask_fast_s_per_km?, ask_slow_s_per_km?, ask_member_ids? (json), ask_kind? (jog_walk), renudged_at?, created_at, updated_at, deleted_at?
 leader_thread_states    id, club_id, session_id, member_id, last_read_at?, muted   (unique session + member)
 leader_thread_members   id, club_id, session_id, member_id                         (unique session + member)
 ```

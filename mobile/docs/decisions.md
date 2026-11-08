@@ -969,3 +969,58 @@ who lead, or have been asked to lead, it, so a reply never depends on which comm
   closed update with no comments, unless you are committee.
 - Privacy: comments are written by members and shown to everyone the update is for (privacy policy and data-safety
   notes updated).
+
+**D127 — The committee picks who to ask for a leader (2026-11-07).** "Ask leaders" no longer goes to a computed
+audience the committee can't see. The ask sheet lists the people who could lead and the committee ticks who to ask.
+- **The pool** (`GET /sessions/<id>/leaders-chat/pool`, committee only) is exactly who `LeaderAudience` says might
+  lead the run, each with a reason: `chose_day` (their lead days include it), `led_series` (led this series in the last
+  26 weeks), `led_day` (led another series, or a run with no series, on the same weekday in that window) and
+  `new_leader` (holds the `leader` role, never led). Each has how often they led (confirmed rows only; a withdrawn
+  sign-up still makes someone a candidate but isn't a led run), when they last led and the group they last led, at
+  its exact pace. Nobody outside it is offered, so Monday leaders are never asked about a Tuesday unless they chose
+  Tuesday.
+- **`led_day` is new.** The winter Thursday run and the summer Mug Run are different series on one weekday, so Mug Run
+  leaders had no history on the winter run at the start of a season. It slightly widens the audience of today's
+  "leaders needed" alerts too, on purpose (D106: the alerts and the pool must never disagree).
+- **Ordering:** people who can be asked first, then those whose usual pace fits the stretch being filled (within
+  30 s/mi of it), then regulars (most led runs), then the most recent. Nothing is pre-ticked, so the committee can't
+  mass-nudge by accident.
+- **Targeted ask:** `POST /ask` takes `memberIds` (max 30). It goes to exactly those people minus anyone leading, not
+  going, asked in the last day or no longer active (returned as `skipped`); the message keeps who it really went to
+  (`askedMemberIds`, `askedNames`, shown as `@Anna @Ben` chips). Without `memberIds` the older audience path still
+  runs, for app versions already installed; the app never sends that form. The pace on an ask is now a **stretch of
+  the axis** (150 and 900 s/km mean open ended), or `kind: jog_walk`, not a pace the leader must run.
+- **The leader's own pace wins** on the lead form. "I can lead" carries the stretch (`fast`, `slow`, `kind`) only as a
+  hint ("The committee is looking for a group between 9:30 and 10:15/mi"); pace, distance and name come from their
+  last group. The device keeps that per series (`LastGroupStore`); with none (a new phone, or a group they joined as
+  co-leader) the app asks `GET /members/me/last-led` and caches the answer.
+- **Local storage:** an ask's kind and names ride in `body` behind the same U+241E mark as D125 (`ask2` form, the older
+  `ask` form still decodes), so there is still no schema bump.
+- Account deletion drops a deleted member's id from other people's asks.
+
+**D128 — The target spread of paces: gaps and open ends, not slots (2026-11-07).** The committee aims for groups from
+about 8:00 to 12:00/mi plus jog/walk, with some flexibility and no big hole between neighbours.
+- **Real paces, no grid.** Each led group stays at its own pace (9:15, 10:30, 7:45-8:00); a single pace is that pace and
+  a range is its two ends, with no tolerance padding. A single pace and a range are labelled ("Single pace",
+  "Range", a dot or a bar) but every rule treats them the same.
+- **Gap (red):** two neighbouring led groups 45 s/mi or more apart, nearest edge to nearest edge. A new group would
+  fit 15 s inside each edge, so 9:15 and 10:30 leaves "9:30 to 10:15" and 8:00 and 8:45 leaves "8:15 to 8:30". A range
+  inside a wider group hides nothing.
+- **Open end (amber):** nothing led starting by 8:30 (8:00 + 30 s), or reaching 11:30 (12:00 - 30 s). 7:45-8:00 meets
+  the fast end. **Jog/walk (amber):** no led jog/walk group without a pace. With no led group at all the whole target is
+  one red item.
+- Only `paced` runs get the spread. A `single` or `open` run just lists its groups.
+- **Replaces D122 and D124 on the coverage card:** the ladder's 7:00-12:00/mi window, its 20 s/km minimum and its grey
+  "No group faster/slower than" notes give way to the rules above, so the card and the Leader cover screen agree.
+  `buildCoverage` stays for the led/unled split and for the people-coming section.
+- One rule in two places: `buildSpreadTarget` (app) and `PaceSpread` (API), both tested against
+  `api/tests/fixtures/spread_target_cases.json`, whose expected values are worked by hand. It does not use
+  `buildCoverage`'s tolerance or 20 s/km minimum; the old report stays for the people-coming section.
+- **Seen in two places:** the run page's coverage card and Profile > **Leader cover** (the next four weeks, from the
+  cached sessions, so it works offline) draw the same vertical list: pace on the left, a dot or bar on a rail, a red
+  gap row or amber row with an **Ask** button between groups. Runs that need attention open first.
+- **Early nudge:** `app:send-reminders` also looks at runs 3 to 7 days out (the last 72 hours stay with the existing
+  alert). For each red gap it asks up to 2 previous leaders whose usual pace fits it, once a day per run, never
+  someone the committee already asked, one nudge per person per rolling week, between 09:00 and 19:00 local. Open ends
+  and jog/walk are only asked about once no red gap is left. It climbs down the list across days rather than asking
+  everyone at once. The push opens the lead form with the stretch.

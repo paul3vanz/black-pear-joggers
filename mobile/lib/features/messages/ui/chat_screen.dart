@@ -11,9 +11,11 @@ import '../../../core/auth/session_expiry.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/ui/offline_banner.dart';
 import '../../groups/data/group_dtos.dart';
+import '../../groups/ui/ask_leaders_sheet.dart';
 import '../../groups/ui/group_access.dart';
 import '../../groups/ui/group_format.dart';
 import '../../groups/ui/groups_providers.dart';
+import '../../groups/ui/pace_spread_list.dart' show spreadWholeRunTarget;
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../../runs/ui/session_actions.dart' show confirm;
@@ -363,6 +365,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ],
         ),
         actions: [
+          // The committee can ask people to lead without picking a gap first (D127).
+          if (_leaders && canModerate && session != null && !closed)
+            IconButton(
+              key: const ValueKey('ask-people'),
+              tooltip: 'Ask people to lead',
+              icon: const Icon(Icons.person_add_alt_1_outlined),
+              onPressed: () => unawaited(
+                showAskLeadersSheet(
+                  context,
+                  ref,
+                  session: session,
+                  target: spreadWholeRunTarget,
+                  openThread: false,
+                ),
+              ),
+            ),
           if (muted)
             const Icon(
               Icons.notifications_off_outlined,
@@ -426,7 +444,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       onLead: (m) => _leaders && m.memberId != me && !closed
                           ? () => unawaited(
                               context.push(
-                                '/runs/${widget.sessionId}/groups/new?intent=lead',
+                                '/runs/${widget.sessionId}/groups/new?intent=lead'
+                                '${askLeadQuery(m.ask)}',
                               ),
                             )
                           : null,

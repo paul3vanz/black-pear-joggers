@@ -15,6 +15,9 @@ Map<String, Object?> messageJson(
   String kind = 'message',
   int? askFast,
   int? askSlow,
+  // An ask that names its people (D127): their names, and `jog_walk` for a jog/walk ask.
+  List<String>? askedNames,
+  String? askKind,
 }) => {
   'id': id,
   'groupId': groupId,
@@ -25,6 +28,11 @@ Map<String, Object?> messageJson(
   'body': deletedAt == null ? body : '',
   'askFastSPerKm': askFast,
   'askSlowSPerKm': askSlow,
+  'askKind': askKind,
+  'askedMemberIds': askedNames == null
+      ? null
+      : [for (final n in askedNames) 'id-$n'],
+  'askedNames': askedNames,
   'createdAt': createdAt,
   'deletedAt': deletedAt,
 };
@@ -155,3 +163,35 @@ Future<void> seedThread(
         closed: Value(closed),
       ),
     );
+
+/// One entry of `GET …/leaders-chat/pool` (D127). [lastLed] is the group they
+/// last led: `{kind, paceUnit, paceFromS, paceToS}`.
+Map<String, Object?> poolJson(
+  String id, {
+  String name = 'Anna H.',
+  String reason = 'led_series',
+  int ledCount = 3,
+  String? lastLedOn = '2026-10-14',
+  Map<String, Object?>? lastLed = const {
+    'kind': 'run',
+    'paceUnit': 'mi',
+    'paceFromS': 555,
+    'paceToS': null,
+  },
+  bool fitsRange = false,
+  bool leadingThisRun = false,
+  bool notGoing = false,
+  bool askedRecently = false,
+}) => {
+  'memberId': id,
+  'name': name,
+  'reason': reason,
+  'ledCount': ledCount,
+  'lastLedOn': lastLedOn,
+  'lastLed': lastLed,
+  'fitsRange': fitsRange,
+  'leadingThisRun': leadingThisRun,
+  'notGoing': notGoing,
+  'askedAt': askedRecently ? '2026-10-11T10:00:00.000Z' : null,
+  'askedRecently': askedRecently,
+};

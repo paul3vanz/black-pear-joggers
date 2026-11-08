@@ -117,6 +117,12 @@ class AccountDeletion
         DB::table('group_messages')->where('member_id', $memberId)->delete();
         DB::table('group_thread_states')->where('member_id', $memberId)->delete();
 
+        // Other people's asks that named them: drop the id (and bump the message so its ?since= feed shows it).
+        foreach (DB::table('leader_messages')->where('ask_member_ids', 'like', '%' . $memberId . '%')->get(['id', 'ask_member_ids']) as $ask) {
+            $named = array_values(array_diff(json_decode($ask->ask_member_ids, true) ?: [], [$memberId]));
+            DB::table('leader_messages')->where('id', $ask->id)->update(['ask_member_ids' => json_encode($named), 'updated_at' => $now]);
+        }
+
         // The leaders threads (messages, including soft-deleted ones, read markers, asks they received).
         DB::table('leader_messages')->where('member_id', $memberId)->delete();
         DB::table('leader_thread_states')->where('member_id', $memberId)->delete();

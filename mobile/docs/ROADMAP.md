@@ -378,6 +378,19 @@ migration is written. Suggested order: 1, 3, 2 (3 reuses the chat screen from 2)
      now leading 9:00/mi" into the thread automatically. Move the ask's pace/note out of `body` into columns at the
      next schema bump.
 
+4. **Getting leaders signed up ahead of time**: **built (D127, D128)**.
+   - The committee sees the next four weeks in Profile > **Leader cover**, and the run page's coverage card now draws the
+     same vertical list: groups in pace order, a red **gap** row where two led groups are 45 s or more apart, amber rows
+     for the open ends of the 8:00 to 12:00/mi target and for jog/walk, each with **Ask**.
+   - **Ask** opens a list of the people who could lead (led this series or day before, or chose it), with how often they
+     led and at what pace; the committee ticks who to ask. They get a push and answer in the leaders thread, where the
+     ask shows `@` chips. **I can lead** opens the lead form pre-filled from their own last group (server fallback for a
+     new phone), with the stretch as a hint.
+   - `app:send-reminders` nudges previous leaders whose pace fits a gap 3 to 7 days out (2 a day per gap, one a week each).
+   - [ ] Host: run `api/database/manual/2026_11_leader_ask_targets.sql` before deploying the API.
+   - [ ] Later: @mentions typed in the thread, asks that cover several runs, a per-series target spread, and a push to
+     the committee when an early nudge has gone out.
+
 ## Backlog
 
 - PBs and Magic Mile results on the profile (API already has these)

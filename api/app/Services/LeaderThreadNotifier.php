@@ -8,6 +8,7 @@ use App\Models\LeaderMessage;
 use App\Models\LeaderThreadMember;
 use App\Models\LeaderThreadState;
 use App\Models\Notification;
+use App\Models\SessionAttendee;
 use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
 use Illuminate\Support\Carbon;
@@ -71,31 +72,49 @@ class LeaderThreadNotifier
     }
 
     /**
-     * Sends an ask. Returns how many members it was sent to as an ask ("leaders
-     * needed" push), which is zero when nobody may lead at that pace.
+     * Sends an ask. An ask that names its people (D127, `ask_member_ids`) goes to exactly those
+     * people, minus anyone who can't be asked (leading, not going, asked in the last day, no longer
+     * active), and the message is rewritten to hold who it really went to; any other ask goes to the
+     * members who may lead that pace (RunNotifier::availableLeaders).
+     *
+     * @return array{sent: int, skipped: array<int, array{memberId: string, reason: string}>} sent is
+     *         how many members got the "leaders needed" push, zero when nobody could be asked
      */
-    public function ask(Club $club, LeaderThreadAccess $thread, LeaderMessage $message): int
+    public function ask(Club $club, LeaderThreadAccess $thread, LeaderMessage $message): array
     {
         $notifier = app(RunNotifier::class);
         $sent = 0;
+        $skipped = [];
 
-        $notifier->guard('leader ask', function () use ($club, $thread, $message, $notifier, &$sent) {
+        $notifier->guard('leader ask', function () use ($club, $thread, $message, $notifier, &$sent, &$skipped) {
             $session = $thread->session;
-            $band = $this->band($message);
-            $recipients = $notifier->availableLeaders($club, $session, [$message->member_id], null, $band);
+
+            if ($message->isTargeted()) {
+                [$recipients, $skipped] = $this->targets($club, $thread, $message);
+                $message->ask_member_ids = $recipients;
+                $message->save();
+            } else {
+                $recipients = $notifier->availableLeaders($club, $session, [$message->member_id], null, $this->band($message));
+            }
+
             $sent = count($recipients);
 
             foreach ($recipients as $id) {
-                LeaderThreadMember::firstOrCreate(
+                $row = LeaderThreadMember::firstOrCreate(
                     ['session_id' => $session->id, 'member_id' => $id],
                     ['club_id' => $club->id]
                 );
+
+                if (!$row->wasRecentlyCreated) {
+                    $row->touch(); // "asked in the last day" reads this
+                }
             }
 
             $tz = $notifier->tz($club);
             $day = RunText::day($session->starts_at, $tz);
             $time = RunText::time($session->starts_at, $tz);
             $note = trim((string) $message->body);
+            $targeted = $message->isTargeted();
 
             $notifier->notifyByUnit(
                 $club,
@@ -103,9 +122,10 @@ class LeaderThreadNotifier
                 NotificationCategories::LEADERS_NEEDED,
                 $this->data($session),
                 ['dedupeKey' => 'leader_ask:' . $message->id, 'onDuplicate' => 'skip'],
-                function (?string $unit) use ($message, $day, $time, $note) {
-                    $pace = LeaderThreadAccess::paceText($message, (string) $unit);
-                    $body = 'Can you lead' . ($pace !== '' ? " $pace" : '') . " at $time on $day?" . ($note !== '' ? " $note" : '');
+                function (?string $unit) use ($message, $day, $time, $note, $targeted) {
+                    $pace = LeaderThreadAccess::phrase($message, (string) $unit);
+                    $lead = ($targeted ? 'Committee asked you: can you lead' : 'Can you lead') . ($pace !== '' ? " $pace" : '');
+                    $body = $lead . " at $time on $day?" . ($note !== '' ? " $note" : '');
 
                     return ["Can you lead on $day?", RunText::clip($body)];
                 }
@@ -127,7 +147,50 @@ class LeaderThreadNotifier
             );
         });
 
-        return $sent;
+        return ['sent' => $sent, 'skipped' => $skipped];
+    }
+
+    /**
+     * Who a targeted ask really goes to, and who was left out and why. The asker is left out silently.
+     *
+     * @return array{0: string[], 1: array<int, array{memberId: string, reason: string}>}
+     */
+    private function targets(Club $club, LeaderThreadAccess $thread, LeaderMessage $message): array
+    {
+        $wanted = array_values(array_unique($message->ask_member_ids ?? []));
+        $active = array_flip(app(RunNotifier::class)->activeIds($club, $wanted, $message->member_id));
+        $leading = array_flip($thread->leaderIds());
+        $notGoing = array_flip(
+            SessionAttendee::where('session_id', $thread->session->id)->where('status', SessionAttendee::NOT_GOING)
+                ->whereIn('member_id', $wanted)->pluck('member_id')->all()
+        );
+        $recent = array_flip(
+            LeaderThreadMember::where('session_id', $thread->session->id)->whereIn('member_id', $wanted)
+                ->where('updated_at', '>', Carbon::now()->subHours(LeaderPool::ASKED_RECENTLY_HOURS))
+                ->pluck('member_id')->all()
+        );
+
+        $recipients = [];
+        $skipped = [];
+
+        foreach ($wanted as $id) {
+            if ($id === $message->member_id) {
+                continue;
+            }
+
+            $reason = isset($leading[$id]) ? 'leading'
+                : (isset($notGoing[$id]) ? 'not_going'
+                : (isset($recent[$id]) ? 'asked_recently'
+                : (!isset($active[$id]) ? 'inactive' : null)));
+
+            if ($reason === null) {
+                $recipients[] = $id;
+            } else {
+                $skipped[] = ['memberId' => $id, 'reason' => $reason];
+            }
+        }
+
+        return [$recipients, $skipped];
     }
 
     /**
@@ -188,7 +251,10 @@ class LeaderThreadNotifier
                 $leading = SessionGroupLeader::where('status', SessionGroupLeader::CONFIRMED)
                     ->whereIn('group_id', SessionGroup::where('session_id', $session->id)->pluck('id'))
                     ->pluck('member_id')->all();
-                $asked = LeaderThreadMember::where('session_id', $session->id)->pluck('member_id')->all();
+                // A targeted ask repeats to the people it named; an older one to everyone asked about the run.
+                $asked = $ask->isTargeted()
+                    ? $ask->ask_member_ids
+                    : LeaderThreadMember::where('session_id', $session->id)->pluck('member_id')->all();
                 $ids = $notifier->activeIds($club, array_diff($asked, $answered, $leading), $ask->member_id);
                 $day = RunText::day($session->starts_at, $tz);
                 $time = RunText::time($session->starts_at, $tz);
@@ -200,7 +266,7 @@ class LeaderThreadNotifier
                     $this->data($session),
                     ['dedupeKey' => 'leader_ask_repeat:' . $ask->id, 'onDuplicate' => 'skip'],
                     function (?string $unit) use ($ask, $day, $time) {
-                        $pace = LeaderThreadAccess::paceText($ask, (string) $unit);
+                        $pace = LeaderThreadAccess::phrase($ask, (string) $unit);
 
                         return ["Still need a leader on $day", RunText::clip('Can you lead' . ($pace !== '' ? " $pace" : '') . " at $time on $day? Nobody has stepped up yet.")];
                     }
@@ -215,11 +281,20 @@ class LeaderThreadNotifier
     public function isCovered(ClubSession $session, LeaderMessage $ask): bool
     {
         $band = $this->band($ask);
+        $jogWalk = $ask->ask_kind === LeaderMessage::ASK_JOG_WALK;
         $groups = SessionGroup::where('session_id', $session->id)->get();
         $ledIds = SessionGroupLeader::where('status', SessionGroupLeader::CONFIRMED)
             ->whereIn('group_id', $groups->pluck('id'))->pluck('group_id')->unique()->all();
 
         foreach ($groups->whereIn('id', $ledIds) as $group) {
+            if ($jogWalk) {
+                if ($group->kind === 'jog_walk') {
+                    return true;
+                }
+
+                continue;
+            }
+
             if ($band === null || PaceMatcher::overlaps(PaceMatcher::groupBand($group), $band)) {
                 return true;
             }

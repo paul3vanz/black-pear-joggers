@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/db/app_database.dart';
 import '../../../core/units/pace_spec.dart';
+import '../../groups/logic/ask_stretch.dart';
 import '../../groups/ui/group_format.dart';
 import '../../groups/ui/groups_providers.dart';
 import '../../members/ui/member_avatar.dart';
@@ -291,6 +292,70 @@ String? askPaceText(AskBody ask, UnitPrefs units) {
   );
 }
 
+/// What an ask is for, after "Can anyone lead": a jog/walk group, or for an ask
+/// that named people (D127) the stretch in words ("a group between 9:30 and
+/// 10:15/mi"), or an older ask's range ("8:25-10:05/mi"). Null when it is for
+/// anything.
+String? askPhrase(AskBody ask, UnitPrefs units) {
+  if (ask.jogWalk) return 'a jog/walk group';
+  if (ask.askedNames.isNotEmpty) {
+    return stretchPhrase(
+      fastSPerKm: ask.fastSPerKm,
+      slowSPerKm: ask.slowSPerKm,
+      unit: units.paceUnit,
+    );
+  }
+  return askPaceText(ask, units);
+}
+
+/// The query the "I can lead" route carries so the lead form can say what the
+/// committee is looking for: `&kind=jog_walk` or `&fast=<s/km>&slow=<s/km>`.
+String askLeadQuery(AskBody? ask) {
+  if (ask == null) return '';
+  if (ask.jogWalk) return '&kind=jog_walk';
+  if (ask.hasPace) return '&fast=${ask.fastSPerKm}&slow=${ask.slowSPerKm}';
+  return '';
+}
+
+/// "@Anna" for each person a targeted ask named, three then "+2".
+class AskedChips extends StatelessWidget {
+  const AskedChips({super.key, required this.names, required this.color});
+
+  final List<String> names;
+  final Color color;
+
+  static const _shown = 3;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.labelMedium
+        ?.copyWith(color: color, fontWeight: FontWeight.w600);
+    final first = [for (final n in names) n.trim().split(' ').first];
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      children: [
+        for (final n in first.take(_shown))
+          DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border.all(color: color.withValues(alpha: 0.5)),
+              borderRadius: BorderRadius.circular(99),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              child: Text('@$n', style: style),
+            ),
+          ),
+        if (first.length > _shown)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Text('+${first.length - _shown}', style: style),
+          ),
+      ],
+    );
+  }
+}
+
 /// The inside of a leaders-thread ask bubble: what is wanted, the committee's
 /// note and, for someone who could answer, **I can lead**.
 class AskContent extends StatelessWidget {
@@ -309,7 +374,7 @@ class AskContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pace = askPaceText(ask, units);
+    final pace = askPhrase(ask, units);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -328,6 +393,15 @@ class AskContent extends StatelessWidget {
             ),
           ],
         ),
+        if (ask.askedNames.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: AskedChips(
+              key: const ValueKey('ask-chips'),
+              names: ask.askedNames,
+              color: color,
+            ),
+          ),
         if (ask.note.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 2),

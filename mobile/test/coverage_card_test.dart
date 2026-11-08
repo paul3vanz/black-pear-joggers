@@ -76,7 +76,7 @@ void main() {
     await unmount(tester);
   }
 
-  testWidgets('committee sees the pace ladder with groups and gaps in order', (
+  testWidgets('committee sees the groups in pace order with the gap between', (
     tester,
   ) async {
     await pump(tester, groups: [led('a', from: 480), led('b', from: 630)]);
@@ -85,26 +85,74 @@ void main() {
     expect(inCard(find.text('8:00/mi')), findsOneWidget);
     expect(inCard(find.text('10:30/mi')), findsOneWidget);
     expect(inCard(find.text('Jo Bloggs')), findsNWidgets(2));
-    final gap = find.text('No led group between 8:25 and 10:05/mi');
+    final gap = find.text('Gap · 8:15 to 10:15/mi');
     expect(gap, findsOneWidget);
+    expect(find.text('Nobody between 8:00 and 10:30'), findsOneWidget);
     double top(Finder f) => tester.getTopLeft(f).dy;
     expect(top(inCard(find.text('8:00/mi'))), lessThan(top(gap)));
     expect(top(gap), lessThan(top(inCard(find.text('10:30/mi')))));
-    // The header says how much is left to fill (just the middle gap; the window ends are only noted).
+    // The header says what is left: one red gap, and amber things to add.
     expect(find.byKey(const ValueKey('coverage-status')), findsOneWidget);
-    expect(find.text('1 to fill'), findsOneWidget);
-    expect(find.text('No group slower than 10:55/mi'), findsOneWidget);
-    expect(find.textContaining('Every pace has a group'), findsNothing);
+    expect(find.text('1 gap'), findsOneWidget);
+    expect(find.text('Add if you can: slower end, jog/walk'), findsOneWidget);
+    expect(find.text('Nothing slower than 11:30/mi'), findsOneWidget);
+    expect(find.text('Covered'), findsNothing);
     await finish(tester);
   });
 
-  testWidgets('one group at 8:45 leaves nothing to fill', (tester) async {
-    await pump(tester, groups: [led('a', from: 525)]);
+  testWidgets('9:15 and 10:30 leave a gap, 8:00 and 8:40 do not', (
+    tester,
+  ) async {
+    await pump(tester, groups: [led('a', from: 555), led('b', from: 630)]);
+    expect(find.text('Gap · 9:30 to 10:15/mi'), findsOneWidget);
+    await unmount(tester);
+    await db.clearAll();
+
+    await pump(tester, groups: [led('a', from: 480), led('b', from: 520)]);
+    expect(find.textContaining('Gap ·'), findsNothing);
+    await finish(tester);
+  });
+
+  testWidgets('a single pace and a range are labelled and treated alike', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      groups: [led('a', from: 540, to: 555), led('b', from: 630)],
+    );
+    expect(inCard(find.text('9:00-9:15/mi')), findsOneWidget);
+    expect(inCard(find.textContaining('Range')), findsOneWidget);
+    expect(inCard(find.textContaining('Single pace')), findsOneWidget);
+    // The range's slow edge (9:15) sets the gap, exactly as a single 9:15 would.
+    expect(find.text('Gap · 9:30 to 10:15/mi'), findsOneWidget);
+    await finish(tester);
+  });
+
+  testWidgets('a full spread with jog/walk is covered', (tester) async {
+    await pump(
+      tester,
+      groups: [
+        led('a', from: 465, to: 480),
+        for (final (i, p) in [520, 560, 600, 640, 680, 720].indexed)
+          led('s$i', from: p),
+        led('j', from: null, kind: 'jog_walk'),
+      ],
+    );
     expect(find.text('Covered'), findsOneWidget);
-    // The ends are only noted, in plain words.
-    expect(find.textContaining('No group faster than'), findsOneWidget);
-    expect(find.textContaining('No group slower than'), findsOneWidget);
-    expect(find.textContaining('to fill'), findsNothing);
+    expect(find.textContaining('Gap ·'), findsNothing);
+    expect(find.textContaining('Nothing faster'), findsNothing);
+    expect(find.textContaining('Nothing slower'), findsNothing);
+    await finish(tester);
+  });
+
+  testWidgets('one group at 8:45 only has amber things to add', (tester) async {
+    await pump(tester, groups: [led('a', from: 525)]);
+    expect(find.text('Covered'), findsNothing);
+    expect(find.text('Nothing faster than 8:30/mi'), findsOneWidget);
+    expect(find.text('Nothing slower than 11:30/mi'), findsOneWidget);
+    expect(find.text('Jog/walk: nobody yet'), findsOneWidget);
+    expect(find.textContaining('Gap ·'), findsNothing);
+    expect(find.text('1 gap'), findsNothing);
     await finish(tester);
   });
 
@@ -114,22 +162,19 @@ void main() {
     await finish(tester);
   });
 
-  testWidgets(
-    'a jog/walk group softens the slow end and sits under No set pace',
-    (tester) async {
-      await pump(
-        tester,
-        groups: [
-          led('a', from: 480),
-          led('j', from: null, kind: 'jog_walk'),
-        ],
-      );
-      expect(find.text('No set pace'), findsOneWidget);
-      expect(inCard(find.text('Jog/walk group')), findsOneWidget);
-      expect(find.textContaining('No group slower than'), findsOneWidget);
-      await finish(tester);
-    },
-  );
+  testWidgets('a led jog/walk group replaces the jog/walk row', (tester) async {
+    await pump(
+      tester,
+      groups: [
+        led('a', from: 480),
+        led('j', from: null, kind: 'jog_walk'),
+      ],
+    );
+    expect(inCard(find.text('Jog/walk')), findsOneWidget);
+    expect(find.text('Jog/walk: nobody yet'), findsNothing);
+    expect(find.text('Nothing slower than 11:30/mi'), findsOneWidget);
+    await finish(tester);
+  });
 
   testWidgets('groups without a leader are listed as needing one', (
     tester,
@@ -141,10 +186,11 @@ void main() {
         groupJson('x', paceFromS: 660, paceToS: null, status: 'needs_leader'),
       ],
     );
-    // On the ladder at its pace, flagged, and not counted as covered.
+    // On the list at its pace, flagged, and not counted as covered.
     expect(inCard(find.text('Needs a leader')), findsOneWidget);
     expect(inCard(find.text('11:00/mi')), findsOneWidget);
-    expect(find.textContaining('No group slower than'), findsOneWidget);
+    expect(find.text('1 group needs a leader'), findsOneWidget);
+    expect(find.text('Nothing slower than 11:30/mi'), findsOneWidget);
     await finish(tester);
   });
 
@@ -159,7 +205,7 @@ void main() {
     await finish(tester);
   });
 
-  testWidgets('km viewers get the km window and wording', (tester) async {
+  testWidgets('km viewers get the same rule in km', (tester) async {
     await pump(
       tester,
       paceUnit: DistUnit.km,
@@ -173,7 +219,19 @@ void main() {
         ),
       ],
     );
-    expect(find.text('No group slower than 6:15/km'), findsOneWidget);
+    expect(find.text('Nothing slower than 7:10/km'), findsOneWidget);
+    expect(find.text('Nothing faster than 5:15/km'), findsOneWidget);
+    await finish(tester);
+  });
+
+  testWidgets('only paced runs get the spread: an open run just lists groups', (
+    tester,
+  ) async {
+    await pump(tester, groupMode: 'open', groups: [led('a', from: 600)]);
+    expect(inCard(find.text('10:00/mi')), findsOneWidget);
+    expect(find.textContaining('Nothing faster'), findsNothing);
+    expect(find.textContaining('Nothing slower'), findsNothing);
+    expect(find.text('Jog/walk: nobody yet'), findsNothing);
     await finish(tester);
   });
 

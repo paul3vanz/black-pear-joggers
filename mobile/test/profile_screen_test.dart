@@ -131,6 +131,23 @@ void main() {
     await unmount(tester);
   });
 
+  testWidgets('committee see a Leader cover row, members do not', (
+    tester,
+  ) async {
+    await pumpProfile(tester, online: true);
+    expect(find.text('Leader cover'), findsNothing);
+    await unmount(tester);
+
+    adapter.routes['GET /app/clubs/1/profile'] = FakeResponse(200, {
+      ...profileJson(),
+      'roles': ['committee'],
+    });
+    await pumpProfile(tester, online: true);
+    expect(find.byKey(const ValueKey('leader-cover-tile')), findsOneWidget);
+    expect(find.text('Leader cover'), findsOneWidget);
+    await unmount(tester);
+  });
+
   testWidgets('has an About & privacy row', (tester) async {
     await pumpProfile(tester, online: true);
 

@@ -252,9 +252,33 @@ class LeaderThreadAccess
             return (string) $message->body;
         }
 
-        $pace = self::paceText($message, $unit);
+        $pace = self::phrase($message, $unit);
 
         return trim('Can anyone lead' . ($pace !== '' ? " $pace" : '') . '?');
+    }
+
+    /**
+     * What an ask is for, in [unit]: the stretch of an ask that names its people (D127, "a group
+     * between 9:30 and 10:15/mi", "a jog/walk group"), else the older pace text ("8:25-10:05/mi").
+     */
+    public static function phrase(LeaderMessage $message, string $unit): string
+    {
+        if ($message->ask_kind === LeaderMessage::ASK_JOG_WALK) {
+            return 'a jog/walk group';
+        }
+
+        if (!$message->isTargeted()) {
+            return self::paceText($message, $unit);
+        }
+
+        if ($message->ask_fast_s_per_km === null) {
+            return '';
+        }
+
+        $fast = (int) $message->ask_fast_s_per_km;
+        $slow = $message->ask_slow_s_per_km === null ? $fast : (int) $message->ask_slow_s_per_km;
+
+        return PaceSpread::stretchPhrase($fast, $slow, $unit === 'km' ? 'km' : 'mi');
     }
 
     /** "8:25-10:05/mi" for an ask, empty when it has no pace. */

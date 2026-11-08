@@ -69,6 +69,27 @@ void main() {
       expect(await store.read(1, 's1'), easy); // via the overall fallback
     });
 
+    test(
+      'remembers the run it was led on, without it counting for equality',
+      () async {
+        final store = LastGroupStore(db);
+        await store.write(
+          1,
+          's1',
+          const LastGroupSpec(label: 'Easy', sourceTitle: 'Riverside Run'),
+        );
+        final read = await store.read(1, 's1');
+        expect(read!.sourceTitle, 'Riverside Run');
+        expect(
+          read,
+          const LastGroupSpec(label: 'Easy'),
+        ); // the title is not part of it
+        // A value stored before the title existed still reads, with none.
+        await store.write(1, 's2', easy);
+        expect((await store.read(1, 's2'))!.sourceTitle, isNull);
+      },
+    );
+
     test('keeps clubs apart', () async {
       final store = LastGroupStore(db);
       await store.write(1, 's1', easy);

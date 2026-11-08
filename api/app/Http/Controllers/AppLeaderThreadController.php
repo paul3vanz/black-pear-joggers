@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\AppResponses;
 use App\Models\LeaderMessage;
 use App\Models\LeaderThreadState;
+use App\Services\LeaderPool;
 use App\Services\LeaderThreadAccess;
 use App\Services\LeaderThreadNotifier;
 use App\Services\NotificationPresenter;
@@ -30,9 +31,12 @@ class AppLeaderThreadController extends Controller
 
     const RATE_LIMIT = 20;
 
-    /** Seconds per km: 2:30 to 15:00. */
-    const MIN_PACE = 150;
-    const MAX_PACE = 900;
+    /** Seconds per km: 2:30 to 15:00. The two ends also mean "open" (see LeaderMessage::OPEN_FAST). */
+    const MIN_PACE = LeaderMessage::OPEN_FAST;
+    const MAX_PACE = LeaderMessage::OPEN_SLOW;
+
+    /** Most people one ask can name. */
+    const MAX_TARGETS = 30;
 
     private function notInThread()
     {
@@ -71,14 +75,35 @@ class AppLeaderThreadController extends Controller
             'body' => $deleted ? '' : $message->body,
             'askFastSPerKm' => $deleted ? null : $message->ask_fast_s_per_km,
             'askSlowSPerKm' => $deleted ? null : $message->ask_slow_s_per_km,
+            'askKind' => $deleted ? null : $message->ask_kind,
+            'askedMemberIds' => $deleted ? null : $message->ask_member_ids,
+            'askedNames' => $deleted || $message->ask_member_ids === null
+                ? null
+                : array_map(fn ($id) => ($people[$id] ?? ['name' => 'Member'])['name'], $message->ask_member_ids),
             'createdAt' => NotificationPresenter::time($message->created_at),
             'deletedAt' => NotificationPresenter::time($message->deleted_at),
         ];
     }
 
+    /** Authors and the people an ask names, so a message can show both. */
+    private function peopleOf(LeaderThreadAccess $thread, $messages): array
+    {
+        $ids = [];
+
+        foreach ($messages as $message) {
+            $ids[] = $message->member_id;
+
+            foreach ($message->ask_member_ids ?? [] as $id) {
+                $ids[] = $id;
+            }
+        }
+
+        return $thread->people($ids);
+    }
+
     private function messages(LeaderThreadAccess $thread, $messages): array
     {
-        $people = $thread->people($messages->pluck('member_id')->all());
+        $people = $this->peopleOf($thread, $messages);
 
         return $messages->map(fn ($m) => $this->message($m, $thread, $people))->all();
     }
@@ -198,9 +223,9 @@ class AppLeaderThreadController extends Controller
      * @OA\Post(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions/{sessionId}/leaders-chat/ask",
-     *   summary="Committee/admin only: ask for someone to lead a pace range (fastSPerKm to slowSPerKm, seconds per km; both optional for any pace). Posts an ask message, sends 'leaders needed' to the members who may lead at that pace and adds them to the thread. Idempotent on id. A day later, if nobody covers that pace, the people asked who haven't answered are nudged once.",
+     *   summary="Committee/admin only: ask for someone to lead a stretch of the pace axis (fastSPerKm to slowSPerKm, seconds per km, 150 and 900 meaning open ended; both optional for any pace) or a jog/walk group (kind). With memberIds (from the pool) it goes to exactly those people, minus anyone leading, not going or asked in the last day (returned in skipped); without it, to the members who may lead at that pace. Posts an ask message, sends 'leaders needed' and adds them to the thread. Idempotent on id. A day later, if nobody covers it, the people asked who haven't answered are nudged once.",
      *   security={{"bearerAuth":{}}},
-     *   @OA\Response(response=201, description="{ message, notified } (200 on a replayed id)"),
+     *   @OA\Response(response=201, description="{ message, notified, skipped: [{memberId, reason: leading|not_going|asked_recently|inactive}] } (200 on a replayed id)"),
      *   @OA\Response(response=403, description="Not committee/admin"),
      *   @OA\Response(response=409, description="thread_closed | conflict"),
      *   @OA\Response(response=422, description="Validation error"),
@@ -226,19 +251,26 @@ class AppLeaderThreadController extends Controller
             'note' => is_string($note) ? trim($note) : $note,
             'fastSPerKm' => $request->input('fastSPerKm'),
             'slowSPerKm' => $request->input('slowSPerKm'),
+            'memberIds' => $request->input('memberIds'),
+            'kind' => $request->input('kind'),
         ], [
             'id' => 'nullable|uuid',
             'note' => 'nullable|string|max:' . self::MAX_LENGTH,
             'fastSPerKm' => 'nullable|integer|between:' . self::MIN_PACE . ',' . self::MAX_PACE,
             'slowSPerKm' => 'nullable|integer|between:' . self::MIN_PACE . ',' . self::MAX_PACE . '|required_with:fastSPerKm',
+            'memberIds' => 'nullable|array|min:1|max:' . self::MAX_TARGETS . '|required_with:kind',
+            'memberIds.*' => 'uuid',
+            'kind' => 'nullable|in:' . LeaderMessage::ASK_JOG_WALK,
         ]);
 
         if ($validator->fails()) {
             return $this->validationFailed($validator);
         }
 
-        $fast = $request->input('fastSPerKm');
-        $slow = $request->input('slowSPerKm');
+        $jogWalk = $request->input('kind') === LeaderMessage::ASK_JOG_WALK;
+        $memberIds = $request->input('memberIds');
+        $fast = $jogWalk ? null : $request->input('fastSPerKm');
+        $slow = $jogWalk ? null : $request->input('slowSPerKm');
 
         if ($fast !== null && (int) $slow < (int) $fast) {
             return response()->json([
@@ -253,7 +285,57 @@ class AppLeaderThreadController extends Controller
             'body' => (string) $note,
             'ask_fast_s_per_km' => $fast === null ? null : (int) $fast,
             'ask_slow_s_per_km' => $fast === null ? null : (int) $slow,
+            'ask_member_ids' => $memberIds === null ? null : array_values(array_unique($memberIds)),
+            'ask_kind' => $jogWalk ? LeaderMessage::ASK_JOG_WALK : null,
         ], true);
+    }
+
+    /**
+     * @OA\Get(
+     *   tags={"App"},
+     *   path="/app/clubs/{clubId}/sessions/{sessionId}/leaders-chat/pool",
+     *   summary="Committee/admin only: the members who could be asked to lead this run (those who led its series or weekday before, or chose the day), with how often and when they last led and at what pace. Optional fastSPerKm and slowSPerKm (the stretch being filled; 150 and 900 mean open ended) or kind=jog_walk set fitsRange. This is the only list the ask sheet offers.",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Response(response=200, description="{ items: [{ memberId, name, reason: chose_day|led_series|led_day|new_leader, ledCount, lastLedOn, lastLed, fitsRange, leadingThisRun, notGoing, askedAt, askedRecently }] }, people who can be asked first, then fitsRange, then ledCount"),
+     *   @OA\Response(response=403, description="Not committee/admin"),
+     *   @OA\Response(response=404, description="No such run"),
+     * )
+     */
+    public function pool(Request $request, $clubId, $sessionId)
+    {
+        $club = $request->attributes->get('club');
+        $member = $request->attributes->get('member');
+        $thread = $this->open($request, $sessionId);
+
+        if (!$thread instanceof LeaderThreadAccess) {
+            return $thread;
+        }
+
+        if (!$thread->canModerate($member)) {
+            return $this->forbidden('Only the committee can see who could lead.');
+        }
+
+        $validator = $this->makeValidator([
+            'fastSPerKm' => $request->query('fastSPerKm'),
+            'slowSPerKm' => $request->query('slowSPerKm'),
+            'kind' => $request->query('kind'),
+        ], [
+            'fastSPerKm' => 'nullable|integer|between:' . self::MIN_PACE . ',' . self::MAX_PACE,
+            'slowSPerKm' => 'nullable|integer|between:' . self::MIN_PACE . ',' . self::MAX_PACE . '|required_with:fastSPerKm',
+            'kind' => 'nullable|in:' . LeaderMessage::ASK_JOG_WALK,
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationFailed($validator);
+        }
+
+        $fast = $request->query('fastSPerKm');
+        $slow = $request->query('slowSPerKm');
+        $stretch = $fast === null ? null : ['fast' => (float) min($fast, $slow), 'slow' => (float) max($fast, $slow)];
+
+        return response()->json([
+            'items' => app(LeaderPool::class)->build($club, $thread, $stretch, $request->query('kind') === LeaderMessage::ASK_JOG_WALK, [$member->id]),
+        ]);
     }
 
     /** Shared by store and ask: replay check, closed, rate limit, save, notify. */
@@ -266,9 +348,9 @@ class AppLeaderThreadController extends Controller
                 return response()->json(['error' => 'conflict', 'message' => 'That id is already in use.'], 409);
             }
 
-            $json = $this->message($existing, $thread, $thread->people([$member->id]));
+            $json = $this->message($existing, $thread, $this->peopleOf($thread, [$existing]));
 
-            return response()->json($isAsk ? ['message' => $json, 'notified' => 0] : $json, 200);
+            return response()->json($isAsk ? ['message' => $json, 'notified' => 0, 'skipped' => []] : $json, 200);
         }
 
         if ($thread->isClosed()) {
@@ -289,16 +371,17 @@ class AppLeaderThreadController extends Controller
 
         $notifier = app(LeaderThreadNotifier::class);
         $notified = 0;
+        $skipped = [];
 
         if ($isAsk) {
-            $notified = $notifier->ask($club, $thread, $message);
+            ['sent' => $notified, 'skipped' => $skipped] = $notifier->ask($club, $thread, $message);
         } else {
             $notifier->newMessage($club, $thread, $message);
         }
 
-        $json = $this->message($message, $thread, $thread->people([$member->id]));
+        $json = $this->message($message, $thread, $this->peopleOf($thread, [$message]));
 
-        return response()->json($isAsk ? ['message' => $json, 'notified' => $notified] : $json, 201);
+        return response()->json($isAsk ? ['message' => $json, 'notified' => $notified, 'skipped' => $skipped] : $json, 201);
     }
 
     /**

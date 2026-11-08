@@ -8,6 +8,7 @@ use App\Models\MemberPreference;
 use App\Models\MemberSeriesPref;
 use App\Models\Notification;
 use App\Models\NotificationPreference;
+use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
 use App\Models\SessionSeries;
 use App\Services\LeaderAudience;
@@ -276,5 +277,110 @@ class AppLeaderAudienceTest extends AppGroupsBase
         };
         $this->assertNotNull($pushed('opted'));
         $this->assertNull($pushed('optedOut'));
+    }
+
+    /** A leader row with a pace on a session of $series (or none) on $date. */
+    private function ledAt(ClubMember $member, string $date, ?SessionSeries $series, string $status = 'confirmed', ?int $from = null, ?int $to = null, string $kind = 'run'): SessionGroup
+    {
+        $session = $series ? ClubSession::where('series_id', $series->id)->where('occurrence_date', $date)->first() : null;
+        $session = $session ?: $this->sessionOn($series, $date, '19:00');
+        $group = $this->group($session, [], [
+            'label' => 'Old', 'status' => 'active', 'kind' => $kind,
+            'pace_unit' => $from === null ? null : 'mi', 'pace_from_s' => $from, 'pace_to_s' => $to,
+        ]);
+        SessionGroupLeader::create(['club_id' => 1, 'group_id' => $group->id, 'member_id' => $member->id, 'status' => $status]);
+
+        return $group;
+    }
+
+    private function reasonsFor(ClubSession $run): array
+    {
+        $members = ClubMember::where('club_id', 1)->where('status', 'active')->get();
+        $byName = [];
+        foreach (app(LeaderAudience::class)->reasons($run, 'Europe/London', $members) as $id => $reason) {
+            $byName[explode(' ', ClubMember::find($id)->display_name)[0]] = $reason;
+        }
+        ksort($byName);
+
+        return $byName;
+    }
+
+    public function testEachCandidateHasTheReasonTheyQualifyFor()
+    {
+        $run = $this->sessionOn($this->monday, '2026-10-12', '19:00');
+        $this->days($this->who('chose'), '1');
+        $this->ledAt($this->who('sameSeries'), '2026-10-05', $this->monday);
+        $this->ledAt($this->who('role', ['leader']), '2026-10-07', $this->wednesday); // another day: not a candidate
+        $this->days($this->who('newLeader', ['leader']), null);
+
+        $this->assertSame(
+            ['Lou' => 'new_leader', 'chose' => 'chose_day', 'newLeader' => 'new_leader', 'sameSeries' => 'led_series'],
+            $this->reasonsFor($run)
+        );
+    }
+
+    public function testSomeoneWhoLedAnotherSeriesOnTheSameWeekdayIsALedDayCandidate()
+    {
+        // The winter Thursday run and the summer Mug Run are different series on one weekday (D127).
+        $mondaySocial = SessionSeries::create([
+            'club_id' => 1, 'title' => 'Monday social', 'weekday' => 1, 'start_time' => '19:00', 'duration_min' => 60,
+            'interval_weeks' => 1, 'valid_from' => '2026-01-01', 'valid_until' => null, 'group_mode' => 'paced',
+        ]);
+        $run = $this->sessionOn($this->monday, '2026-10-12', '19:00');
+        $this->ledAt($this->who('otherMonday'), '2026-10-05', $mondaySocial);
+        $this->ledAt($this->who('bothSeries'), '2026-10-05', $mondaySocial);
+        $this->ledAt($this->m['bothSeries'], '2026-09-28', $this->monday);
+        $this->ledAt($this->who('adHocMonday'), '2026-09-21', null);
+
+        $reasons = $this->reasonsFor($run);
+
+        $this->assertSame('led_day', $reasons['otherMonday']);
+        $this->assertSame('led_day', $reasons['adHocMonday']);
+        $this->assertSame('led_series', $reasons['bothSeries']); // the series tier wins
+    }
+
+    public function testHistoryCountsConfirmedSessionsAndKeepsTheLastGroupsPace()
+    {
+        $run = $this->sessionOn($this->monday, '2026-10-12', '19:00');
+        $anna = $this->who('anna');
+        $this->ledAt($anna, '2026-09-14', $this->monday, 'confirmed', 570, 585);
+        $this->ledAt($anna, '2026-09-28', $this->monday, 'confirmed', 555, null); // the latest: a single 9:15
+        $this->ledAt($anna, '2026-10-05', $this->monday, 'withdrawn', 600, null); // a withdrawn sign-up is not a led run
+        $withdrawnOnly = $this->who('withdrawnOnly');
+        $this->ledAt($withdrawnOnly, '2026-10-05', $this->monday, 'withdrawn', 630, null);
+        $deleted = $this->ledAt($this->who('deletedGroup'), '2026-09-21', $this->monday, 'confirmed', 480, null);
+        $deleted->delete(); // a soft-deleted group still counts as history
+
+        $history = app(LeaderAudience::class)->history($run, 'Europe/London');
+
+        $this->assertSame(2, $history['series'][$anna->id]['ledCount']);
+        $this->assertSame('2026-09-28', $history['series'][$anna->id]['lastLedOn']);
+        $this->assertSame(
+            ['kind' => 'run', 'label' => 'Old', 'paceUnit' => 'mi', 'paceFromS' => 555, 'paceToS' => null, 'distanceValue' => null, 'distanceUnit' => null],
+            $history['series'][$anna->id]['lastLed']
+        );
+
+        // Withdrawn only: in the history (so still a candidate), but never led.
+        $this->assertSame(0, $history['series'][$withdrawnOnly->id]['ledCount']);
+        $this->assertNull($history['series'][$withdrawnOnly->id]['lastLedOn']);
+        $this->assertSame(630, $history['series'][$withdrawnOnly->id]['lastLed']['paceFromS']);
+
+        $this->assertSame(1, $history['series'][$this->m['deletedGroup']->id]['ledCount']);
+        $this->assertSame(480, $history['day'][$this->m['deletedGroup']->id]['lastLed']['paceFromS']);
+    }
+
+    public function testHistoryDatesAreClubLocal()
+    {
+        // 00:30 BST on Monday 2026-10-19 is Sunday 23:30Z; the last led date is the local Monday.
+        $run = $this->sessionOn(null, '2026-10-19', '00:30');
+        $this->session(['date' => '2026-10-12'] + SessionGenerator::times('2026-10-12', '00:30', 90, 'Europe/London'));
+        $past = ClubSession::where('local_date', '2026-10-12')->first();
+        $group = $this->group($past, [], ['label' => 'Old', 'status' => 'active']);
+        $midnight = $this->who('midnight');
+        SessionGroupLeader::create(['club_id' => 1, 'group_id' => $group->id, 'member_id' => $midnight->id, 'status' => 'confirmed']);
+
+        $history = app(LeaderAudience::class)->history($run, 'Europe/London');
+
+        $this->assertSame('2026-10-12', $history['day'][$midnight->id]['lastLedOn']);
     }
 }

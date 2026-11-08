@@ -306,6 +306,28 @@ class AppAccountDeletionTest extends AppProfilesBase
         $this->assertSame(0, Device::count());
     }
 
+    public function testAnAskThatNamedTheMemberLosesTheirIdAndIsTouched()
+    {
+        $session = $this->clubSession(1);
+        $ask = \App\Models\LeaderMessage::create([
+            'club_id' => 1, 'session_id' => $session->id, 'member_id' => $this->committee->id, 'kind' => 'ask', 'body' => '',
+            'ask_member_ids' => [$this->victim->id, $this->leaderB->id],
+        ]);
+        $other = \App\Models\LeaderMessage::create([
+            'club_id' => 1, 'session_id' => $session->id, 'member_id' => $this->committee->id, 'kind' => 'ask', 'body' => '',
+            'ask_member_ids' => [$this->leaderB->id],
+        ]);
+        $before = $ask->fresh()->updated_at;
+        $this->tick(120);
+
+        $this->del('victim');
+
+        $this->assertSame([$this->leaderB->id], $ask->fresh()->ask_member_ids);
+        $this->assertTrue($ask->fresh()->updated_at->gt($before), 'so ?since= delivers the change');
+        $this->assertSame([$this->leaderB->id], $other->fresh()->ask_member_ids);
+        $this->assertTrue($other->fresh()->updated_at->equalTo($other->updated_at), 'an ask that never named them is left alone');
+    }
+
     // ---- groups and sessions -------------------------------------------
 
     public function testGroupsThatLoseTheirLastLeaderNeedOneAndTheRunIsTouched()

@@ -28,3 +28,8 @@ const seriesGroupModes = ['paced', 'single', 'open', 'routes', 'events'];
 
 /// The modes an ad-hoc run can have.
 const adHocGroupModes = ['paced', 'single', 'open', 'routes', 'events', 'race'];
+
+/// Whether the committee's target spread of paces (8:00 to 12:00/mi plus
+/// jog/walk, no big gaps, D128) applies: `paced` runs only. A `single` or `open`
+/// run has no spread to fill, so coverage just lists its groups.
+bool usesSpreadTarget(String mode) => mode == 'paced';

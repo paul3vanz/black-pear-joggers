@@ -14,6 +14,7 @@ import '../../../core/units/pace_spec.dart';
 import '../data/group_dtos.dart';
 import '../data/groups_repository.dart';
 import '../data/last_group_store.dart';
+import '../logic/ask_stretch.dart';
 import 'distance_input.dart';
 import 'group_access.dart';
 import 'group_actions.dart';
@@ -49,6 +50,9 @@ class GroupEditorScreen extends ConsumerWidget {
     this.initialKind,
     this.intent = GroupIntent.lead,
     this.initialLead,
+    this.askedFastSPerKm,
+    this.askedSlowSPerKm,
+    this.askedJogWalk = false,
   });
 
   /// The new-group screen for a route like
@@ -56,11 +60,20 @@ class GroupEditorScreen extends ConsumerWidget {
   /// router and the tests, so the query parameters mean one thing.
   factory GroupEditorScreen.fromUri(String sessionId, Uri uri) {
     final q = uri.queryParameters;
+    final intent = GroupIntent.fromQuery(q['intent']);
+    // "I can lead" on an ask carries what the committee is looking for (D127):
+    // `fast` and `slow` (seconds per km) or `kind=jog_walk`. That is a request, not
+    // "Add route", so it must not stand in for the form's own kind.
+    final asked = intent == GroupIntent.lead;
+    final askedJogWalk = asked && q['kind'] == 'jog_walk';
     return GroupEditorScreen(
       sessionId: sessionId,
-      initialKind: q['kind'],
+      initialKind: askedJogWalk ? null : q['kind'],
+      askedFastSPerKm: asked ? int.tryParse(q['fast'] ?? '') : null,
+      askedSlowSPerKm: asked ? int.tryParse(q['slow'] ?? '') : null,
+      askedJogWalk: askedJogWalk,
       // 'lead' (default) or 'add' (D86).
-      intent: GroupIntent.fromQuery(q['intent']),
+      intent: intent,
       // Start state of the "I will lead" switch on 'add'.
       initialLead: switch (q['lead']) {
         'false' => false,
@@ -79,6 +92,14 @@ class GroupEditorScreen extends ConsumerWidget {
   /// (null = on). "Add route" starts it off.
   final bool? initialLead;
 
+  /// What the committee asked for when this was opened from "I can lead" (D127):
+  /// a stretch of the pace axis in seconds per km (150 and 900 mean open ended), or
+  /// a jog/walk group. A hint and a starting point only: the member's own last
+  /// group always wins.
+  final int? askedFastSPerKm;
+  final int? askedSlowSPerKm;
+  final bool askedJogWalk;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(sessionProvider(sessionId));
@@ -87,7 +108,7 @@ class GroupEditorScreen extends ConsumerWidget {
     // "add a group", which are not "mine").
     final prefill =
         groupId == null && initialKind == null && intent == GroupIntent.lead;
-    final last = prefill ? ref.watch(lastGroupSpecProvider(sessionId)) : null;
+    final last = prefill ? ref.watch(leadFormSpecProvider(sessionId)) : null;
     final editing = groupId != null;
     Widget body;
     final s = session.value;
@@ -125,6 +146,9 @@ class GroupEditorScreen extends ConsumerWidget {
               intent: intent,
               initialLead: initialLead,
               initialSpec: last?.value,
+              askedFastSPerKm: askedFastSPerKm,
+              askedSlowSPerKm: askedSlowSPerKm,
+              askedJogWalk: askedJogWalk,
             );
     }
     return Scaffold(
@@ -152,6 +176,9 @@ class GroupForm extends ConsumerStatefulWidget {
     this.intent = GroupIntent.lead,
     this.initialLead,
     this.initialSpec,
+    this.askedFastSPerKm,
+    this.askedSlowSPerKm,
+    this.askedJogWalk = false,
   });
 
   final Session session;
@@ -162,6 +189,11 @@ class GroupForm extends ConsumerStatefulWidget {
 
   /// The member's last group, used to pre-fill a new group.
   final LastGroupSpec? initialSpec;
+
+  /// What the committee asked for (see [GroupEditorScreen.askedFastSPerKm]).
+  final int? askedFastSPerKm;
+  final int? askedSlowSPerKm;
+  final bool askedJogWalk;
 
   @override
   ConsumerState<GroupForm> createState() => _GroupFormState();
@@ -193,7 +225,12 @@ class _GroupFormState extends ConsumerState<GroupForm> {
   void initState() {
     super.initState();
     final g = widget.existing;
-    final prior = g == null ? widget.initialSpec : null;
+    var prior = g == null ? widget.initialSpec : null;
+    // Asked for a jog/walk group: take the distance from their last group, but a
+    // pace and name that belong to a different kind of group would be wrong.
+    if (prior != null && widget.askedJogWalk && prior.kind != 'jog_walk') {
+      prior = LastGroupSpec(kind: 'jog_walk', distance: prior.distance);
+    }
     final units = ref.read(unitPrefsProvider);
     _pace = PaceInputController(
       initial: g?.pace ?? prior?.pace ?? const NoPace(),
@@ -203,13 +240,17 @@ class _GroupFormState extends ConsumerState<GroupForm> {
       initial: g?.distance ?? prior?.distance,
       defaultUnit: units.distanceUnit,
     );
-    _label = TextEditingController(text: g?.label ?? prior?.label ?? '');
+    final askedWalk = g == null && widget.askedJogWalk;
+    _label = TextEditingController(
+      text: g?.label ?? prior?.label ?? (askedWalk ? 'Jog/walk' : ''),
+    );
     _description = TextEditingController(
       text: g?.description ?? prior?.description ?? '',
     );
     _kind =
         g?.kind ??
         widget.initialKind ??
+        (askedWalk ? 'jog_walk' : null) ??
         prior?.kind ??
         (widget.session.groupMode == 'routes' ? 'route' : 'run');
     _lead = widget.initialLead ?? true;
@@ -227,6 +268,82 @@ class _GroupFormState extends ConsumerState<GroupForm> {
     _label.dispose();
     _description.dispose();
     super.dispose();
+  }
+
+  /// The line above the form for "Lead a group" (D127): where the pre-filled values came
+  /// from and, when opened from an ask, what the committee is looking for. Their
+  /// own usual pace always wins; with no history the stretch is only offered, with a
+  /// button that fills its middle. Null when there is nothing to say.
+  Widget? _hint(BuildContext context) {
+    if (_editing || widget.intent != GroupIntent.lead) return null;
+    final unit = ref.read(unitPrefsProvider).paceUnit;
+    final spec = widget.initialSpec;
+    final stretch = widget.askedJogWalk
+        ? 'a jog/walk group'
+        : stretchPhrase(
+            fastSPerKm: widget.askedFastSPerKm,
+            slowSPerKm: widget.askedSlowSPerKm,
+            unit: unit,
+          );
+    final filled = spec == null || widget.askedJogWalk
+        ? null
+        : 'Filled in from your last group'
+              '${spec.sourceTitle == null ? '' : ' on ${spec.sourceTitle}'}.';
+    final String text;
+    if (filled != null && stretch != null) {
+      text = spec!.pace.isNone
+          ? '$filled The committee is looking for $stretch.'
+          : '$filled The committee is looking for $stretch, but your usual '
+                'pace wins.';
+    } else if (filled != null) {
+      text = filled;
+    } else if (stretch != null) {
+      text = 'The committee is looking for $stretch.';
+    } else {
+      return null;
+    }
+    final middle = widget.askedJogWalk
+        ? null
+        : stretchMiddle(
+            fastSPerKm: widget.askedFastSPerKm,
+            slowSPerKm: widget.askedSlowSPerKm,
+            unit: unit,
+          );
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: DecoratedBox(
+        key: const ValueKey('lead-hint'),
+        decoration: BoxDecoration(
+          color: scheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(text, style: TextStyle(color: scheme.onSecondaryContainer)),
+              if (middle != null)
+                ListenableBuilder(
+                  listenable: _pace,
+                  builder: (context, _) => _pace.mode == PaceMode.none
+                      ? TextButton(
+                          key: const ValueKey('lead-hint-use'),
+                          onPressed: () {
+                            _pace.setMode(PaceMode.single);
+                            _pace.setUnit(unit);
+                            _pace.fast.text = middle.format();
+                          },
+                          child: Text('Use ${middle.format()}/${unit.code}'),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   /// Whether this member may create a leaderless group. Watched in `build`
@@ -347,6 +464,7 @@ class _GroupFormState extends ConsumerState<GroupForm> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          ?_hint(context),
           DropdownButtonFormField<String>(
             initialValue: _kind,
             isExpanded: true,
