@@ -66,6 +66,8 @@ void main() {
         'kind': 'run',
         'label': 'Steady',
         'description': null,
+        'routeUrl': null,
+        'routeId': null,
         'paceUnit': 'mi',
         'paceFromS': 570,
         'paceToS': 600,

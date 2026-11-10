@@ -14,6 +14,7 @@ import '../../../core/units/pace_spec.dart';
 import '../data/group_dtos.dart';
 import '../data/groups_repository.dart';
 import '../data/last_group_store.dart';
+import '../data/route_dtos.dart';
 import '../logic/ask_stretch.dart';
 import 'distance_input.dart';
 import 'group_access.dart';
@@ -205,6 +206,13 @@ class _GroupFormState extends ConsumerState<GroupForm> {
   late final DistanceInputController _distance;
   late final TextEditingController _label;
   late final TextEditingController _description;
+  late final TextEditingController _routeUrl;
+
+  /// What the route picker shows: [_noRoute], [_ownLink] or the id of one of the
+  /// run's routes (D130).
+  late String _routeChoice;
+  static const _noRoute = '__none';
+  static const _ownLink = '__link';
   late String _kind;
   late bool _lead;
   bool _saving = false;
@@ -247,6 +255,8 @@ class _GroupFormState extends ConsumerState<GroupForm> {
     _description = TextEditingController(
       text: g?.description ?? prior?.description ?? '',
     );
+    _routeUrl = TextEditingController(text: g?.routeUrl ?? '');
+    _routeChoice = g?.routeId ?? (g?.routeUrl != null ? _ownLink : _noRoute);
     _kind =
         g?.kind ??
         widget.initialKind ??
@@ -267,6 +277,7 @@ class _GroupFormState extends ConsumerState<GroupForm> {
     _distance.dispose();
     _label.dispose();
     _description.dispose();
+    _routeUrl.dispose();
     super.dispose();
   }
 
@@ -380,6 +391,73 @@ class _GroupFormState extends ConsumerState<GroupForm> {
     }
   }
 
+  /// Choosing a run route also fills in the distance when none is typed yet.
+  void _pickRoute(String choice, List<SessionRoute> routes) {
+    setState(() => _routeChoice = choice);
+    final route = routes.where((r) => r.id == choice).firstOrNull;
+    final d = route?.distance;
+    if (d != null && _distance.text.text.trim().isEmpty) {
+      _distance.text.text = Distance.formatValue(d.value);
+      _distance.setUnit(d.unit);
+    }
+  }
+
+  /// The route picker (when the run has routes) and the link field (D130).
+  List<Widget> _routeFields() {
+    final routes =
+        ref.watch(sessionRoutesProvider(widget.session.id)).value ?? const [];
+    final showLink = routes.isEmpty || _routeChoice == _ownLink;
+    final known =
+        _routeChoice == _noRoute ||
+        _routeChoice == _ownLink ||
+        routes.any((r) => r.id == _routeChoice);
+    return [
+      if (routes.isNotEmpty) ...[
+        DropdownButtonFormField<String>(
+          key: const ValueKey('route-picker'),
+          initialValue: known ? _routeChoice : _noRoute,
+          isExpanded: true,
+          decoration: const InputDecoration(
+            labelText: 'Route (optional)',
+            helperText: 'Pick one of the routes set for this run.',
+            border: OutlineInputBorder(),
+          ),
+          items: [
+            const DropdownMenuItem(value: _noRoute, child: Text('No route')),
+            for (final r in routes)
+              DropdownMenuItem(
+                value: r.id,
+                child: Text(
+                  r.distance == null
+                      ? r.label
+                      : '${r.label} (${r.distance!.format()})',
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            const DropdownMenuItem(value: _ownLink, child: Text('Other link…')),
+          ],
+          onChanged: (v) => _pickRoute(v ?? _noRoute, routes),
+        ),
+        formGap,
+      ],
+      if (showLink)
+        TextFormField(
+          controller: _routeUrl,
+          maxLength: 500,
+          keyboardType: TextInputType.url,
+          autocorrect: false,
+          validator: checkRouteUrl,
+          decoration: const InputDecoration(
+            labelText: 'Route link (optional)',
+            hintText: 'https://www.plotaroute.com/route/403075',
+            helperText:
+                'Every member can open it, whether or not they are going.',
+            border: OutlineInputBorder(),
+          ),
+        ),
+    ];
+  }
+
   Future<void> _save() async {
     // A save is already in flight: ignore the tap (the button is disabled too).
     if (_saving) return;
@@ -389,6 +467,13 @@ class _GroupFormState extends ConsumerState<GroupForm> {
     final store = ref.read(lastGroupStoreProvider);
     final label = _label.text.trim();
     final description = _description.text.trim();
+    final routes =
+        ref.read(sessionRoutesProvider(widget.session.id)).value ?? const [];
+    // Without run routes there is only the link field. With them, a group has one
+    // of the routes or its own link, never both.
+    final useLink = routes.isEmpty || _routeChoice == _ownLink;
+    final routeUrl = useLink ? _routeUrl.text.trim() : '';
+    final routeId = useLink || _routeChoice == _noRoute ? null : _routeChoice;
     final pace = _pace.spec;
     final distance = _distance.distance;
     // The switch only exists for "add a group" by someone who may create a
@@ -418,6 +503,8 @@ class _GroupFormState extends ConsumerState<GroupForm> {
                 kind: _kind,
                 label: label.isEmpty ? null : label,
                 description: description.isEmpty ? null : description,
+                routeUrl: routeUrl.isEmpty ? null : routeUrl,
+                routeId: routeId,
                 pace: pace,
                 distance: distance,
               )
@@ -428,6 +515,8 @@ class _GroupFormState extends ConsumerState<GroupForm> {
                   kind: _kind,
                   label: label.isEmpty ? null : label,
                   description: description.isEmpty ? null : description,
+                  routeUrl: routeUrl.isEmpty ? null : routeUrl,
+                  routeId: routeId,
                   pace: pace,
                   distance: distance,
                   lead: lead,
@@ -540,6 +629,8 @@ class _GroupFormState extends ConsumerState<GroupForm> {
               border: const OutlineInputBorder(),
             ),
           ),
+          formGap,
+          ..._routeFields(),
           if (_showLeadSwitch(watch: true))
             _LeadSwitch(
               value: _lead,

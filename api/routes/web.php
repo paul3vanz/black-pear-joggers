@@ -179,6 +179,11 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->post('sessions/{id}/restore', 'AppSessionController@restore');
         $router->delete('sessions/{id}', 'AppSessionController@destroy');
 
+        // Routes set for a run, which its groups may pick (D130)
+        $router->post('sessions/{sessionId}/routes', 'AppSessionRouteController@store');
+        $router->patch('routes/{id}', 'AppSessionRouteController@update');
+        $router->delete('routes/{id}', 'AppSessionRouteController@destroy');
+
         // Phase 4: groups, leaders, attendance, preferences
         $router->post('sessions/{sessionId}/groups', 'AppGroupController@store');
         $router->patch('groups/{id}', 'AppGroupController@update');

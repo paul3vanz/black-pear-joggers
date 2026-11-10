@@ -1024,3 +1024,19 @@ about 8:00 to 12:00/mi plus jog/walk, with some flexibility and no big hole betw
   someone the committee already asked, one nudge per person per rolling week, between 09:00 and 19:00 local. Open ends
   and jog/walk are only asked about once no red gap is left. It climbs down the list across days rather than asking
   everyone at once. The push opens the lead form with the stretch.
+
+**D129 — A group can link to its route (2026-11-10).** `session_groups.route_url` (varchar 500, nullable) holds the full
+`http(s)` URL as entered, usually plotaroute.com but any site a leader prefers. Leaders and the committee set it in the
+group editor; **every** member sees a "View route" button on the group card, going or not, so they can look in advance.
+The app opens it with `LaunchMode.externalApplication` (via `openLink`), so it lands in the device's default browser
+and never an in-app web view: the member needs a full browser to download the GPX for their watch. No scheme other
+than http/https is stored or opened. Host SQL `api/database/manual/2026_11_group_route_url.sql`.
+
+**D130 — Routes set for a run, which groups can pick (2026-11-10).** A run (e.g. a Sunday long run) can have routes of its
+own: `session_routes` (label, `http(s)` url, optional distance), set per session by the committee, admins or the run's
+coordinator. A group has `route_id` **or** its own `route_url` (D129), never both, and the API resolves the effective
+`routeUrl` plus `routeId`/`routeLabel` on the group so the "View route" button works the same either way. Everyone sees the
+run's routes and each group's link, going or not. In the editor a run with routes shows a Route picker (the routes, "Other
+link…", "No route"); picking one with a distance fills the distance if it is empty. Deleting a route leaves its groups with
+none (no notification). Kept simple for now: routes are per session, not copied from the series or last week. The app
+caches them as `sessions.routes_json` (Drift v13). Host SQL `api/database/manual/2026_11_session_routes.sql`.

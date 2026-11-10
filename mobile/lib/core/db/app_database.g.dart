@@ -4900,6 +4900,17 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _routesJsonMeta = const VerificationMeta(
+    'routesJson',
+  );
+  @override
+  late final GeneratedColumn<String> routesJson = GeneratedColumn<String>(
+    'routes_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -4935,6 +4946,7 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     originalJson,
     groupsJson,
     summaryJson,
+    routesJson,
     updatedAt,
   ];
   @override
@@ -5118,6 +5130,12 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         ),
       );
     }
+    if (data.containsKey('routes_json')) {
+      context.handle(
+        _routesJsonMeta,
+        routesJson.isAcceptableOrUnknown(data['routes_json']!, _routesJsonMeta),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -5223,6 +5241,10 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         DriftSqlType.string,
         data['${effectivePrefix}summary_json'],
       ),
+      routesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}routes_json'],
+      ),
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -5273,6 +5295,10 @@ class Session extends DataClass implements Insertable<Session> {
 
   /// JSON of the contract's `summary` block for the caller (Phase 4), or null.
   final String? summaryJson;
+
+  /// JSON array of the routes set for the run (D130), or null for an older
+  /// payload that had none.
+  final String? routesJson;
   final DateTime updatedAt;
   const Session({
     required this.id,
@@ -5297,6 +5323,7 @@ class Session extends DataClass implements Insertable<Session> {
     this.originalJson,
     this.groupsJson,
     this.summaryJson,
+    this.routesJson,
     required this.updatedAt,
   });
   @override
@@ -5347,6 +5374,9 @@ class Session extends DataClass implements Insertable<Session> {
     }
     if (!nullToAbsent || summaryJson != null) {
       map['summary_json'] = Variable<String>(summaryJson);
+    }
+    if (!nullToAbsent || routesJson != null) {
+      map['routes_json'] = Variable<String>(routesJson);
     }
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -5400,6 +5430,9 @@ class Session extends DataClass implements Insertable<Session> {
       summaryJson: summaryJson == null && nullToAbsent
           ? const Value.absent()
           : Value(summaryJson),
+      routesJson: routesJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(routesJson),
       updatedAt: Value(updatedAt),
     );
   }
@@ -5434,6 +5467,7 @@ class Session extends DataClass implements Insertable<Session> {
       originalJson: serializer.fromJson<String?>(json['originalJson']),
       groupsJson: serializer.fromJson<String?>(json['groupsJson']),
       summaryJson: serializer.fromJson<String?>(json['summaryJson']),
+      routesJson: serializer.fromJson<String?>(json['routesJson']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -5463,6 +5497,7 @@ class Session extends DataClass implements Insertable<Session> {
       'originalJson': serializer.toJson<String?>(originalJson),
       'groupsJson': serializer.toJson<String?>(groupsJson),
       'summaryJson': serializer.toJson<String?>(summaryJson),
+      'routesJson': serializer.toJson<String?>(routesJson),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -5490,6 +5525,7 @@ class Session extends DataClass implements Insertable<Session> {
     Value<String?> originalJson = const Value.absent(),
     Value<String?> groupsJson = const Value.absent(),
     Value<String?> summaryJson = const Value.absent(),
+    Value<String?> routesJson = const Value.absent(),
     DateTime? updatedAt,
   }) => Session(
     id: id ?? this.id,
@@ -5520,6 +5556,7 @@ class Session extends DataClass implements Insertable<Session> {
     originalJson: originalJson.present ? originalJson.value : this.originalJson,
     groupsJson: groupsJson.present ? groupsJson.value : this.groupsJson,
     summaryJson: summaryJson.present ? summaryJson.value : this.summaryJson,
+    routesJson: routesJson.present ? routesJson.value : this.routesJson,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   Session copyWithCompanion(SessionsCompanion data) {
@@ -5566,6 +5603,9 @@ class Session extends DataClass implements Insertable<Session> {
       summaryJson: data.summaryJson.present
           ? data.summaryJson.value
           : this.summaryJson,
+      routesJson: data.routesJson.present
+          ? data.routesJson.value
+          : this.routesJson,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -5595,6 +5635,7 @@ class Session extends DataClass implements Insertable<Session> {
           ..write('originalJson: $originalJson, ')
           ..write('groupsJson: $groupsJson, ')
           ..write('summaryJson: $summaryJson, ')
+          ..write('routesJson: $routesJson, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -5624,6 +5665,7 @@ class Session extends DataClass implements Insertable<Session> {
     originalJson,
     groupsJson,
     summaryJson,
+    routesJson,
     updatedAt,
   ]);
   @override
@@ -5652,6 +5694,7 @@ class Session extends DataClass implements Insertable<Session> {
           other.originalJson == this.originalJson &&
           other.groupsJson == this.groupsJson &&
           other.summaryJson == this.summaryJson &&
+          other.routesJson == this.routesJson &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -5678,6 +5721,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   final Value<String?> originalJson;
   final Value<String?> groupsJson;
   final Value<String?> summaryJson;
+  final Value<String?> routesJson;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const SessionsCompanion({
@@ -5703,6 +5747,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.originalJson = const Value.absent(),
     this.groupsJson = const Value.absent(),
     this.summaryJson = const Value.absent(),
+    this.routesJson = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -5729,6 +5774,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.originalJson = const Value.absent(),
     this.groupsJson = const Value.absent(),
     this.summaryJson = const Value.absent(),
+    this.routesJson = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -5763,6 +5809,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Expression<String>? originalJson,
     Expression<String>? groupsJson,
     Expression<String>? summaryJson,
+    Expression<String>? routesJson,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -5790,6 +5837,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       if (originalJson != null) 'original_json': originalJson,
       if (groupsJson != null) 'groups_json': groupsJson,
       if (summaryJson != null) 'summary_json': summaryJson,
+      if (routesJson != null) 'routes_json': routesJson,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -5818,6 +5866,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Value<String?>? originalJson,
     Value<String?>? groupsJson,
     Value<String?>? summaryJson,
+    Value<String?>? routesJson,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -5844,6 +5893,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       originalJson: originalJson ?? this.originalJson,
       groupsJson: groupsJson ?? this.groupsJson,
       summaryJson: summaryJson ?? this.summaryJson,
+      routesJson: routesJson ?? this.routesJson,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -5920,6 +5970,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     if (summaryJson.present) {
       map['summary_json'] = Variable<String>(summaryJson.value);
     }
+    if (routesJson.present) {
+      map['routes_json'] = Variable<String>(routesJson.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -5954,6 +6007,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
           ..write('originalJson: $originalJson, ')
           ..write('groupsJson: $groupsJson, ')
           ..write('summaryJson: $summaryJson, ')
+          ..write('routesJson: $routesJson, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -13338,6 +13392,7 @@ typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
   Value<String?> originalJson,
   Value<String?> groupsJson,
   Value<String?> summaryJson,
+  Value<String?> routesJson,
   required DateTime updatedAt,
   Value<int> rowid,
 });
@@ -13364,6 +13419,7 @@ typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
   Value<String?> originalJson,
   Value<String?> groupsJson,
   Value<String?> summaryJson,
+  Value<String?> routesJson,
   Value<DateTime> updatedAt,
   Value<int> rowid,
 });
@@ -13484,6 +13540,11 @@ class $$SessionsTableFilterComposer
 
   ColumnFilters<String> get summaryJson => $composableBuilder(
     column: $table.summaryJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get routesJson => $composableBuilder(
+    column: $table.routesJson,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13612,6 +13673,11 @@ class $$SessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get routesJson => $composableBuilder(
+    column: $table.routesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -13713,6 +13779,11 @@ class $$SessionsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get routesJson => $composableBuilder(
+    column: $table.routesJson,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
@@ -13767,6 +13838,7 @@ class $$SessionsTableTableManager
                 Value<String?> originalJson = const Value.absent(),
                 Value<String?> groupsJson = const Value.absent(),
                 Value<String?> summaryJson = const Value.absent(),
+                Value<String?> routesJson = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionsCompanion(
@@ -13792,6 +13864,7 @@ class $$SessionsTableTableManager
                 originalJson: originalJson,
                 groupsJson: groupsJson,
                 summaryJson: summaryJson,
+                routesJson: routesJson,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -13819,6 +13892,7 @@ class $$SessionsTableTableManager
                 Value<String?> originalJson = const Value.absent(),
                 Value<String?> groupsJson = const Value.absent(),
                 Value<String?> summaryJson = const Value.absent(),
+                Value<String?> routesJson = const Value.absent(),
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => SessionsCompanion.insert(
@@ -13844,6 +13918,7 @@ class $$SessionsTableTableManager
                 originalJson: originalJson,
                 groupsJson: groupsJson,
                 summaryJson: summaryJson,
+                routesJson: routesJson,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),

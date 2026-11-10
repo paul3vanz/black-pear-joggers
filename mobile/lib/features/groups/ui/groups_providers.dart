@@ -11,6 +11,7 @@ import '../data/groups_repository.dart';
 import '../data/last_group_store.dart';
 import '../data/member_dtos.dart';
 import '../data/plan_dtos.dart';
+import '../data/route_dtos.dart';
 import '../data/plan_repository.dart';
 import '../data/run_preferences_repository.dart';
 import '../data/summary_dtos.dart';
@@ -175,4 +176,10 @@ Future<void> rememberLastGroup(
 /// Small remembered settings (D55): "already asked" flags and day filters.
 final smallKvStoreProvider = Provider<SmallKvStore>(
   (ref) => SmallKvStore(ref.watch(appDatabaseProvider)),
+);
+
+/// The routes set for a cached session (D130), in order. A group may pick one.
+final sessionRoutesProvider = StreamProvider.family<List<SessionRoute>, String>(
+  (ref, sessionId) =>
+      ref.watch(groupsRepositoryProvider).watchRoutes(sessionId),
 );

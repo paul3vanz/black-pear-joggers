@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../../../core/db/app_database.dart';
 import 'group_dtos.dart';
+import 'route_dtos.dart';
 import 'summary_dtos.dart';
 
 /// Local-only edits of a cached session's embedded groups and summary
@@ -28,6 +29,16 @@ class SessionLocalStore {
             : sortGroups(decodeGroups(row.groupsJson)),
       );
 
+  /// The routes set for a session (D130), in order. Empty for an unknown
+  /// session or an older payload without routes.
+  Stream<List<SessionRoute>> watchRoutes(String sessionId) =>
+      (_db.select(
+        _db.sessions,
+      )..where((s) => s.id.equals(sessionId))).watchSingleOrNull().map(
+        (row) =>
+            row == null ? const <SessionRoute>[] : decodeRoutes(row.routesJson),
+      );
+
   Stream<SessionSummary?> watchSummary(String sessionId) =>
       (_db.select(_db.sessions)..where((s) => s.id.equals(sessionId)))
           .watchSingleOrNull()
@@ -37,6 +48,7 @@ class SessionLocalStore {
     String sessionId, {
     List<Group>? groups,
     SessionSummary? summary,
+    List<SessionRoute>? routes,
   }) => (_db.update(_db.sessions)..where((s) => s.id.equals(sessionId))).write(
     SessionsCompanion(
       groupsJson: groups == null
@@ -45,6 +57,9 @@ class SessionLocalStore {
       summaryJson: summary == null
           ? const Value.absent()
           : Value(encodeSummary(summary)),
+      routesJson: routes == null
+          ? const Value.absent()
+          : Value(encodeRoutes(routes)),
     ),
   );
 
@@ -82,6 +97,53 @@ class SessionLocalStore {
       summary = summary.copyWith(clearMyGroup: true);
     }
     await _write(sessionId, groups: groups, summary: summary);
+  }
+
+  /// Puts [route] (new or edited) into its session, and brings the groups that
+  /// picked it up to date.
+  Future<void> mergeRoute(SessionRoute route) async {
+    final row = await session(route.sessionId);
+    if (row == null) return;
+    final routes = decodeRoutes(row.routesJson);
+    final i = routes.indexWhere((r) => r.id == route.id);
+    if (i >= 0) {
+      routes[i] = route;
+    } else {
+      routes.add(route);
+    }
+    routes.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    final groups = decodeGroups(row.groupsJson);
+    await _write(
+      route.sessionId,
+      routes: routes,
+      groups: row.groupsJson == null
+          ? null
+          : [
+              for (final g in groups)
+                g.routeId == route.id
+                    ? g.copyWith(routeUrl: route.url, routeLabel: route.label)
+                    : g,
+            ],
+    );
+  }
+
+  /// Removes a deleted route; groups that picked it end up with none.
+  Future<void> removeRoute(String sessionId, String routeId) async {
+    final row = await session(sessionId);
+    if (row == null) return;
+    final routes = decodeRoutes(row.routesJson)
+      ..removeWhere((r) => r.id == routeId);
+    final groups = decodeGroups(row.groupsJson);
+    await _write(
+      sessionId,
+      routes: routes,
+      groups: row.groupsJson == null
+          ? null
+          : [
+              for (final g in groups)
+                g.routeId == routeId ? g.copyWith(clearRoute: true) : g,
+            ],
+    );
   }
 
   SessionSummary _recount(

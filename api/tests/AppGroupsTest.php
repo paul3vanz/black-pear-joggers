@@ -212,4 +212,54 @@ class AppGroupsTest extends AppGroupsBase
         $this->assertNull($none['paceFromSPerKm']);
         $this->assertNull($none['distanceM']);
     }
+
+    // ---- route link ------------------------------------------------------
+
+    public function testRouteUrlIsStoredInFullAndEveryMemberSeesIt()
+    {
+        $s = $this->session();
+        $url = 'https://www.plotaroute.com/route/403075?units=km';
+        [$status, $body] = $this->api('POST', "/sessions/{$s->id}/groups", 'leaderA', [
+            'label' => 'Route A', 'routeUrl' => "  $url  ", 'lead' => true,
+        ]);
+
+        $this->assertSame(201, $status);
+        $this->assertSame($url, $body['routeUrl']);
+        $this->assertSame($url, SessionGroup::find($body['id'])->route_url);
+
+        // A member who is not in the group still gets the link in the run payload.
+        [$status, $run] = $this->api('GET', '/sessions?from=2026-10-12&to=2026-10-12', 'plain');
+        $this->assertSame(200, $status);
+        $this->assertSame($url, $run['items'][0]['groups'][0]['routeUrl']);
+    }
+
+    public function testRouteUrlCanBeChangedAndCleared()
+    {
+        $s = $this->session();
+        $g = $this->group($s, [$this->leaderA], ['label' => 'Route A']);
+
+        [$status, $body] = $this->api('PATCH', "/groups/{$g->id}", 'leaderA', ['routeUrl' => 'https://example.com/r.gpx']);
+        $this->assertSame(200, $status);
+        $this->assertSame('https://example.com/r.gpx', $body['routeUrl']);
+
+        // Other edits leave it alone.
+        [, $body] = $this->api('PATCH', "/groups/{$g->id}", 'leaderA', ['description' => 'Muster at the gate']);
+        $this->assertSame('https://example.com/r.gpx', $body['routeUrl']);
+
+        [, $body] = $this->api('PATCH', "/groups/{$g->id}", 'leaderA', ['routeUrl' => '']);
+        $this->assertNull($body['routeUrl']);
+    }
+
+    public function testRouteUrlMustBeAWebLink()
+    {
+        $s = $this->session();
+
+        foreach (['javascript:alert(1)', 'ftp://example.com/r', 'not a url', 'plotaroute.com/route/1', 'https://' . str_repeat('a', 500) . '.com'] as $bad) {
+            [$status, $body] = $this->api('POST', "/sessions/{$s->id}/groups", 'leaderA', [
+                'label' => 'Route', 'routeUrl' => $bad, 'lead' => true,
+            ]);
+            $this->assertSame(422, $status, $bad);
+            $this->assertArrayHasKey('routeUrl', $body['errors'] ?? [$body['field'] ?? '' => 1], $bad);
+        }
+    }
 }

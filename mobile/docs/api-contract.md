@@ -448,6 +448,8 @@ the earlier shapes. New error codes: `forbidden` (403), `not_found` (404),
 ```json
 { "id": "uuid", "sessionId": "uuid", "kind": "run",
   "label": "Jog/walk|null", "description": "…|null",
+  "routeUrl": "https://www.plotaroute.com/route/403075|null",
+  "routeId": "uuid|null", "routeLabel": "10 mile|null",
   "paceUnit": "mi|km|null", "paceFromS": 570, "paceToS": 600,
   "paceFromSPerKm": 354, "paceToSPerKm": 373,
   "distanceValue": 3.0, "distanceUnit": "mi", "distanceM": 4828,
@@ -476,7 +478,7 @@ groups. `summary` is computed for the caller.
 
 ### Groups
 - `POST …/sessions/{sessionId}/groups` → 201 with the Group. Body:
-  `{ id?, kind?, label?, description?, paceUnit?, paceFromS?, paceToS?, distanceValue?, distanceUnit?, lead? }`
+  `{ id?, kind?, label?, description?, routeUrl?, paceUnit?, paceFromS?, paceToS?, distanceValue?, distanceUnit?, lead? }`
   - **Any linked member** may create a group if `lead` is true (they become its
     leader). `lead: false` (leaderless) needs the committee, an admin or the
     session coordinator.
@@ -500,6 +502,24 @@ groups. `summary` is computed for the caller.
     needs `paceFromS`.
   - `distanceValue` is 0.1-200 and needs `distanceUnit`.
   - `kind` must be in the list; `label` max 80; `description` max 1000.
+  - `routeUrl` (D129) is the full link to the route, max 500, `http` or `https` only (422 on `routeUrl`); stored as entered
+    (trimmed), `null` or `""` clears it. Every member who can see the run gets it in the group, going or not, and the app
+    opens it in the device browser. PATCH takes it too; event groups keep it as well.
+  - `routeId` (D130) picks one of the run's routes (below) instead: a group has a route **or** its own `routeUrl`, never both
+    (both non-null is 422 on `routeId`; the route wins when one is cleared, a link clears the route). An id that is not a
+    live route of this run is 422 on `routeId`. In the Group, `routeUrl` is always the effective link (the route's when one
+    is picked), with `routeId` and `routeLabel` alongside.
+
+### Run routes (D130)
+Routes set for a run (e.g. a 10 and a 14 mile route for a long run). They ride in the session payload as `routes: [Route]`
+(live ones, in `sortOrder`), where `Route = { id, sessionId, label, url, distanceValue?, distanceUnit?, distanceM?,
+sortOrder, updatedAt, deletedAt }`. Every member sees them, going or not.
+- `POST …/sessions/{sessionId}/routes` → 201 with the Route (200 on a replayed `id`). Body `{ id?, label, url, distanceValue?,
+  distanceUnit? }`. Committee, admin or the run's coordinator only (403). `label` max 80 and required, `url` max 500, `http(s)`
+  only; `distanceValue` is 0.1-200 and needs `distanceUnit` (422). 409 `session_cancelled` / `session_past`.
+- `PATCH …/routes/{id}` → the Route (same fields, same permissions; groups that picked it follow the change).
+- `DELETE …/routes/{id}` → 204 (also when already deleted). Groups that picked it end up with no route.
+Every change touches the session, so `?since=` delivers it.
 
 ### Attendance
 - `PUT …/sessions/{sessionId}/attendance` → 200 with

@@ -390,6 +390,14 @@ migration is written. Suggested order: 1, 3, 2 (3 reuses the chat screen from 2)
    - [ ] Host: run `api/database/manual/2026_11_leader_ask_targets.sql` before deploying the API.
    - [ ] Later: @mentions typed in the thread, asks that cover several runs, a per-series target spread, and a push to
      the committee when an early nudge has gone out.
+- [x] **Route link on a group (D129).** Leaders add a full http(s) route URL (usually plotaroute.com) in the group editor;
+  every member sees "View route" on the card, going or not, and it opens in the device browser (not an in-app view) so
+  the GPX can be downloaded.
+   - [ ] Host: run `api/database/manual/2026_11_group_route_url.sql` before deploying the API.
+- [x] **Routes set for a run (D130).** The committee or coordinator adds routes to a run (Routes card); a group picks one in the
+  editor or keeps its own link. Everyone can open them.
+   - [ ] Host: run `api/database/manual/2026_11_session_routes.sql` (after the group route URL one) before deploying the API.
+   - [ ] Later: copy last week's routes into a new run.
 
 ## Backlog
 

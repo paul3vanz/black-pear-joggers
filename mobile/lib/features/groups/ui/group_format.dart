@@ -179,3 +179,20 @@ bool showsPaceGroupsNote(String mode) => mode == 'paced' || mode == 'single';
     subtitle: hasLabel ? name : (kind == 'run' ? null : groupKindLabel(kind)),
   );
 }
+
+/// The route link as a web [Uri], or null when it is empty or not an http(s)
+/// link (the server only stores those, so this guards old or odd data).
+Uri? routeUri(String? url) {
+  final uri = Uri.tryParse((url ?? '').trim());
+  if (uri == null || !uri.hasAuthority || uri.host.isEmpty) return null;
+  return uri.scheme == 'http' || uri.scheme == 'https' ? uri : null;
+}
+
+/// Form check for the route link: empty is fine, otherwise a full http(s) URL.
+String? checkRouteUrl(String? value) {
+  final v = (value ?? '').trim();
+  if (v.isEmpty) return null;
+  return routeUri(v) == null
+      ? 'Enter the full link, starting with https://'
+      : null;
+}

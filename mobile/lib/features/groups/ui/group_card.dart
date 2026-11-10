@@ -24,6 +24,7 @@ class GroupCard extends StatefulWidget {
     this.onEdit,
     this.onDelete,
     this.onChat,
+    this.onOpenRoute,
     this.chatUnread = false,
     this.footer,
   });
@@ -49,6 +50,10 @@ class GroupCard extends StatefulWidget {
   /// button. [chatUnread] adds a dot for unread messages.
   final VoidCallback? onChat;
   final bool chatUnread;
+
+  /// Opens the route link in the device browser. Shown to every member, not
+  /// only those in the group; null (no valid link) hides the button.
+  final VoidCallback? onOpenRoute;
 
   /// Extra content under the going count (the pace spread on route cards).
   final Widget? footer;
@@ -143,6 +148,19 @@ class _GroupCardState extends State<GroupCard> {
                   child: Text(_expanded ? 'Show less' : 'Show more'),
                 ),
             ],
+            if (widget.onOpenRoute != null)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(0, 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  onPressed: widget.onOpenRoute,
+                  icon: const Icon(Icons.map_outlined),
+                  label: const Text('View route'),
+                ),
+              ),
             const SizedBox(height: 4),
             Wrap(
               spacing: 12,

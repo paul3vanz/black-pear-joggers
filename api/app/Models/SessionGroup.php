@@ -32,6 +32,8 @@ final class SessionGroup extends Model
         'kind',
         'label',
         'description',
+        'route_url',
+        'route_id',
         'pace_unit',
         'pace_from_s',
         'pace_to_s',
@@ -46,6 +48,11 @@ final class SessionGroup extends Model
     public function session()
     {
         return $this->belongsTo(ClubSession::class, 'session_id')->withTrashed();
+    }
+
+    public function route()
+    {
+        return $this->belongsTo(SessionRoute::class, 'route_id');
     }
 
     public function leaders()

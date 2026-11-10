@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
     : super(driftDatabase(name: databaseNameFor(sub)));
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   /// Diagnostics hook (D100): told about every successful open, with the
   /// from/to versions when it migrated. Set once in `main`; null in tests.
@@ -94,7 +94,10 @@ class AppDatabase extends _$AppDatabase {
           TableMigration(sessionSeries, newColumns: [sessionSeries.imageUrl]),
         );
         await m.alterTable(
-          TableMigration(sessions, newColumns: [sessions.imageUrl]),
+          TableMigration(
+            sessions,
+            newColumns: [sessions.imageUrl, sessions.routesJson],
+          ),
         );
       }
       // v7 (Phase 6.5): member photo/bio cards. New tables only, existing rows
@@ -137,6 +140,16 @@ class AppDatabase extends _$AppDatabase {
       // only: existing rows are untouched, the first refresh fills it.
       if (from < 12) {
         await m.createTable(seriesFollows);
+      }
+      // v13 (D130): routes set for a run, cached as JSON on the session. A
+      // database older than v3 just created `sessions` with the column.
+      if (from >= 3 && from < 13) {
+        final cols = await customSelect('PRAGMA table_info(sessions)').get();
+        if (cols.isEmpty) {
+          await m.createTable(sessions);
+        } else if (!cols.any((c) => c.read<String>('name') == 'routes_json')) {
+          await m.addColumn(sessions, sessions.routesJson);
+        }
       }
     },
   );

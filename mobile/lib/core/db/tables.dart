@@ -203,6 +203,10 @@ class Sessions extends Table {
 
   /// JSON of the contract's `summary` block for the caller (Phase 4), or null.
   TextColumn get summaryJson => text().nullable()();
+
+  /// JSON array of the routes set for the run (D130), or null for an older
+  /// payload that had none.
+  TextColumn get routesJson => text().nullable()();
   DateTimeColumn get updatedAt => dateTime()();
 
   @override

@@ -6,6 +6,7 @@ use App\Models\ClubSession;
 use App\Models\SessionAttendee;
 use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
+use App\Models\SessionRoute;
 use Illuminate\Support\Collection;
 
 /**
@@ -21,6 +22,9 @@ class GroupPresenter
     public static function eagerLoads(): array
     {
         return [
+            'routes' => function ($query) {
+                $query->orderBy('sort_order')->orderBy('created_at')->orderBy('id');
+            },
             'groups' => function ($query) {
                 $query->orderBy('sort_order')->orderBy('created_at')->orderBy('id');
             },
@@ -28,6 +32,7 @@ class GroupPresenter
                 $query->where('status', SessionGroupLeader::CONFIRMED)->orderBy('created_at')->orderBy('id');
             },
             'groups.leaders.member',
+            'groups.route',
             'attendees:id,session_id,member_id,group_id,status',
         ];
     }
@@ -58,7 +63,8 @@ class GroupPresenter
      */
     public static function group(SessionGroup $group, ?Collection $attendees = null): array
     {
-        $group->loadMissing('leaders.member');
+        $group->loadMissing('leaders.member', 'route');
+        $route = $group->route;
 
         if ($attendees === null) {
             $attendees = SessionAttendee::where('group_id', $group->id)->get(['id', 'group_id', 'member_id', 'status']);
@@ -74,6 +80,9 @@ class GroupPresenter
             'kind' => $group->kind,
             'label' => $group->label,
             'description' => $group->description,
+            'routeUrl' => $group->route_url ?? ($route ? $route->url : null),
+            'routeId' => $route ? $route->id : null,
+            'routeLabel' => $route ? $route->label : null,
             'paceUnit' => $group->pace_unit,
             'paceFromS' => $from,
             'paceToS' => $to,
@@ -101,6 +110,32 @@ class GroupPresenter
             'maybeCount' => $mine->where('status', SessionAttendee::MAYBE)->count(),
             'updatedAt' => NotificationPresenter::time($group->updated_at),
             'deletedAt' => NotificationPresenter::time($group->deleted_at),
+        ];
+    }
+
+    /** The routes set for the session, in order. */
+    public static function routesFor(ClubSession $session): array
+    {
+        $session->loadMissing('routes');
+
+        return $session->routes->map(function ($route) {
+            return self::route($route);
+        })->values()->all();
+    }
+
+    public static function route(SessionRoute $route): array
+    {
+        return [
+            'id' => $route->id,
+            'sessionId' => $route->session_id,
+            'label' => $route->label,
+            'url' => $route->url,
+            'distanceValue' => $route->distance_value !== null ? (float) $route->distance_value : null,
+            'distanceUnit' => $route->distance_unit,
+            'distanceM' => self::metres($route->distance_value, $route->distance_unit),
+            'sortOrder' => (int) $route->sort_order,
+            'updatedAt' => NotificationPresenter::time($route->updated_at),
+            'deletedAt' => NotificationPresenter::time($route->deleted_at),
         ];
     }
 

@@ -92,6 +92,7 @@ class RunPresenter
             'coordinatorName' => $session->coordinator ? $session->coordinator->display_name : null,
             'isDetached' => (bool) $session->is_detached,
             'original' => self::original($session),
+            'routes' => GroupPresenter::routesFor($session),
             'groups' => GroupPresenter::groupsFor($session),
             'summary' => GroupPresenter::summary($session, $callerMemberId),
             'updatedAt' => NotificationPresenter::time($session->updated_at),

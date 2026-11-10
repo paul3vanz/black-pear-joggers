@@ -10,6 +10,7 @@ import '../../../core/units/dist_unit.dart';
 import '../../../core/units/distance.dart';
 import '../../../core/units/pace_spec.dart';
 import 'group_dtos.dart';
+import 'route_dtos.dart';
 import 'last_group_store.dart';
 import 'session_local.dart';
 import 'summary_dtos.dart';
@@ -58,12 +59,16 @@ class GroupsRepository {
     required String kind,
     String? label,
     String? description,
+    String? routeUrl,
+    String? routeId,
     required PaceSpec pace,
     Distance? distance,
   }) => {
     'kind': kind,
     'label': label,
     'description': description,
+    'routeUrl': routeUrl,
+    'routeId': routeId,
     ...pace.toJson(),
     'distanceValue': distance?.value,
     'distanceUnit': distance?.unit.code,
@@ -145,6 +150,8 @@ class GroupsRepository {
     String kind = 'run',
     String? label,
     String? description,
+    String? routeUrl,
+    String? routeId,
     PaceSpec pace = const NoPace(),
     Distance? distance,
     bool lead = true,
@@ -162,6 +169,8 @@ class GroupsRepository {
               kind: kind,
               label: label,
               description: description,
+              routeUrl: routeUrl,
+              routeId: routeId,
               pace: pace,
               distance: distance,
             ),
@@ -211,6 +220,8 @@ class GroupsRepository {
     String kind = 'run',
     String? label,
     String? description,
+    String? routeUrl,
+    String? routeId,
     PaceSpec pace = const NoPace(),
     Distance? distance,
   }) async {
@@ -224,12 +235,82 @@ class GroupsRepository {
             kind: kind,
             label: label,
             description: description,
+            routeUrl: routeUrl,
+            routeId: routeId,
             pace: pace,
             distance: distance,
           ),
         ),
       ),
     );
+  }
+
+  /// The routes set for a session (D130), in order.
+  Stream<List<SessionRoute>> watchRoutes(String sessionId) =>
+      _local.watchRoutes(sessionId);
+
+  Map<String, Object?> _routeFields({
+    required String label,
+    required String url,
+    Distance? distance,
+  }) => {
+    'label': label,
+    'url': url,
+    'distanceValue': distance?.value,
+    'distanceUnit': distance?.unit.code,
+  };
+
+  /// Adds a route to a run (committee, admin or the run's coordinator). The
+  /// client UUID makes a replay idempotent. Online-only like other writes.
+  Future<SessionRoute> createRoute(
+    String sessionId, {
+    required String label,
+    required String url,
+    Distance? distance,
+    String? id,
+  }) async {
+    final clubId = await _clubOf(sessionId);
+    final response = await guardApi(
+      () => _dio.post<Object?>(
+        '/app/clubs/$clubId/sessions/$sessionId/routes',
+        data: {
+          'id': id ?? _newId(),
+          ..._routeFields(label: label, url: url, distance: distance),
+        },
+      ),
+    );
+    final route = SessionRoute.fromJson(jsonObject(response));
+    await _local.mergeRoute(route);
+    return route;
+  }
+
+  /// Edits a route; groups that picked it follow the change.
+  Future<SessionRoute> updateRoute(
+    String sessionId,
+    String routeId, {
+    required String label,
+    required String url,
+    Distance? distance,
+  }) async {
+    final clubId = await _clubOf(sessionId);
+    final response = await guardApi(
+      () => _dio.patch<Object?>(
+        '/app/clubs/$clubId/routes/$routeId',
+        data: _routeFields(label: label, url: url, distance: distance),
+      ),
+    );
+    final route = SessionRoute.fromJson(jsonObject(response));
+    await _local.mergeRoute(route);
+    return route;
+  }
+
+  /// Deletes a route; groups that picked it end up with none.
+  Future<void> deleteRoute(String sessionId, String routeId) async {
+    final clubId = await _clubOf(sessionId);
+    await guardApi(
+      () => _dio.delete<Object?>('/app/clubs/$clubId/routes/$routeId'),
+    );
+    await _local.removeRoute(sessionId, routeId);
   }
 
   /// Deletes a group; its attendees become unassigned.

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/util/open_link.dart';
 import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../messages/ui/messages_providers.dart';
@@ -18,6 +19,7 @@ import 'group_actions.dart';
 import 'group_card.dart';
 import 'group_format.dart';
 import 'group_plan_block.dart';
+import 'routes_card.dart';
 import 'groups_providers.dart';
 import 'respond_card.dart';
 
@@ -115,6 +117,13 @@ class GroupsSection extends ConsumerWidget {
           ),
         if (routes && open) MyPaceTile(session: session),
         const SizedBox(height: 8),
+        RoutesCard(
+          session: session,
+          canManage:
+              isCommittee ||
+              (myId != null && session.coordinatorMemberId == myId),
+          open: open,
+        ),
         if (groups.isEmpty)
           Card(
             child: Padding(
@@ -174,6 +183,9 @@ class GroupsSection extends ConsumerWidget {
       units: units,
       isMine: mine,
       isLeading: leading,
+      onOpenRoute: routeUri(g.routeUrl) == null
+          ? null
+          : () => unawaited(openLink(context, ref, routeUri(g.routeUrl)!)),
       joinLabel: session.groupMode == 'routes' || g.kind == 'route'
           ? "I'm doing this route"
           : 'Join this group',

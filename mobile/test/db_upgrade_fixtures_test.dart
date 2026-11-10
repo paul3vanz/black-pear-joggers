@@ -41,9 +41,10 @@ const _fixtures = <String, int>{
   'v9.sqlite': 9,
   'v10.sqlite': 10,
   'v11.sqlite': 11,
+  'v12.sqlite': 12,
 };
 
-const _currentVersion = 12;
+const _currentVersion = 13;
 
 /// Which tables each old schema had, so the test can check row counts survive.
 const _clubId = 1;
@@ -263,8 +264,13 @@ void main() {
         expect(series.map((s) => s.durationMin), containsAll([75, 120]));
         // v11 (D115): run days arrive empty ("never chosen") before v11; lead
         // days survive from v10. v12 (D117) only adds series_follows, empty
-        // until the first refresh.
-        expect(await db.select(db.seriesFollows).get(), isEmpty);
+        // until the first refresh (a v12 file already holds a row). v13 (D130)
+        // adds sessions.routes_json, null until the first refresh.
+        expect(
+          await db.select(db.seriesFollows).get(),
+          entry.value >= 12 ? hasLength(1) : isEmpty,
+        );
+        expect(session.routesJson, isNull);
         final prefs = await db.select(db.preferences).getSingle();
         expect(prefs.runDays, entry.value >= 11 ? '1,2,4' : isNull);
         expect(prefs.leadDays, entry.value >= 10 ? '2,4' : isNull);

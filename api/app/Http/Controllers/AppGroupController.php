@@ -8,6 +8,7 @@ use App\Models\EventLocation;
 use App\Models\SessionAttendee;
 use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
+use App\Models\SessionRoute;
 use App\Services\GroupPresenter;
 use App\Services\RunNotifier;
 use Illuminate\Http\Request;
@@ -26,6 +27,8 @@ class AppGroupController extends Controller
         'kind' => 'kind',
         'label' => 'label',
         'description' => 'description',
+        'routeUrl' => 'route_url',
+        'routeId' => 'route_id',
         'paceUnit' => 'pace_unit',
         'paceFromS' => 'pace_from_s',
         'paceToS' => 'pace_to_s',
@@ -40,6 +43,9 @@ class AppGroupController extends Controller
             'kind' => 'nullable|in:' . implode(',', SessionGroup::KINDS),
             'label' => 'nullable|string|max:80',
             'description' => 'nullable|string|max:1000',
+            // The full link to the route (plotaroute.com or any site); http(s) only, as it is opened in the browser.
+            'routeUrl' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https?:\/\//i'],
+            'routeId' => 'nullable|uuid',
             'paceUnit' => 'nullable|in:mi,km',
             'paceFromS' => 'nullable|integer|between:180,1800',
             'paceToS' => 'nullable|integer|between:180,1800',
@@ -48,6 +54,18 @@ class AppGroupController extends Controller
             'lead' => 'nullable|boolean',
             'locationId' => 'nullable|uuid',
         ];
+    }
+
+    /** The request body with the route link trimmed, so stray spaces from a paste do not fail validation. */
+    private function input(Request $request): array
+    {
+        $data = $request->all();
+
+        if (isset($data['routeUrl']) && is_string($data['routeUrl'])) {
+            $data['routeUrl'] = trim($data['routeUrl']);
+        }
+
+        return $data;
     }
 
     /** Events and race groups are events: they have no pace. */
@@ -115,6 +133,34 @@ class AppGroupController extends Controller
         return null;
     }
 
+    /**
+     * A group has its own link or one of the run's routes, never both. Fixes up $values (the route
+     * wins, a link clears the route) and returns a 422 for an unknown route, else null.
+     */
+    private function resolveRoute(ClubSession $session, array &$values)
+    {
+        $id = $values['route_id'] ?? null;
+        $url = $values['route_url'] ?? null;
+
+        if ($id !== null && $url !== null) {
+            return $this->invalidField('routeId', "Pick one of the run's routes or give a link, not both.");
+        }
+
+        if ($id !== null) {
+            $exists = SessionRoute::where('club_id', $session->club_id)->where('session_id', $session->id)->where('id', $id)->exists();
+
+            if (!$exists) {
+                return $this->invalidField('routeId', 'routeId does not match a route of this run.');
+            }
+
+            $values['route_url'] = null;
+        } elseif ($url !== null) {
+            $values['route_id'] = null;
+        }
+
+        return null;
+    }
+
     /** Column values from the request, only for the keys present. */
     private function fromRequest(Request $request): array
     {
@@ -123,6 +169,10 @@ class AppGroupController extends Controller
         foreach (self::FIELDS as $key => $column) {
             if ($request->has($key)) {
                 $value = $request->input($key);
+
+                if ($column === 'route_url' && is_string($value)) {
+                    $value = trim($value);
+                }
 
                 if ($value === '') {
                     $value = null;
@@ -181,7 +231,7 @@ class AppGroupController extends Controller
      * @OA\Post(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions/{sessionId}/groups",
-     *   summary="Create a pace group. Any linked member with lead=true (they lead it); leaderless groups need committee, admin or the coordinator. With lead=true: 409 already_leading (with groupId) when the caller already leads another group of the run. Idempotent on id. A group with no pace needs a label (422 on label). On an events run any linked member adds an event (locationId and/or label; kind forced to event; the same locationId returns the existing group with 200; the caller is marked going; pace fields and lead are 422 on paceFromS; 422 on locationId when it is not a live location of the club). On a race run: 409 race_group_fixed.",
+     *   summary="Create a pace group. Any linked member with lead=true (they lead it); leaderless groups need committee, admin or the coordinator. With lead=true: 409 already_leading (with groupId) when the caller already leads another group of the run. Idempotent on id. A group with no pace needs a label (422 on label). routeUrl is an optional http(s) link to the route, shown to every member (422 on routeUrl). On an events run any linked member adds an event (locationId and/or label; kind forced to event; the same locationId returns the existing group with 200; the caller is marked going; pace fields and lead are 422 on paceFromS; 422 on locationId when it is not a live location of the club). On a race run: 409 race_group_fixed.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=201, description="The group (200 on a replayed id)"),
      *   @OA\Response(response=403, description="Not allowed"),
@@ -200,7 +250,7 @@ class AppGroupController extends Controller
             return $this->notFound('No such session.');
         }
 
-        $validator = $this->makeValidator($request->all(), $this->rules());
+        $validator = $this->makeValidator($this->input($request), $this->rules());
 
         if ($validator->fails()) {
             return $this->validationFailed($validator);
@@ -216,10 +266,14 @@ class AppGroupController extends Controller
 
         $values = $this->fromRequest($request) + [
             'kind' => 'run', 'label' => null, 'description' => null, 'pace_unit' => null, 'pace_from_s' => null,
-            'pace_to_s' => null, 'distance_value' => null, 'distance_unit' => null,
+            'pace_to_s' => null, 'distance_value' => null, 'distance_unit' => null, 'route_url' => null, 'route_id' => null,
         ];
 
         if ($bad = $this->checkSpec($values)) {
+            return $bad;
+        }
+
+        if ($bad = $this->resolveRoute($session, $values)) {
             return $bad;
         }
 
@@ -306,14 +360,18 @@ class AppGroupController extends Controller
             }
         }
 
-        $values = $this->fromRequest($request) + ['label' => null, 'description' => null, 'distance_value' => null, 'distance_unit' => null];
-        $values = array_intersect_key($values, array_flip(['label', 'description', 'distance_value', 'distance_unit']));
+        $values = $this->fromRequest($request) + ['label' => null, 'description' => null, 'route_url' => null, 'route_id' => null, 'distance_value' => null, 'distance_unit' => null];
+        $values = array_intersect_key($values, array_flip(['label', 'description', 'route_url', 'route_id', 'distance_value', 'distance_unit']));
         $values['label'] = trim((string) $values['label']) !== ''
             ? trim((string) $values['label'])
             : ($location ? mb_substr($location->name, 0, 80) : null);
         $values['kind'] = 'event';
 
         if ($bad = $this->checkEventSpec($values)) {
+            return $bad;
+        }
+
+        if ($bad = $this->resolveRoute($session, $values)) {
             return $bad;
         }
 
@@ -396,7 +454,7 @@ class AppGroupController extends Controller
 
         $rules = $this->rules();
         unset($rules['id'], $rules['lead']);
-        $validator = $this->makeValidator($request->all(), $rules);
+        $validator = $this->makeValidator($this->input($request), $rules);
 
         if ($validator->fails()) {
             return $this->validationFailed($validator);
@@ -430,6 +488,10 @@ class AppGroupController extends Controller
             if ($bad = $this->checkSpec($final)) {
                 return $bad;
             }
+        }
+
+        if ($bad = $this->resolveRoute($group->session, $changes)) {
+            return $bad;
         }
 
         if ($bad = $this->closedResponse($group->session)) {

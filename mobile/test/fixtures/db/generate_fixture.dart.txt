@@ -345,6 +345,19 @@ final rows = <String, List<Map<String, Object?>>>{
       'updated_at': t0 - 5000,
     },
   ],
+  'series_follows': [
+    {
+      'series_id': 'ser_1',
+      'club_id': 1,
+      'title': 'Monday club run',
+      'weekday': 1,
+      'local_start_time': '19:00',
+      'group_mode': 'paced',
+      'mode': 'follow',
+      'usually_comes': 1,
+      'fetched_at': t0,
+    },
+  ],
   'group_messages': [
     {
       'id': 'msg_1',

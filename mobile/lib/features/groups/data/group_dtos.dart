@@ -49,6 +49,9 @@ class Group {
     this.kind = 'run',
     this.label,
     this.description,
+    this.routeUrl,
+    this.routeId,
+    this.routeLabel,
     this.paceUnit,
     this.paceFromS,
     this.paceToS,
@@ -73,6 +76,13 @@ class Group {
   final String kind;
   final String? label;
   final String? description;
+
+  /// Full http(s) link to the route (usually plotaroute.com), set by a leader.
+  final String? routeUrl;
+
+  /// The run route this group picked (D130); [routeUrl] is then that route's link.
+  final String? routeId;
+  final String? routeLabel;
   final String? paceUnit;
   final int? paceFromS;
   final int? paceToS;
@@ -105,6 +115,9 @@ class Group {
       kind: _str(json['kind']) ?? 'run',
       label: _str(json['label']),
       description: _str(json['description']),
+      routeUrl: _str(json['routeUrl']),
+      routeId: _str(json['routeId']),
+      routeLabel: _str(json['routeLabel']),
       paceUnit: _str(json['paceUnit']),
       paceFromS: (json['paceFromS'] as num?)?.toInt(),
       paceToS: (json['paceToS'] as num?)?.toInt(),
@@ -135,6 +148,9 @@ class Group {
     'kind': kind,
     'label': label,
     'description': description,
+    'routeUrl': routeUrl,
+    'routeId': routeId,
+    'routeLabel': routeLabel,
     'paceUnit': paceUnit,
     'paceFromS': paceFromS,
     'paceToS': paceToS,
@@ -179,6 +195,10 @@ class Group {
     List<GroupLeader>? leaders,
     int? goingCount,
     int? maybeCount,
+    String? routeUrl,
+    String? routeId,
+    String? routeLabel,
+    bool clearRoute = false,
     String? status,
   }) => Group(
     id: id,
@@ -186,6 +206,9 @@ class Group {
     kind: kind,
     label: label,
     description: description,
+    routeUrl: clearRoute ? null : (routeUrl ?? this.routeUrl),
+    routeId: clearRoute ? null : (routeId ?? this.routeId),
+    routeLabel: clearRoute ? null : (routeLabel ?? this.routeLabel),
     paceUnit: paceUnit,
     paceFromS: paceFromS,
     paceToS: paceToS,

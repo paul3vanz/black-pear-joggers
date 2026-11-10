@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/units/dist_unit.dart';
 import 'package:bpj/features/groups/ui/group_editor_screen.dart';
 import 'package:bpj/features/groups/ui/pace_input.dart';
 import 'package:flutter/material.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,6 +34,7 @@ void main() {
     bool? lead,
     String groupMode = 'paced',
     List<Map<String, Object?>> groups = const [],
+    List<Map<String, Object?>> runRoutes = const [],
     Map<String, Object> routes = const {},
   }) async {
     adapter = GatedAdapter(
@@ -40,6 +43,11 @@ void main() {
     await tester.runAsync(() async {
       await seedSession(db, 'a', groups: groups, groupMode: groupMode);
       await seedUnits(db);
+      if (runRoutes.isNotEmpty) {
+        await (db.update(db.sessions)..where((s) => s.id.equals('a'))).write(
+          SessionsCompanion(routesJson: Value(jsonEncode(runRoutes))),
+        );
+      }
     });
     router = GoRouter(
       routes: [
@@ -120,6 +128,8 @@ void main() {
       'kind': 'run',
       'label': 'Easy 5k',
       'description': null,
+      'routeUrl': null,
+      'routeId': null,
       'paceUnit': 'mi',
       'paceFromS': 570,
       'paceToS': null,
@@ -165,6 +175,8 @@ void main() {
       'kind': 'run',
       'label': 'Social jog',
       'description': 'Muster at the bridge',
+      'routeUrl': null,
+      'routeId': null,
       'paceUnit': null,
       'paceFromS': null,
       'paceToS': null,
@@ -466,6 +478,8 @@ void main() {
         'kind': 'run',
         'label': 'Jog/walk',
         'description': 'Old text',
+        'routeUrl': null,
+        'routeId': null,
         'paceUnit': null,
         'paceFromS': null,
         'paceToS': null,
@@ -670,6 +684,63 @@ void main() {
       await tester.enterText(field('Label (required)'), 'Mine too');
       await tapSave(tester);
       expect(sent(adapter, 'POST', _create), hasLength(1));
+      await unmount(tester);
+    });
+  });
+
+  group('run routes (D130)', () {
+    final tenMile = {
+      'id': 'r10',
+      'sessionId': 'a',
+      'label': '10 mile',
+      'url': 'https://www.plotaroute.com/route/1',
+      'distanceValue': 10.0,
+      'distanceUnit': 'mi',
+      'sortOrder': 0,
+    };
+
+    testWidgets('picking a route sends routeId and fills the distance', (
+      tester,
+    ) async {
+      await pumpEditor(
+        tester,
+        runRoutes: [tenMile],
+        routes: {'POST $_create': created},
+      );
+      expect(field('Route link (optional)'), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('route-picker')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('10 mile (10 mi)').last);
+      await tester.pumpAndSettle();
+      await tester.enterText(field('Label (required)'), 'Steady');
+      await tapSave(tester);
+      final body = posted();
+      expect(body['routeId'], 'r10');
+      expect(body['routeUrl'], isNull);
+      expect(body['distanceValue'], 10.0);
+      expect(body['distanceUnit'], 'mi');
+      await unmount(tester);
+    });
+
+    testWidgets('other link sends routeUrl and no routeId', (tester) async {
+      await pumpEditor(
+        tester,
+        runRoutes: [tenMile],
+        routes: {'POST $_create': created},
+      );
+      await tester.tap(find.byKey(const ValueKey('route-picker')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Other link…').last);
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        field('Route link (optional)'),
+        'https://example.com/mine',
+      );
+      await tester.enterText(field('Label (required)'), 'Mine');
+      await tapSave(tester);
+      final body = posted();
+      expect(body['routeId'], isNull);
+      expect(body['routeUrl'], 'https://example.com/mine');
       await unmount(tester);
     });
   });

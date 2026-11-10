@@ -166,6 +166,7 @@ class SessionDto {
     required this.original,
     this.groupsJson,
     this.summaryJson,
+    this.routesJson,
     required this.updatedAt,
     required this.deletedAt,
   });
@@ -200,6 +201,9 @@ class SessionDto {
   /// the payload had none (an older server). A null leaves a stored value alone.
   final String? groupsJson;
   final String? summaryJson;
+
+  /// The embedded `routes` (D130) re-encoded as JSON, or null when absent.
+  final String? routesJson;
   final DateTime updatedAt;
   final DateTime? deletedAt;
 
@@ -233,6 +237,7 @@ class SessionDto {
           : null,
       groupsJson: json['groups'] is List ? jsonEncode(json['groups']) : null,
       summaryJson: json['summary'] is Map ? jsonEncode(json['summary']) : null,
+      routesJson: json['routes'] is List ? jsonEncode(json['routes']) : null,
       updatedAt: _date(json['updatedAt']) ?? startsAt,
       deletedAt: _date(json['deletedAt']),
     );
@@ -263,6 +268,7 @@ class SessionDto {
     summaryJson: summaryJson == null
         ? const Value.absent()
         : Value(summaryJson),
+    routesJson: routesJson == null ? const Value.absent() : Value(routesJson),
     updatedAt: updatedAt,
   );
 }

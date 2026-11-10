@@ -101,6 +101,11 @@ final class ClubSession extends Model
         return $this->hasMany(SessionGroup::class, 'session_id');
     }
 
+    public function routes()
+    {
+        return $this->hasMany(SessionRoute::class, 'session_id');
+    }
+
     public function attendees()
     {
         return $this->hasMany(SessionAttendee::class, 'session_id');

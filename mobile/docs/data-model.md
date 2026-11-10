@@ -89,9 +89,12 @@ description, so we don't duplicate marketing copy.
 
 ```
 session_groups         id, club_id, session_id, kind, label?, description?,
+                       route_url?,
+                       route_id? -> session_routes,
                        pace_unit('mi','km')?, pace_from_s?, pace_to_s?,
                        distance_value?, distance_unit('mi','km')?,
                        status('active','needs_leader'), sort_order, created_by_member_id
+session_routes         id, club_id, session_id, label, url, distance_value?, distance_unit?, sort_order  (soft delete)
 session_group_leaders  id, club_id, group_id, member_id, role('leader','co_leader','backmarker'),
                        status('confirmed','withdrawn'), withdrawn_at?
 session_attendees      id, club_id, session_id, member_id, group_id?, status('going','maybe','not_going'),
