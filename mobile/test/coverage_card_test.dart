@@ -85,7 +85,7 @@ void main() {
     expect(inCard(find.text('8:00/mi')), findsOneWidget);
     expect(inCard(find.text('10:30/mi')), findsOneWidget);
     expect(inCard(find.text('Jo Bloggs')), findsNWidgets(2));
-    final gap = find.text('Gap · 8:15 to 10:15/mi');
+    final gap = find.text('Need groups between 8:30/mi and 10:00/mi');
     expect(gap, findsOneWidget);
     expect(find.text('Nobody between 8:00 and 10:30'), findsOneWidget);
     double top(Finder f) => tester.getTopLeft(f).dy;
@@ -95,21 +95,55 @@ void main() {
     expect(find.byKey(const ValueKey('coverage-status')), findsOneWidget);
     expect(find.text('1 gap'), findsOneWidget);
     expect(find.text('Add if you can: slower end, jog/walk'), findsOneWidget);
-    expect(find.text('Nothing slower than 11:30/mi'), findsOneWidget);
+    // The slow edge is 10:30 and the target runs to 12:00: ask beyond it.
+    expect(find.text('Need an 11:00/mi or slower group'), findsOneWidget);
+    expect(find.text('Slowest group is 10:30'), findsOneWidget);
     expect(find.text('Covered'), findsNothing);
     await finish(tester);
   });
 
-  testWidgets('9:15 and 10:30 leave a gap, 8:00 and 8:40 do not', (
+  testWidgets('a gap over 60 s is a range, 30-60 s one pace, 30 s none', (
     tester,
   ) async {
+    // 9:15 and 10:30 are 75 s apart: the span actually uncovered.
     await pump(tester, groups: [led('a', from: 555), led('b', from: 630)]);
-    expect(find.text('Gap · 9:30 to 10:15/mi'), findsOneWidget);
+    expect(
+      find.text('Need groups between 9:45/mi and 10:00/mi'),
+      findsOneWidget,
+    );
     await unmount(tester);
     await db.clearAll();
 
-    await pump(tester, groups: [led('a', from: 480), led('b', from: 520)]);
-    expect(find.textContaining('Gap ·'), findsNothing);
+    // 9:15 and 10:15 are 60 s apart: the middle, 9:45.
+    await pump(tester, groups: [led('a', from: 555), led('b', from: 615)]);
+    expect(find.text('Need a 9:45/mi group'), findsOneWidget);
+    expect(find.textContaining('Need groups between'), findsNothing);
+    await unmount(tester);
+    await db.clearAll();
+
+    // 8:00 and 8:30 are exactly 30 s apart, which is not a gap.
+    await pump(tester, groups: [led('a', from: 480), led('b', from: 510)]);
+    expect(find.textContaining('Need groups between'), findsNothing);
+    expect(find.byKey(const ValueKey('spread-gap-495')), findsNothing);
+    expect(find.text('Nobody between 8:00 and 8:30'), findsNothing);
+    await finish(tester);
+  });
+
+  testWidgets('one group at 10:30-11:00 asks for both sides', (tester) async {
+    await pump(tester, groups: [led('a', from: 630, to: 660)]);
+    expect(find.text('Need a 10:00/mi or faster group'), findsOneWidget);
+    expect(find.text('Need an 11:30/mi or slower group'), findsOneWidget);
+    expect(find.text('Fastest group is 10:30'), findsOneWidget);
+    expect(find.text('Slowest group is 11:00'), findsOneWidget);
+    expect(find.textContaining('Nothing faster'), findsNothing);
+    await finish(tester);
+  });
+
+  testWidgets('the Ask buttons are compact, not stretched', (tester) async {
+    await pump(tester, groups: [led('a', from: 630, to: 660)]);
+    final size = tester.getSize(find.byKey(const ValueKey('ask-faster-end')));
+    expect(size.height, lessThanOrEqualTo(40));
+    expect(size.height, greaterThanOrEqualTo(24));
     await finish(tester);
   });
 
@@ -124,7 +158,10 @@ void main() {
     expect(inCard(find.textContaining('Range')), findsOneWidget);
     expect(inCard(find.textContaining('Single pace')), findsOneWidget);
     // The range's slow edge (9:15) sets the gap, exactly as a single 9:15 would.
-    expect(find.text('Gap · 9:30 to 10:15/mi'), findsOneWidget);
+    expect(
+      find.text('Need groups between 9:45/mi and 10:00/mi'),
+      findsOneWidget,
+    );
     await finish(tester);
   });
 
@@ -133,25 +170,23 @@ void main() {
       tester,
       groups: [
         led('a', from: 465, to: 480),
-        for (final (i, p) in [520, 560, 600, 640, 680, 720].indexed)
+        for (final (i, p) in [510, 540, 570, 600, 630, 660, 690].indexed)
           led('s$i', from: p),
         led('j', from: null, kind: 'jog_walk'),
       ],
     );
     expect(find.text('Covered'), findsOneWidget);
-    expect(find.textContaining('Gap ·'), findsNothing);
-    expect(find.textContaining('Nothing faster'), findsNothing);
-    expect(find.textContaining('Nothing slower'), findsNothing);
+    expect(find.textContaining('Need'), findsNothing);
     await finish(tester);
   });
 
   testWidgets('one group at 8:45 only has amber things to add', (tester) async {
     await pump(tester, groups: [led('a', from: 525)]);
     expect(find.text('Covered'), findsNothing);
-    expect(find.text('Nothing faster than 8:30/mi'), findsOneWidget);
-    expect(find.text('Nothing slower than 11:30/mi'), findsOneWidget);
+    expect(find.text('Need an 8:15/mi or faster group'), findsOneWidget);
+    expect(find.text('Need a 9:15/mi or slower group'), findsOneWidget);
     expect(find.text('Jog/walk: nobody yet'), findsOneWidget);
-    expect(find.textContaining('Gap ·'), findsNothing);
+    expect(find.textContaining('Need groups between'), findsNothing);
     expect(find.text('1 gap'), findsNothing);
     await finish(tester);
   });
@@ -172,7 +207,7 @@ void main() {
     );
     expect(inCard(find.text('Jog/walk')), findsOneWidget);
     expect(find.text('Jog/walk: nobody yet'), findsNothing);
-    expect(find.text('Nothing slower than 11:30/mi'), findsOneWidget);
+    expect(find.text('Need an 8:30/mi or slower group'), findsOneWidget);
     await finish(tester);
   });
 
@@ -190,7 +225,7 @@ void main() {
     expect(inCard(find.text('Needs a leader')), findsOneWidget);
     expect(inCard(find.text('11:00/mi')), findsOneWidget);
     expect(find.text('1 group needs a leader'), findsOneWidget);
-    expect(find.text('Nothing slower than 11:30/mi'), findsOneWidget);
+    expect(find.text('Need a 9:30/mi or slower group'), findsOneWidget);
     await finish(tester);
   });
 
@@ -219,8 +254,9 @@ void main() {
         ),
       ],
     );
-    expect(find.text('Nothing slower than 7:10/km'), findsOneWidget);
-    expect(find.text('Nothing faster than 5:15/km'), findsOneWidget);
+    // 6:00/km: 30 s/mi (about 19 s/km) either side, to whole 15 s.
+    expect(find.text('Need a 5:45/km or faster group'), findsOneWidget);
+    expect(find.text('Need a 6:15/km or slower group'), findsOneWidget);
     await finish(tester);
   });
 
@@ -229,8 +265,7 @@ void main() {
   ) async {
     await pump(tester, groupMode: 'open', groups: [led('a', from: 600)]);
     expect(inCard(find.text('10:00/mi')), findsOneWidget);
-    expect(find.textContaining('Nothing faster'), findsNothing);
-    expect(find.textContaining('Nothing slower'), findsNothing);
+    expect(find.textContaining('Need'), findsNothing);
     expect(find.text('Jog/walk: nobody yet'), findsNothing);
     await finish(tester);
   });

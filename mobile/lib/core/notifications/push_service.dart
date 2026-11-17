@@ -32,6 +32,8 @@ import 'notification_actions.dart';
 import 'notification_categories.dart';
 import 'notification_routing.dart';
 import 'push_background.dart';
+import 'refresh_coordinator.dart';
+import 'refresh_target.dart';
 
 part 'push_service.g.dart';
 
@@ -199,6 +201,16 @@ class PushService {
     final clubId = int.tryParse('${data['clubId'] ?? ''}');
     if (clubId == null) return;
     if (userId != null && userId != _ref.read(activeSubProvider)) return;
+    // Runs/groups/paces: refresh the sessions feed + this run's plan so the
+    // run page updates itself (forced: the push says something just changed).
+    final target = refreshTargetFor(data);
+    if (target.sessions) {
+      unawaited(
+        _ref
+            .read(refreshCoordinatorProvider)
+            .refreshSession(clubId, target.sessionId, force: true),
+      );
+    }
     try {
       await _ref.read(inboxRepositoryProvider).refresh(clubId);
       await _ref.read(postsRepositoryProvider).refresh(clubId);
@@ -274,8 +286,52 @@ class PushService {
       await Future<void>.delayed(const Duration(milliseconds: 100));
       await _waitUntilLinked();
     }
+    await _refreshForTap(data, decision);
     _ref.read(routerProvider).go(decision.route);
   }
+
+  /// Starts pulling what the tapped notification is about, so the target
+  /// screen shows it without a pull-to-refresh. Waits a couple of seconds at
+  /// most (the since-cursor request is small) so a run that isn't cached yet
+  /// is usually there when the page opens; otherwise the page fills in from
+  /// the Drift stream when the refresh lands.
+  Future<void> _refreshForTap(
+    Map<String, Object?> data,
+    TapDecision decision,
+  ) async {
+    try {
+      final target = refreshTargetFor(data);
+      final clubId =
+          decision.setClubId ??
+          int.tryParse('${data['clubId'] ?? ''}') ??
+          _ref.read(activeClubIdProvider);
+      if (clubId == null) return;
+      final coordinator = _ref.read(refreshCoordinatorProvider);
+      if (target.posts) {
+        unawaited(_quiet(_ref.read(postsRepositoryProvider).refresh(clubId)));
+      }
+      if (target.threads) {
+        unawaited(
+          _quiet(
+            _ref.read(messagesRepositoryProvider).refreshThreadsQuietly(clubId),
+          ),
+        );
+      }
+      unawaited(_quiet(_ref.read(inboxRepositoryProvider).refresh(clubId)));
+      if (target.sessions) {
+        await coordinator
+            .refreshSession(clubId, target.sessionId, force: true)
+            .timeout(const Duration(seconds: 3));
+      }
+    } on Object catch (e) {
+      // Offline or slow: navigate anyway, the refresh keeps going.
+      debugPrint('Tap-triggered refresh: $e');
+    }
+  }
+
+  Future<void> _quiet(Future<void> f) => f.catchError((Object e) {
+    debugPrint('Tap-triggered refresh failed: $e');
+  });
 
   Future<void> _waitUntilLinked() async {
     final deadline = DateTime.now().add(const Duration(seconds: 10));

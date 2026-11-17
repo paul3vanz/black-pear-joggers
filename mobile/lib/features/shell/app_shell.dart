@@ -6,7 +6,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/auth/accounts_controller.dart';
 import '../../core/auth/session_expiry.dart';
+import '../../app/router.dart';
 import '../../core/notifications/push_service.dart';
+import '../../core/notifications/refresh_coordinator.dart';
+import '../../core/notifications/refresh_target.dart';
 import '../../core/ui/health_banner.dart';
 import '../events/data/event_locations_repository.dart';
 import '../groups/data/attendance_repository.dart';
@@ -30,10 +33,15 @@ class AppShell extends ConsumerStatefulWidget {
 
 class _AppShellState extends ConsumerState<AppShell>
     with WidgetsBindingObserver {
+  Timer? _poll;
+  bool _foreground = true;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Gentle poll of the Runs tab (and the open run page): never in background.
+    _poll = Timer.periodic(runsPollInterval, (_) => unawaited(_pollRuns()));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       unawaited(_refreshInbox());
@@ -47,6 +55,7 @@ class _AppShellState extends ConsumerState<AppShell>
 
   @override
   void dispose() {
+    _poll?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -54,11 +63,36 @@ class _AppShellState extends ConsumerState<AppShell>
   /// Back in the foreground: re-send any run responses that couldn't be sent.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
     if (state == AppLifecycleState.resumed) {
+      unawaited(_refreshRuns());
       unawaited(_retryPending());
       unawaited(_refreshMemberCards());
       unawaited(_refreshEventLocations());
     }
+  }
+
+  /// Resume: pull run changes (throttled to once a minute, since cursor), and
+  /// the plan of the run page that is open.
+  Future<void> _refreshRuns() async {
+    final clubId = ref.read(activeClubIdProvider);
+    if (ref.read(activeSubProvider) == null) return;
+    final location = ref
+        .read(routerProvider)
+        .routeInformationProvider
+        .value
+        .uri
+        .toString();
+    await ref
+        .read(refreshCoordinatorProvider)
+        .refreshSession(clubId, openSessionIdFromLocation(location));
+  }
+
+  /// Timer tick: only while the app is in the foreground and the Runs tab (list
+  /// or a run page, which lives in the same branch) is the visible one.
+  Future<void> _pollRuns() async {
+    if (!mounted || !_foreground || widget.shell.currentIndex != 0) return;
+    await _refreshRuns();
   }
 
   /// Re-sends unsent run responses and chat messages, and refreshes the chat

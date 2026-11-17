@@ -96,6 +96,43 @@ void main() {
       expect(dto.endsAt, DateTime.utc(2026, 10, 12, 19, 30));
     });
 
+    test('own image and website are parsed; own image wins in the cache', () {
+      final dto = SessionDto.fromJson(
+        sessionJson(
+          'a',
+          localDate: '2026-10-12',
+          seriesId: null,
+          groupMode: 'race',
+          imageUrl: 'https://bpj.org.uk/series.jpg',
+          sessionImageUrl: 'https://bpj.org.uk/own.jpg',
+          websiteUrl: 'https://race.example/enter',
+        ),
+      );
+      expect(dto.ownImageUrl, 'https://bpj.org.uk/own.jpg');
+      expect(dto.websiteUrl, 'https://race.example/enter');
+      final c = dto.toCompanion(1);
+      expect(c.imageUrl.value, 'https://bpj.org.uk/own.jpg');
+      expect(c.ownImageUrl.value, 'https://bpj.org.uk/own.jpg');
+      expect(c.websiteUrl.value, 'https://race.example/enter');
+    });
+
+    test('an older server sends neither new field', () {
+      final json = sessionJson('a', localDate: '2026-10-12')
+        ..remove('sessionImageUrl')
+        ..remove('websiteUrl');
+      final dto = SessionDto.fromJson(json);
+      expect(dto.ownImageUrl, isNull);
+      expect(dto.websiteUrl, isNull);
+    });
+
+    test('sessionBannerUrl prefers the run image over the series image', () {
+      expect(sessionBannerUrl(ownImageUrl: 'own', imageUrl: 'series'), 'own');
+      expect(sessionBannerUrl(ownImageUrl: null, imageUrl: 'series'), 'series');
+      expect(sessionBannerUrl(ownImageUrl: '  ', imageUrl: 'series'), 'series');
+      expect(sessionBannerUrl(ownImageUrl: 'own'), 'own');
+      expect(sessionBannerUrl(ownImageUrl: '', imageUrl: ''), isNull);
+    });
+
     test('an empty localEndTime counts as no end', () {
       final dto = SessionDto.fromJson({
         ...sessionJson('a', localDate: '2026-10-12'),
@@ -446,6 +483,88 @@ void main() {
         await unmount(tester);
       },
     );
+
+    testWidgets('ad-hoc run: own image link is sent, no race field', (
+      tester,
+    ) async {
+      await pumpEditor(
+        tester,
+        const SessionEditScreen(),
+        routes: {
+          'POST /app/clubs/1/sessions': FakeResponse(
+            201,
+            sessionJson(
+              'x1',
+              localDate: day(3),
+              seriesId: null,
+              imageUrl: 'https://bpj.org.uk/own.jpg',
+              sessionImageUrl: 'https://bpj.org.uk/own.jpg',
+            ),
+          ),
+        },
+      );
+      expect(find.byKey(const ValueKey('race-website-field')), findsNothing);
+      await tester.enterText(field('Title'), 'Social');
+      await tester.enterText(
+        field('Picture link (optional)'),
+        'https://bpj.org.uk/own.jpg',
+      );
+      await save(tester);
+      final body = lastBody('POST');
+      expect(body['imageUrl'], 'https://bpj.org.uk/own.jpg');
+      expect(body['websiteUrl'], isNull);
+      await unmount(tester);
+    });
+
+    testWidgets('race run: website field is validated and sent', (
+      tester,
+    ) async {
+      await tester.runAsync(
+        () => db
+            .into(db.sessions)
+            .insert(
+              SessionDto.fromJson(
+                sessionJson(
+                  'r1',
+                  localDate: day(5),
+                  seriesId: null,
+                  groupMode: 'race',
+                  websiteUrl: 'https://race.example/old',
+                ),
+              ).toCompanion(1),
+            ),
+      );
+      await pumpEditor(
+        tester,
+        const SessionEditScreen(sessionId: 'r1'),
+        routes: {
+          'PATCH /app/clubs/1/sessions/r1': FakeResponse(
+            200,
+            sessionJson(
+              'r1',
+              localDate: day(5),
+              seriesId: null,
+              groupMode: 'race',
+              websiteUrl: 'https://race.example/enter',
+            ),
+          ),
+        },
+      );
+      final website = find.byKey(const ValueKey('race-website-field'));
+      expect(website, findsOneWidget);
+      await tester.enterText(website, 'race.example');
+      await save(tester);
+      expect(
+        find.text('Enter the full link, starting with https://'),
+        findsOne,
+      );
+      expect(adapter.requests.where((r) => r.method == 'PATCH'), isEmpty);
+
+      await tester.enterText(website, 'https://race.example/enter');
+      await save(tester);
+      expect(lastBody('PATCH')['websiteUrl'], 'https://race.example/enter');
+      await unmount(tester);
+    });
 
     testWidgets('a bad duration or image URL blocks saving', (tester) async {
       await pumpEditor(tester, const SeriesEditScreen());

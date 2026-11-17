@@ -1560,3 +1560,22 @@ Per member and live series, first match wins:
   `AppFollowsTest`, `MigrateFollowsTest`, updated `AppGroupMatchTest`, `AppRunRemindersTest`, `AppLeaderAudienceTest`,
   `AppNotificationsV2Test`; app `follow_resolver_test` (same table), `follows_repository_test`,
   `runs_i_follow_screen_test`, `runs_screen_test`.
+
+## Update (2026-11-17): a run's own image and a race website (D131)
+
+- **New columns** `sessions.image_url` and `sessions.website_url` (both nullable, 500 chars). Migration
+  `2026_11_17_090000_add_image_and_website_to_sessions_table`; manual SQL
+  `api/database/manual/2026_11_session_image_website.sql` (run once, after `2026_11_session_routes.sql`).
+- **Writes:** `POST /sessions` (ad-hoc) and `PATCH /sessions/{id}` (committee/admin) accept `imageUrl` and
+  `websiteUrl`. Each is an http(s) URL up to 500 chars (422 on the field otherwise), validated like a group's
+  `routeUrl`. On `PATCH`, `null` or `""` clears it and leaving the key out keeps it. Neither detaches a series
+  occurrence. `websiteUrl` is accepted on any run; the app shows it for `groupMode: race` only.
+- **Reads (session payload):**
+  - `imageUrl`: the **effective** banner: the run's own image when set, otherwise the series image, otherwise `null`.
+    Existing clients keep working unchanged.
+  - `sessionImageUrl`: only the run's own image (what the editor shows and clears). New.
+  - `websiteUrl`: the race website / entry link. New.
+- **App:** Drift schema v14 adds `sessions.own_image_url` and `sessions.website_url` (`imageUrl` stays the effective
+  one). The run editor has a "Picture link" field (ad-hoc and single-occurrence edits) and, when the run is a race, a
+  "Race website" field. The run page shows a **Race website / Enter** button (opens in the external browser) above
+  the race card. `sessionBannerUrl()` picks own image, then series image, for the Runs-tab card and the run page.

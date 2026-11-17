@@ -76,6 +76,31 @@ void main() {
 
   Finder tile(String id) => find.byKey(ValueKey('inbox-$id'));
 
+  testWidgets(
+    'tab labels stay on one line on a narrow phone at a big text size',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 1.5;
+      addTearDown(tester.view.reset);
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpInbox(tester);
+
+      Size labelSize(InboxFolder f) => tester.getSize(
+        find.descendant(
+          of: find.byKey(ValueKey('inbox-tab-${f.name}')),
+          matching: find.text(f.label),
+        ),
+      );
+      // "All" cannot wrap, so every other label should be as tall as it.
+      final oneLine = labelSize(InboxFolder.all).height;
+      for (final f in InboxFolder.values) {
+        expect(labelSize(f).height, oneLine, reason: '${f.label} wraps');
+      }
+      await unmount(tester);
+    },
+  );
+
   testWidgets('All shows everything; each tab filters', (tester) async {
     await pumpInbox(tester);
     for (final id in ['u1', 'r1', 'r2', 'c1', 'l1', 'l2']) {

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../groups/data/plan_dtos.dart';
 import '../../groups/ui/group_format.dart';
 import '../../members/ui/member_avatar.dart';
+import '../logic/event_place.dart';
+import 'uk_dot_map.dart';
 
 /// One event of an `events` run (a parkrun, a race) or the single card of a
 /// `race` run: name, distance, the note (meeting point, car-share seats), the
@@ -29,6 +31,8 @@ class EventCard extends StatelessWidget {
     this.chatUnread = false,
     this.onEditNote,
     this.onRemove,
+    this.place,
+    this.onOpenLink,
   });
 
   /// The event name (or "Who's going?" on a race).
@@ -67,6 +71,11 @@ class EventCard extends StatelessWidget {
   /// In the overflow menu; both null hides the menu.
   final VoidCallback? onEditNote;
   final VoidCallback? onRemove;
+
+  /// Where the event is (from its cached location); null or empty hides the
+  /// "Details" row. [onOpenLink] opens a link in the external browser/maps.
+  final EventPlace? place;
+  final void Function(Uri url)? onOpenLink;
 
   @override
   Widget build(BuildContext context) {
@@ -135,6 +144,8 @@ class EventCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(note, style: muted),
             ],
+            if (place != null && place!.hasDetails)
+              _PlaceDetails(place: place!, onOpenLink: onOpenLink),
             if (fellowAttendees.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text('Also going', style: theme.textTheme.labelLarge),
@@ -214,6 +225,97 @@ class EventCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// A collapsed "Details" row (region and country) that expands to the links
+/// and, for Great Britain, a small dot map.
+class _PlaceDetails extends StatefulWidget {
+  const _PlaceDetails({required this.place, this.onOpenLink});
+
+  final EventPlace place;
+  final void Function(Uri url)? onOpenLink;
+
+  @override
+  State<_PlaceDetails> createState() => _PlaceDetailsState();
+}
+
+class _PlaceDetailsState extends State<_PlaceDetails> {
+  bool _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final place = widget.place;
+    final muted = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    final page = place.pageUri;
+    final directions = place.directionsUri;
+    final open = widget.onOpenLink;
+    final lat = place.lat, lng = place.lng;
+    final showMap =
+        _open &&
+        lat != null &&
+        lng != null &&
+        place.country?.toUpperCase() == 'GB' &&
+        isInUkExtent(lat, lng);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          key: const ValueKey('event-details-toggle'),
+          onTap: () => setState(() => _open = !_open),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.place_outlined,
+                  size: 18,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(place.regionLine ?? 'Details', style: muted),
+                ),
+                Icon(
+                  _open ? Icons.expand_less : Icons.expand_more,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_open)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Wrap(
+                  spacing: 8,
+                  children: [
+                    if (page != null && open != null)
+                      TextButton.icon(
+                        onPressed: () => open(page),
+                        icon: const Icon(Icons.open_in_new, size: 18),
+                        label: Text(place.pageLabel),
+                      ),
+                    if (directions != null && open != null)
+                      TextButton.icon(
+                        onPressed: () => open(directions),
+                        icon: const Icon(Icons.directions_outlined, size: 18),
+                        label: const Text('Open in Maps'),
+                      ),
+                  ],
+                ),
+              ),
+              if (showMap) UkDotMap(lat: lat, lng: lng),
+            ],
+          ),
+      ],
     );
   }
 }

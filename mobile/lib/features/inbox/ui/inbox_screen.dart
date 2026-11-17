@@ -140,6 +140,12 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
         ],
         bottom: TabBar(
           controller: _tabs,
+          // Scrollable tabs size to their label, so a label never wraps onto a
+          // second line at a narrow width or a large text size; tight padding
+          // keeps them all on screen at normal sizes.
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          labelPadding: const EdgeInsets.symmetric(horizontal: 12),
           tabs: [
             for (final f in InboxFolder.values)
               Tab(
@@ -150,7 +156,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen>
                   isLabelVisible: unreadIn(f),
                   alignment: AlignmentDirectional.topEnd,
                   offset: const Offset(6, -2),
-                  child: Text(f.label),
+                  child: Text(f.label, maxLines: 1, softWrap: false),
                 ),
               ),
           ],

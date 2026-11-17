@@ -12,6 +12,16 @@ part 'series_image.g.dart';
 ImageProvider Function(String url) seriesImageFactory(Ref ref) =>
     CachedNetworkImageProvider.new;
 
+/// The banner for a run (D131): its own image when it has one, otherwise the
+/// series image (the server already resolves this into `imageUrl`; this keeps
+/// the preference explicit and survives a server that only sends the own one).
+String? sessionBannerUrl({String? ownImageUrl, String? imageUrl}) {
+  final own = (ownImageUrl ?? '').trim();
+  if (own.isNotEmpty) return own;
+  final series = (imageUrl ?? '').trim();
+  return series.isEmpty ? null : series;
+}
+
 /// Height of the banner above a run card / on the run page.
 const seriesImageHeight = 150.0;
 

@@ -16,7 +16,11 @@ import '../../groups/ui/groups_providers.dart';
 import '../../messages/ui/messages_providers.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../../runs/ui/session_actions.dart';
+import '../../../core/util/open_link.dart';
 import '../logic/event_access.dart';
+import '../logic/event_place.dart';
+import '../data/event_locations_repository.dart';
+import 'event_providers.dart';
 import 'event_card.dart';
 import 'event_picker_sheet.dart';
 
@@ -57,6 +61,29 @@ class _EventsSectionState extends ConsumerState<EventsSection> {
         ),
       );
     });
+  }
+
+  bool _triedLocations = false;
+
+  /// The location list is otherwise only fetched by the picker; pull it once
+  /// when a card's location is not cached, so its details can show. Best
+  /// effort: offline just leaves the card without details.
+  void _refreshLocationsIfMissing(
+    List<Group> groups,
+    Map<String, EventLocation> locations,
+  ) {
+    if (_triedLocations) return;
+    final missing = groups.any(
+      (g) => g.locationId != null && !locations.containsKey(g.locationId),
+    );
+    if (!missing) return;
+    _triedLocations = true;
+    unawaited(
+      ref
+          .read(eventLocationsRepositoryProvider)
+          .refresh(session.clubId)
+          .then<void>((_) {}, onError: (Object _) {}),
+    );
   }
 
   Future<void> _add(BuildContext context, List<Group> groups) async {
@@ -163,6 +190,13 @@ class _EventsSectionState extends ConsumerState<EventsSection> {
       myMemberId: myId,
       isCommittee: isCommittee,
     );
+    final locations = {
+      for (final l
+          in ref.watch(eventLocationsProvider(session.clubId)).value ??
+              <EventLocation>[])
+        l.id: l,
+    };
+    _refreshLocationsIfMissing(groups, locations);
     _scrollWhenBuilt();
 
     final inEvents = groups.fold<int>(0, (n, g) => n + g.goingCount);
@@ -212,6 +246,7 @@ class _EventsSectionState extends ConsumerState<EventsSection> {
               open: open,
               plan: plan,
               showNames: namesAnyway,
+              location: locations[g.locationId],
             ),
         if (noEvent > 0 && groups.isNotEmpty)
           Padding(
@@ -238,6 +273,7 @@ class _EventsSectionState extends ConsumerState<EventsSection> {
     required bool open,
     required SessionPlan? plan,
     required bool showNames,
+    EventLocation? location,
   }) {
     final mine = resp.groupId == g.id && resp.status != 'not_going';
     final canEdit =
@@ -265,6 +301,8 @@ class _EventsSectionState extends ConsumerState<EventsSection> {
       maybe: g.maybeCount,
       isMine: mine,
       fellowAttendees: names,
+      place: location == null ? null : EventPlace.fromLocation(location),
+      onOpenLink: (url) => unawaited(openLink(context, ref, url)),
       onJoin: open && !mine
           ? () => unawaited(
               respondToRun(

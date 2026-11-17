@@ -1040,3 +1040,42 @@ run's routes and each group's link, going or not. In the editor a run with route
 link…", "No route"); picking one with a distance fills the distance if it is empty. Deleting a route leaves its groups with
 none (no notification). Kept simple for now: routes are per session, not copied from the series or last week. The app
 caches them as `sessions.routes_json` (Drift v13). Host SQL `api/database/manual/2026_11_session_routes.sql`.
+
+**D131 — Sign in with Apple through Auth0 Universal Login (2026-11-06).** Apple guideline 4.8 expects it because the app
+offers Google and Facebook. The login already uses Universal Login with no `connection` parameter, so enabling the Apple
+connection on the Native app adds the button with no app change.
+- Apple side: a Services ID (return URL `https://blackpearjoggers.us.auth0.com/login/callback`) and a Sign in with Apple
+  key, separate from the APNs key. Steps are in setup.md.
+- An Apple login is a new Auth0 login, so the person links their membership as usual (`member_logins` is many-to-one).
+- Apple sends name and email only on first authorisation, and may send a private-relay address. Nothing in the app
+  or API relies on the email being real.
+
+**D132 — Per-run picture and race website (2026-11-17).** A session can have its own `image_url` that overrides the series
+image (ad-hoc runs have no series), plus an optional `website_url` shown as a "Race website / Enter" button that opens the
+external browser. The server's `imageUrl` stays the *effective* image (own, else series) so old apps keep working;
+`sessionImageUrl` is the run's own image (what the editor reads and clears) and `websiteUrl` the race link. Both are
+http(s) only, max 500 chars, validated like the group `routeUrl` (D129). Writes are online-only like other session edits.
+Drift v14 adds `sessions.own_image_url` and `website_url`. Migration `2026_11_17_090000_add_image_and_website_to_sessions_table`.
+
+**D133 — Event details on parkrun/event cards (2026-11-17).** The card shows a collapsed "Details" row built from the cached
+`event_locations` row (looked up by `group.locationId`; refreshed once if missing): region/country, "parkrun page" link
+(stored `url`, else `https://www.parkrun.org.uk/{slug}/` for GB parkruns, as `app:import-event-locations` does), "Open in Maps"
+(Google Maps directions link from lat/lng) and a small hand-drawn Great Britain outline with a dot (CustomPaint; no map SDK,
+tiles or API key; GB coordinates only). No API or schema change. The outline is rough: check on a device.
+
+**D134 — Gap rule on the coverage card and Leader cover (2026-11-17), supersedes D128's numbers.** A gap is more than 30 s/mi
+(~19 s/km; exactly 30 is not a gap) between one group's slow edge and the next group's fast edge, or between a target end
+(8:00 / 12:00 per mile) and the nearest group. Open ends are measured from the nearest group's edge and only show when that
+edge is more than 30 s/mi inside the target end: "Need a X/mi or faster group" (X = fast edge − 30 s) and "Need an X/mi or
+slower group" (X = slow edge + 30 s). Between groups: 30–60 s reads "Need a X/mi group" (mid-point), over 60 s reads
+"Need groups between A/mi and B/mi". Rounded to 15 s in the viewer's unit; "an" before 8, 11, 18. Ask targets carry the
+same stretch. **Not yet aligned:** API `PaceSpread`, `app:send-reminders` early nudge and the shared fixture
+`api/tests/fixtures/spread_target_cases.json` still use the old 45 s / 8:30 / 11:30 rule (the Dart test no longer reads it).
+The Ask buttons are compact (min height 36, compact density). Inbox tabs are scrollable with 12 px label padding, one line each.
+
+**D135 — Data freshness (2026-11-17).** `RefreshCoordinator` (`core/notifications`) is the one place deciding when run data is
+pulled. A foreground push or notification tap force-refreshes the sessions feed (`since` cursor, which carries embedded groups)
+and the plan of the push's `sessionId`; a tap waits up to 3 s before navigating, then the page fills from the Drift stream.
+Resume and a 75 s poll (foreground, Runs tab only) are throttled to 60 s per club/run. Nothing runs in the background.
+Root cause of "had to pull to refresh": pushes/taps/resume never refreshed sessions, and plain FCM data lacked `sessionId`/
+`groupId` (now always added by `FcmClient`).

@@ -40,6 +40,8 @@ final class ClubSession extends Model
         'venue_id',
         'title',
         'notes',
+        'image_url',
+        'website_url',
         'group_mode',
         'coordinator_member_id',
         'status',

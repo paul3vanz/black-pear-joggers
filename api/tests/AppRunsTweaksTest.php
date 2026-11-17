@@ -284,6 +284,31 @@ class AppRunsTweaksTest extends AppApiTestCase
         $this->assertArrayHasKey('imageUrl', $body['errors']);
     }
 
+    public function testSessionImageOverridesSeriesAndWebsiteUrl()
+    {
+        // Ad-hoc run: own image and website, validated like the series image.
+        [$status, $run] = $this->call_('POST', '/app/clubs/1/sessions', 'u|committee', $this->adHocBody([
+            'groupMode' => 'race', 'imageUrl' => 'https://a.example/r.jpg', 'websiteUrl' => 'https://race.example/enter',
+        ]));
+        $this->assertSame(201, $status);
+        $this->assertSame('https://a.example/r.jpg', $run['imageUrl']);
+        $this->assertSame('https://a.example/r.jpg', $run['sessionImageUrl']);
+        $this->assertSame('https://race.example/enter', $run['websiteUrl']);
+
+        foreach (['imageUrl', 'websiteUrl'] as $field) {
+            [$status, $body] = $this->call_('PATCH', '/app/clubs/1/sessions/' . $run['id'], 'u|committee', [$field => 'ftp://x']);
+            $this->assertSame(422, $status);
+            $this->assertArrayHasKey($field, $body['errors']);
+        }
+
+        // Empty clears.
+        [$status, $run] = $this->call_('PATCH', '/app/clubs/1/sessions/' . $run['id'], 'u|committee', ['imageUrl' => '', 'websiteUrl' => '']);
+        $this->assertSame(200, $status);
+        $this->assertNull($run['imageUrl']);
+        $this->assertNull($run['sessionImageUrl']);
+        $this->assertNull($run['websiteUrl']);
+    }
+
     public function testEmptyImageUrlIsStoredAsNull()
     {
         [, $series] = $this->call_('POST', '/app/clubs/1/series', 'u|committee', $this->seriesBody(['imageUrl' => 'https://a.example/x.jpg']));

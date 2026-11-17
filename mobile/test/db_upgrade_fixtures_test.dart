@@ -271,6 +271,9 @@ void main() {
           entry.value >= 12 ? hasLength(1) : isEmpty,
         );
         expect(session.routesJson, isNull);
+        // v14 (D131) adds the run's own image and website, null until refresh.
+        expect(session.ownImageUrl, isNull);
+        expect(session.websiteUrl, isNull);
         final prefs = await db.select(db.preferences).getSingle();
         expect(prefs.runDays, entry.value >= 11 ? '1,2,4' : isNull);
         expect(prefs.leadDays, entry.value >= 10 ? '2,4' : isNull);

@@ -55,7 +55,7 @@ void main() {
         localDate: '2026-10-14',
         groups: [
           group('f0', from: 465, to: 480),
-          for (final (i, p) in [520, 560, 600, 640, 680, 720].indexed)
+          for (final (i, p) in [510, 540, 570, 600, 630, 660, 690].indexed)
             group('f${i + 1}', from: p),
           group('fj', kind: 'jog_walk'),
         ],
@@ -117,7 +117,10 @@ void main() {
     // The gap run shows its groups and the gap between them.
     expect(inRun('gap', find.text('9:15/mi')), findsOneWidget);
     expect(inRun('gap', find.text('10:30/mi')), findsOneWidget);
-    expect(inRun('gap', find.text('Gap · 9:30 to 10:15/mi')), findsOneWidget);
+    expect(
+      inRun('gap', find.text('Need groups between 9:45/mi and 10:00/mi')),
+      findsOneWidget,
+    );
     expect(inRun('gap', find.text('1 gap')), findsOneWidget);
 
     // A run with no groups says so and offers the ask.

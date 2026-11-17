@@ -32,6 +32,46 @@ Debug builds have a **"Developer: sign in with access token"** option on the sig
 
 The token can't be refreshed, so you'll need a new one when it expires.
 
+## Sign in with Apple (Phase 7c)
+
+The app uses Auth0 Universal Login with no `connection` parameter, so once the Apple connection is enabled for the
+Native app, an "Apple" button appears on the login page by itself. **No app code change is needed.** Apple's
+guideline 4.8 expects this because Google and Facebook are offered. The button works on Android too (it opens
+Apple's web page).
+
+Bundle id: `uk.org.bpj.app`. Auth0 domain: `blackpearjoggers.us.auth0.com`.
+
+**Apple Developer portal** (https://developer.apple.com/account → Certificates, Identifiers & Profiles):
+1. **Identifiers → `uk.org.bpj.app`** (the App ID): Sign in with Apple capability on, set as the primary App ID.
+2. **Identifiers → + → Services IDs:**
+   - Description "BPJ Sign in", identifier e.g. `uk.org.bpj.app.signin` (must differ from the App ID).
+   - After creating it, open it, tick **Sign in with Apple** and press **Configure**.
+   - Primary App ID: `uk.org.bpj.app`.
+   - Domains: `blackpearjoggers.us.auth0.com`.
+   - Return URLs: `https://blackpearjoggers.us.auth0.com/login/callback`
+   - Save, Continue, Save. This identifier is Auth0's **Client ID** for the connection.
+3. **Keys → +:** name "BPJ Sign in with Apple", tick **Sign in with Apple**, Configure → primary App ID
+   `uk.org.bpj.app`. Register and **download the `.p8` once** (Apple won't offer it again). Note the **Key ID**.
+   This is a separate key from the APNs key. Don't reuse it.
+4. Note your **Team ID** (Membership details, top right of the portal).
+
+**Auth0** (Authentication → Social → Create Connection → Apple):
+1. Client ID: the Services ID (`uk.org.bpj.app.signin`). Apple Team ID, Client Signing Key ID: from above.
+   Client Signing Key: paste the whole contents of the `.p8` (including the BEGIN/END lines).
+2. Permissions: **Name** and **Email**.
+3. **Applications** tab: switch the connection on for **BPJ App** (the Native app). Also for the website app if the
+   website should offer it too.
+4. Use the connection's **Try** button, then test in the app.
+
+Things to know:
+- Apple sends the person's name and email **only the first time** they authorise. If a test account is wrong, remove
+  the app under iPhone Settings → Apple ID → Sign-In & Security → Sign in with Apple, then try again.
+- "Hide My Email" gives a `@privaterelay.appleid.com` address. Club emails to that address only arrive if relays
+  are allowed for your sending domain (Apple developer portal → Services → Configure email sources).
+- A person who signs in with Apple is a **new Auth0 login**, so they link their membership (URN + DOB) like anyone
+  else. `member_logins` already allows several logins per member.
+- The `.p8` is a secret: keep it out of the repo, with a backup next to the Android keystore.
+
 ## Local API for the emulator
 
 The Android emulator reaches your PC at `10.0.2.2`. Start the API with:
@@ -211,9 +251,10 @@ Only Firebase Cloud Messaging is used. It's free.
 5. **Host cron** must run `php artisan schedule:run` every minute. That drains
    the `notifications` queue and runs `app:send-reminders` every 10 minutes (run reminders and
    leaders-needed alerts; it is safe to run late, twice or by hand). No other setup is needed.
-6. **iOS (later):** this needs the Apple Developer Program.
-   - Create an APNs auth key (.p8).
-   - Upload it in Firebase → Project settings → Cloud Messaging → Apple app configuration.
+6. **iOS:** the APNs auth key (.p8) is created and uploaded in Firebase → Project settings → Cloud Messaging →
+   Apple app configuration (done 2026-11-06). Still to check: a real push on a TestFlight/release iOS build.
+   `Runner.entitlements` has `aps-environment` = `development`; release builds get the production value when
+   archived with automatic signing.
 
 ### Granting committee / leader roles
 Posting club updates needs the `committee` or `admin` role. Run this on the host

@@ -157,6 +157,8 @@ class SessionDto {
     required this.localStartTime,
     required this.localEndTime,
     this.imageUrl,
+    this.ownImageUrl,
+    this.websiteUrl,
     required this.groupMode,
     required this.status,
     required this.cancelReason,
@@ -185,8 +187,14 @@ class SessionDto {
   /// Null when the run has no end time (D47).
   final String? localEndTime;
 
-  /// The series banner image URL (D49), null for ad-hoc runs.
+  /// The banner image URL (D49): the run's own image, else the series one.
   final String? imageUrl;
+
+  /// Only the run's own image (D131); overrides the series image.
+  final String? ownImageUrl;
+
+  /// Race website / entry link (D131).
+  final String? websiteUrl;
   final String groupMode;
   final String status;
   final String? cancelReason;
@@ -226,6 +234,8 @@ class SessionDto {
       localStartTime: json['localStartTime'] as String? ?? '',
       localEndTime: _str(json['localEndTime']),
       imageUrl: _str(json['imageUrl']),
+      ownImageUrl: _str(json['sessionImageUrl']),
+      websiteUrl: _str(json['websiteUrl']),
       groupMode: json['groupMode'] as String? ?? 'open',
       status: json['status'] as String? ?? 'scheduled',
       cancelReason: _str(json['cancelReason']),
@@ -256,7 +266,9 @@ class SessionDto {
     localDate: localDate,
     localStartTime: localStartTime,
     localEndTime: Value(localEndTime),
-    imageUrl: Value(imageUrl),
+    imageUrl: Value(ownImageUrl ?? imageUrl),
+    ownImageUrl: Value(ownImageUrl),
+    websiteUrl: Value(websiteUrl),
     groupMode: groupMode,
     status: Value(status),
     cancelReason: Value(cancelReason),

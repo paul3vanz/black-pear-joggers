@@ -80,6 +80,13 @@ class FcmClient
             'route' => (string) ($data['route'] ?? ''),
         ];
 
+        // Ids the app uses to refresh the right data when the push arrives or is tapped.
+        foreach (['sessionId', 'groupId'] as $key) {
+            if (!empty($data[$key])) {
+                $common[$key] = (string) $data[$key];
+            }
+        }
+
         if (!empty($data['actions']) && self::actionButtonsEnabled()) {
             return $this->buildActionMessage($device, $notification, $common, $data);
         }

@@ -79,7 +79,10 @@ class RunPresenter
             'title' => $session->title,
             'venueId' => $session->venue_id,
             'notes' => $session->notes,
-            'imageUrl' => $session->series ? $session->series->image_url : null,
+            // Effective banner: the run's own picture wins over the series one.
+            'imageUrl' => $session->image_url ?: ($session->series ? $session->series->image_url : null),
+            'sessionImageUrl' => $session->image_url,
+            'websiteUrl' => $session->website_url,
             'startsAt' => self::instant($session->starts_at),
             'endsAt' => $session->has_end ? self::instant($session->ends_at) : null,
             'localDate' => $session->localDateYmd(),

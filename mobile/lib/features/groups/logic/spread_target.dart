@@ -3,25 +3,29 @@ import 'dart:math' as math;
 import '../../../core/units/dist_unit.dart';
 import '../data/group_dtos.dart';
 
-/// The spread of paces the committee aims for on a paced run (D128). Written per
-/// mile, which is how the committee thinks of them, and worked in seconds per km.
-/// The server has the same rule (`PaceSpread`); both are tested against
-/// `api/tests/fixtures/spread_target_cases.json`, so change them together.
+/// The spread of paces the committee aims for on a paced run (D128, gap rule
+/// changed in D131). Written per mile, which is how the committee thinks of
+/// them, and worked in seconds per km (paces are stored as entered and only
+/// converted for display).
+///
+/// The API's `PaceSpread` (early nudges) still has the older D128 numbers.
 const spreadTargetFastPerMi = 480.0; // 8:00/mi
 const spreadTargetSlowPerMi = 720.0; // 12:00/mi
-const spreadEndFlexPerMi = 30.0;
 
-/// Two neighbouring groups this far apart or more leave a gap.
-const spreadMaxGapPerMi = 45.0;
+/// A hole bigger than this between two edges is worth asking about, and a new
+/// group has to be at least this far from an edge to fill it.
+const spreadMaxGapPerMi = 30.0;
 
-/// A new group fits this far inside each edge of a gap.
+/// Beyond twice [spreadMaxGapPerMi] a gap is worded as a range of paces rather
+/// than one pace.
+const spreadRangeGapPerMi = 60.0;
+
+/// A new group fitting a single-pace gap may sit this far either side of it.
 const spreadFillMarginPerMi = 15.0;
 
 double _km(double perMile) => perMile / DistUnit.mi.kmPerUnit;
 
-int _roundUp5(double s) => (((s / 5) - 1e-6).ceil()) * 5;
-int _roundDown5(double s) => (((s / 5) + 1e-6).floor()) * 5;
-int _round5(double s) => (s / 5).round() * 5;
+int _round15(double s) => (s / 15).round() * 15;
 
 /// Where two neighbouring led groups are too far apart. All values are seconds
 /// per km.
@@ -31,20 +35,40 @@ class SpreadGap {
     required this.toS,
     required this.fastS,
     required this.slowS,
+    required this.single,
   });
 
   /// The slow edge of the faster group and the fast edge of the slower one.
   final double fromS;
   final double toS;
 
-  /// Where a new group would fit: [spreadFillMarginPerMi] inside each edge.
+  /// The stretch to ask about, in seconds per km: for a range gap
+  /// [spreadMaxGapPerMi] outside each edge; for a [single] one, a margin of
+  /// [spreadFillMarginPerMi] inside each edge.
   final double fastS;
   final double slowS;
 
-  /// The stretch as whole 5 s in [unit], rounded inwards so what is named really
-  /// is open ("9:30 to 10:15").
-  int fastIn(DistUnit unit) => _roundUp5(fastS * unit.kmPerUnit);
-  int slowIn(DistUnit unit) => _roundDown5(slowS * unit.kmPerUnit);
+  /// A 30-60 s gap, worded as one pace (its mid-point) rather than a range.
+  final bool single;
+
+  /// The pace named in [unit] (whole 15 s): the mid-point of a [single] gap,
+  /// else the faster end of the range of paces needed.
+  int fastIn(DistUnit unit) => isSingleIn(unit)
+      ? _round15((fromS + toS) / 2 * unit.kmPerUnit)
+      : _round15((fromS + _km(spreadMaxGapPerMi)) * unit.kmPerUnit);
+
+  /// As [fastIn] for the slower end of the range (same as [fastIn] for a
+  /// [single] gap).
+  int slowIn(DistUnit unit) => isSingleIn(unit)
+      ? fastIn(unit)
+      : _round15((toS - _km(spreadMaxGapPerMi)) * unit.kmPerUnit);
+
+  /// Worded as one pace in [unit]: a [single] gap, or a range that rounds to
+  /// nothing wider than one 15 s step.
+  bool isSingleIn(DistUnit unit) =>
+      single ||
+      _round15((fromS + _km(spreadMaxGapPerMi)) * unit.kmPerUnit) >=
+          _round15((toS - _km(spreadMaxGapPerMi)) * unit.kmPerUnit);
 
   /// The neighbours' edges in [unit], to the second ("nobody between 9:15 and
   /// 10:30").
@@ -52,21 +76,22 @@ class SpreadGap {
   int toIn(DistUnit unit) => (toS * unit.kmPerUnit).round();
 }
 
-/// An open end of the target: nothing as fast as 8:30, or as slow as 11:30.
+/// An open end of the target: a faster or slower group is needed, measured from
+/// the edge of the fastest or slowest led group.
 class SpreadEnd {
   const SpreadEnd({required this.edgeS, required this.nearestS});
 
-  /// The edge of the open stretch in seconds per km: the fastest a group may
-  /// start (faster end), or the slowest it may finish (slower end), to meet it.
+  /// The pace asked for in seconds per km: [spreadMaxGapPerMi] faster than the
+  /// fastest group's fast edge, or slower than the slowest group's slow edge.
   final double edgeS;
 
   /// The slowest or fastest led group's own edge in seconds per km, for "the
   /// fastest group is 9:15".
   final double nearestS;
 
-  /// [edgeS] to the nearest 5 s in [unit] (8:30/mi, or 5:15/km for the same
+  /// [edgeS] to the nearest 15 s in [unit] (10:00/mi, or 6:15/km for the same
   /// stretch).
-  int edgeIn(DistUnit unit) => _round5(edgeS * unit.kmPerUnit);
+  int edgeIn(DistUnit unit) => _round15(edgeS * unit.kmPerUnit);
 
   int nearestIn(DistUnit unit) => (nearestS * unit.kmPerUnit).round();
 }
@@ -86,7 +111,7 @@ class SpreadTarget {
   /// Red: too far between two led groups, fastest first.
   final List<SpreadGap> gaps;
 
-  /// Amber: nothing led as fast as 8:30, or as slow as 11:30. Null when met.
+  /// Amber: nothing led within 30 s/mi of 8:00, or of 12:00. Null when met.
   final SpreadEnd? fasterEnd;
   final SpreadEnd? slowerEnd;
 
@@ -143,9 +168,10 @@ SpreadTarget buildSpreadTarget(List<Group> groups) {
     );
   }
 
-  final fastEnd = _km(spreadTargetFastPerMi + spreadEndFlexPerMi);
-  final slowEnd = _km(spreadTargetSlowPerMi - spreadEndFlexPerMi);
+  final fastEnd = _km(spreadTargetFastPerMi + spreadMaxGapPerMi);
+  final slowEnd = _km(spreadTargetSlowPerMi - spreadMaxGapPerMi);
   final maxGap = _km(spreadMaxGapPerMi);
+  final rangeGap = _km(spreadRangeGapPerMi);
   final margin = _km(spreadFillMarginPerMi);
 
   bands.sort((a, b) => a.fast.compareTo(b.fast));
@@ -153,15 +179,17 @@ SpreadTarget buildSpreadTarget(List<Group> groups) {
   // The slowest edge so far, so a range inside a wider group hides nothing.
   var edge = bands.first.slow;
   for (final b in bands.skip(1)) {
-    if (b.fast - edge >= maxGap - 1e-9) {
-      gaps.add(
-        SpreadGap(
-          fromS: edge,
-          toS: b.fast,
-          fastS: edge + margin,
-          slowS: b.fast - margin,
-        ),
+    final hole = b.fast - edge;
+    if (hole > maxGap + 1e-9) {
+      final single = hole <= rangeGap + 1e-9;
+      final gap = SpreadGap(
+        fromS: edge,
+        toS: b.fast,
+        fastS: single ? edge + margin : edge + maxGap,
+        slowS: single ? b.fast - margin : b.fast - maxGap,
+        single: single,
       );
+      gaps.add(gap);
     }
     edge = math.max(edge, b.slow);
   }
@@ -170,10 +198,13 @@ SpreadTarget buildSpreadTarget(List<Group> groups) {
     empty: false,
     gaps: gaps,
     fasterEnd: bands.first.fast > fastEnd + 1e-9
-        ? SpreadEnd(edgeS: fastEnd, nearestS: bands.first.fast)
+        ? SpreadEnd(
+            edgeS: bands.first.fast - maxGap,
+            nearestS: bands.first.fast,
+          )
         : null,
     slowerEnd: edge < slowEnd - 1e-9
-        ? SpreadEnd(edgeS: slowEnd, nearestS: edge)
+        ? SpreadEnd(edgeS: edge + maxGap, nearestS: edge)
         : null,
     jogWalk: jogWalk,
   );

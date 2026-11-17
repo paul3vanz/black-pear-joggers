@@ -33,6 +33,10 @@ class AppSessionController extends Controller
             'notes' => 'nullable|string',
             'groupMode' => ($creating ? 'required' : 'nullable') . '|in:' . implode(',', SessionSeries::GROUP_MODES),
             'coordinatorMemberId' => 'nullable|uuid',
+            // Own picture for this run; overrides the series image. http(s) only, as it is loaded by the app.
+            'imageUrl' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https?:\/\//i'],
+            // Where to read about / enter the race (any run, shown as a button for races). http(s) only, opened in the browser.
+            'websiteUrl' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https?:\/\//i'],
         ];
     }
 
@@ -68,6 +72,14 @@ class AppSessionController extends Controller
         return $session->has_end ? (int) $session->starts_at->diffInMinutes($session->ends_at) : null;
     }
 
+    /** Trimmed link, null when empty. */
+    private function cleanUrl($value): ?string
+    {
+        $value = is_string($value) ? trim($value) : null;
+
+        return $value === '' ? null : $value;
+    }
+
     /** 422 unless the id is a live member of this club (or empty). */
     private function checkCoordinator($club, $memberId)
     {
@@ -88,7 +100,7 @@ class AppSessionController extends Controller
      *   @OA\Parameter(name="from", in="query", required=false, @OA\Schema(type="string", format="date")),
      *   @OA\Parameter(name="to", in="query", required=false, @OA\Schema(type="string", format="date")),
      *   @OA\Parameter(name="since", in="query", required=false, @OA\Schema(type="string", format="date-time")),
-     *   @OA\Response(response=200, description="{ items: Session[] (endsAt and localEndTime are null when the run has no end time; imageUrl is the series image), serverTime }"),
+     *   @OA\Response(response=200, description="{ items: Session[] (endsAt and localEndTime are null when the run has no end time; imageUrl is the run's own image, else the series image; sessionImageUrl is only the run's own; websiteUrl), serverTime }"),
      *   @OA\Response(response=403, description="Not linked to this club"),
      *   @OA\Response(response=422, description="Bad from, to or since"),
      * )
@@ -162,6 +174,8 @@ class AppSessionController extends Controller
      *       @OA\Property(property="notes", type="string", nullable=true),
      *       @OA\Property(property="groupMode", type="string", enum={"paced","single","open","routes","events","race"}),
      *       @OA\Property(property="coordinatorMemberId", type="string", format="uuid", nullable=true),
+     *       @OA\Property(property="imageUrl", type="string", nullable=true, description="http(s) banner for this run; overrides the series image (ad-hoc runs have no series). On PATCH, null clears it."),
+     *       @OA\Property(property="websiteUrl", type="string", nullable=true, description="http(s) race website / entry link (shown for races). On PATCH, null clears it."),
      *     )
      *   ),
      *   @OA\Response(response=201, description="The session (200 when the id was already used)"),
@@ -204,6 +218,8 @@ class AppSessionController extends Controller
             'title' => $request->input('title'),
             'venue_id' => $request->input('venueId'),
             'notes' => $request->input('notes'),
+            'image_url' => $this->cleanUrl($request->input('imageUrl')),
+            'website_url' => $this->cleanUrl($request->input('websiteUrl')),
             'group_mode' => $request->input('groupMode'),
             'coordinator_member_id' => $request->input('coordinatorMemberId'),
         ] + SessionGenerator::times(
@@ -282,9 +298,11 @@ class AppSessionController extends Controller
         $before = [$session->title, $session->venue_id, $session->local_start_time, $this->durationOf($session)];
         $movedFrom = ['starts_at' => $session->starts_at->copy(), 'venue_id' => $session->venue_id];
 
-        foreach (['title' => 'title', 'venueId' => 'venue_id', 'notes' => 'notes', 'coordinatorMemberId' => 'coordinator_member_id'] as $key => $column) {
+        foreach (['title' => 'title', 'venueId' => 'venue_id', 'notes' => 'notes', 'coordinatorMemberId' => 'coordinator_member_id', 'imageUrl' => 'image_url', 'websiteUrl' => 'website_url'] as $key => $column) {
             if ($request->has($key)) {
-                $session->{$column} = $request->input($key);
+                $session->{$column} = in_array($key, ['imageUrl', 'websiteUrl'], true)
+                    ? $this->cleanUrl($request->input($key))
+                    : $request->input($key);
             }
         }
 

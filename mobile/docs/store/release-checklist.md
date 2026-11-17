@@ -201,6 +201,7 @@ Nothing here is done. See [ROADMAP Phase 7c](../ROADMAP.md) and Phase 2's iOS pu
 - **Apple Developer Program**: $99 a year (individual) or an organisation account (needs a D-U-N-S number). Needed for TestFlight and the App Store.
 - **A Mac with Xcode**, or a hosted Mac build service (Codemagic is the one in the roadmap). Flutter cannot build iOS on Windows.
 - **Sign in with Apple**: the app offers Google and Facebook sign-in, and Apple's guideline 4.8 expects an equivalent privacy-friendly option, which in practice means Sign in with Apple. Auth0 has an Apple connection; enable it for the Native app and test it.
+  (Status: steps and decision D131 are in setup.md and decisions.md.)
 - **APNs key** (a `.p8` file) created in the Apple Developer account and uploaded in Firebase -> Project settings -> Cloud Messaging -> Apple app configuration. Without it iOS gets no push. Also add the Push Notifications capability in Xcode (see mobile/README.md "Push notifications").
 - **App Store privacy labels** (the iOS equivalent of the Data safety form): the answers are the same as data-safety.md, redone in App Store Connect.
 - **Account deletion in the app** is required by Apple too (guideline 5.1.1(v)); the same Profile -> About & privacy -> Delete my account covers it.

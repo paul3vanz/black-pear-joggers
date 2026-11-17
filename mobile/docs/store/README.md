@@ -6,4 +6,5 @@ Drafts for publishing the BPJ app (`uk.org.bpj.app`). The owner publishes the po
 - [privacy-policy.md](privacy-policy.md): draft policy for https://bpj.org.uk/privacy-policy. Resolve every `[CONFIRM]` first.
 - [data-safety.md](data-safety.md): answers for Play "Data safety", content rating, target audience, app access and account deletion.
 - [play-listing.md](play-listing.md): names, descriptions, screenshots checklist, release notes template.
+- [app-store-listing.md](app-store-listing.md): Apple App Store Connect answers: listing, privacy labels, age rating, review notes, build and upload.
 - Beta builds: `../../scripts/distribute-android.sh` (Firebase App Distribution).

@@ -187,8 +187,16 @@ class Sessions extends Table {
   TextColumn get status => text().withDefault(const Constant('scheduled'))();
   TextColumn get cancelReason => text().nullable()();
 
-  /// The series' banner image URL, copied onto the run by the server (D49).
+  /// The effective banner image URL (D49): the run's own image when set, else
+  /// the series' one, resolved by the server.
   TextColumn get imageUrl => text().nullable()();
+
+  /// Only the run's own image (D131), which overrides the series image. Kept
+  /// apart so the editor can show and clear it.
+  TextColumn get ownImageUrl => text().nullable()();
+
+  /// Race website / entry link (D131), http(s) only.
+  TextColumn get websiteUrl => text().nullable()();
 
   TextColumn get coordinatorMemberId => text().nullable()();
   TextColumn get coordinatorName => text().nullable()();

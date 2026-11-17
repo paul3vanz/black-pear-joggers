@@ -111,8 +111,8 @@ problem of updates being missed.
       - Inbox with unread badge
       - Notification settings screen
       - Committee "new post" screen
-- [ ] iOS: push needs the paid Apple Developer account and an APNs key uploaded to
-      Firebase. Android works now.
+- [~] iOS: APNs key uploaded to Firebase (2026-11-06); still to verify on a real iOS build (Phase 7c).
+      Android works.
 
 **Done when:** the committee posts from the app and testers get a push. Posts can
 still be read offline later.
@@ -277,10 +277,16 @@ data-safety answers). Decisions D71-D73.
 - [x] About screen: version, privacy policy link, delete account (Profile -> About & privacy, D75)
 
 **7c: iOS (needs the paid Apple Developer account, not started)**
-- [ ] Apple Developer Program ($99/yr): TestFlight, then the App Store
-- [ ] **Sign in with Apple**. Apple guideline 4.8 expects it when Google or Facebook login is offered.
-      Auth0 has an Apple connection.
-- [ ] APNs key uploaded to Firebase (iOS push), iOS action category check, App Store privacy labels
+- [x] Apple Developer Program ($99/yr) paid (2026-11-06)
+- [ ] TestFlight build, then the App Store
+- [~] **Sign in with Apple**. Apple guideline 4.8 expects it when Google or Facebook login is offered.
+      Capability enabled on the App ID. No app code needed (Universal Login shows the button). Steps in
+      [setup.md](setup.md#sign-in-with-apple-phase-7c), D131:
+      - [ ] Services ID + return URL, Sign in with Apple key (.p8) in the Apple portal
+      - [ ] Apple connection in Auth0, enabled for BPJ App
+      - [ ] Test on iPhone (first-time name/email, Hide My Email) and Android
+- [x] APNs key uploaded to Firebase (2026-11-06)
+- [ ] iOS push check on a real build, iOS action category check, App Store privacy labels
 
 ## Phase 8: parkrun tourism and race events
 
@@ -329,7 +335,7 @@ Contract: "Update (2026-10-19)" in [api-contract.md](api-contract.md). D117, D11
 - [x] API: `app:migrate-follows` with `--dry-run` counts per rule, safe to run twice
 - [x] App: My runs | All runs on the Runs tab, status chips, inline Follow, Runs I follow screen with Undo;
       Notification settings links to it; Drift schema v12
-- [ ] Host: run `2026_10_follows.sql`, then `app:migrate-follows --dry-run`, check the counts, then run it
+- [x] Host: SQL files run OK (2026-11-06). Check `app:migrate-follows` has been run (dry run first)
 - [ ] Real-device check (TalkBack on the three-way control)
 - [ ] Later: remove `runDays` handling and `member_preferences.run_days` once older app versions are rare
 
@@ -358,14 +364,14 @@ migration is written. Suggested order: 1, 3, 2 (3 reuses the chat screen from 2)
    - Always on, not a setting. Only the committee sees who; members never see each other's state.
    - API `post_receipts` + `POST /posts/receipts` + `GET /posts/{id}/receipts`; the app reports delivered after every
      posts refresh and read when the update has been open 2s and scrolled to the end.
-   - [ ] Host: run `api/database/manual/2026_10_post_receipts.sql` before deploying the API.
+   - [x] Host: run `api/database/manual/2026_10_post_receipts.sql` before deploying the API.
    - [ ] Later: a per-update summary on the committee's Updates list, and "nudge those who haven't read it".
 2. **Chat on updates** (members ask, committee replies): **built (D126)**.
    - A Q&A thread under each update that everyone it is for can read and write; committee replies carry a
      "Committee" badge; the committee gets a push for new questions and members who asked or opened it get one for
      replies; per-update mute; the committee can close comments (members read only, the committee can still reply).
    - Reached from a **Comments** card on the update, from its notifications, and from the Inbox's Chats tab.
-   - [ ] Host: run `api/database/manual/2026_10_post_comments.sql` (it also adds `posts.comments_closed_at`) before
+   - [x] Host: run `api/database/manual/2026_10_post_comments.sql` (it also adds `posts.comments_closed_at`) before
      deploying the API.
    - [ ] Later: show a comment count on the Updates list, and let the committee close comments when publishing.
 
@@ -373,7 +379,7 @@ migration is written. Suggested order: 1, 3, 2 (3 reuses the chat screen from 2)
    - One thread per run for the committee, the run's leaders and anyone asked; the coverage card's gaps and unled
      groups have **Ask leaders**, the ask is a `leaders_needed` push and repeats once after a day if still uncovered.
    - Inbox has a **Leaders** tab; leaders get a **Leaders thread** link on the run page.
-   - [ ] Host: run `api/database/manual/2026_10_leader_threads.sql` before deploying the API.
+   - [x] Host: run `api/database/manual/2026_10_leader_threads.sql` before deploying the API.
    - [ ] Later: **I can lead** could pre-fill the pace in the group editor, and a leader signing up could post "Sam is
      now leading 9:00/mi" into the thread automatically. Move the ask's pace/note out of `body` into columns at the
      next schema bump.
@@ -398,6 +404,19 @@ migration is written. Suggested order: 1, 3, 2 (3 reuses the chat screen from 2)
   editor or keeps its own link. Everyone can open them.
    - [ ] Host: run `api/database/manual/2026_11_session_routes.sql` (after the group route URL one) before deploying the API.
    - [ ] Later: copy last week's routes into a new run.
+
+## Tweaks (2026-11-17): run pictures, race links, event details, gap wording, fresher data
+
+Decisions D132-D135. Contract: "Update (2026-11-17)" in [api-contract.md](api-contract.md).
+- [x] Per-run picture overriding the series picture; race website + "Enter" button (Drift v14)
+  - [ ] Host: run migration `2026_11_17_090000_add_image_and_website_to_sessions_table` **before deploying the API** (the
+        presenter reads the new columns)
+- [x] Parkrun/event card details: region, parkrun page, Open in Maps, GB dot map
+- [x] Inbox tabs no longer wrap; compact Ask buttons; coverage gap rule 30 s with "Need a X/mi or faster/slower group"
+  - [ ] Align API `PaceSpread`, the `app:send-reminders` early nudge and `spread_target_cases.json` with D134
+- [x] Refresh on notification tap, foreground push, resume and a 75 s poll (D135); FCM data carries `sessionId`/`groupId`
+- [ ] Not run yet (sandbox blocked Flutter/PHP): `flutter test` (events, refresh coordinator, runs images), PHP tests; `dart analyze` is clean
+- [ ] Real-device check of all of the above; check the GB outline looks right
 
 ## Backlog
 

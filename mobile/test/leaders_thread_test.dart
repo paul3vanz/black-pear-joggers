@@ -860,11 +860,11 @@ void main() {
     ) async {
       final adapter = await pumpDetail(tester);
 
-      // The gap between 8:00 and 10:30 is where a 9:00 to 10:00 group would fit.
-      await tester.tap(find.byKey(const ValueKey('ask-gap-495')));
+      // 8:00 and 10:30 leave 8:30 to 10:00 uncovered (30 s/mi inside each edge).
+      await tester.tap(find.byKey(const ValueKey('ask-gap-510')));
       await tester.pumpAndSettle();
       expect(
-        find.text('Ask for a group between 8:15 and 10:15/mi'),
+        find.text('Ask for a group between 8:30 and 10:00/mi'),
         findsOneWidget,
       );
       await tester.tap(find.byKey(const ValueKey('pool-m1')));
@@ -879,9 +879,9 @@ void main() {
       final data = askBody(adapter);
       expect(data['note'], 'Thursday');
       expect(data['memberIds'], ['m1']); // only the person ticked
-      // The stretch, in seconds per km: 8:15 to 10:15/mi.
-      expect(data['fastSPerKm'], 308);
-      expect(data['slowSPerKm'], 382);
+      // The stretch, in seconds per km: 8:30 to 10:00/mi.
+      expect(data['fastSPerKm'], 317);
+      expect(data['slowSPerKm'], 373);
       // Done: told how many, and the thread opens.
       expect(find.text('leaders thread page'), findsOneWidget);
       await unmount(tester);
@@ -897,7 +897,7 @@ void main() {
 
       await tester.tap(find.byKey(const ValueKey('ask-slower-end')));
       await tester.pumpAndSettle();
-      expect(find.text('Ask for a group slower than 11:30/mi'), findsOneWidget);
+      expect(find.text('Ask for a group slower than 9:15/mi'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('pool-m2')));
       await tester.pump();
       await tester.tap(find.byKey(const ValueKey('ask-send')));
@@ -905,7 +905,7 @@ void main() {
 
       final data = askBody(adapter);
       expect(data['memberIds'], ['m2']);
-      expect(data['fastSPerKm'], 429); // 11:30/mi
+      expect(data['fastSPerKm'], 345); // 9:15/mi
       expect(data['slowSPerKm'], 900); // open ended
       await unmount(tester);
     });
@@ -954,8 +954,11 @@ void main() {
     ) async {
       await pumpDetail(tester, roles: const [], coordinator: 'me');
       expect(find.text('Group coverage'), findsOneWidget);
-      expect(find.byKey(const ValueKey('ask-gap-495')), findsNothing);
-      expect(find.text('Gap · 8:15 to 10:15/mi'), findsOneWidget);
+      expect(find.byKey(const ValueKey('ask-gap-510')), findsNothing);
+      expect(
+        find.text('Need groups between 8:30/mi and 10:00/mi'),
+        findsOneWidget,
+      );
       expect(find.byKey(const ValueKey('open-leaders-chat')), findsNothing);
       await unmount(tester);
     });
@@ -976,7 +979,7 @@ void main() {
         'error': 'forbidden',
         'message': 'Only the committee can ask for leaders.',
       });
-      await tester.tap(find.byKey(const ValueKey('ask-gap-495')));
+      await tester.tap(find.byKey(const ValueKey('ask-gap-510')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('pool-m1')));
       await tester.pump();

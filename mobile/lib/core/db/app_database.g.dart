@@ -4830,6 +4830,28 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _ownImageUrlMeta = const VerificationMeta(
+    'ownImageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> ownImageUrl = GeneratedColumn<String>(
+    'own_image_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _websiteUrlMeta = const VerificationMeta(
+    'websiteUrl',
+  );
+  @override
+  late final GeneratedColumn<String> websiteUrl = GeneratedColumn<String>(
+    'website_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _coordinatorMemberIdMeta =
       const VerificationMeta('coordinatorMemberId');
   @override
@@ -4940,6 +4962,8 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     status,
     cancelReason,
     imageUrl,
+    ownImageUrl,
+    websiteUrl,
     coordinatorMemberId,
     coordinatorName,
     isDetached,
@@ -5082,6 +5106,21 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         imageUrl.isAcceptableOrUnknown(data['image_url']!, _imageUrlMeta),
       );
     }
+    if (data.containsKey('own_image_url')) {
+      context.handle(
+        _ownImageUrlMeta,
+        ownImageUrl.isAcceptableOrUnknown(
+          data['own_image_url']!,
+          _ownImageUrlMeta,
+        ),
+      );
+    }
+    if (data.containsKey('website_url')) {
+      context.handle(
+        _websiteUrlMeta,
+        websiteUrl.isAcceptableOrUnknown(data['website_url']!, _websiteUrlMeta),
+      );
+    }
     if (data.containsKey('coordinator_member_id')) {
       context.handle(
         _coordinatorMemberIdMeta,
@@ -5217,6 +5256,14 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         DriftSqlType.string,
         data['${effectivePrefix}image_url'],
       ),
+      ownImageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}own_image_url'],
+      ),
+      websiteUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}website_url'],
+      ),
       coordinatorMemberId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}coordinator_member_id'],
@@ -5280,8 +5327,16 @@ class Session extends DataClass implements Insertable<Session> {
   final String status;
   final String? cancelReason;
 
-  /// The series' banner image URL, copied onto the run by the server (D49).
+  /// The effective banner image URL (D49): the run's own image when set, else
+  /// the series' one, resolved by the server.
   final String? imageUrl;
+
+  /// Only the run's own image (D131), which overrides the series image. Kept
+  /// apart so the editor can show and clear it.
+  final String? ownImageUrl;
+
+  /// Race website / entry link (D131), http(s) only.
+  final String? websiteUrl;
   final String? coordinatorMemberId;
   final String? coordinatorName;
   final bool isDetached;
@@ -5317,6 +5372,8 @@ class Session extends DataClass implements Insertable<Session> {
     required this.status,
     this.cancelReason,
     this.imageUrl,
+    this.ownImageUrl,
+    this.websiteUrl,
     this.coordinatorMemberId,
     this.coordinatorName,
     required this.isDetached,
@@ -5358,6 +5415,12 @@ class Session extends DataClass implements Insertable<Session> {
     }
     if (!nullToAbsent || imageUrl != null) {
       map['image_url'] = Variable<String>(imageUrl);
+    }
+    if (!nullToAbsent || ownImageUrl != null) {
+      map['own_image_url'] = Variable<String>(ownImageUrl);
+    }
+    if (!nullToAbsent || websiteUrl != null) {
+      map['website_url'] = Variable<String>(websiteUrl);
     }
     if (!nullToAbsent || coordinatorMemberId != null) {
       map['coordinator_member_id'] = Variable<String>(coordinatorMemberId);
@@ -5414,6 +5477,12 @@ class Session extends DataClass implements Insertable<Session> {
       imageUrl: imageUrl == null && nullToAbsent
           ? const Value.absent()
           : Value(imageUrl),
+      ownImageUrl: ownImageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(ownImageUrl),
+      websiteUrl: websiteUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(websiteUrl),
       coordinatorMemberId: coordinatorMemberId == null && nullToAbsent
           ? const Value.absent()
           : Value(coordinatorMemberId),
@@ -5459,6 +5528,8 @@ class Session extends DataClass implements Insertable<Session> {
       status: serializer.fromJson<String>(json['status']),
       cancelReason: serializer.fromJson<String?>(json['cancelReason']),
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
+      ownImageUrl: serializer.fromJson<String?>(json['ownImageUrl']),
+      websiteUrl: serializer.fromJson<String?>(json['websiteUrl']),
       coordinatorMemberId: serializer.fromJson<String?>(
         json['coordinatorMemberId'],
       ),
@@ -5491,6 +5562,8 @@ class Session extends DataClass implements Insertable<Session> {
       'status': serializer.toJson<String>(status),
       'cancelReason': serializer.toJson<String?>(cancelReason),
       'imageUrl': serializer.toJson<String?>(imageUrl),
+      'ownImageUrl': serializer.toJson<String?>(ownImageUrl),
+      'websiteUrl': serializer.toJson<String?>(websiteUrl),
       'coordinatorMemberId': serializer.toJson<String?>(coordinatorMemberId),
       'coordinatorName': serializer.toJson<String?>(coordinatorName),
       'isDetached': serializer.toJson<bool>(isDetached),
@@ -5519,6 +5592,8 @@ class Session extends DataClass implements Insertable<Session> {
     String? status,
     Value<String?> cancelReason = const Value.absent(),
     Value<String?> imageUrl = const Value.absent(),
+    Value<String?> ownImageUrl = const Value.absent(),
+    Value<String?> websiteUrl = const Value.absent(),
     Value<String?> coordinatorMemberId = const Value.absent(),
     Value<String?> coordinatorName = const Value.absent(),
     bool? isDetached,
@@ -5546,6 +5621,8 @@ class Session extends DataClass implements Insertable<Session> {
     status: status ?? this.status,
     cancelReason: cancelReason.present ? cancelReason.value : this.cancelReason,
     imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
+    ownImageUrl: ownImageUrl.present ? ownImageUrl.value : this.ownImageUrl,
+    websiteUrl: websiteUrl.present ? websiteUrl.value : this.websiteUrl,
     coordinatorMemberId: coordinatorMemberId.present
         ? coordinatorMemberId.value
         : this.coordinatorMemberId,
@@ -5585,6 +5662,12 @@ class Session extends DataClass implements Insertable<Session> {
           ? data.cancelReason.value
           : this.cancelReason,
       imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
+      ownImageUrl: data.ownImageUrl.present
+          ? data.ownImageUrl.value
+          : this.ownImageUrl,
+      websiteUrl: data.websiteUrl.present
+          ? data.websiteUrl.value
+          : this.websiteUrl,
       coordinatorMemberId: data.coordinatorMemberId.present
           ? data.coordinatorMemberId.value
           : this.coordinatorMemberId,
@@ -5629,6 +5712,8 @@ class Session extends DataClass implements Insertable<Session> {
           ..write('status: $status, ')
           ..write('cancelReason: $cancelReason, ')
           ..write('imageUrl: $imageUrl, ')
+          ..write('ownImageUrl: $ownImageUrl, ')
+          ..write('websiteUrl: $websiteUrl, ')
           ..write('coordinatorMemberId: $coordinatorMemberId, ')
           ..write('coordinatorName: $coordinatorName, ')
           ..write('isDetached: $isDetached, ')
@@ -5659,6 +5744,8 @@ class Session extends DataClass implements Insertable<Session> {
     status,
     cancelReason,
     imageUrl,
+    ownImageUrl,
+    websiteUrl,
     coordinatorMemberId,
     coordinatorName,
     isDetached,
@@ -5688,6 +5775,8 @@ class Session extends DataClass implements Insertable<Session> {
           other.status == this.status &&
           other.cancelReason == this.cancelReason &&
           other.imageUrl == this.imageUrl &&
+          other.ownImageUrl == this.ownImageUrl &&
+          other.websiteUrl == this.websiteUrl &&
           other.coordinatorMemberId == this.coordinatorMemberId &&
           other.coordinatorName == this.coordinatorName &&
           other.isDetached == this.isDetached &&
@@ -5715,6 +5804,8 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   final Value<String> status;
   final Value<String?> cancelReason;
   final Value<String?> imageUrl;
+  final Value<String?> ownImageUrl;
+  final Value<String?> websiteUrl;
   final Value<String?> coordinatorMemberId;
   final Value<String?> coordinatorName;
   final Value<bool> isDetached;
@@ -5741,6 +5832,8 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.status = const Value.absent(),
     this.cancelReason = const Value.absent(),
     this.imageUrl = const Value.absent(),
+    this.ownImageUrl = const Value.absent(),
+    this.websiteUrl = const Value.absent(),
     this.coordinatorMemberId = const Value.absent(),
     this.coordinatorName = const Value.absent(),
     this.isDetached = const Value.absent(),
@@ -5768,6 +5861,8 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.status = const Value.absent(),
     this.cancelReason = const Value.absent(),
     this.imageUrl = const Value.absent(),
+    this.ownImageUrl = const Value.absent(),
+    this.websiteUrl = const Value.absent(),
     this.coordinatorMemberId = const Value.absent(),
     this.coordinatorName = const Value.absent(),
     this.isDetached = const Value.absent(),
@@ -5803,6 +5898,8 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Expression<String>? status,
     Expression<String>? cancelReason,
     Expression<String>? imageUrl,
+    Expression<String>? ownImageUrl,
+    Expression<String>? websiteUrl,
     Expression<String>? coordinatorMemberId,
     Expression<String>? coordinatorName,
     Expression<bool>? isDetached,
@@ -5830,6 +5927,8 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       if (status != null) 'status': status,
       if (cancelReason != null) 'cancel_reason': cancelReason,
       if (imageUrl != null) 'image_url': imageUrl,
+      if (ownImageUrl != null) 'own_image_url': ownImageUrl,
+      if (websiteUrl != null) 'website_url': websiteUrl,
       if (coordinatorMemberId != null)
         'coordinator_member_id': coordinatorMemberId,
       if (coordinatorName != null) 'coordinator_name': coordinatorName,
@@ -5860,6 +5959,8 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Value<String>? status,
     Value<String?>? cancelReason,
     Value<String?>? imageUrl,
+    Value<String?>? ownImageUrl,
+    Value<String?>? websiteUrl,
     Value<String?>? coordinatorMemberId,
     Value<String?>? coordinatorName,
     Value<bool>? isDetached,
@@ -5887,6 +5988,8 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       status: status ?? this.status,
       cancelReason: cancelReason ?? this.cancelReason,
       imageUrl: imageUrl ?? this.imageUrl,
+      ownImageUrl: ownImageUrl ?? this.ownImageUrl,
+      websiteUrl: websiteUrl ?? this.websiteUrl,
       coordinatorMemberId: coordinatorMemberId ?? this.coordinatorMemberId,
       coordinatorName: coordinatorName ?? this.coordinatorName,
       isDetached: isDetached ?? this.isDetached,
@@ -5950,6 +6053,12 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     if (imageUrl.present) {
       map['image_url'] = Variable<String>(imageUrl.value);
     }
+    if (ownImageUrl.present) {
+      map['own_image_url'] = Variable<String>(ownImageUrl.value);
+    }
+    if (websiteUrl.present) {
+      map['website_url'] = Variable<String>(websiteUrl.value);
+    }
     if (coordinatorMemberId.present) {
       map['coordinator_member_id'] = Variable<String>(
         coordinatorMemberId.value,
@@ -6001,6 +6110,8 @@ class SessionsCompanion extends UpdateCompanion<Session> {
           ..write('status: $status, ')
           ..write('cancelReason: $cancelReason, ')
           ..write('imageUrl: $imageUrl, ')
+          ..write('ownImageUrl: $ownImageUrl, ')
+          ..write('websiteUrl: $websiteUrl, ')
           ..write('coordinatorMemberId: $coordinatorMemberId, ')
           ..write('coordinatorName: $coordinatorName, ')
           ..write('isDetached: $isDetached, ')
@@ -13386,6 +13497,8 @@ typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
   Value<String> status,
   Value<String?> cancelReason,
   Value<String?> imageUrl,
+  Value<String?> ownImageUrl,
+  Value<String?> websiteUrl,
   Value<String?> coordinatorMemberId,
   Value<String?> coordinatorName,
   Value<bool> isDetached,
@@ -13413,6 +13526,8 @@ typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
   Value<String> status,
   Value<String?> cancelReason,
   Value<String?> imageUrl,
+  Value<String?> ownImageUrl,
+  Value<String?> websiteUrl,
   Value<String?> coordinatorMemberId,
   Value<String?> coordinatorName,
   Value<bool> isDetached,
@@ -13510,6 +13625,16 @@ class $$SessionsTableFilterComposer
 
   ColumnFilters<String> get imageUrl => $composableBuilder(
     column: $table.imageUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ownImageUrl => $composableBuilder(
+    column: $table.ownImageUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get websiteUrl => $composableBuilder(
+    column: $table.websiteUrl,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13643,6 +13768,16 @@ class $$SessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get ownImageUrl => $composableBuilder(
+    column: $table.ownImageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get websiteUrl => $composableBuilder(
+    column: $table.websiteUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get coordinatorMemberId => $composableBuilder(
     column: $table.coordinatorMemberId,
     builder: (column) => ColumnOrderings(column),
@@ -13749,6 +13884,16 @@ class $$SessionsTableAnnotationComposer
   GeneratedColumn<String> get imageUrl =>
       $composableBuilder(column: $table.imageUrl, builder: (column) => column);
 
+  GeneratedColumn<String> get ownImageUrl => $composableBuilder(
+    column: $table.ownImageUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get websiteUrl => $composableBuilder(
+    column: $table.websiteUrl,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get coordinatorMemberId => $composableBuilder(
     column: $table.coordinatorMemberId,
     builder: (column) => column,
@@ -13832,6 +13977,8 @@ class $$SessionsTableTableManager
                 Value<String> status = const Value.absent(),
                 Value<String?> cancelReason = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
+                Value<String?> ownImageUrl = const Value.absent(),
+                Value<String?> websiteUrl = const Value.absent(),
                 Value<String?> coordinatorMemberId = const Value.absent(),
                 Value<String?> coordinatorName = const Value.absent(),
                 Value<bool> isDetached = const Value.absent(),
@@ -13858,6 +14005,8 @@ class $$SessionsTableTableManager
                 status: status,
                 cancelReason: cancelReason,
                 imageUrl: imageUrl,
+                ownImageUrl: ownImageUrl,
+                websiteUrl: websiteUrl,
                 coordinatorMemberId: coordinatorMemberId,
                 coordinatorName: coordinatorName,
                 isDetached: isDetached,
@@ -13886,6 +14035,8 @@ class $$SessionsTableTableManager
                 Value<String> status = const Value.absent(),
                 Value<String?> cancelReason = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
+                Value<String?> ownImageUrl = const Value.absent(),
+                Value<String?> websiteUrl = const Value.absent(),
                 Value<String?> coordinatorMemberId = const Value.absent(),
                 Value<String?> coordinatorName = const Value.absent(),
                 Value<bool> isDetached = const Value.absent(),
@@ -13912,6 +14063,8 @@ class $$SessionsTableTableManager
                 status: status,
                 cancelReason: cancelReason,
                 imageUrl: imageUrl,
+                ownImageUrl: ownImageUrl,
+                websiteUrl: websiteUrl,
                 coordinatorMemberId: coordinatorMemberId,
                 coordinatorName: coordinatorName,
                 isDetached: isDetached,

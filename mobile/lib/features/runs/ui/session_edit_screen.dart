@@ -7,7 +7,9 @@ import 'package:go_router/go_router.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../../core/db/app_database.dart';
 import '../data/runs_repository.dart';
+import '../../groups/ui/group_format.dart' show checkRouteUrl;
 import '../../groups/ui/member_picker.dart';
+import '../logic/run_modes.dart';
 import 'form_fields.dart';
 import 'run_format.dart';
 import 'runs_providers.dart';
@@ -60,6 +62,8 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
   late final TextEditingController _title;
   late final TextEditingController _duration;
   late final TextEditingController _notes;
+  late final TextEditingController _imageUrl;
+  late final TextEditingController _websiteUrl;
   late String? _date;
   late String? _start;
   late String? _venueId;
@@ -87,6 +91,8 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
           : durationBetween(s.localStartTime, s.localEndTime!).toString(),
     );
     _notes = TextEditingController(text: s?.notes ?? '');
+    _imageUrl = TextEditingController(text: s?.ownImageUrl ?? '');
+    _websiteUrl = TextEditingController(text: s?.websiteUrl ?? '');
     _date = s?.localDate ?? todayString();
     _start = s?.localStartTime ?? '19:00';
     _venueId = s?.venueId;
@@ -100,6 +106,8 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
     _title.dispose();
     _duration.dispose();
     _notes.dispose();
+    _imageUrl.dispose();
+    _websiteUrl.dispose();
     super.dispose();
   }
 
@@ -125,6 +133,10 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
     final router = GoRouter.of(context);
     final notes = _notes.text.trim().isEmpty ? null : _notes.text.trim();
     final duration = DurationField.parse(_duration); // null = no end time
+    final image = _imageUrl.text.trim().isEmpty ? null : _imageUrl.text.trim();
+    final website = _websiteUrl.text.trim().isEmpty
+        ? null
+        : _websiteUrl.text.trim();
     setState(() => _saving = true);
     final existing = _existing;
     final ok = await runWrite(
@@ -140,6 +152,8 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
               groupMode: _groupMode,
               venueId: _venueId,
               notes: notes,
+              imageUrl: image,
+              websiteUrl: website,
             )
           : repo.updateSession(
               clubId,
@@ -149,6 +163,8 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
               durationMin: duration,
               venueId: _venueId,
               notes: notes,
+              imageUrl: image,
+              websiteUrl: website,
               localDate: _dateEditable ? _date : null,
               setCoordinator: _coordinatorChanged,
               coordinatorMemberId: _coordinatorId,
@@ -233,6 +249,42 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
                 ),
                 formGap,
               ],
+              if (isRaceMode(_groupMode)) ...[
+                TextFormField(
+                  key: const ValueKey('race-website-field'),
+                  controller: _websiteUrl,
+                  maxLength: 500,
+                  keyboardType: TextInputType.url,
+                  autocorrect: false,
+                  validator: checkRouteUrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Race website (optional)',
+                    hintText: 'https://www.example.com/race',
+                    helperText:
+                        'Members get a "Race website / Enter" button that '
+                        'opens it.',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                formGap,
+              ],
+              TextFormField(
+                key: const ValueKey('run-image-field'),
+                controller: _imageUrl,
+                maxLength: 500,
+                keyboardType: TextInputType.url,
+                autocorrect: false,
+                validator: checkRouteUrl,
+                decoration: InputDecoration(
+                  labelText: 'Picture link (optional)',
+                  hintText: 'https://bpj.org.uk/images/run.jpg',
+                  helperText: _existing?.seriesId != null
+                      ? 'Replaces the series picture on this run only.'
+                      : 'Shown at the top of the run.',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+              formGap,
               TextFormField(
                 controller: _notes,
                 decoration: const InputDecoration(

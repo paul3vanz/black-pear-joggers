@@ -255,6 +255,8 @@ class RunsRepository {
     required String groupMode,
     String? venueId,
     String? notes,
+    String? imageUrl, // the run's own banner, overrides the series (D131)
+    String? websiteUrl, // race website / entry link (D131)
     String? id,
   }) async => _upsertSession(
     clubId,
@@ -270,6 +272,8 @@ class RunsRepository {
           'groupMode': groupMode,
           'venueId': venueId,
           'notes': notes,
+          'imageUrl': imageUrl,
+          'websiteUrl': websiteUrl,
         },
       ),
     ),
@@ -287,6 +291,8 @@ class RunsRepository {
     String? venueId,
     String? notes,
     String? localDate,
+    String? imageUrl, // null clears the run's own image (D131)
+    String? websiteUrl, // null clears the website link (D131)
     bool setCoordinator = false,
     String? coordinatorMemberId,
   }) async => _upsertSession(
@@ -300,6 +306,8 @@ class RunsRepository {
           'durationMin': durationMin,
           'venueId': venueId,
           'notes': notes,
+          'imageUrl': imageUrl,
+          'websiteUrl': websiteUrl,
           'localDate': ?localDate,
           if (setCoordinator) 'coordinatorMemberId': coordinatorMemberId,
         },

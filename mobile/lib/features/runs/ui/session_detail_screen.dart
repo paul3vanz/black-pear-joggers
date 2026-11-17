@@ -8,6 +8,7 @@ import '../../../core/util/open_link.dart';
 import '../../events/ui/events_section.dart';
 import '../../events/ui/race_section.dart';
 import '../../groups/ui/group_access.dart';
+import '../../groups/ui/group_format.dart' show routeUri;
 import '../../members/ui/member_avatar.dart';
 import '../logic/run_modes.dart';
 import '../../membership/ui/membership_providers.dart';
@@ -87,7 +88,14 @@ class _Body extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           // Series banner (D49): only takes space once the image has loaded.
-          SeriesImage(url: session.imageUrl, roundBottom: true, gapBelow: 12),
+          SeriesImage(
+            url: sessionBannerUrl(
+              ownImageUrl: session.ownImageUrl,
+              imageUrl: session.imageUrl,
+            ),
+            roundBottom: true,
+            gapBelow: 12,
+          ),
           if (cancelled)
             _Banner(
               icon: Icons.event_busy,
@@ -175,9 +183,22 @@ class _Body extends ConsumerWidget {
           // the event cards show the counts and names themselves.
           if (isEventsMode(session.groupMode))
             EventsSection(session: session)
-          else if (isRaceMode(session.groupMode))
-            RaceSection(session: session)
-          else ...[
+          else if (isRaceMode(session.groupMode)) ...[
+            if (routeUri(session.websiteUrl) case final site?)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.tonalIcon(
+                    key: const ValueKey('race-website'),
+                    onPressed: () => openLink(context, ref, site),
+                    icon: const Icon(Icons.open_in_new),
+                    label: const Text('Race website / Enter'),
+                  ),
+                ),
+              ),
+            RaceSection(session: session),
+          ] else ...[
             GroupsSection(session: session),
             WhosComingSection(session: session),
           ],

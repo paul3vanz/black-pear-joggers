@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
     : super(driftDatabase(name: databaseNameFor(sub)));
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   /// Diagnostics hook (D100): told about every successful open, with the
   /// from/to versions when it migrated. Set once in `main`; null in tests.
@@ -149,6 +149,22 @@ class AppDatabase extends _$AppDatabase {
           await m.createTable(sessions);
         } else if (!cols.any((c) => c.read<String>('name') == 'routes_json')) {
           await m.addColumn(sessions, sessions.routesJson);
+        }
+      }
+      // v14 (D131): a run's own image (overrides the series') and website link.
+      // A database older than v3 just created `sessions` with the columns.
+      if (from >= 3 && from < 14) {
+        final cols = await customSelect('PRAGMA table_info(sessions)').get();
+        final names = {for (final c in cols) c.read<String>('name')};
+        if (names.isEmpty) {
+          await m.createTable(sessions);
+        } else {
+          if (!names.contains('own_image_url')) {
+            await m.addColumn(sessions, sessions.ownImageUrl);
+          }
+          if (!names.contains('website_url')) {
+            await m.addColumn(sessions, sessions.websiteUrl);
+          }
         }
       }
     },

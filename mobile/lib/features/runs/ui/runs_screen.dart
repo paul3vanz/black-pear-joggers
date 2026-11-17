@@ -585,7 +585,10 @@ class _RunCard extends StatelessWidget {
             Opacity(
               opacity: dimmed ? 0.5 : 1,
               child: SeriesImage(
-                url: session.imageUrl,
+                url: sessionBannerUrl(
+                  ownImageUrl: session.ownImageUrl,
+                  imageUrl: session.imageUrl,
+                ),
                 height: runCardImageHeight,
               ),
             ),

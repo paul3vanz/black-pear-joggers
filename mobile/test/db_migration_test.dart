@@ -571,10 +571,10 @@ void main() {
     expect((row.mode, row.usuallyComes), ('hide', false));
   });
 
-  test('a fresh database is created at schema v13', () async {
+  test('a fresh database is created at schema v14', () async {
     final db = AppDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 13);
+    expect(db.schemaVersion, 14);
     await db.customSelect('SELECT 1').get();
     expect(await db.select(db.sessions).get(), isEmpty);
     expect(await db.select(db.seriesFollows).get(), isEmpty);

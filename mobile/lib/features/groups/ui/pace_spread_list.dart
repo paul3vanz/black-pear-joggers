@@ -11,57 +11,86 @@ import 'group_format.dart';
 import 'groups_providers.dart';
 import 'leaders_line.dart';
 
-/// "Gap · 9:30 to 10:15/mi": where a new group would fit between two led groups.
-String spreadGapText(SpreadGap gap, DistUnit unit) =>
-    'Gap · ${mmss(gap.fastIn(unit))} to ${mmss(gap.slowIn(unit))}/${unit.code}';
+/// "a" or "an" for a pace read aloud ("an 8:15", "an 11:30", "a 9:45"): an
+/// 8, an 11 or an 18 minutes starts with a vowel sound.
+String aOrAn(int seconds) {
+  final minutes = seconds ~/ 60;
+  return minutes == 8 || minutes == 11 || minutes == 18 ? 'an' : 'a';
+}
+
+/// What a gap needs, as the row title: "Need a 9:45/mi group" for a gap of 30 to
+/// 60 s/mi, "Need groups between 9:15/mi and 10:45/mi" for a wider one.
+String spreadGapText(SpreadGap gap, DistUnit unit) {
+  final code = unit.code;
+  if (gap.isSingleIn(unit)) {
+    final at = gap.fastIn(unit);
+    return 'Need ${aOrAn(at)} ${mmss(at)}/$code group';
+  }
+  return 'Need groups between ${mmss(gap.fastIn(unit))}/$code and '
+      '${mmss(gap.slowIn(unit))}/$code';
+}
 
 /// "Nobody between 9:15 and 10:30".
 String spreadGapDetail(SpreadGap gap, DistUnit unit) =>
     'Nobody between ${mmss(gap.fromIn(unit))} and ${mmss(gap.toIn(unit))}';
 
-/// "Nothing faster than 8:30/mi" (the target's fast end).
-String spreadFasterText(SpreadEnd end, DistUnit unit) =>
-    'Nothing faster than ${mmss(end.edgeIn(unit))}/${unit.code}';
+/// "Need a 10:00/mi or faster group": 30 s/mi quicker than the fastest group.
+String spreadFasterText(SpreadEnd end, DistUnit unit) {
+  final at = end.edgeIn(unit);
+  return 'Need ${aOrAn(at)} ${mmss(at)}/${unit.code} or faster group';
+}
 
-/// "Nothing slower than 11:30/mi" (the target's slow end).
-String spreadSlowerText(SpreadEnd end, DistUnit unit) =>
-    'Nothing slower than ${mmss(end.edgeIn(unit))}/${unit.code}';
+/// "Need an 11:30/mi or slower group": 30 s/mi slower than the slowest group.
+String spreadSlowerText(SpreadEnd end, DistUnit unit) {
+  final at = end.edgeIn(unit);
+  return 'Need ${aOrAn(at)} ${mmss(at)}/${unit.code} or slower group';
+}
 
-/// What the committee asks for, after "Ask for": "a group between 9:30 and
-/// 10:15/mi".
-String spreadGapPhrase(SpreadGap gap, DistUnit unit) =>
-    'a group between ${mmss(gap.fastIn(unit))} and '
-    '${mmss(gap.slowIn(unit))}/${unit.code}';
+int _perKm(int perUnit, DistUnit unit) => (perUnit / unit.kmPerUnit).round();
 
-/// The ask for a gap: the stretch, in seconds per km.
-AskTarget spreadGapTarget(SpreadGap gap, DistUnit unit) => (
-  fastSPerKm: gap.fastS.round(),
-  slowSPerKm: gap.slowS.round(),
-  jogWalk: false,
-  label: spreadGapPhrase(gap, unit),
-);
+/// What the committee asks for, after "Ask for": "a group around 9:45/mi" or "a
+/// group between 9:15 and 10:45/mi".
+String spreadGapPhrase(SpreadGap gap, DistUnit unit) => gap.isSingleIn(unit)
+    ? 'a group around ${mmss(gap.fastIn(unit))}/${unit.code}'
+    : 'a group between ${mmss(gap.fastIn(unit))} and '
+          '${mmss(gap.slowIn(unit))}/${unit.code}';
 
-/// The ask for an open end: "faster than 8:30" runs from the open bound to the
+/// The ask for a gap: the stretch, in seconds per km. A range is the paces
+/// named; a single pace is 15 s/mi either side of it.
+AskTarget spreadGapTarget(SpreadGap gap, DistUnit unit) {
+  final single = gap.isSingleIn(unit);
+  final fast = gap.fastIn(unit) - (single ? spreadFillMarginPerMi.round() : 0);
+  final slow = gap.slowIn(unit) + (single ? spreadFillMarginPerMi.round() : 0);
+  return (
+    fastSPerKm: _perKm(fast, unit),
+    slowSPerKm: _perKm(slow, unit),
+    jogWalk: false,
+    label: spreadGapPhrase(gap, unit),
+  );
+}
+
+/// The ask for an open end: "faster than 10:00" runs from the open bound to the
 /// edge, "slower than 11:30" from the edge to the open bound.
 AskTarget spreadEndTarget(
   SpreadEnd end, {
   required bool faster,
   required DistUnit unit,
 }) {
-  final edge = end.edgeS.round();
-  final shown = mmss(end.edgeIn(unit));
+  final shown = end.edgeIn(unit);
+  final edge = _perKm(shown, unit);
+  final text = mmss(shown);
   return faster
       ? (
           fastSPerKm: askOpenFast,
           slowSPerKm: edge,
           jogWalk: false,
-          label: 'a group faster than $shown/${unit.code}',
+          label: 'a group faster than $text/${unit.code}',
         )
       : (
           fastSPerKm: edge,
           slowSPerKm: askOpenSlow,
           jogWalk: false,
-          label: 'a group slower than $shown/${unit.code}',
+          label: 'a group slower than $text/${unit.code}',
         );
 }
 
@@ -161,9 +190,10 @@ class _Chip extends StatelessWidget {
 }
 
 /// The committee's picture of one run (D128): its groups in pace order, fastest
-/// at the top, with a red gap row wherever two led groups are 45 s or more
-/// apart, an amber row for an open end of the target (nothing faster than 8:30,
-/// nothing slower than 11:30) and a jog/walk row last. A single pace is a dot
+/// at the top, with a red gap row wherever two led groups are more than 30 s/mi
+/// apart, an amber row for an open end of the target (a faster group needed
+/// while the fastest is not within 30 s/mi of 8:00, a slower one likewise for
+/// 12:00) and a jog/walk row last. A single pace is a dot
 /// and a range a short bar, both with the pace written out; neither is treated
 /// differently. A group with no leader shows as needing one. Each red or amber
 /// row can be asked about ([onAsk], null to hide the buttons).
@@ -212,7 +242,9 @@ class PaceSpreadList extends StatelessWidget {
             row: _HoleRow(
               key: ValueKey('spread-gap-${gap.fastIn(unit)}'),
               tone: _Tone.gap,
-              pace: '${mmss(gap.fastIn(unit))}-${mmss(gap.slowIn(unit))}',
+              pace: gap.isSingleIn(unit)
+                  ? mmss(gap.fastIn(unit))
+                  : '${mmss(gap.fastIn(unit))}-${mmss(gap.slowIn(unit))}',
               title: spreadGapText(gap, unit),
               detail: spreadGapDetail(gap, unit),
               askKey: ValueKey('ask-gap-${gap.fastIn(unit)}'),
@@ -229,7 +261,7 @@ class PaceSpreadList extends StatelessWidget {
         _HoleRow(
           key: const ValueKey('spread-faster-end'),
           tone: _Tone.end,
-          pace: '<${mmss(end.edgeIn(unit))}',
+          pace: '\u2264${mmss(end.edgeIn(unit))}',
           title: spreadFasterText(end, unit),
           detail: 'Fastest group is ${mmss(end.nearestIn(unit))}',
           askKey: const ValueKey('ask-faster-end'),
@@ -261,7 +293,7 @@ class PaceSpreadList extends StatelessWidget {
         _HoleRow(
           key: const ValueKey('spread-slower-end'),
           tone: _Tone.end,
-          pace: '>${mmss(end.edgeIn(unit))}',
+          pace: '\u2265${mmss(end.edgeIn(unit))}',
           title: spreadSlowerText(end, unit),
           detail: 'Slowest group is ${mmss(end.nearestIn(unit))}',
           askKey: const ValueKey('ask-slower-end'),
@@ -352,7 +384,12 @@ class _RailRow extends StatelessWidget {
             ),
           ),
           if (trailing != null)
-            Padding(padding: const EdgeInsets.only(left: 8), child: trailing),
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              // Centred and loose, so the button keeps its own height however
+              // tall the row is.
+              child: Center(child: trailing),
+            ),
         ],
       ),
     );
@@ -442,20 +479,37 @@ class _GroupRow extends StatelessWidget {
         ],
       ),
       trailing: canAsk
-          ? FilledButton.tonal(
+          ? _AskButton(
               key: ValueKey('ask-group-${group.id}'),
-              style: FilledButton.styleFrom(minimumSize: const Size(0, 40)),
               onPressed: () => onAsk!((
                 fastSPerKm: band.fast.round(),
                 slowSPerKm: band.slow.round(),
                 jogWalk: false,
                 label: 'a group at ${paceText(group.pace, units)}',
               )),
-              child: const Text('Ask'),
             )
           : null,
     );
   }
+}
+
+/// A compact Ask button: a fixed height, whatever the row beside it needs.
+class _AskButton extends StatelessWidget {
+  const _AskButton({super.key, required this.onPressed});
+
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) => FilledButton.tonal(
+    onPressed: onPressed,
+    style: FilledButton.styleFrom(
+      minimumSize: const Size(0, 36),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      visualDensity: VisualDensity.compact,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    ),
+    child: const Text('Ask'),
+  );
 }
 
 enum _Tone { gap, end }
@@ -531,12 +585,7 @@ class _HoleRow extends StatelessWidget {
       ),
       trailing: onAsk == null
           ? null
-          : FilledButton.tonal(
-              key: askKey,
-              style: FilledButton.styleFrom(minimumSize: const Size(0, 40)),
-              onPressed: onAsk,
-              child: const Text('Ask'),
-            ),
+          : _AskButton(key: askKey, onPressed: onAsk),
     );
   }
 }
