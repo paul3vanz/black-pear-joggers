@@ -1086,3 +1086,9 @@ Root cause of "had to pull to refresh": pushes/taps/resume never refreshed sessi
 won't wipe it) and the new `app:backfill-event-regions {clubId} [--dry-run]` sets it from lat/lng using the free postcodes.io
 bulk reverse-geocode (county or district, then region; UK only, no key). The Great Britain outline is now a ~170-point
 coastline at 110x150. "Race (one event)" is now just "Race" everywhere.
+
+**D137 — Seen-by order and website-only members (2026-11-17).** "See who" lists Read, then Delivered, then Not yet. The API
+now marks `hasApp` on each receipt member and on `GET /members` items (new `Services/AppUsage`: a member has the app when one
+of their `member_logins` has a row in `devices`; a delivered/read receipt also counts). Members with no app are shown apart
+("Not on the app", own count, not counted in "not yet") and get a "Not on the app" chip on Members and roles. Old servers
+omit the field, which reads as true. No schema change.

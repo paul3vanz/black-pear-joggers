@@ -24,11 +24,16 @@ class ReceiptMember {
     required this.memberId,
     required this.displayName,
     required this.state,
+    this.hasApp = true,
   });
 
   final String memberId;
   final String displayName;
   final ReceiptState state;
+
+  /// False for members who exist only from the website (no app installed).
+  /// Older servers don't say, so it defaults to true.
+  final bool hasApp;
 }
 
 /// `GET /posts/{id}/receipts`: who an update was for and what they have done.
@@ -58,6 +63,7 @@ class PostReceipts {
             memberId: m['memberId'] as String? ?? '',
             displayName: m['displayName'] as String? ?? '',
             state: ReceiptState.parse(m['state'] as String?),
+            hasApp: m['hasApp'] as bool? ?? true,
           ),
     ],
   );

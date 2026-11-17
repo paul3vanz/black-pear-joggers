@@ -124,12 +124,17 @@ class _Body extends StatelessWidget {
         child: Text('Nobody else was meant to see this.'),
       );
     }
-    final notYet = r.audienceCount - r.deliveredCount;
     final delivered = r.deliveredCount - r.readCount;
     List<ReceiptMember> of(ReceiptState s) => [
       for (final m in r.members)
-        if (m.state == s) m,
+        if (m.state == s && (s != ReceiptState.none || m.hasApp)) m,
     ];
+    // Members who exist only from the website can't have got it in the app.
+    final noApp = [
+      for (final m in r.members)
+        if (m.state == ReceiptState.none && !m.hasApp) m,
+    ];
+    final notYet = r.audienceCount - r.deliveredCount - noApp.length;
     Widget count(ReceiptState s, int n, String label) => Padding(
       padding: const EdgeInsets.only(right: 16),
       child: Row(
@@ -150,6 +155,8 @@ class _Body extends StatelessWidget {
             count(ReceiptState.read, r.readCount, 'read'),
             count(ReceiptState.delivered, delivered, 'delivered'),
             count(ReceiptState.none, notYet, 'not yet'),
+            if (noApp.isNotEmpty)
+              count(ReceiptState.none, noApp.length, 'not on the app'),
           ],
         ),
         const SizedBox(height: 4),
@@ -167,13 +174,14 @@ class _Body extends StatelessWidget {
             childrenPadding: const EdgeInsets.only(right: 8),
             title: Text('See who', style: theme.textTheme.labelLarge),
             children: [
-              _Group('Not yet', of(ReceiptState.none), ReceiptState.none),
+              _Group('Read', of(ReceiptState.read), ReceiptState.read),
               _Group(
                 'Delivered',
                 of(ReceiptState.delivered),
                 ReceiptState.delivered,
               ),
-              _Group('Read', of(ReceiptState.read), ReceiptState.read),
+              _Group('Not yet', of(ReceiptState.none), ReceiptState.none),
+              _Group('Not on the app', noApp, ReceiptState.none),
             ],
           ),
         ),

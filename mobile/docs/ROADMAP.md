@@ -418,6 +418,7 @@ Decisions D132-D135. Contract: "Update (2026-11-17)" in [api-contract.md](api-co
 - [ ] Not run yet (sandbox blocked Flutter/PHP): `flutter test` (events, refresh coordinator, runs images), PHP tests; `dart analyze` is clean
 - [x] Follow-up (D136): event location line uses the API region, finer GB outline, "Race (one event)" renamed "Race"
   - [ ] Host: run `php artisan app:backfill-event-regions 1 --dry-run`, then without `--dry-run` (needs outbound HTTPS to api.postcodes.io)
+- [x] Seen-by order Read > Delivered > Not yet, website-only members shown as "Not on the app" (D137, API `hasApp`)
 - [ ] Real-device check of all of the above; check the GB outline looks right
 
 ## Backlog

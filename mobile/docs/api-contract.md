@@ -1579,3 +1579,7 @@ Per member and live series, first match wins:
   one). The run editor has a "Picture link" field (ad-hoc and single-occurrence edits) and, when the run is a race, a
   "Race website" field. The run page shows a **Race website / Enter** button (opens in the external browser) above
   the race card. `sessionBannerUrl()` picks own image, then series image, for the Runs-tab card and the run page.
+
+## Update (2026-11-17, b): `hasApp`
+
+`GET /posts/{id}/receipts` members and `GET /members` items gain `hasApp: bool` (false = exists only from the website, no push device on any login). Old clients ignore it; the app treats a missing value as true. See D137.

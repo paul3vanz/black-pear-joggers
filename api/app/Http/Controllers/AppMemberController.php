@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\ManagesGroups;
 use App\Models\ClubMember;
+use App\Services\AppUsage;
 use Illuminate\Http\Request;
 
 /**
@@ -17,13 +18,14 @@ class AppMemberController extends Controller
     const ROLES = ['leader', 'committee', 'admin'];
     const MAX = 50;
 
-    private function item(ClubMember $member): array
+    private function item(ClubMember $member, ?bool $hasApp = null): array
     {
         return [
             'memberId' => $member->id,
             'displayName' => $member->display_name,
             'status' => $member->status,
             'roles' => array_values($member->roles ?? []),
+            'hasApp' => $hasApp ?? isset(AppUsage::memberIdsWithApp((int) $member->club_id, [$member->id])[$member->id]),
         ];
     }
 
@@ -35,7 +37,7 @@ class AppMemberController extends Controller
      *   security={{"bearerAuth":{}}},
      *   @OA\Parameter(name="q", in="query", required=false, @OA\Schema(type="string")),
      *   @OA\Parameter(name="limit", in="query", required=false, @OA\Schema(type="integer")),
-     *   @OA\Response(response=200, description="{ items: [{ memberId, displayName, status, roles }] }"),
+     *   @OA\Response(response=200, description="{ items: [{ memberId, displayName, status, roles, hasApp }] }"),
      *   @OA\Response(response=403, description="Not a committee member or admin"),
      * )
      */
@@ -65,11 +67,13 @@ class AppMemberController extends Controller
             $query->where('display_name', 'like', '%' . $escaped . '%');
         }
 
+        $members = $query->orderBy('display_name')->orderBy('id')->limit($limit)->get();
+        $withApp = AppUsage::memberIdsWithApp($club->id, $members->pluck('id')->all());
+
         return response()->json([
-            'items' => $query->orderBy('display_name')->orderBy('id')->limit($limit)->get()
-                ->map(function ($member) {
-                    return $this->item($member);
-                })->all(),
+            'items' => $members->map(function ($member) use ($withApp) {
+                return $this->item($member, isset($withApp[$member->id]));
+            })->all(),
         ]);
     }
 

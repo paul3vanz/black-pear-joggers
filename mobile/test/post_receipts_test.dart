@@ -146,10 +146,16 @@ void main() {
           'POST $receiptsPath': const FakeResponse(204),
           'GET /app/clubs/1/posts/p1/receipts': const FakeResponse(200, {
             'postId': 'p1',
-            'audienceCount': 4,
+            'audienceCount': 5,
             'deliveredCount': 3,
             'readCount': 1,
             'members': [
+              {
+                'memberId': 'm5',
+                'displayName': 'Eve Web',
+                'state': 'none',
+                'hasApp': false,
+              },
               {'memberId': 'm1', 'displayName': 'Abi L.', 'state': 'read'},
               {'memberId': 'm2', 'displayName': 'Ben M.', 'state': 'delivered'},
               {'memberId': 'm4', 'displayName': 'Dee P.', 'state': 'delivered'},
@@ -240,11 +246,19 @@ void main() {
       expect(find.text('1 read'), findsOneWidget);
       expect(find.text('2 delivered'), findsOneWidget);
       expect(find.text('1 not yet'), findsOneWidget);
+      expect(find.text('1 not on the app'), findsOneWidget);
 
       await tester.tap(find.byKey(const ValueKey('receiptsNames')));
       await tester.pumpAndSettle();
       expect(find.text('Not yet (1)'), findsOneWidget);
       expect(find.text('Cy N.'), findsOneWidget);
+      expect(find.text('Not on the app (1)'), findsOneWidget);
+      expect(find.text('Eve Web'), findsOneWidget);
+      // Read first, then Delivered, Not yet, and Not on the app last.
+      double y(String t) => tester.getTopLeft(find.text(t)).dy;
+      expect(y('Read (1)'), lessThan(y('Delivered (2)')));
+      expect(y('Delivered (2)'), lessThan(y('Not yet (1)')));
+      expect(y('Not yet (1)'), lessThan(y('Not on the app (1)')));
       await unmount(tester);
     });
   });

@@ -68,12 +68,16 @@ class MemberItem {
     required this.displayName,
     this.status = 'active',
     this.roles = const [],
+    this.hasApp = true,
   });
 
   final String memberId;
   final String displayName;
   final String status;
   final List<String> roles;
+
+  /// False for website-only members (no app installed); true if the server doesn't say.
+  final bool hasApp;
 
   factory MemberItem.fromJson(Map<String, Object?> json) => MemberItem(
     memberId: json['memberId'] as String? ?? '',
@@ -84,6 +88,7 @@ class MemberItem {
         for (final r in json['roles']! as List)
           if (r is String) r,
     ],
+    hasApp: json['hasApp'] as bool? ?? true,
   );
 
   bool get isLeader => roles.contains('leader');

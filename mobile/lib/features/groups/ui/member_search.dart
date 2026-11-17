@@ -181,6 +181,11 @@ class _Chips extends StatelessWidget {
               ? scheme.secondaryContainer
               : scheme.errorContainer,
         ),
+        if (!member.hasApp)
+          const Chip(
+            visualDensity: VisualDensity.compact,
+            label: Text('Not on the app'),
+          ),
         for (final r in member.roles)
           Chip(visualDensity: VisualDensity.compact, label: Text(roleLabel(r))),
       ],

@@ -7,6 +7,7 @@ use App\Models\ClubMember;
 use App\Models\Notification;
 use App\Models\Post;
 use App\Models\PostReceipt;
+use App\Services\AppUsage;
 use App\Services\NotificationPresenter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -112,7 +113,7 @@ class AppPostReceiptController extends Controller
      *   security={{"bearerAuth":{}}},
      *   @OA\Parameter(name="clubId", in="path", required=true, @OA\Schema(type="integer")),
      *   @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *   @OA\Response(response=200, description="{ postId, audienceCount, deliveredCount, readCount, members: [{ memberId, displayName, state: none|delivered|read, deliveredAt, readAt }] } (deliveredCount includes read)"),
+     *   @OA\Response(response=200, description="{ postId, audienceCount, deliveredCount, readCount, members: [{ memberId, displayName, state: none|delivered|read, deliveredAt, readAt, hasApp }] } (deliveredCount includes read)"),
      *   @OA\Response(response=403, description="Not a committee member or admin"),
      *   @OA\Response(response=404, description="No such post"),
      * )
@@ -139,12 +140,13 @@ class AppPostReceiptController extends Controller
             ->get()
             ->keyBy('member_id');
 
+        $withApp = AppUsage::memberIdsWithApp($club->id);
         $rows = ClubMember::where('club_id', $club->id)
             ->where('status', 'active')
             ->where('id', '!=', $post->author_member_id ?? '')
             ->get()
             ->filter(fn (ClubMember $m) => in_array($post->audience, $m->audiences(), true))
-            ->map(function (ClubMember $m) use ($receipts, $pushed) {
+            ->map(function (ClubMember $m) use ($receipts, $pushed, $withApp) {
                 $receipt = $receipts->get($m->id);
                 $delivered = collect([$receipt?->delivered_at, $pushed->get($m->id)?->pushed_at])
                     ->filter()
@@ -160,6 +162,8 @@ class AppPostReceiptController extends Controller
                     'state' => $read ? 'read' : ($delivered ? 'delivered' : 'none'),
                     'deliveredAt' => $delivered ? NotificationPresenter::time($delivered) : null,
                     'readAt' => $read ? NotificationPresenter::time($read) : null,
+                    // False for members who exist only from the website: they can't have seen it in the app.
+                    'hasApp' => isset($withApp[$m->id]) || $delivered !== null,
                 ];
             })
             ->sortBy(fn ($row) => mb_strtolower((string) $row['displayName']))
