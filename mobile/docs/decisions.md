@@ -1079,3 +1079,10 @@ and the plan of the push's `sessionId`; a tap waits up to 3 s before navigating,
 Resume and a 75 s poll (foreground, Runs tab only) are throttled to 60 s per club/run. Nothing runs in the background.
 Root cause of "had to pull to refresh": pushes/taps/resume never refreshed sessions, and plain FCM data lacked `sessionId`/
 `groupId` (now always added by `FcmClient`).
+
+**D136 — Event location line and map fidelity (2026-11-17), refines D133.** The Details row shows the API's `region`
+(e.g. "Worcester, West Midlands"), and appends the country only outside the UK; a UK event with no region shows just
+"Details". `region` was never filled by the parkrun import, so `app:import-event-locations` no longer writes it (a re-import
+won't wipe it) and the new `app:backfill-event-regions {clubId} [--dry-run]` sets it from lat/lng using the free postcodes.io
+bulk reverse-geocode (county or district, then region; UK only, no key). The Great Britain outline is now a ~170-point
+coastline at 110x150. "Race (one event)" is now just "Race" everywhere.

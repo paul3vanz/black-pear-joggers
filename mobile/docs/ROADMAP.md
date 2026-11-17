@@ -416,6 +416,8 @@ Decisions D132-D135. Contract: "Update (2026-11-17)" in [api-contract.md](api-co
   - [ ] Align API `PaceSpread`, the `app:send-reminders` early nudge and `spread_target_cases.json` with D134
 - [x] Refresh on notification tap, foreground push, resume and a 75 s poll (D135); FCM data carries `sessionId`/`groupId`
 - [ ] Not run yet (sandbox blocked Flutter/PHP): `flutter test` (events, refresh coordinator, runs images), PHP tests; `dart analyze` is clean
+- [x] Follow-up (D136): event location line uses the API region, finer GB outline, "Race (one event)" renamed "Race"
+  - [ ] Host: run `php artisan app:backfill-event-regions 1 --dry-run`, then without `--dry-run` (needs outbound HTTPS to api.postcodes.io)
 - [ ] Real-device check of all of the above; check the GB outline looks right
 
 ## Backlog

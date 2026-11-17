@@ -56,7 +56,7 @@ void main() {
 
     test('labels and explainers', () {
       expect(groupModeLabel('events'), 'Events (e.g. parkrun)');
-      expect(groupModeLabel('race'), 'Race (one event)');
+      expect(groupModeLabel('race'), 'Race');
       expect(groupModeExplainer('events'), isNotEmpty);
       expect(groupModeExplainer('race'), isNotEmpty);
     });
@@ -314,7 +314,7 @@ void main() {
       await pumpEditor(tester, const SeriesEditScreen());
       await openModes(tester);
       expect(find.text('Events (e.g. parkrun)'), findsOneWidget);
-      expect(find.text('Race (one event)'), findsNothing);
+      expect(find.text('Race'), findsNothing);
       await unmount(tester);
     });
 
@@ -322,7 +322,7 @@ void main() {
       await pumpEditor(tester, const SessionEditScreen());
       await openModes(tester);
       expect(find.text('Events (e.g. parkrun)'), findsOneWidget);
-      expect(find.text('Race (one event)'), findsOneWidget);
+      expect(find.text('Race'), findsOneWidget);
       await unmount(tester);
     });
 
@@ -350,7 +350,7 @@ void main() {
         'Droitwich 10k',
       );
       await openModes(tester);
-      await tester.tap(find.text('Race (one event)').last);
+      await tester.tap(find.text('Race').last);
       await tester.pumpAndSettle();
       await save(tester);
       final body = lastBody('POST');

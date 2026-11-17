@@ -33,7 +33,19 @@ void main() {
         lat: 52.19,
         lng: -2.22,
       );
-      expect(p.regionLine, 'Worcestershire, United Kingdom');
+      expect(p.regionLine, 'Worcestershire');
+      expect(
+        const EventPlace(kind: 'parkrun', country: 'GB').regionLine,
+        isNull,
+      );
+      expect(
+        const EventPlace(
+          kind: 'parkrun',
+          country: 'IE',
+          region: 'Cork',
+        ).regionLine,
+        'Cork, IE',
+      );
       expect(p.directionsUri.toString(), contains('destination=52.19%2C-2.22'));
       const none = EventPlace(kind: 'other');
       expect(none.hasDetails, isFalse);
@@ -53,6 +65,7 @@ void main() {
               kind: 'parkrun',
               slug: 'worcester',
               country: 'GB',
+              region: 'Worcester, West Midlands',
               lat: 52.19,
               lng: -2.22,
             ),
@@ -61,7 +74,7 @@ void main() {
         ),
       ),
     );
-    expect(find.text('United Kingdom'), findsOneWidget);
+    expect(find.text('Worcester, West Midlands'), findsOneWidget);
     expect(find.text('parkrun page'), findsNothing);
     await tester.tap(find.byKey(const ValueKey('event-details-toggle')));
     await tester.pump();

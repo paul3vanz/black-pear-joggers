@@ -173,7 +173,6 @@ class ImportEventLocations extends Command
                 'slug' => mb_substr($slug, 0, 80),
                 'name' => mb_substr($name, 0, 120),
                 'country' => self::COUNTRIES[$country] ?? null,
-                'region' => null,
                 'lat' => $this->coordinate($coordinates[1] ?? null, 90),
                 'lng' => $this->coordinate($coordinates[0] ?? null, 180),
                 'url' => $kind === 'parkrun' ? 'https://www.parkrun.org.uk/' . rawurlencode($slug) . '/' : null,

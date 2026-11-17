@@ -32,12 +32,15 @@ class EventPlace {
   final double? lng;
   final String? url;
 
-  /// "Worcestershire, United Kingdom" style line; null when nothing is known.
+  /// "Worcester, West Midlands" (the API's location). In the UK the country
+  /// adds nothing, so it is only appended for other countries; null when the
+  /// API has no location.
   String? get regionLine {
-    final parts = [
-      if (region != null && region!.trim().isNotEmpty) region!.trim(),
-      ?countryName(country),
-    ];
+    final r = region?.trim();
+    final hasRegion = r != null && r.isNotEmpty;
+    final inUk = country == null || country!.toUpperCase() == 'GB';
+    final c = inUk ? null : countryName(country);
+    final parts = [if (hasRegion) r, ?c];
     return parts.isEmpty ? null : parts.join(', ');
   }
 

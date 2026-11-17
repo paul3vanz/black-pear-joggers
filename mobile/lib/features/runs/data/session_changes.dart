@@ -83,6 +83,6 @@ String groupModeLabel(String mode) => switch (mode) {
   'open' => 'Open run',
   'routes' => 'Routes',
   'events' => 'Events (e.g. parkrun)',
-  'race' => 'Race (one event)',
+  'race' => 'Race',
   _ => mode,
 };
