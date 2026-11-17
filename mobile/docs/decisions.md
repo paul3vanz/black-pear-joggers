@@ -1069,8 +1069,9 @@ tiles or API key; GB coordinates only). No API or schema change. The outline is 
 edge is more than 30 s/mi inside the target end: "Need a X/mi or faster group" (X = fast edge − 30 s) and "Need an X/mi or
 slower group" (X = slow edge + 30 s). Between groups: 30–60 s reads "Need a X/mi group" (mid-point), over 60 s reads
 "Need groups between A/mi and B/mi". Rounded to 15 s in the viewer's unit; "an" before 8, 11, 18. Ask targets carry the
-same stretch. **Not yet aligned:** API `PaceSpread`, `app:send-reminders` early nudge and the shared fixture
-`api/tests/fixtures/spread_target_cases.json` still use the old 45 s / 8:30 / 11:30 rule (the Dart test no longer reads it).
+same stretch. **Aligned (2026-11-17):** the API's `PaceSpread` (and so the `app:send-reminders` early nudge) now follows the same rule, and
+the shared fixture `api/tests/fixtures/spread_target_cases.json` was rewritten (gaps/ends as whole seconds in the viewer's unit); both
+test suites read it again. Early-nudge text now reads e.g. "between 8:30 and 10:00/mi" and "a group slower than 11:00/mi".
 The Ask buttons are compact (min height 36, compact density). Inbox tabs are scrollable with 12 px label padding, one line each.
 
 **D135 — Data freshness (2026-11-17).** `RefreshCoordinator` (`core/notifications`) is the one place deciding when run data is

@@ -4,11 +4,12 @@ import '../../../core/units/dist_unit.dart';
 import '../data/group_dtos.dart';
 
 /// The spread of paces the committee aims for on a paced run (D128, gap rule
-/// changed in D131). Written per mile, which is how the committee thinks of
+/// changed in D134). Written per mile, which is how the committee thinks of
 /// them, and worked in seconds per km (paces are stored as entered and only
 /// converted for display).
 ///
-/// The API's `PaceSpread` (early nudges) still has the older D128 numbers.
+/// The API's `PaceSpread` (early nudges) is the twin; both read
+/// api/tests/fixtures/spread_target_cases.json.
 const spreadTargetFastPerMi = 480.0; // 8:00/mi
 const spreadTargetSlowPerMi = 720.0; // 12:00/mi
 

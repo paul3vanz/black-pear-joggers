@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:bpj/core/units/dist_unit.dart';
 import 'package:bpj/features/groups/data/group_dtos.dart';
 import 'package:bpj/features/groups/logic/spread_target.dart';
@@ -5,10 +8,62 @@ import 'package:flutter_test/flutter_test.dart';
 
 const _jo = GroupLeader(memberId: 'jo', displayName: 'Jo', role: 'leader');
 
-/// The spread rule (D128, gap rule changed in D131). The API's PaceSpread still
-/// reads api/tests/fixtures/spread_target_cases.json with the older numbers, so
-/// that table is no longer shared with this side.
+Group _group(Map<String, Object?> json, int i) {
+  final from = json['from'] as int?;
+  return Group(
+    id: 'g$i',
+    sessionId: 'a',
+    kind: json['kind'] as String? ?? 'run',
+    paceUnit: from == null ? null : json['unit'] as String?,
+    paceFromS: from,
+    paceToS: json['to'] as int?,
+    leaders: (json['led'] as bool? ?? true) ? const [_jo] : const [],
+    status: (json['led'] as bool? ?? true) ? 'active' : 'needs_leader',
+  );
+}
+
+/// The spread rule (D134, which replaced D128's numbers), against the case
+/// table the API's PaceSpreadTest reads too
+/// (api/tests/fixtures/spread_target_cases.json). The expected values there are
+/// worked by hand, so each side proves its own copy of the rule.
 void main() {
+  final table = jsonDecode(
+    File('../api/tests/fixtures/spread_target_cases.json').readAsStringSync(),
+  ) as Map<String, Object?>;
+  final cases = (table['cases']! as List).cast<Map<String, Object?>>();
+
+  for (final c in cases) {
+    test('shared table: ${c['name']}', () {
+      final unit = DistUnit.fromCode(c['unit'])!;
+      final spread = buildSpreadTarget([
+        for (final (i, g) in (c['groups']! as List).indexed)
+          _group((g as Map).cast<String, Object?>(), i),
+      ]);
+      final expected = (c['expect']! as Map).cast<String, Object?>();
+      int whole(double perKm) => (perKm * unit.kmPerUnit).round();
+
+      expect(spread.empty, expected['empty'], reason: 'empty');
+      expect(
+        [
+          for (final g in spread.gaps) [whole(g.fastS), whole(g.slowS)],
+        ],
+        (expected['gaps']! as List).map((e) => (e as List).cast<int>()),
+        reason: 'gaps',
+      );
+      expect(
+        spread.fasterEnd == null ? null : whole(spread.fasterEnd!.edgeS),
+        expected['fasterEnd'],
+        reason: 'fasterEnd',
+      );
+      expect(
+        spread.slowerEnd == null ? null : whole(spread.slowerEnd!.edgeS),
+        expected['slowerEnd'],
+        reason: 'slowerEnd',
+      );
+      expect(spread.jogWalk, expected['jogWalk'], reason: 'jogWalk');
+    });
+  }
+
   group('what the screens read', () {
     Group led(int from, {int? to, String kind = 'run', bool pace = true}) =>
         Group(

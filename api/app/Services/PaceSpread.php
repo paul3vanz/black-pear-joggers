@@ -8,17 +8,20 @@ use App\Models\SessionGroup;
 use App\Models\SessionGroupLeader;
 
 /**
- * The spread of paces the committee aims for on a paced run (D128), the server twin of
- * `buildSpreadTarget` in the app. Both are tested against tests/fixtures/spread_target_cases.json,
- * so change the rule in both places and the fixture together.
+ * The spread of paces the committee aims for on a paced run, the server twin of `buildSpreadTarget`
+ * in the app (D134, which replaced D128's numbers). Both are tested against
+ * tests/fixtures/spread_target_cases.json, so change the rule in both places and the fixture together.
  *
  * Groups with a confirmed leader count, at their real pace: a single pace is that pace and a range
  * is its two ends, with no tolerance padding. Nothing is rounded to a minute. The rule:
  *
- *  - gap: two neighbouring groups MAX_GAP_PER_MI or more apart (nearest edge to nearest edge). A new
- *    group would fit FILL_MARGIN_PER_MI inside each edge, so 9:15 and 10:30 leaves "9:30 to 10:15";
- *  - faster end: the fastest group starts later than TARGET_FAST + END_FLEX (8:30);
- *  - slower end: the slowest group ends before TARGET_SLOW - END_FLEX (11:30);
+ *  - gap: two neighbouring groups MORE than MAX_GAP_PER_MI (30 s) apart (slow edge to fast edge).
+ *    A gap of up to RANGE_GAP_PER_MI (60 s) is one pace, filled FILL_MARGIN_PER_MI (15 s) inside
+ *    each edge; a bigger one is a range, MAX_GAP_PER_MI inside each edge;
+ *  - faster end: the fastest group starts later than TARGET_FAST + MAX_GAP (8:30); the stretch needed
+ *    is faster than that group's fast edge less MAX_GAP;
+ *  - slower end: the slowest group ends before TARGET_SLOW - MAX_GAP (11:30); the stretch needed is
+ *    slower than that group's slow edge plus MAX_GAP;
  *  - jog/walk: no led jog/walk group without a pace;
  *  - with no led paced group at all there is one gap over the whole target (empty).
  *
@@ -29,8 +32,8 @@ class PaceSpread
 {
     const TARGET_FAST_PER_MI = 480;
     const TARGET_SLOW_PER_MI = 720;
-    const END_FLEX_PER_MI = 30;
-    const MAX_GAP_PER_MI = 45;
+    const MAX_GAP_PER_MI = 30;
+    const RANGE_GAP_PER_MI = 60;
     const FILL_MARGIN_PER_MI = 15;
 
     /** How far a leader's usual pace may sit outside the stretch and still fit it (s/mi). */
@@ -69,16 +72,17 @@ class PaceSpread
      * @param array<int, array{0: float, 1: float}> $bands the bands (s/km) of the groups that have a leader and a pace
      * @return array{
      *     empty: bool,
-     *     gaps: array<int, array{from: float, to: float, fast: float, slow: float}>,
+     *     gaps: array<int, array{from: float, to: float, fast: float, slow: float, single: bool}>,
      *     fasterEnd: array{slow: float}|null,
      *     slowerEnd: array{fast: float}|null
      * } gaps and ends are in s/km; from/to are the neighbours' edges, fast/slow the stretch a new group would fit
      */
     public static function analyse(array $bands): array
     {
-        $fastEnd = self::km(self::TARGET_FAST_PER_MI + self::END_FLEX_PER_MI);
-        $slowEnd = self::km(self::TARGET_SLOW_PER_MI - self::END_FLEX_PER_MI);
+        $fastEnd = self::km(self::TARGET_FAST_PER_MI + self::MAX_GAP_PER_MI);
+        $slowEnd = self::km(self::TARGET_SLOW_PER_MI - self::MAX_GAP_PER_MI);
         $maxGap = self::km(self::MAX_GAP_PER_MI);
+        $rangeGap = self::km(self::RANGE_GAP_PER_MI);
         $margin = self::km(self::FILL_MARGIN_PER_MI);
 
         if (!$bands) {
@@ -91,8 +95,17 @@ class PaceSpread
         $edge = $bands[0][1];
 
         foreach (array_slice($bands, 1) as $band) {
-            if ($band[0] - $edge >= $maxGap - 1e-9) {
-                $gaps[] = ['from' => $edge, 'to' => $band[0], 'fast' => $edge + $margin, 'slow' => $band[0] - $margin];
+            $hole = $band[0] - $edge;
+
+            if ($hole > $maxGap + 1e-9) {
+                $single = $hole <= $rangeGap + 1e-9;
+                $gaps[] = [
+                    'from' => $edge,
+                    'to' => $band[0],
+                    'fast' => $single ? $edge + $margin : $edge + $maxGap,
+                    'slow' => $single ? $band[0] - $margin : $band[0] - $maxGap,
+                    'single' => $single,
+                ];
             }
 
             $edge = max($edge, $band[1]);
@@ -101,8 +114,8 @@ class PaceSpread
         return [
             'empty' => false,
             'gaps' => $gaps,
-            'fasterEnd' => $bands[0][0] > $fastEnd + 1e-9 ? ['slow' => $fastEnd] : null,
-            'slowerEnd' => $edge < $slowEnd - 1e-9 ? ['fast' => $slowEnd] : null,
+            'fasterEnd' => $bands[0][0] > $fastEnd + 1e-9 ? ['slow' => $bands[0][0] - $maxGap] : null,
+            'slowerEnd' => $edge < $slowEnd - 1e-9 ? ['fast' => $edge + $maxGap] : null,
         ];
     }
 
@@ -201,6 +214,6 @@ class PaceSpread
 
         $flex = self::km(self::FIT_FLEX_PER_MI);
 
-        return $usual[0] - $flex <= $slow && $usual[1] + $flex >= $fast;
+        return $usual[0] - $flex <= $slow + 1e-9 && $usual[1] + $flex >= $fast - 1e-9;
     }
 }

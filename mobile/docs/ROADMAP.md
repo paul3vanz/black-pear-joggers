@@ -413,7 +413,7 @@ Decisions D132-D135. Contract: "Update (2026-11-17)" in [api-contract.md](api-co
         presenter reads the new columns)
 - [x] Parkrun/event card details: region, parkrun page, Open in Maps, GB dot map
 - [x] Inbox tabs no longer wrap; compact Ask buttons; coverage gap rule 30 s with "Need a X/mi or faster/slower group"
-  - [ ] Align API `PaceSpread`, the `app:send-reminders` early nudge and `spread_target_cases.json` with D134
+  - [x] API `PaceSpread`, the early nudge and `spread_target_cases.json` aligned with D134 (PHP tests not run yet)
 - [x] Refresh on notification tap, foreground push, resume and a 75 s poll (D135); FCM data carries `sessionId`/`groupId`
 - [ ] Not run yet (sandbox blocked Flutter/PHP): `flutter test` (events, refresh coordinator, runs images), PHP tests; `dart analyze` is clean
 - [x] Follow-up (D136): event location line uses the API region, finer GB outline, "Race (one event)" renamed "Race"

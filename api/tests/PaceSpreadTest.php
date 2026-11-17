@@ -4,7 +4,7 @@ use App\Services\PaceSpread;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
- * D128: the pace spread rule, checked against the case table the app's tests read too
+ * D134 (was D128): the pace spread rule, checked against the case table the app's tests read too
  * (tests/fixtures/spread_target_cases.json). The expected values there are worked by hand,
  * so this test and the Dart one each prove their own copy of the rule.
  */
@@ -46,11 +46,13 @@ class PaceSpreadTest extends BaseTestCase
         $unit = $case['unit'];
         $spread = PaceSpread::analyse($bands);
 
+        $whole = fn (float $perKm) => (int) round(PaceSpread::inUnit($perKm, $unit));
+
         $actual = [
             'empty' => $spread['empty'],
-            'gaps' => array_map(fn ($gap) => PaceSpread::window($gap, $unit), $spread['gaps']),
-            'fasterEnd' => $spread['fasterEnd'] === null ? null : PaceSpread::edge($spread['fasterEnd']['slow'], $unit),
-            'slowerEnd' => $spread['slowerEnd'] === null ? null : PaceSpread::edge($spread['slowerEnd']['fast'], $unit),
+            'gaps' => array_map(fn ($gap) => [$whole($gap['fast']), $whole($gap['slow'])], $spread['gaps']),
+            'fasterEnd' => $spread['fasterEnd'] === null ? null : $whole($spread['fasterEnd']['slow']),
+            'slowerEnd' => $spread['slowerEnd'] === null ? null : $whole($spread['slowerEnd']['fast']),
             'jogWalk' => $jogWalk,
         ];
 

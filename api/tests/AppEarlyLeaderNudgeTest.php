@@ -16,10 +16,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 
 /**
- * D128: a gentle nudge to likely leaders 3 to 7 days out when a run has a hole in its spread of paces.
+ * D128/D134: a gentle nudge to likely leaders 3 to 7 days out when a run has a hole in its spread of paces.
  *
  * "Now" is Monday 2026-10-12 09:00Z (10:00 London). The run is Saturday 2026-10-17 at 19:00, with two
- * leaders at 8:00 and 10:30, so the hole is 8:15 to 10:15/mi. Anna (9:15, led three times), Cara (8:00,
+ * leaders at 8:00 and 10:30, so the hole is 8:30 to 10:00/mi (30 s inside each edge). Anna (9:15, led three times), Cara (8:00,
  * twice) and Ben (10:30, once) fit it, in that order; Dee (11:45) and Eli (jog/walk) do not. Each day
  * later the run is a day closer; it leaves this job's window on 2026-10-14 (inside 72 hours).
  */
@@ -91,7 +91,7 @@ class AppEarlyLeaderNudgeTest extends AppGroupsBase
         ]);
     }
 
-    /** A run on $date with leaders at 8:00 and 10:30: a hole of 8:15 to 10:15/mi. */
+    /** A run on $date with leaders at 8:00 and 10:30: a hole of 8:30 to 10:00/mi. */
     private function holeOn(string $date): ClubSession
     {
         $run = $this->runOn($date);
@@ -128,7 +128,7 @@ class AppEarlyLeaderNudgeTest extends AppGroupsBase
         $n = Notification::where('member_id', $this->m['anna']->id)->first();
         $this->assertSame('leaders_needed', $n->category);
         $this->assertSame('Leaders needed: Saturday 17 Oct', $n->title);
-        $this->assertSame('Club run on Saturday 17 Oct at 7pm needs a group between 8:15 and 10:15/mi. Can you lead?', $n->body);
+        $this->assertSame('Club run on Saturday 17 Oct at 7pm needs a group between 8:30 and 10:00/mi. Can you lead?', $n->body);
         $this->assertSame('/runs/' . $this->target->id . '/groups/new?intent=lead&fast=308&slow=382', $n->data['route']);
         $this->assertSame($this->target->id, $n->data['sessionId']);
 
@@ -158,16 +158,16 @@ class AppEarlyLeaderNudgeTest extends AppGroupsBase
     {
         $this->nudge('2026-10-12 09:00'); // Anna and Cara, for the hole
 
-        foreach ([520, 560, 600] as $from) { // 8:00, 8:40, 9:20, 10:00, 10:30: no gap of 45 s or more
+        foreach ([510, 540, 570, 600] as $from) { // 8:00, 8:30, 9:00, 9:30, 10:00, 10:30: no gap over 30 s
             $this->lead($this->target, $from);
         }
 
-        // The slow end (nothing slower than 11:30) and jog/walk are left; Ben fitted the old hole, not these.
+        // The slow end (nothing slower than 11:00, the slowest edge plus 30 s) and jog/walk are left; Ben fitted the old hole, not these.
         $this->assertSame(2, $this->nudge('2026-10-13 09:00'));
         $this->assertSame(['anna', 'cara', 'dee', 'eli'], $this->nudged());
 
         $bodies = Notification::whereIn('member_id', [$this->m['dee']->id, $this->m['eli']->id])->pluck('body', 'member_id');
-        $this->assertStringContainsString('could use a group slower than 11:30/mi. Can you lead?', $bodies[$this->m['dee']->id]);
+        $this->assertStringContainsString('could use a group slower than 11:00/mi. Can you lead?', $bodies[$this->m['dee']->id]);
         $this->assertStringContainsString('could use a jog/walk group. Can you lead?', $bodies[$this->m['eli']->id]);
         $this->assertSame(0, Notification::where('member_id', $this->m['ben']->id)->count());
     }
@@ -247,8 +247,8 @@ class AppEarlyLeaderNudgeTest extends AppGroupsBase
 
         $this->nudge('2026-10-12 09:00');
 
-        $this->assertStringContainsString('needs a group between 5:10 and 6:20/km', Notification::where('member_id', $this->m['anna']->id)->first()->body);
-        $this->assertStringContainsString('between 8:15 and 10:15/mi', Notification::where('member_id', $this->m['cara']->id)->first()->body);
+        $this->assertStringContainsString('needs a group between 5:20 and 6:10/km', Notification::where('member_id', $this->m['anna']->id)->first()->body);
+        $this->assertStringContainsString('between 8:30 and 10:00/mi', Notification::where('member_id', $this->m['cara']->id)->first()->body);
     }
 
     public function testTheReminderJobRunsItAndReportsTheCount()
