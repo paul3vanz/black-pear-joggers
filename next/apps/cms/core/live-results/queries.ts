@@ -2,15 +2,6 @@ import { supabase } from './supabase-client';
 import { buildLeaderboard } from './leaderboard';
 import { EventRow, FinishRow, LiveResultsData, ParticipantRow, RaceRow } from './types';
 
-// Priority when no ?event= override is given: show whatever's live right
-// now, then fall back to the most recently finished event so results don't
-// vanish the moment the race director marks it finished.
-const STATUS_PRIORITY: Record<EventRow['status'], number> = {
-  active: 0,
-  finished: 1,
-  pending: 2,
-};
-
 async function getEventById(eventId: string): Promise<EventRow | null> {
   const { data, error } = await supabase
     .from('events')
@@ -21,15 +12,13 @@ async function getEventById(eventId: string): Promise<EventRow | null> {
   return data;
 }
 
-async function getMostRelevantEvent(): Promise<EventRow | null> {
+export async function fetchEvents(): Promise<EventRow[]> {
   const { data, error } = await supabase
     .from('events')
     .select('id, name, date, location, status')
     .order('date', { ascending: false });
-  if (error) throw new Error(`getMostRelevantEvent: ${error.message}`);
-  if (!data || data.length === 0) return null;
-
-  return [...data].sort((a, b) => STATUS_PRIORITY[a.status] - STATUS_PRIORITY[b.status])[0];
+  if (error) throw new Error(`fetchEvents: ${error.message}`);
+  return data ?? [];
 }
 
 async function getRacesForEvent(eventId: string): Promise<RaceRow[]> {
@@ -61,8 +50,8 @@ async function getFinishesForRaces(raceIds: string[]): Promise<FinishRow[]> {
   return data ?? [];
 }
 
-export async function fetchLiveResults(eventId?: string): Promise<LiveResultsData> {
-  const event = eventId ? await getEventById(eventId) : await getMostRelevantEvent();
+export async function fetchLiveResults(eventId: string): Promise<LiveResultsData> {
+  const event = await getEventById(eventId);
   if (!event) return { event: null, races: [], leaderboardByCategory: {} };
 
   const races = await getRacesForEvent(event.id);

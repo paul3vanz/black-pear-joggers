@@ -1,25 +1,25 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { BackgroundColour, Stack } from '@black-pear-joggers/stack';
 import { Container } from '@black-pear-joggers/container';
-import { formatElapsed, formatOrdinal, sortCategoryKeys } from '../core/live-results/leaderboard';
-import { isSupabaseConfigured } from '../core/live-results/supabase-client';
-import { useLiveResults } from '../core/live-results/use-live-results';
-import { LeaderboardEntry } from '../core/live-results/types';
+import { formatElapsed, formatOrdinal, sortCategoryKeys } from '../../core/live-results/leaderboard';
+import { isSupabaseConfigured } from '../../core/live-results/supabase-client';
+import { useLiveResults } from '../../core/live-results/use-live-results';
+import { LeaderboardEntry } from '../../core/live-results/types';
 
 const thClass = 'border-b-2 border-gray-300 p-2 font-bold whitespace-nowrap';
 const tdClass = 'border-b border-gray-200 p-2 whitespace-nowrap';
 
-// Static, fully client-rendered page (this app is exported to Cloudflare
-// Pages — see next.config.js `output: 'export'`) that polls race-timing's
-// Supabase project directly for in-flight lapped-race results. Requires
+// Client-rendered page for one event (cms deploys as a real server).
+// Polls race-timing's Supabase project directly for in-flight lapped-race results. Requires
 // NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_READONLY_KEY to be set in
 // the Cloudflare Pages build config — see core/live-results/supabase-client.ts
 // for why this key can only ever read, despite being public in this page's
 // JS bundle.
-export default function LiveResultsPage() {
+export default function LiveResultsEventPage() {
   const router = useRouter();
-  const eventId = typeof router.query.event === 'string' ? router.query.event : undefined;
+  const eventId = typeof router.query.eventId === 'string' ? router.query.eventId : undefined;
   const { data, isLoading, error } = useLiveResults(eventId);
 
   const totalFinishers = data
@@ -34,6 +34,7 @@ export default function LiveResultsPage() {
 
       <Stack backgroundColour={BackgroundColour.White}>
         <Container wide>
+          <p><Link href="/live-results">&larr; All events</Link></p>
           <h1>Live Results</h1>
 
           {!isSupabaseConfigured && (
@@ -47,7 +48,7 @@ export default function LiveResultsPage() {
           )}
 
           {isSupabaseConfigured && !isLoading && !error && !data?.event && (
-            <p>No event found yet. Results will appear here once a race goes live in the timing app.</p>
+            <p>Event not found.</p>
           )}
 
           {data?.event && (
