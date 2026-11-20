@@ -25,6 +25,7 @@ import '../features/profile/ui/diagnostics_screen.dart';
 import '../features/profile/ui/recover_screen.dart';
 import '../features/profile/ui/profile_screen.dart';
 import '../features/runs/ui/runs_i_follow_screen.dart';
+import '../features/safety/ui/blocked_members_screen.dart';
 import '../features/runs/ui/runs_screen.dart';
 import '../features/runs/ui/series_screens.dart';
 import '../features/runs/ui/session_detail_screen.dart';
@@ -299,6 +300,11 @@ GoRouter router(Ref ref) {
                     routes: [
                       // A real route (not Navigator.push) so signing out replaces
                       // it along with everything else.
+                      GoRoute(
+                        path: 'blocked',
+                        parentNavigatorKey: rootNavigatorKey,
+                        builder: (_, _) => const BlockedMembersScreen(),
+                      ),
                       GoRoute(
                         path: 'delete',
                         parentNavigatorKey: rootNavigatorKey,

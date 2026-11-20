@@ -19,6 +19,10 @@ import '../../groups/ui/pace_spread_list.dart' show spreadWholeRunTarget;
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/runs_providers.dart';
 import '../../runs/ui/session_actions.dart' show confirm;
+import '../../safety/data/safety_repository.dart'
+    show ReportKind, safetyRepositoryProvider;
+import '../../safety/ui/safety_actions.dart';
+import '../../safety/ui/safety_providers.dart';
 import '../../updates/ui/updates_providers.dart';
 import '../data/message_dtos.dart';
 import '../data/messages_repository.dart';
@@ -87,6 +91,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       _openChat.open(_groupId);
       unawaited(_markRead());
       unawaited(_poll());
+      unawaited(_syncBlocks());
     });
     _timer = Timer.periodic(widget.pollInterval, (_) => unawaited(_poll()));
   }
@@ -113,6 +118,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (sub != null) await handleExpiry(sub, e);
       return ApiException.from(e);
     }
+  }
+
+  /// Catches up with blocks made on another phone. Offline keeps the saved list.
+  Future<void> _syncBlocks() async {
+    try {
+      await ref.read(safetyRepositoryProvider).refresh(_clubId);
+    } on Object {
+      // Offline: the saved list is used.
+    }
+  }
+
+  /// Long-press on someone else's message: report, block (and delete, for
+  /// whoever may moderate).
+  void _messageActions(GroupMessage m, {required bool canDelete}) {
+    unawaited(
+      showMessageActions(
+        context,
+        ref,
+        kind: _post
+            ? ReportKind.comment
+            : _leaders
+            ? ReportKind.leaderMessage
+            : ReportKind.message,
+        messageId: m.id,
+        memberId: m.memberId,
+        name: m.authorName,
+        onDelete: canDelete ? () => unawaited(_delete(m)) : null,
+      ),
+    );
   }
 
   Future<void> _poll() async {
@@ -326,6 +360,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final muted = thread?.muted ?? false;
     final closed = thread?.closed ?? false;
     final dismissed = ref.watch(chatInfoDismissedProvider).value ?? true;
+    // Blocked members' messages are hidden from this phone (guideline 1.2).
+    final blocked = ref.watch(blockedIdsProvider);
+    final visible = blocked.isEmpty
+        ? messages
+        : messages?.where((m) => !blocked.contains(m.memberId)).toList();
 
     // New messages from others while the screen is open: mark the thread read.
     ref.listen(threadMessagesProvider(_groupId), (previous, next) {
@@ -437,7 +476,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
                   Expanded(
                     child: _MessageList(
-                      messages: messages,
+                      messages: visible,
                       leaders: _leaders,
                       units: units,
                       // Someone who could answer an ask can start leading from it.
@@ -459,6 +498,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           (m.memberId == me || canModerate),
                       onFailedTap: _failedActions,
                       onDelete: _delete,
+                      onActions: (m) => _messageActions(
+                        m,
+                        canDelete: !m.isDeleted && canModerate,
+                      ),
                     ),
                   ),
                   // Comments closed (D126): members can only read; the committee
@@ -532,6 +575,7 @@ class _MessageList extends StatelessWidget {
     required this.canDelete,
     required this.onFailedTap,
     required this.onDelete,
+    required this.onActions,
   });
 
   final List<GroupMessage>? messages;
@@ -544,6 +588,7 @@ class _MessageList extends StatelessWidget {
   final bool Function(GroupMessage) canDelete;
   final void Function(GroupMessage) onFailedTap;
   final void Function(GroupMessage) onDelete;
+  final void Function(GroupMessage) onActions;
 
   @override
   Widget build(BuildContext context) {
@@ -581,8 +626,10 @@ class _MessageList extends StatelessWidget {
           onTap: message.isFailed ? () => onFailedTap(message) : null,
           onLongPress: message.isFailed
               ? () => onFailedTap(message)
-              : canDelete(message)
-              ? () => onDelete(message)
+              : isMine(message)
+              ? (canDelete(message) ? () => onDelete(message) : null)
+              : !message.isDeleted && !message.isPending
+              ? () => onActions(message)
               : null,
         ),
       },

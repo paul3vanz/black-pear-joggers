@@ -117,6 +117,13 @@ class AppAccountDeletionTest extends AppProfilesBase
         \App\Models\PostComment::create(['club_id' => $c, 'post_id' => $post->id, 'member_id' => $m->id, 'body' => 'oops'])->delete(); // tombstones hold the key too
         \App\Models\PostThreadState::create(['club_id' => $c, 'post_id' => $post->id, 'member_id' => $m->id, 'muted' => true]);
         \App\Models\PostReceipt::create(['club_id' => $c, 'post_id' => $post->id, 'member_id' => $m->id, 'delivered_at' => Carbon::now()]);
+
+        // Blocks and reports, in both directions.
+        $other = $this->leaderB->id;
+        \App\Models\MemberBlock::create(['club_id' => $c, 'blocker_member_id' => $m->id, 'blocked_member_id' => $other]);
+        \App\Models\MemberBlock::create(['club_id' => $c, 'blocker_member_id' => $other, 'blocked_member_id' => $m->id]);
+        \App\Models\ContentReport::create(['club_id' => $c, 'reporter_member_id' => $m->id, 'reported_member_id' => $other, 'kind' => 'profile', 'reason' => 'spam']);
+        \App\Models\ContentReport::create(['club_id' => $c, 'reporter_member_id' => $other, 'reported_member_id' => $m->id, 'kind' => 'profile', 'reason' => 'spam']);
     }
 
     /** [table, column] pairs of every foreign key to club_members in the test schema. */

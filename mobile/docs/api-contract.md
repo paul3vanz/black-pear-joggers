@@ -1583,3 +1583,18 @@ Per member and live series, first match wins:
 ## Update (2026-11-17, b): `hasApp`
 
 `GET /posts/{id}/receipts` members and `GET /members` items gain `hasApp: bool` (false = exists only from the website, no push device on any login). Old clients ignore it; the app treats a missing value as true. See D137.
+
+## Update (2026-11-20): report and block (D138)
+
+All under `/app/clubs/{clubId}` and club-scoped.
+
+- `GET /blocks` -> `{ items: [{ memberId, name, createdAt }] }` (the caller's blocked members; `name` is first name + initial).
+- `POST /blocks { memberId }` -> 201 `{ memberId, name, createdAt }` (200 if already blocked). 404 not a member of this club, 422 yourself.
+- `DELETE /blocks/{memberId}` -> 204, idempotent.
+- `POST /reports { kind, targetId?, reportedMemberId, reason, details? }` -> 201 `{ id }`.
+  - `kind`: `message` (group chat), `leader_message` (leaders thread), `comment` (update comment), `profile`.
+  - `targetId`: required for all but `profile`; the message must be by `reportedMemberId` in this club (404 otherwise, deleted ones count).
+  - `reason`: `spam | abusive | inappropriate | other`. `details` up to 500 characters.
+  - 422 on validation or reporting yourself, 429 `too_many_requests` after 10 reports in an hour.
+  - Committee members and admins (not the reporter) get an inbox row "Content reported" with a `route` to the thread.
+- Tables `member_blocks`, `content_reports` (migration `2026_11_20_090000_...`, manual SQL `2026_11_reports_blocks.sql`).

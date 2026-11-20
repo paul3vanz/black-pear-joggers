@@ -132,6 +132,10 @@ class AccountDeletion
         DB::table('post_comments')->where('member_id', $memberId)->delete();
         DB::table('post_thread_states')->where('member_id', $memberId)->delete();
 
+        // Blocks they made or received, and reports they sent or that name them.
+        DB::table('member_blocks')->where('blocker_member_id', $memberId)->orWhere('blocked_member_id', $memberId)->delete();
+        DB::table('content_reports')->where('reporter_member_id', $memberId)->orWhere('reported_member_id', $memberId)->delete();
+
         // What they had and read of club updates.
         DB::table('post_receipts')->where('member_id', $memberId)->delete();
 

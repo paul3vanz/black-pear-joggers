@@ -87,6 +87,7 @@ abstract class AppApiTestCase extends TestCase
             '2026_11_10_090000_add_route_url_to_session_groups_table.php',
             '2026_11_10_090100_create_session_routes_table.php',
             '2026_11_17_090000_add_image_and_website_to_sessions_table.php',
+            '2026_11_20_090000_create_member_blocks_and_content_reports_tables.php',
         ]);
 
         // Stand in for the Auth0 verification: the sub comes from a header.

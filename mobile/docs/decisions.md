@@ -1093,3 +1093,17 @@ now marks `hasApp` on each receipt member and on `GET /members` items (new `Serv
 of their `member_logins` has a row in `devices`; a delivered/read receipt also counts). Members with no app are shown apart
 ("Not on the app", own count, not counted in "not yet") and get a "Not on the app" chip on Members and roles. Old servers
 omit the field, which reads as true. No schema change.
+
+**D138 — Report and block (2026-11-20), supersedes the "no reporting flow yet" part of D44.** Apple rejected the first review
+asking for the content reporting and blocking mechanisms (guideline 1.2: the app has chat, update comments, photos and bios).
+- **Report:** long-press someone else's message (group chat, leaders thread or update comments) or open the menu on their profile
+  page -> pick a reason (spam, abusive, inappropriate, other) and optional details. `POST /reports` stores a `content_reports`
+  row with a copy of the text (the author may delete it) and puts a "Content reported" inbox row (category `club_updates`,
+  forced push) in front of every other committee member and admin, linking to the thread. Ten reports an hour per member.
+  There is no in-app list of reports yet: the committee acts from the thread (delete message, Remove photo and bio).
+- **Block:** personal, one-way, silent. `POST/DELETE /blocks`, `GET /blocks`. The phone hides blocked members' messages and
+  profile card; the list is kept in `sync_cursors` under `blockedMembers:<clubId>` (id -> name JSON, so no schema change) and is
+  re-pulled when a chat opens or Blocked members opens. Managed in Profile > About & privacy > Blocked members.
+- **Not done:** pushes and inbox rows for a blocked person's messages still arrive (the server does not filter by block);
+  names in "who's coming" lists are not hidden. Committee can still delete messages and remove members' content.
+- Both new tables are in `AccountDeletion`. Host SQL `api/database/manual/2026_11_reports_blocks.sql`.

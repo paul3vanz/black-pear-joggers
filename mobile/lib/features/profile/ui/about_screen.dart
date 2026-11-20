@@ -61,6 +61,15 @@ class AboutScreen extends ConsumerWidget {
               label: 'Contact the committee',
               url: club.contactUrl,
             ),
+            // Members you blocked from a message or a profile (guideline 1.2).
+            ListTile(
+              key: const ValueKey('blocked-members-tile'),
+              leading: const Icon(Icons.block),
+              title: const Text('Blocked members'),
+              subtitle: const Text('See and unblock people you have blocked'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/profile/about/blocked'),
+            ),
             // Opens the copyable error report and the repair actions (D100).
             ListTile(
               key: const ValueKey('diagnostics-tile'),

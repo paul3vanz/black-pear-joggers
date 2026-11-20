@@ -128,7 +128,7 @@ To review:
 Account deletion: Profile -> About & privacy -> Delete my account (type DELETE to confirm).
 Push notifications (Firebase Cloud Messaging) are used for club updates and run reminders, and are optional.
 Camera and photos are used only to choose an optional profile photo.
-User-generated content: group chat, profile photo, bio and goals are visible only to signed-in club members. [Describe the Report/Block feature here once built: see section 9.]
+User-generated content: group chat, update comments, profile photo, bio and goals are visible only to signed-in club members. Report: press and hold another member's message (or open the menu on their profile) -> Report; the committee is notified. Block: same menus -> Block; their messages and profile card are hidden. Manage blocks in Profile -> About & privacy -> Blocked members. Contact: webmaster@bpj.org.uk.
 ```
 
 **Version release:** choose "Manually release this version" for 1.0 so you control the day it goes live after approval.
@@ -197,11 +197,15 @@ Output: `build/ios/ipa/*.ipa`. Upload with the **Transporter** app (Mac App Stor
 - [ ] Screenshots uploaded; description and screenshots only claim what the iOS build does.
 - [ ] App Privacy published.
 
-## 9. The biggest rejection risk: user-generated content
+## 9. User-generated content (guideline 1.2): built 2026-11-20, D138
 
-Apple guideline **1.2** is stricter than Play. An app with chat, photos and bios must have: a way to **report** offensive content, a way to **block** abusive users, a method to filter content, and published contact details. The app today has message deletion and committee removal, but **no Report or Block** ([data-safety.md](data-safety.md) section 2 notes the same gap; D44, roadmap backlog). A closed club app is lower risk, but reviewers do check for it and it is the most common reason chat apps are bounced.
+Apple wants: a way to **report** offensive content, a way to **block** abusive users, a method to filter content, and published contact details. Status:
 
-Recommended before submitting: build a small **Report** (message, profile) that notifies the committee, and **Block** (hide that member's messages and profile for me), and mention both in the review notes. That is a task of its own; ask for it when you are ready. If you submit without, say in the notes that the club is members-only, the committee moderates, and give the contact email, and be ready for a rejection asking for it.
+- Report: long-press a message or the profile menu -> reason -> committee inbox. Done.
+- Block: same entry points, hides the member on the phone; Profile -> About & privacy -> Blocked members to undo. Done.
+- Filter: messages are plain text only, 1000 characters, 20 a minute; no images or links preview; the committee can delete messages and clear a member's photo and bio. There is no word filter. `[CONFIRM]` say this in the notes if Apple asks.
+- Contact: `webmaster@bpj.org.uk` (About -> Contact the committee).
+- Before submitting: apply `api/database/manual/2026_11_reports_blocks.sql` on production, deploy the API, and film it ([app-review-response.md](app-review-response.md)).
 
 ## 10. After approval
 

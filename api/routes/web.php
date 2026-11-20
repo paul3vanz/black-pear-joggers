@@ -234,6 +234,12 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
         $router->delete('members/{memberId}/profile', 'AppMemberProfileController@clearProfile');
         $router->get('member-cards', 'AppMemberProfileController@cards');
 
+        // Report and block (Apple guideline 1.2)
+        $router->get('blocks', 'AppSafetyController@index');
+        $router->post('blocks', 'AppSafetyController@store');
+        $router->delete('blocks/{memberId}', 'AppSafetyController@destroy');
+        $router->post('reports', 'AppSafetyController@report');
+
         // Phase 9: club standards (BPJ scheme, not club-scoped data)
         $router->get('standards', 'AppStandardsController@index');
     });

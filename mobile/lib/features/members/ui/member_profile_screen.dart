@@ -11,6 +11,9 @@ import '../../../core/auth/session_expiry.dart';
 import '../../../core/ui/offline_banner.dart';
 import '../../../core/util/relative_time.dart';
 import '../../membership/ui/membership_providers.dart';
+import '../../safety/data/safety_repository.dart' show ReportKind;
+import '../../safety/ui/safety_actions.dart';
+import '../../safety/ui/safety_providers.dart';
 import '../../updates/ui/updates_providers.dart';
 import '../data/member_dtos.dart';
 import '../data/member_profile_repository.dart';
@@ -147,6 +150,11 @@ class _MemberProfileScreenState extends ConsumerState<MemberProfileScreen> {
         shown != null &&
         !shown.isYou &&
         widget.memberId != ref.watch(ownMemberIdProvider);
+    final isSelf =
+        shown == null ||
+        shown.isYou ||
+        widget.memberId == ref.watch(ownMemberIdProvider);
+    final isBlocked = ref.watch(blockedIdsProvider).contains(widget.memberId);
 
     return Scaffold(
       appBar: AppBar(
@@ -160,20 +168,72 @@ class _MemberProfileScreenState extends ConsumerState<MemberProfileScreen> {
               ),
         title: const Text('Member'),
         actions: [
-          if (canModerate)
+          // Report and block are for anyone else's card (guideline 1.2); the
+          // committee also gets "Remove photo and bio".
+          if (shown != null && !isSelf)
             PopupMenuButton<String>(
-              onSelected: (_) => _clear(shown),
-              itemBuilder: (context) => const [
-                PopupMenuItem(
-                  value: 'clear',
-                  child: Text('Remove photo and bio'),
+              key: const ValueKey('member-menu'),
+              onSelected: (value) => switch (value) {
+                'clear' => unawaited(_clear(shown)),
+                'report' => unawaited(
+                  showReportDialog(
+                    context,
+                    ref,
+                    kind: ReportKind.profile,
+                    reportedMemberId: shown.memberId,
+                    name: shown.displayName,
+                  ),
                 ),
+                'block' => unawaited(
+                  confirmBlock(
+                    context,
+                    ref,
+                    memberId: shown.memberId,
+                    name: shown.displayName,
+                  ),
+                ),
+                _ => unawaited(
+                  unblockMember(
+                    context,
+                    ref,
+                    memberId: shown.memberId,
+                    name: shown.displayName,
+                  ),
+                ),
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'report',
+                  child: Text('Report this profile'),
+                ),
+                PopupMenuItem(
+                  value: isBlocked ? 'unblock' : 'block',
+                  child: Text(isBlocked ? 'Unblock' : 'Block'),
+                ),
+                if (canModerate)
+                  const PopupMenuItem(
+                    value: 'clear',
+                    child: Text('Remove photo and bio'),
+                  ),
               ],
             ),
         ],
       ),
       body: SafeArea(
-        child: RefreshIndicator(onRefresh: _load, child: _body(shown)),
+        child: RefreshIndicator(
+          onRefresh: _load,
+          child: isBlocked && shown != null
+              ? _Scrollable(
+                  child: _Message(
+                    icon: Icons.block,
+                    title: 'You have blocked ${shown.displayName}',
+                    text:
+                        "Their profile card is hidden. Use the menu at the top "
+                        'to unblock them.',
+                  ),
+                )
+              : _body(shown),
+        ),
       ),
     );
   }
