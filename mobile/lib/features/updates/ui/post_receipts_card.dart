@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../../core/ui/admin_only.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../data/post_receipts_repository.dart';
 
@@ -78,6 +79,7 @@ class PostReceiptsCard extends ConsumerWidget {
                     ),
                   ),
                 ),
+                const AdminBadge(),
                 IconButton(
                   key: const ValueKey('receiptsRefresh'),
                   tooltip: 'Refresh',

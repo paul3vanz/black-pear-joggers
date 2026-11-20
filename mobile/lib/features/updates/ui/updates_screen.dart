@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/ui/admin_only.dart';
 import '../../../core/util/clock.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
@@ -75,7 +76,7 @@ class _UpdatesScreenState extends ConsumerState<UpdatesScreen> {
           ? FloatingActionButton.extended(
               onPressed: () => context.push('/updates/new'),
               icon: const Icon(Icons.edit),
-              label: const Text('New update'),
+              label: const AdminLabel('New update'),
             )
           : null,
       body: SafeArea(

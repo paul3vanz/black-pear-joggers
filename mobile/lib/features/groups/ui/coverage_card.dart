@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/ui/admin_only.dart';
 import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
 import '../../../core/units/dist_unit.dart';
@@ -141,7 +142,7 @@ class CoverageCard extends ConsumerWidget {
                       context.push('/runs/${session.id}/leaders-chat'),
                     ),
                     icon: const Icon(Icons.forum_outlined),
-                    label: const Text('Leaders thread'),
+                    label: const AdminLabel('Leaders thread'),
                   ),
               ],
             ),

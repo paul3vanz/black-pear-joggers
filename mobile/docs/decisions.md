@@ -1107,3 +1107,13 @@ asking for the content reporting and blocking mechanisms (guideline 1.2: the app
 - **Not done:** pushes and inbox rows for a blocked person's messages still arrive (the server does not filter by block);
   names in "who's coming" lists are not hidden. Committee can still delete messages and remove members' content.
 - Both new tables are in `AccountDeletion`. Host SQL `api/database/manual/2026_11_reports_blocks.sql`.
+
+**D139 — Admin-only features are marked, not headed "Committee" (2026-11-20).** The server lets committee members and admins do the
+same things, and some admins are not on the committee, so the app says "Admin only" for either role. `core/ui/admin_only.dart`
+holds the marker: `AdminBadge` (shield icon, tooltip "Admin only"), `AdminTrailing` (badge + chevron for list tiles),
+`AdminLabel` (button/menu label + badge), `AdminAppBarAction` (whole admin screens) and `AdminPanel` (bordered, lightly shaded
+panel with an "Admin only" tag, used for the run page's edit/cancel/delete block, which replaces its old "Committee" heading).
+Applied to the Profile links (Members and roles, Leader cover, Event locations), the Runs "Manage" and Updates "New update"
+buttons, the "Leaders thread" button, the update "Seen by" card, the run coordinator field and "Remove photo and bio". Messages
+that said "Only the committee can…" now say "Only committee members and admins can…". The role names in the roles editor and the
+audience labels on new updates stay as they are: they name roles, not features.

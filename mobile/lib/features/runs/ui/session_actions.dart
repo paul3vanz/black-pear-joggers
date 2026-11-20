@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/db/app_database.dart';
+import '../../../core/ui/admin_only.dart';
 import '../data/runs_repository.dart';
 import 'runs_providers.dart';
 
@@ -177,35 +178,40 @@ class SessionActions extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Committee', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
-          FilledButton.tonalIcon(
-            onPressed: () =>
-                unawaited(context.push('/runs/${session.id}/edit')),
-            icon: const Icon(Icons.edit),
-            label: const Text('Edit this run'),
+          AdminPanel(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FilledButton.tonalIcon(
+                  onPressed: () =>
+                      unawaited(context.push('/runs/${session.id}/edit')),
+                  icon: const Icon(Icons.edit),
+                  label: const Text('Edit this run'),
+                ),
+                const SizedBox(height: 8),
+                if (cancelled)
+                  OutlinedButton.icon(
+                    onPressed: () => unawaited(_restore(context, ref)),
+                    icon: const Icon(Icons.restore),
+                    label: const Text('Restore run'),
+                  )
+                else
+                  OutlinedButton.icon(
+                    onPressed: () => unawaited(_cancel(context, ref)),
+                    icon: const Icon(Icons.event_busy),
+                    label: const Text('Cancel run'),
+                  ),
+                if (adHoc) ...[
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    onPressed: () => unawaited(_delete(context, ref)),
+                    icon: const Icon(Icons.delete_outline),
+                    label: const Text('Delete run'),
+                  ),
+                ],
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          if (cancelled)
-            OutlinedButton.icon(
-              onPressed: () => unawaited(_restore(context, ref)),
-              icon: const Icon(Icons.restore),
-              label: const Text('Restore run'),
-            )
-          else
-            OutlinedButton.icon(
-              onPressed: () => unawaited(_cancel(context, ref)),
-              icon: const Icon(Icons.event_busy),
-              label: const Text('Cancel run'),
-            ),
-          if (adHoc) ...[
-            const SizedBox(height: 8),
-            TextButton.icon(
-              onPressed: () => unawaited(_delete(context, ref)),
-              icon: const Icon(Icons.delete_outline),
-              label: const Text('Delete run'),
-            ),
-          ],
         ],
       ),
     );

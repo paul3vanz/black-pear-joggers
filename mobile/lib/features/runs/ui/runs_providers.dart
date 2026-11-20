@@ -47,7 +47,9 @@ final canManageRunsProvider = Provider<bool>(
 String runsErrorMessage(Object error) {
   final api = ApiException.from(error);
   if (api.isNetworkError) return 'You need a connection to do that.';
-  if (api.statusCode == 403) return 'Only the committee can do that.';
+  if (api.statusCode == 403) {
+    return 'Only committee members and admins can do that.';
+  }
   return switch (api.code) {
     'in_use' =>
       'That venue is still used by a series or an upcoming run. Change '

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/ui/admin_only.dart';
 import '../../../core/util/clock.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
@@ -223,7 +224,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ListTile(
             leading: const Icon(Icons.manage_accounts_outlined),
             title: const Text('Members and roles'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const AdminTrailing(),
             onTap: () => context.push('/profile/members'),
           ),
         if (ref.watch(canManageRunsProvider))
@@ -232,7 +233,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             leading: const Icon(Icons.groups_outlined),
             title: const Text('Leader cover'),
             subtitle: const Text('who leads the next 4 weeks of runs'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const AdminTrailing(),
             onTap: () => context.push('/profile/leader-cover'),
           ),
         if (ref.watch(canManageRunsProvider))
@@ -240,7 +241,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             leading: const Icon(Icons.flag_outlined),
             title: const Text('Event locations'),
             subtitle: const Text('parkruns, races and other events'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const AdminTrailing(),
             onTap: () => context.push('/profile/event-locations'),
           ),
         ListTile(

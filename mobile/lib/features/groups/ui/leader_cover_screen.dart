@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/db/app_database.dart';
+import '../../../core/ui/admin_only.dart';
 import '../../../core/util/clock.dart';
 import '../../../core/units/dist_unit.dart';
 import '../../runs/data/runs_repository.dart';
@@ -75,7 +76,9 @@ class _LeaderCoverScreenState extends ConsumerState<LeaderCoverScreen> {
     if (!ref.watch(canManageRunsProvider)) {
       return Scaffold(
         appBar: AppBar(title: const Text('Leader cover')),
-        body: const Center(child: Text('Only the committee can see this.')),
+        body: const Center(
+          child: Text('Only committee members and admins can see this.'),
+        ),
       );
     }
     final clubId = ref.watch(activeClubIdProvider);
@@ -105,7 +108,10 @@ class _LeaderCoverScreenState extends ConsumerState<LeaderCoverScreen> {
         if (!_onlyNeeds || runNeedsLeaders(e.session, e.groups)) e,
     ];
     return Scaffold(
-      appBar: AppBar(title: const Text('Leader cover')),
+      appBar: AppBar(
+        title: const Text('Leader cover'),
+        actions: const [AdminAppBarAction()],
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: ListView(

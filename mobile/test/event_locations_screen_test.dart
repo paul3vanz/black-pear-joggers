@@ -115,7 +115,9 @@ void main() {
   ) async {
     await pump(tester, roles: const []);
     expect(
-      find.text('Only the committee can manage event locations.'),
+      find.text(
+        'Only committee members and admins can manage event locations.',
+      ),
       findsOneWidget,
     );
     expect(find.text('Add location'), findsNothing);
@@ -286,7 +288,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(field('Name'), 'X parkrun');
     await tapSave(tester);
-    expect(find.text('Only the committee can do that.'), findsOneWidget);
+    expect(
+      find.text('Only committee members and admins can do that.'),
+      findsOneWidget,
+    );
     expect(find.text('Add location'), findsNWidgets(2)); // form title + button
     await unmount(tester);
   });

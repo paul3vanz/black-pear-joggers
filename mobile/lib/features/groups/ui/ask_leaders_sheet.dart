@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -238,12 +239,7 @@ class _AskSheetState extends ConsumerState<_AskSheet> {
           Expanded(
             child: ListView(
               controller: scroll,
-              padding: EdgeInsets.fromLTRB(
-                16,
-                16,
-                16,
-                16 + MediaQuery.viewInsetsOf(context).bottom,
-              ),
+              padding: const EdgeInsets.all(16),
               children: [
                 Text(
                   _title(widget.target),
@@ -286,7 +282,18 @@ class _AskSheetState extends ConsumerState<_AskSheet> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            // Keep Send clear of the system navigation bar (edge-to-edge on
+            // Android) and of the keyboard, whichever is taller.
+            padding: EdgeInsets.fromLTRB(
+              16,
+              0,
+              16,
+              12 +
+                  math.max(
+                    MediaQuery.viewPaddingOf(context).bottom,
+                    MediaQuery.viewInsetsOf(context).bottom,
+                  ),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,

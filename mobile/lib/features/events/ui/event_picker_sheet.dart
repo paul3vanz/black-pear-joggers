@@ -210,9 +210,13 @@ class _EventPickerSheetState extends ConsumerState<EventPickerSheet> {
     return Padding(
       // Lift the sheet above the keyboard.
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: SizedBox(
-        height: height,
-        child: _otherMode ? _otherForm(context) : _picker(context),
+      // Keep the buttons clear of the system navigation bar.
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: height,
+          child: _otherMode ? _otherForm(context) : _picker(context),
+        ),
       ),
     );
   }

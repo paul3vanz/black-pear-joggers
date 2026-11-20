@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/db/app_database.dart';
+import '../../../core/ui/admin_only.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../runs/ui/form_fields.dart';
 import '../../runs/ui/runs_providers.dart';
@@ -76,7 +77,9 @@ class _EventLocationsScreenState extends ConsumerState<EventLocationsScreen> {
         body: const Center(
           child: Padding(
             padding: EdgeInsets.all(24),
-            child: Text('Only the committee can manage event locations.'),
+            child: Text(
+              'Only committee members and admins can manage event locations.',
+            ),
           ),
         ),
       );
@@ -89,7 +92,10 @@ class _EventLocationsScreenState extends ConsumerState<EventLocationsScreen> {
     ];
     final filtering = _query.isNotEmpty || _kinds.isNotEmpty;
     return Scaffold(
-      appBar: AppBar(title: const Text('Event locations')),
+      appBar: AppBar(
+        title: const Text('Event locations'),
+        actions: const [AdminAppBarAction()],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => unawaited(_openForm(context)),
         icon: const Icon(Icons.add),

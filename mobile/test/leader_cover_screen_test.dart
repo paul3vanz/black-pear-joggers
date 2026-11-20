@@ -167,7 +167,10 @@ void main() {
   testWidgets('a plain member is told it is for the committee', (tester) async {
     await seed(tester, roles: const []);
 
-    expect(find.text('Only the committee can see this.'), findsOneWidget);
+    expect(
+      find.text('Only committee members and admins can see this.'),
+      findsOneWidget,
+    );
     expect(run('gap'), findsNothing);
     await unmount(tester);
   });

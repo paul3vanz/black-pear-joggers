@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/ui/admin_only.dart';
 import '../../../core/util/clock.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/auth/accounts_controller.dart';
@@ -213,7 +214,7 @@ class _MemberProfileScreenState extends ConsumerState<MemberProfileScreen> {
                 if (canModerate)
                   const PopupMenuItem(
                     value: 'clear',
-                    child: Text('Remove photo and bio'),
+                    child: AdminLabel('Remove photo and bio'),
                   ),
               ],
             ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/ui/admin_only.dart';
 import '../../membership/data/membership_repository.dart';
 import '../data/member_dtos.dart';
 import 'group_access.dart';
@@ -49,7 +50,10 @@ class _MembersRolesScreenState extends ConsumerState<MembersRolesScreen> {
     ref.watch(isAdminProvider);
     ref.watch(myMemberIdProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Members and roles')),
+      appBar: AppBar(
+        title: const Text('Members and roles'),
+        actions: const [AdminAppBarAction()],
+      ),
       body: SafeArea(
         child: MemberSearchList(
           key: _search,

@@ -48,35 +48,37 @@ class _PaceSheetState extends State<_PaceSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        0,
-        16,
-        16 + MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('My pace for this run', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 4),
-              Text(
-                'Only for this run. It helps leaders see who is coming and '
-                'at what pace. Your usual pace is set in your profile.',
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 16),
-              PaceInput(controller: _pace),
-              const SizedBox(height: 16),
-              FilledButton(onPressed: _save, child: const Text('Save pace')),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(const NoPace()),
-                child: const Text('Use my usual pace'),
-              ),
-            ],
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          16,
+          0,
+          16,
+          16 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('My pace for this run', style: theme.textTheme.titleLarge),
+                const SizedBox(height: 4),
+                Text(
+                  'Only for this run. It helps leaders see who is coming and '
+                  'at what pace. Your usual pace is set in your profile.',
+                  style: theme.textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 16),
+                PaceInput(controller: _pace),
+                const SizedBox(height: 16),
+                FilledButton(onPressed: _save, child: const Text('Save pace')),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(const NoPace()),
+                  child: const Text('Use my usual pace'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

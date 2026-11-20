@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/ui/admin_only.dart';
 import '../../membership/ui/membership_providers.dart';
 import '../../../core/db/app_database.dart';
 import '../data/runs_repository.dart';
@@ -322,6 +323,7 @@ class _CoordinatorTile extends StatelessWidget {
     child: Row(
       children: [
         Expanded(child: Text(name ?? 'No coordinator')),
+        const AdminBadge(),
         TextButton(
           onPressed: onPick,
           child: Text(name == null ? 'Choose' : 'Change'),

@@ -270,7 +270,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Remove'));
     await settle(tester);
-    expect(find.text('Only the committee can do that.'), findsOneWidget);
+    expect(
+      find.text('Only committee members and admins can do that.'),
+      findsOneWidget,
+    );
     expect(find.text('Love a hilly run.'), findsOneWidget);
     await unmount(tester);
   });

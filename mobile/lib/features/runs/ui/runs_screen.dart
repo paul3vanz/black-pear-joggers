@@ -9,6 +9,7 @@ import '../../../core/api/api_exception.dart';
 import '../../../core/auth/accounts_controller.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/db/app_database.dart';
+import '../../../core/ui/admin_only.dart';
 import '../../../core/ui/offline_banner.dart';
 import '../../../core/util/clock.dart';
 import '../../membership/ui/membership_providers.dart';
@@ -185,7 +186,7 @@ class _RunsScreenState extends ConsumerState<RunsScreen> {
           ? FloatingActionButton.extended(
               onPressed: () => _showManageMenu(context),
               icon: const Icon(Icons.edit_calendar),
-              label: const Text('Manage'),
+              label: const AdminLabel('Manage'),
             )
           : null,
       bottomNavigationBar: showFooter
