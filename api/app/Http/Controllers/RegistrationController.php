@@ -106,55 +106,34 @@ class RegistrationController extends Controller
             return;
         }
 
-        $athleteId = $this->fetchPowerOfTenAthleteId($registration->urn);
-
-        Log::info("Got athlete ID: $athleteId");
-
-        if (!$athleteId) {
-            $registration->notes = 'Needs an athlete id adding by hand: '
-                . 'Power of 10 can no longer be searched by URN.';
-            $registration->save();
-        }
-
-        if ($athleteId) {
-            // Add athlete to athlete table
-            $athlete = $this->createAthlete(
-                [
-                    'urn' => $membershipDetails->Urn,
-                    'id' => $athleteId,
-                    'athlete_id' => $athleteId,
-                    'first_name' => $membershipDetails->Firstname,
-                    'last_name' => $membershipDetails->Lastname,
-                    'gender' => $registration->gender,
-                    'dob' => $registration->dateOfBirth,
-                ]
-            );
-
-            if ($athlete) {
-                $registration->forceDelete();
-            }
-        }
+        $this->createAthleteFromRegistration($registration, $membershipDetails->Firstname, $membershipDetails->Lastname);
     }
 
     /**
-     * There is no longer any way to look an athlete up by their UKA URN.
+     * Turn a verified registration into an athlete, whether or not Power of 10 knows them.
      *
-     * This used to read thepowerof10.info/athletes/profile.aspx?ukaurn=, which
-     * does not resolve at all now: the request throws rather than 404s, and it
-     * was taking the whole registrations run down with it. The rebuilt site is
-     * keyed by GUID and its only search is behind reCAPTCHA, so there is
-     * nothing to point this at.
-     *
-     * Returning null leaves the registration in place rather than creating an
-     * athlete we cannot identify, so somebody can finish it by hand.
+     * Power of 10 can no longer be searched by URN, so a new athlete starts with
+     * no athlete_id (the old Power of 10 integer id) and no po10_guid. Those are
+     * only needed to scrape results and to link to their profile, and can be
+     * filled in later. `athletes.id` is auto-increment and is what everything
+     * else (club members, performances, rankings) joins on. What the app needs
+     * to link a membership is the urn and date of birth, which we already hold.
      */
-    private function fetchPowerOfTenAthleteId($athleteUrn)
+    public function createAthleteFromRegistration(Registration $registration, string $firstName, string $lastName): Athlete
     {
-        Log::info('Cannot look up a Power of 10 id by URN, the site that allowed it is gone', [
-            'urn' => $athleteUrn,
+        $athlete = $this->createAthlete([
+            'urn' => $registration->urn,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'gender' => $registration->gender,
+            'dob' => $registration->dateOfBirth,
         ]);
 
-        return null;
+        Log::info('Created athlete from registration', ['athleteId' => $athlete->id, 'urn' => $registration->urn]);
+
+        $registration->forceDelete();
+
+        return $athlete;
     }
 
     /**

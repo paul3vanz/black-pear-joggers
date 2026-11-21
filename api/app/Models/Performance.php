@@ -25,7 +25,7 @@ final class Performance extends Model
 
     public function athlete()
     {
-        return $this->belongsTo('App\Models\Athlete', 'athlete_id', 'athlete_id');
+        return $this->belongsTo('App\Models\Athlete', 'athlete_id', 'id');
     }
 
     public function event()

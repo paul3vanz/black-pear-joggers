@@ -44,6 +44,7 @@ class FetchPerformancesController extends Controller
         // po10_guid replaces urn as the lookup key: the rebuilt Power of 10
         // site is keyed by GUID and has no route that accepts a UKA URN.
         $athletes = Athlete::whereNotNull('po10_guid')
+            ->whereNotNull('athlete_id')
             ->get()
             ->filter(function ($item) { return $item->affiliated; })
             ->values();

@@ -44,6 +44,7 @@ class FetchRankingsController extends Controller
         }
 
         $athletes = Athlete::whereNotNull('po10_guid')
+            ->whereNotNull('athlete_id')
             ->get()
             ->filter(function ($item) { return $item->affiliated; })
             ->values();

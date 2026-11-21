@@ -117,7 +117,7 @@ class ParkrunController extends Controller
     {
         $results = DB::select("
           SELECT
-            a.athlete_id,
+            a.id AS athlete_id,
             a.first_name,
             a.last_name,
             GROUP_CONCAT(
@@ -140,7 +140,7 @@ class ParkrunController extends Controller
               AND m.competitiveRegStatus IN ('Registered')
           WHERE
             m.event = 'parkrun'
-          GROUP BY a.athlete_id
+          GROUP BY a.id
           HAVING event_count >= 10
           ORDER BY event_count DESC
         ");
