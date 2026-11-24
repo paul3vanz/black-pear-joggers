@@ -82,16 +82,28 @@ export function buildLeaderboard(
     if (!participantByBib.has(p.bib_number)) participantByBib.set(p.bib_number, p);
   }
 
-  const finishesByBib = new Map<string, FinishRow[]>();
-  for (const f of finishes) {
-    if (f.gun_time == null) continue;
-    const list = finishesByBib.get(f.bib_number) ?? [];
+  // A single-lap race (races.format = 'single') has one crossing per runner, so
+  // a bib entered twice is a mistake (usually transposed digits) rather than a
+  // lap. Each entry is shown in its own position and marked, so it stays
+  // visible until it's corrected in the timing app. A race with no format
+  // (rows from before the column existed) keeps the lapped behaviour.
+  const singleLapRaces = new Set(races.filter((r) => r.format === 'single').map((r) => r.id));
+
+  const finishGroups = new Map<string, FinishRow[]>();
+  const singleBibCounts = new Map<string, number>();
+  finishes.forEach((f, index) => {
+    if (f.gun_time == null) return;
+    const single = singleLapRaces.has(f.race_id);
+    const key = single ? `${f.race_id}:${f.bib_number}:${index}` : `laps:${f.bib_number}`;
+    const list = finishGroups.get(key) ?? [];
     list.push(f);
-    finishesByBib.set(f.bib_number, list);
-  }
+    finishGroups.set(key, list);
+    if (single) singleBibCounts.set(f.bib_number, (singleBibCounts.get(f.bib_number) ?? 0) + 1);
+  });
 
   const grouped: Record<string, LeaderboardEntry[]> = {};
-  for (const [bibNumber, bibFinishes] of finishesByBib) {
+  for (const [key, bibFinishes] of finishGroups) {
+    const bibNumber = bibFinishes[0].bib_number;
     // Ordered by race (in the rare case an event spans more than one), then
     // by gun_time within a race — which is lap order, since every lap is a
     // finish row against the same shared race start.
@@ -111,7 +123,9 @@ export function buildLeaderboard(
     });
 
     const entry: LeaderboardEntry = {
+      key,
       bibNumber,
+      repeatedBib: (singleBibCounts.get(bibNumber) ?? 0) > 1,
       displayName: (participant && participantDisplayName(participant)) || `Bib ${bibNumber}`,
       club: participant?.club || null,
       gender: participant?.gender || null,

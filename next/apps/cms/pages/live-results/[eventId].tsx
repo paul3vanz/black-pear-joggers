@@ -68,7 +68,9 @@ export default function LiveResultsEventPage() {
                   const entries = data.leaderboardByCategory[category];
                   const hasGender = entries.some((entry) => entry.gender);
                   const hasCategory = entries.some((entry) => entry.category);
-                  const maxLaps = Math.max(0, ...entries.map((entry) => entry.lapsCompleted));
+                  const maxLaps = data.multiLap
+                    ? Math.max(0, ...entries.map((entry) => entry.lapsCompleted))
+                    : 0;
                   const lapColumns = Array.from({ length: maxLaps }, (_, i) => i);
 
                   return (
@@ -94,19 +96,19 @@ export default function LiveResultsEventPage() {
                                   <th className={thClass}>Cat #</th>
                                 </>
                               )}
-                              <th className={thClass}>Laps</th>
+                              {data.multiLap && <th className={thClass}>Laps</th>}
                               {lapColumns.map((i) => (
                                 <th key={i} className={thClass}>
                                   Lap {i + 1}
                                 </th>
                               ))}
-                              <th className={thClass}>Total</th>
+                              <th className={thClass}>{data.multiLap ? 'Total' : 'Time'}</th>
                             </tr>
                           </thead>
                           <tbody>
                             {entries.map((entry: LeaderboardEntry) => (
                               <tr
-                                key={entry.bibNumber}
+                                key={entry.key}
                                 className={
                                   entry.position === 1 || entry.genderPosition === 1
                                     ? 'font-bold'
@@ -114,7 +116,17 @@ export default function LiveResultsEventPage() {
                                 }
                               >
                                 <td className={tdClass}>{entry.position}</td>
-                                <td className={tdClass}>{entry.bibNumber}</td>
+                                <td className={tdClass}>
+                                  {entry.bibNumber}
+                                  {entry.repeatedBib && (
+                                    <span
+                                      className="text-amber-700 font-normal"
+                                      title="This bib was recorded more than once and is being checked"
+                                    >
+                                      {' '}(entered twice, being checked)
+                                    </span>
+                                  )}
+                                </td>
                                 <td className={tdClass}>
                                   {entry.displayName}
                                   {entry.club && (
@@ -141,7 +153,7 @@ export default function LiveResultsEventPage() {
                                     </td>
                                   </>
                                 )}
-                                <td className={tdClass}>{entry.lapsCompleted}</td>
+                                {data.multiLap && <td className={tdClass}>{entry.lapsCompleted}</td>}
                                 {lapColumns.map((i) => (
                                   <td key={i} className={tdClass}>
                                     {entry.lapSplits[i] != null ? formatElapsed(entry.lapSplits[i]) : '—'}

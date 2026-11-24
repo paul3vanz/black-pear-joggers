@@ -16,6 +16,9 @@ export interface RaceRow {
   id: string;
   name: string;
   created_at: string;
+  // 'single': each runner crosses once, so a repeated bib is shown twice and
+  // marked rather than counted as a lap. 'laps' (or missing): repeats are laps.
+  format?: 'single' | 'laps' | null;
 }
 
 export interface ParticipantRow {
@@ -37,7 +40,11 @@ export interface FinishRow {
 }
 
 export interface LeaderboardEntry {
+  key: string; // unique per row: a bib can appear twice in a single-lap race
   bibNumber: string;
+  // Single-lap race only: this bib was entered more than once, so every one of
+  // its rows is shown and marked until it's corrected in the timing app.
+  repeatedBib: boolean;
   displayName: string;
   club: string | null;
   gender: string | null;
@@ -57,4 +64,5 @@ export interface LiveResultsData {
   event: EventRow | null;
   races: RaceRow[];
   leaderboardByCategory: Record<string, LeaderboardEntry[]>;
+  multiLap: boolean; // any race in the event is lapped: show the lap columns
 }
