@@ -154,3 +154,41 @@ describe('formatOrdinal', () => {
     expect(formatOrdinal(21)).toBe('21st');
   });
 });
+
+describe('buildLeaderboard for a single-lap race', () => {
+  const singleRaces: RaceRow[] = [
+    { id: 'race-1', name: 'Croome Capability', created_at: '2026-11-21T09:00:00Z', format: 'single' },
+  ];
+
+  it('shows a repeated bib in both positions, marked, instead of as a second lap', () => {
+    const finishes: FinishRow[] = [
+      { race_id: 'race-1', bib_number: '1', gun_time: 10 * 60_000 },
+      { race_id: 'race-1', bib_number: '3', gun_time: 11 * 60_000 },
+      { race_id: 'race-1', bib_number: '1', gun_time: 12 * 60_000 }, // likely a typo for another bib
+    ];
+
+    const result = buildLeaderboard(singleRaces, participants, finishes);
+
+    expect(result.solo.map((e) => [e.position, e.bibNumber, e.currentTime / 60_000])).toEqual([
+      [1, '1', 10],
+      [2, '3', 11],
+      [3, '1', 12],
+    ]);
+    expect(result.solo.map((e) => e.repeatedBib)).toEqual([true, false, true]);
+    expect(result.solo.every((e) => e.lapsCompleted === 1)).toBe(true);
+    expect(new Set(result.solo.map((e) => e.key)).size).toBe(3);
+  });
+
+  it('keeps lapped behaviour for races with no format (older rows)', () => {
+    const finishes: FinishRow[] = [
+      { race_id: 'race-1', bib_number: '1', gun_time: 10 * 60_000 },
+      { race_id: 'race-1', bib_number: '1', gun_time: 20 * 60_000 },
+    ];
+
+    const result = buildLeaderboard(races, participants, finishes);
+
+    expect(result.solo).toHaveLength(1);
+    expect(result.solo[0].lapsCompleted).toBe(2);
+    expect(result.solo[0].repeatedBib).toBe(false);
+  });
+});

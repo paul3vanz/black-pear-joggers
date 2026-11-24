@@ -24,7 +24,7 @@ export async function fetchEvents(): Promise<EventRow[]> {
 async function getRacesForEvent(eventId: string): Promise<RaceRow[]> {
   const { data, error } = await supabase
     .from('races')
-    .select('id, name, created_at')
+    .select('id, name, created_at, format')
     .eq('event_id', eventId);
   if (error) throw new Error(`getRacesForEvent: ${error.message}`);
   return data ?? [];
@@ -52,10 +52,11 @@ async function getFinishesForRaces(raceIds: string[]): Promise<FinishRow[]> {
 
 export async function fetchLiveResults(eventId: string): Promise<LiveResultsData> {
   const event = await getEventById(eventId);
-  if (!event) return { event: null, races: [], leaderboardByCategory: {} };
+  if (!event) return { event: null, races: [], leaderboardByCategory: {}, multiLap: false };
 
   const races = await getRacesForEvent(event.id);
-  if (races.length === 0) return { event, races, leaderboardByCategory: {} };
+  const multiLap = races.some((r) => r.format !== 'single');
+  if (races.length === 0) return { event, races, leaderboardByCategory: {}, multiLap };
 
   const raceIds = races.map((r) => r.id);
   const [participants, finishes] = await Promise.all([
@@ -67,5 +68,6 @@ export async function fetchLiveResults(eventId: string): Promise<LiveResultsData
     event,
     races,
     leaderboardByCategory: buildLeaderboard(races, participants, finishes),
+    multiLap,
   };
 }
