@@ -23,6 +23,7 @@ Session session({
   localStartTime: start,
   localEndTime: '20:30',
   groupMode: 'paced',
+  usesRoutes: true,
   status: status,
   isDetached: original != null,
   originalJson: original == null ? null : jsonEncode(original),

@@ -307,26 +307,27 @@ class _AskSheetState extends ConsumerState<_AskSheet> {
                       style: TextStyle(color: theme.colorScheme.error),
                     ),
                   ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: _busy
-                          ? null
-                          : () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
-                    ),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                      key: const ValueKey('ask-send'),
-                      onPressed: _busy ? null : () => unawaited(_send()),
-                      child: Text(
-                        _picked.length == 1
-                            ? 'Send to 1 person'
-                            : 'Send to ${_picked.length} people',
-                      ),
-                    ),
-                  ],
+                // Send is the full-width primary action so it can't be missed or
+                // pushed off a narrow screen; Cancel sits under it.
+                FilledButton(
+                  key: const ValueKey('ask-send'),
+                  onPressed: _busy ? null : () => unawaited(_send()),
+                  child: _busy
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(switch (_picked.length) {
+                          0 => 'Send',
+                          1 => 'Send to 1 person',
+                          final n => 'Send to $n people',
+                        }),
+                ),
+                TextButton(
+                  key: const ValueKey('ask-cancel'),
+                  onPressed: _busy ? null : () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
                 ),
               ],
             ),

@@ -154,6 +154,40 @@ class AppGroupMessageController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *   tags={"App"},
+     *   path="/app/clubs/{clubId}/groups/{groupId}/members",
+     *   summary="Who is in a group's chat: its leaders, coordinator and going/maybe members, as short names with their role.",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Response(response=200, description="{ items: [{ memberId, name, role }] }"),
+     *   @OA\Response(response=403, description="not_in_group"),
+     *   @OA\Response(response=404, description="No such group"),
+     * )
+     */
+    public function members(Request $request, $clubId, $groupId)
+    {
+        $thread = $this->open($request, $groupId);
+
+        if (!$thread instanceof ThreadAccess) {
+            return $thread;
+        }
+
+        $people = $thread->people($thread->participantIds());
+        $order = [ThreadAccess::ROLE_LEADER => 0, ThreadAccess::ROLE_COORDINATOR => 1, ThreadAccess::ROLE_COMMITTEE => 2, ThreadAccess::ROLE_MEMBER => 3];
+        $items = [];
+
+        foreach ($people as $id => $who) {
+            $items[] = ['memberId' => $id, 'name' => $who['name'], 'role' => $who['role']];
+        }
+
+        usort($items, function ($a, $b) use ($order) {
+            return [$order[$a['role']], $a['name']] <=> [$order[$b['role']], $b['name']];
+        });
+
+        return response()->json(['items' => $items]);
+    }
+
+    /**
      * @OA\Post(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/groups/{groupId}/messages",

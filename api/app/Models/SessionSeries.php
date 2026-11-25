@@ -16,13 +16,14 @@ final class SessionSeries extends Model
 
     protected $table = 'session_series';
 
-    const GROUP_MODES = ['paced', 'single', 'open', 'routes', 'events', 'race'];
+    const GROUP_MODES = ['paced', 'single', 'open', 'routes', 'events', 'race', 'everyone'];
 
     /** Modes whose groups are events people choose between (no pace, no leaders). */
     const EVENT_MODES = ['events', 'race'];
 
     protected $attributes = [
         'interval_weeks' => 1,
+        'uses_routes' => true,
     ];
 
     protected $fillable = [
@@ -40,12 +41,14 @@ final class SessionSeries extends Model
         'group_mode',
         'cms_slug',
         'image_url',
+        'uses_routes',
     ];
 
     protected $casts = [
         'weekday' => 'integer',
         'duration_min' => 'integer',
         'interval_weeks' => 'integer',
+        'uses_routes' => 'boolean',
     ];
 
     /** start_time as HH:MM (the column is a TIME, read back as HH:MM:SS). */

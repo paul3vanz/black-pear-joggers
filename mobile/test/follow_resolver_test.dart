@@ -66,6 +66,7 @@ void main() {
       localDate: '2026-10-19',
       localStartTime: '19:00',
       groupMode: 'paced',
+      usesRoutes: true,
       status: 'scheduled',
       isDetached: false,
       summaryJson: jsonEncode({'myStatus': myStatus, 'myLeading': leading}),

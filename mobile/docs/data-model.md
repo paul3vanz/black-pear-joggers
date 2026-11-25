@@ -54,7 +54,8 @@ member_logins    id, club_id, member_id, user_id (Auth0 sub), linked_at
 venues           id, club_id, name, address, lat, lng, notes
 session_series   id, club_id, title, description, venue_id, weekday, start_time (local),
                  duration_min, interval_weeks (1), valid_from, valid_until?,
-                 group_mode('paced','single','open','routes'), default_groups json, cms_slug?
+                 group_mode('paced','single','open','routes','events','everyone'), uses_routes bool (default true),
+                 default_groups json, cms_slug?
 sessions         id, club_id, series_id?, occurrence_date?, starts_at, ends_at, venue_id,
                  title, notes, group_mode, coordinator_member_id?, status('scheduled','cancelled'),
                  cancel_reason?, is_detached bool           unique(series_id, occurrence_date)
@@ -77,6 +78,9 @@ sessions         id, club_id, series_id?, occurrence_date?, starts_at, ends_at, 
   - `single`: Wednesday track. One group created from `default_groups`.
   - `open`: Mug Run. Everyone starts together; members can still say "I'll run
     ~9:00/mi, join me" as an informal group.
+  - `everyone` (D140): track night, Mug Run. No leaders or pace groups: whoever is going joins the run's one shared
+    group (created on first RSVP), which holds the group chat. `uses_routes` (on series and sessions) switches the Routes
+    box off for runs with no set routes.
   - `routes`: Sunday long runs. A **coordinator** (`sessions.coordinator_member_id`)
     sets routes such as 10 mi and 16 mi as `route` groups with no leaders.
     Attendees pick a route and their pace *for that run*, and can see the pace
@@ -150,8 +154,10 @@ conversions.
 ### Visibility and permissions
 
 - **Leader names are public** (members see which leaders have confirmed groups).
-- **Attendee names** are visible to the group's leaders, the session coordinator
-  and committee. Everyone else sees counts and an anonymous spread of paces.
+- **Attendee names** (D140): leaders of the group, the session coordinator and
+  committee see full names. Every other member sees first name and last initial
+  ("Sam B.") with each person's pace, on the group card, to encourage others to
+  come. Event groups (D77) stay private to members of the same event.
 - **Any linked member can lead** (D12): they create a group with themselves as
   leader, or join an existing group as co-leader. The `leader` role is a badge the
   committee awards; it doesn't gate leading.

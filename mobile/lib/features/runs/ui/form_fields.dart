@@ -190,6 +190,31 @@ class GroupModeDropdown extends StatelessWidget {
   );
 }
 
+/// "This run has set routes" switch (D140). Off hides the Routes card, for
+/// runs such as the Mug Run or track night that have no route to pick.
+class UsesRoutesSwitch extends StatelessWidget {
+  const UsesRoutesSwitch({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) => SwitchListTile(
+    key: const ValueKey('uses-routes'),
+    contentPadding: EdgeInsets.zero,
+    title: const Text('Has set routes'),
+    subtitle: const Text(
+      'Turn off for runs with no routes to pick, so the Routes box is hidden.',
+    ),
+    value: value,
+    onChanged: onChanged,
+  );
+}
+
 /// Optional duration in minutes (the server accepts 15-600). An empty field means
 /// "no end time" (D47): the run shows only its start time. The clear button makes
 /// that explicit.

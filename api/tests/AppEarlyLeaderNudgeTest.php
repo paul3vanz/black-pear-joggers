@@ -129,7 +129,7 @@ class AppEarlyLeaderNudgeTest extends AppGroupsBase
         $this->assertSame('leaders_needed', $n->category);
         $this->assertSame('Leaders needed: Saturday 17 Oct', $n->title);
         $this->assertSame('Club run on Saturday 17 Oct at 7pm needs a group between 8:30 and 10:00/mi. Can you lead?', $n->body);
-        $this->assertSame('/runs/' . $this->target->id . '/groups/new?intent=lead&fast=308&slow=382', $n->data['route']);
+        $this->assertSame('/runs/' . $this->target->id . '/groups/new?intent=lead&fast=317&slow=373', $n->data['route']);
         $this->assertSame($this->target->id, $n->data['sessionId']);
 
         // The 10-minute job runs again the same day: nobody else is asked.
@@ -162,19 +162,19 @@ class AppEarlyLeaderNudgeTest extends AppGroupsBase
             $this->lead($this->target, $from);
         }
 
-        // The slow end (nothing slower than 11:00, the slowest edge plus 30 s) and jog/walk are left; Ben fitted the old hole, not these.
-        $this->assertSame(2, $this->nudge('2026-10-13 09:00'));
-        $this->assertSame(['anna', 'cara', 'dee', 'eli'], $this->nudged());
+        // The slow end (nothing slower than 11:00, the slowest edge plus 30 s) and jog/walk are left. Dee (11:45) fits the slow end,
+        // and so does Ben (10:30): a leader's usual pace may sit up to 30 s outside the stretch and still fit (FIT_FLEX_PER_MI).
+        $this->assertSame(3, $this->nudge('2026-10-13 09:00'));
+        $this->assertSame(['anna', 'ben', 'cara', 'dee', 'eli'], $this->nudged());
 
         $bodies = Notification::whereIn('member_id', [$this->m['dee']->id, $this->m['eli']->id])->pluck('body', 'member_id');
         $this->assertStringContainsString('could use a group slower than 11:00/mi. Can you lead?', $bodies[$this->m['dee']->id]);
         $this->assertStringContainsString('could use a jog/walk group. Can you lead?', $bodies[$this->m['eli']->id]);
-        $this->assertSame(0, Notification::where('member_id', $this->m['ben']->id)->count());
     }
 
     public function testAFullySpreadRunIsLeftAlone()
     {
-        foreach ([520, 560, 600, 640, 680, 720] as $from) {
+        foreach ([480, 510, 540, 570, 600, 630, 660, 690, 720] as $from) { // 30 s apart, 8:00 to 12:00: no gap
             $this->lead($this->target, $from);
         }
         $this->lead($this->target, 0, 'jog_walk'); // a jog/walk group is on offer too

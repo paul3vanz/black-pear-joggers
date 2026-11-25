@@ -78,6 +78,20 @@ class MessagesRepository {
 
   // --- Reads -----------------------------------------------------------
 
+  /// Who is in a group's chat (not for leaders or comment threads). Needs a
+  /// connection.
+  Future<List<ChatMember>> members(int clubId, String groupId) async {
+    final response = await guardApi(
+      () => _dio.get<Object?>('${_base(clubId, groupId)}/members'),
+    );
+    final items = jsonObject(response)['items'];
+    return [
+      if (items is List)
+        for (final item in items)
+          if (item is Map) ChatMember.fromJson(Map<String, Object?>.from(item)),
+    ];
+  }
+
   /// The thread, oldest first.
   Stream<List<GroupMessage>> watchThread(String groupId) =>
       (_db.select(_db.groupMessages)

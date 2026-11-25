@@ -196,7 +196,7 @@ void main() {
   ) async {
     await pump(tester);
 
-    expect(find.text('Send to 0 people'), findsOneWidget);
+    expect(find.text('Send'), findsOneWidget);
     for (final id in ['anna', 'ben', 'cara', 'dee', 'eli']) {
       expect(ticked(tester, id), isFalse, reason: id);
     }
@@ -207,7 +207,7 @@ void main() {
     await pick(tester, 'cara');
     await pick(tester, 'dee');
     await pick(tester, 'eli');
-    expect(find.text('Send to 0 people'), findsOneWidget);
+    expect(find.text('Send'), findsOneWidget);
     await unmount(tester);
   });
 

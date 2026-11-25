@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
     : super(driftDatabase(name: databaseNameFor(sub)));
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   /// Diagnostics hook (D100): told about every successful open, with the
   /// from/to versions when it migrated. Set once in `main`; null in tests.
@@ -91,12 +91,22 @@ class AppDatabase extends _$AppDatabase {
       // A database older than v3 just created these tables in their v6 shape above.
       if (from >= 3 && from < 6) {
         await m.alterTable(
-          TableMigration(sessionSeries, newColumns: [sessionSeries.imageUrl]),
+          TableMigration(
+            sessionSeries,
+            newColumns: [sessionSeries.imageUrl, sessionSeries.usesRoutes],
+          ),
         );
         await m.alterTable(
           TableMigration(
             sessions,
-            newColumns: [sessions.imageUrl, sessions.routesJson],
+            newColumns: [
+              sessions.imageUrl,
+              sessions.routesJson,
+              // Added by later versions; this rebuild copies the current columns.
+              sessions.ownImageUrl,
+              sessions.websiteUrl,
+              sessions.usesRoutes,
+            ],
           ),
         );
       }
@@ -165,6 +175,27 @@ class AppDatabase extends _$AppDatabase {
           if (!names.contains('website_url')) {
             await m.addColumn(sessions, sessions.websiteUrl);
           }
+        }
+      }
+      // v15 (D140): whether a run (and its series) has set routes.
+      if (from >= 3 && from < 15) {
+        Future<bool> hasColumn(String table) async {
+          final cols = await customSelect('PRAGMA table_info($table)').get();
+          return cols.any((c) => c.read<String>('name') == 'uses_routes');
+        }
+
+        Future<bool> exists(String table) async =>
+            (await customSelect('PRAGMA table_info($table)').get()).isNotEmpty;
+
+        if (!await exists('sessions')) {
+          await m.createTable(sessions);
+        } else if (!await hasColumn('sessions')) {
+          await m.addColumn(sessions, sessions.usesRoutes);
+        }
+        if (!await exists('session_series')) {
+          await m.createTable(sessionSeries);
+        } else if (!await hasColumn('session_series')) {
+          await m.addColumn(sessionSeries, sessionSeries.usesRoutes);
         }
       }
     },

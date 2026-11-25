@@ -7,6 +7,7 @@ import 'package:bpj/features/members/ui/member_avatar.dart';
 import 'package:bpj/features/members/ui/member_profile_screen.dart';
 import 'package:bpj/features/members/ui/member_providers.dart';
 import 'package:bpj/features/membership/ui/membership_providers.dart';
+import 'package:bpj/features/safety/data/safety_repository.dart';
 import 'package:bpj/features/updates/ui/updates_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,6 +71,8 @@ void main() {
           memberProfileRepositoryProvider.overrideWithValue(
             MemberProfileRepository(db, dio),
           ),
+          // The report/block menu reads the blocked list from the cache.
+          safetyRepositoryProvider.overrideWithValue(SafetyRepository(db, dio)),
           activeClubIdProvider.overrideWithValue(1),
           activeSubProvider.overrideWithValue('test|sub'),
           ownMemberIdProvider.overrideWithValue('me'),
@@ -101,7 +104,8 @@ void main() {
     expect(find.text('Love a hilly run.'), findsOneWidget);
     expect(find.text('Goals'), findsNothing);
     expect(find.text('Edit my profile card'), findsNothing);
-    expect(find.byType(PopupMenuButton<String>), findsNothing);
+    // Anyone else's card has the report and block menu (guideline 1.2).
+    expect(find.byType(PopupMenuButton<String>), findsOneWidget);
     // Opened directly (nothing to go back to): a Home button instead.
     expect(find.byTooltip('Home'), findsOneWidget);
     // The large avatar is 120 px.

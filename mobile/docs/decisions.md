@@ -1117,3 +1117,21 @@ Applied to the Profile links (Members and roles, Leader cover, Event locations),
 buttons, the "Leaders thread" button, the update "Seen by" card, the run coordinator field and "Remove photo and bio". Messages
 that said "Only the committee can…" now say "Only committee members and admins can…". The role names in the roles editor and the
 audience labels on new updates stay as they are: they name roles, not features.
+
+**D140 — Runs with no groups, optional routes, and visible attendees (2026-11-26).** Feedback from a tester round.
+- **`everyone` group mode, shown as "No set groups or leaders"** (track night, Mug Run): no pace groups and no leaders. Whoever says "I'm coming" (or maybe) joins the run's one
+  shared group, which the server creates on first use (`AttendanceService::everyoneGroup`, kind `other`, label "Run chat") and which holds
+  the group chat. The run page shows "Who's coming" and a Group chat button instead of the Groups section. It sends no leaders-needed
+  alerts and is left off the leader roster (`ClubSession::isEveryoneMode()`).
+- **`uses_routes`** on `session_series` and `sessions` (default true, copied by the generator, editable on a series and on a run). Off hides the
+  Routes box. `routes` mode always shows it. The series and run forms have a "Has set routes" switch.
+- **Attendees are visible to every member.** `GET …/plan` now returns `attendees` for every group (and `unassigned.members`) to any member, as
+  first name and last initial ("Sam B.") with each person's pace for the run. Leaders of the group, the coordinator and committee/admin still
+  get full names. Event groups (D77) are unchanged: only members of the same event see each other. Reason: seeing who is going and at what
+  pace encourages others to come.
+- **Group cards carry their own list.** The "N going" text on a group card is now an expandable list (photo, name, pace), open by default,
+  replacing the per-group boxes under "Who's coming". "Who's coming" keeps the people with no group yet (names and paces shown), and the
+  committee's coverage card. It also holds the shared list of an `everyone` run.
+- **Who is in a chat:** `GET …/groups/{groupId}/members` returns the thread's participants (leaders, coordinator, going/maybe members) as
+  short names with a role. The chat screen has a "Who's in this chat" button.
+- **Ask leaders sheet:** Send is a full-width button above Cancel, so it can't be mistaken for missing.

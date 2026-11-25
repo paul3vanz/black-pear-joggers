@@ -5,12 +5,13 @@ import '../data/group_dtos.dart';
 import '../data/plan_dtos.dart';
 import '../logic/pace_spread.dart';
 import 'attendee_list.dart';
+import 'group_format.dart' show goingText;
 import 'groups_providers.dart';
 import 'pace_strip.dart';
 
-/// The anonymous pace spread of one group and, when the plan carries names for
-/// it, an expandable "Who's in this group" list. Renders nothing until a plan
-/// has been fetched, and nothing extra when `attendees` is null (not allowed).
+/// The pace spread of one group and the people going: an expandable list of
+/// photo, name and pace, open by default to encourage others to join (D140).
+/// Before a plan has been fetched it falls back to the plain "N going" count.
 class GroupPlanBlock extends ConsumerWidget {
   const GroupPlanBlock({
     super.key,
@@ -19,6 +20,7 @@ class GroupPlanBlock extends ConsumerWidget {
     required this.going,
     required this.maybe,
     this.withCounts = true,
+    this.countStyle,
   });
 
   final String sessionId;
@@ -29,11 +31,19 @@ class GroupPlanBlock extends ConsumerWidget {
   /// Repeat "N going" before the pace range (off on cards that show it).
   final bool withCounts;
 
+  /// Style of the plain "N going" fallback.
+  final TextStyle? countStyle;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final plan = ref.watch(sessionPlanProvider(sessionId)).value;
     final entry = plan?.forGroup(groupId);
-    if (entry == null) return const SizedBox.shrink();
+    if (entry == null) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Text(goingText(going, maybe), style: countStyle),
+      );
+    }
     final units = ref.watch(unitPrefsProvider);
     // Backmarkers are left off the group card, so their role shows against
     // their name in the who's-in-this-group list instead.
@@ -42,18 +52,32 @@ class GroupPlanBlock extends ConsumerWidget {
         .value
         ?.where((g) => g.id == groupId)
         .firstOrNull;
-    return PlanBlock(
+    final block = PlanBlock(
       spread: buildPaceSpread(entry.paces, units.paceUnit),
       going: going,
       maybe: maybe,
       withCounts: withCounts,
       names: entry.attendees,
       namesTitle: "Who's in this group",
+      namesCountText: goingText(going, maybe),
+      initiallyExpanded: true,
       units: units,
       roles: {
         for (final l in group?.leaders ?? const <GroupLeader>[])
           if (l.memberId.isNotEmpty) l.memberId: l.role,
       },
+    );
+    // Nobody to list (an older server, or an event run): keep the count.
+    if (withCounts || (entry.attendees?.isNotEmpty ?? false)) return block;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(goingText(going, maybe), style: countStyle),
+        ),
+        block,
+      ],
     );
   }
 }
@@ -68,6 +92,8 @@ class PlanBlock extends StatelessWidget {
     this.withCounts = true,
     required this.names,
     required this.namesTitle,
+    this.namesCountText,
+    this.initiallyExpanded = false,
     required this.units,
     this.roles = const {},
   });
@@ -78,6 +104,10 @@ class PlanBlock extends StatelessWidget {
   final bool withCounts;
   final List<PlanAttendee>? names;
   final String namesTitle;
+
+  /// Replaces "[namesTitle] (n)" as the list's heading, e.g. "5 going".
+  final String? namesCountText;
+  final bool initiallyExpanded;
   final UnitPrefs units;
 
   /// Member id => leader role, for the names list.
@@ -105,10 +135,11 @@ class PlanBlock extends StatelessWidget {
           Theme(
             data: theme.copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
+              initiallyExpanded: initiallyExpanded,
               tilePadding: EdgeInsets.zero,
               childrenPadding: EdgeInsets.zero,
               title: Text(
-                '$namesTitle (${names.length})',
+                namesCountText ?? '$namesTitle (${names.length})',
                 style: theme.textTheme.labelLarge,
               ),
               children: [

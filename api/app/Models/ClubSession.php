@@ -24,6 +24,7 @@ final class ClubSession extends Model
         'status' => 'scheduled',
         'is_detached' => false,
         'has_end' => true,
+        'uses_routes' => true,
     ];
 
     protected $fillable = [
@@ -47,6 +48,7 @@ final class ClubSession extends Model
         'status',
         'cancel_reason',
         'is_detached',
+        'uses_routes',
     ];
 
     protected $casts = [
@@ -54,6 +56,7 @@ final class ClubSession extends Model
         'ends_at' => 'datetime',
         'is_detached' => 'boolean',
         'has_end' => 'boolean',
+        'uses_routes' => 'boolean',
     ];
 
     public function localDateYmd(): string
@@ -85,6 +88,12 @@ final class ClubSession extends Model
     public function isEventMode(): bool
     {
         return in_array($this->group_mode, SessionSeries::EVENT_MODES, true);
+    }
+
+    /** True for `everyone` runs: no leaders or pace groups, everybody going is in one shared group. */
+    public function isEveryoneMode(): bool
+    {
+        return $this->group_mode === 'everyone';
     }
 
     public function isCancelled(): bool

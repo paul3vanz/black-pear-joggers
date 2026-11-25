@@ -159,6 +159,7 @@ void main() {
       localStartTime: '09:00',
       localEndTime: null,
       groupMode: 'events',
+      usesRoutes: true,
       status: status,
       seriesId: null,
       occurrenceDate: null,

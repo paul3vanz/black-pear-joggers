@@ -117,13 +117,14 @@ class GroupsSection extends ConsumerWidget {
           ),
         if (routes && open) MyPaceTile(session: session),
         const SizedBox(height: 8),
-        RoutesCard(
-          session: session,
-          canManage:
-              isCommittee ||
-              (myId != null && session.coordinatorMemberId == myId),
-          open: open,
-        ),
+        if (session.usesRoutes || routes)
+          RoutesCard(
+            session: session,
+            canManage:
+                isCommittee ||
+                (myId != null && session.coordinatorMemberId == myId),
+            open: open,
+          ),
         if (groups.isEmpty)
           Card(
             child: Padding(
@@ -236,15 +237,16 @@ class GroupsSection extends ConsumerWidget {
           : null,
       chatUnread:
           (ref.watch(threadStateProvider(g.id)).value?.unreadCount ?? 0) > 0,
-      footer: session.groupMode == 'routes'
-          ? GroupPlanBlock(
-              sessionId: session.id,
-              groupId: g.id,
-              going: g.goingCount,
-              maybe: g.maybeCount,
-              withCounts: false,
-            )
-          : null,
+      // Who is going, with photos, names and paces, sits in the card itself.
+      footer: GroupPlanBlock(
+        sessionId: session.id,
+        groupId: g.id,
+        going: g.goingCount,
+        maybe: g.maybeCount,
+        withCounts: false,
+        countStyle: Theme.of(context).textTheme.bodyMedium
+            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+      ),
     );
   }
 }

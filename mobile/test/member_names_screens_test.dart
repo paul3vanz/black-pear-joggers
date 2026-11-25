@@ -163,8 +163,7 @@ void main() {
       memberId: 'lead',
       routes: {'GET $_plan': FakeResponse(200, plan)},
     );
-    await tester.tap(find.text("Who's in this group (2)"));
-    await settle(tester);
+    // The list is open on the group card by default (D140).
     expect(find.text('Sam Runner'), findsOneWidget);
     expect(find.text('SR'), findsOneWidget);
     expect(find.text('PM'), findsOneWidget);

@@ -3920,6 +3920,21 @@ class $SessionSeriesTable extends SessionSeries
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _usesRoutesMeta = const VerificationMeta(
+    'usesRoutes',
+  );
+  @override
+  late final GeneratedColumn<bool> usesRoutes = GeneratedColumn<bool>(
+    'uses_routes',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("uses_routes" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _cmsSlugMeta = const VerificationMeta(
     'cmsSlug',
   );
@@ -3967,6 +3982,7 @@ class $SessionSeriesTable extends SessionSeries
     validFrom,
     validUntil,
     groupMode,
+    usesRoutes,
     cmsSlug,
     imageUrl,
     updatedAt,
@@ -4075,6 +4091,12 @@ class $SessionSeriesTable extends SessionSeries
     } else if (isInserting) {
       context.missing(_groupModeMeta);
     }
+    if (data.containsKey('uses_routes')) {
+      context.handle(
+        _usesRoutesMeta,
+        usesRoutes.isAcceptableOrUnknown(data['uses_routes']!, _usesRoutesMeta),
+      );
+    }
     if (data.containsKey('cms_slug')) {
       context.handle(
         _cmsSlugMeta,
@@ -4152,6 +4174,10 @@ class $SessionSeriesTable extends SessionSeries
         DriftSqlType.string,
         data['${effectivePrefix}group_mode'],
       )!,
+      usesRoutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}uses_routes'],
+      )!,
       cmsSlug: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}cms_slug'],
@@ -4192,6 +4218,9 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
 
   /// `paced` | `single` | `open` | `routes`.
   final String groupMode;
+
+  /// Whether the run has set routes, so its Routes card shows (D140).
+  final bool usesRoutes;
   final String? cmsSlug;
 
   /// Optional banner image URL (D49).
@@ -4210,6 +4239,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     required this.validFrom,
     this.validUntil,
     required this.groupMode,
+    required this.usesRoutes,
     this.cmsSlug,
     this.imageUrl,
     required this.updatedAt,
@@ -4237,6 +4267,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
       map['valid_until'] = Variable<String>(validUntil);
     }
     map['group_mode'] = Variable<String>(groupMode);
+    map['uses_routes'] = Variable<bool>(usesRoutes);
     if (!nullToAbsent || cmsSlug != null) {
       map['cms_slug'] = Variable<String>(cmsSlug);
     }
@@ -4269,6 +4300,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
           ? const Value.absent()
           : Value(validUntil),
       groupMode: Value(groupMode),
+      usesRoutes: Value(usesRoutes),
       cmsSlug: cmsSlug == null && nullToAbsent
           ? const Value.absent()
           : Value(cmsSlug),
@@ -4297,6 +4329,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
       validFrom: serializer.fromJson<String>(json['validFrom']),
       validUntil: serializer.fromJson<String?>(json['validUntil']),
       groupMode: serializer.fromJson<String>(json['groupMode']),
+      usesRoutes: serializer.fromJson<bool>(json['usesRoutes']),
       cmsSlug: serializer.fromJson<String?>(json['cmsSlug']),
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -4318,6 +4351,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
       'validFrom': serializer.toJson<String>(validFrom),
       'validUntil': serializer.toJson<String?>(validUntil),
       'groupMode': serializer.toJson<String>(groupMode),
+      'usesRoutes': serializer.toJson<bool>(usesRoutes),
       'cmsSlug': serializer.toJson<String?>(cmsSlug),
       'imageUrl': serializer.toJson<String?>(imageUrl),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -4337,6 +4371,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     String? validFrom,
     Value<String?> validUntil = const Value.absent(),
     String? groupMode,
+    bool? usesRoutes,
     Value<String?> cmsSlug = const Value.absent(),
     Value<String?> imageUrl = const Value.absent(),
     DateTime? updatedAt,
@@ -4353,6 +4388,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     validFrom: validFrom ?? this.validFrom,
     validUntil: validUntil.present ? validUntil.value : this.validUntil,
     groupMode: groupMode ?? this.groupMode,
+    usesRoutes: usesRoutes ?? this.usesRoutes,
     cmsSlug: cmsSlug.present ? cmsSlug.value : this.cmsSlug,
     imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -4379,6 +4415,9 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
           ? data.validUntil.value
           : this.validUntil,
       groupMode: data.groupMode.present ? data.groupMode.value : this.groupMode,
+      usesRoutes: data.usesRoutes.present
+          ? data.usesRoutes.value
+          : this.usesRoutes,
       cmsSlug: data.cmsSlug.present ? data.cmsSlug.value : this.cmsSlug,
       imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -4400,6 +4439,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
           ..write('validFrom: $validFrom, ')
           ..write('validUntil: $validUntil, ')
           ..write('groupMode: $groupMode, ')
+          ..write('usesRoutes: $usesRoutes, ')
           ..write('cmsSlug: $cmsSlug, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('updatedAt: $updatedAt')
@@ -4421,6 +4461,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
     validFrom,
     validUntil,
     groupMode,
+    usesRoutes,
     cmsSlug,
     imageUrl,
     updatedAt,
@@ -4441,6 +4482,7 @@ class RunSeries extends DataClass implements Insertable<RunSeries> {
           other.validFrom == this.validFrom &&
           other.validUntil == this.validUntil &&
           other.groupMode == this.groupMode &&
+          other.usesRoutes == this.usesRoutes &&
           other.cmsSlug == this.cmsSlug &&
           other.imageUrl == this.imageUrl &&
           other.updatedAt == this.updatedAt);
@@ -4459,6 +4501,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
   final Value<String> validFrom;
   final Value<String?> validUntil;
   final Value<String> groupMode;
+  final Value<bool> usesRoutes;
   final Value<String?> cmsSlug;
   final Value<String?> imageUrl;
   final Value<DateTime> updatedAt;
@@ -4476,6 +4519,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     this.validFrom = const Value.absent(),
     this.validUntil = const Value.absent(),
     this.groupMode = const Value.absent(),
+    this.usesRoutes = const Value.absent(),
     this.cmsSlug = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -4494,6 +4538,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     required String validFrom,
     this.validUntil = const Value.absent(),
     required String groupMode,
+    this.usesRoutes = const Value.absent(),
     this.cmsSlug = const Value.absent(),
     this.imageUrl = const Value.absent(),
     required DateTime updatedAt,
@@ -4519,6 +4564,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     Expression<String>? validFrom,
     Expression<String>? validUntil,
     Expression<String>? groupMode,
+    Expression<bool>? usesRoutes,
     Expression<String>? cmsSlug,
     Expression<String>? imageUrl,
     Expression<DateTime>? updatedAt,
@@ -4537,6 +4583,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
       if (validFrom != null) 'valid_from': validFrom,
       if (validUntil != null) 'valid_until': validUntil,
       if (groupMode != null) 'group_mode': groupMode,
+      if (usesRoutes != null) 'uses_routes': usesRoutes,
       if (cmsSlug != null) 'cms_slug': cmsSlug,
       if (imageUrl != null) 'image_url': imageUrl,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -4557,6 +4604,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     Value<String>? validFrom,
     Value<String?>? validUntil,
     Value<String>? groupMode,
+    Value<bool>? usesRoutes,
     Value<String?>? cmsSlug,
     Value<String?>? imageUrl,
     Value<DateTime>? updatedAt,
@@ -4575,6 +4623,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
       validFrom: validFrom ?? this.validFrom,
       validUntil: validUntil ?? this.validUntil,
       groupMode: groupMode ?? this.groupMode,
+      usesRoutes: usesRoutes ?? this.usesRoutes,
       cmsSlug: cmsSlug ?? this.cmsSlug,
       imageUrl: imageUrl ?? this.imageUrl,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -4621,6 +4670,9 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
     if (groupMode.present) {
       map['group_mode'] = Variable<String>(groupMode.value);
     }
+    if (usesRoutes.present) {
+      map['uses_routes'] = Variable<bool>(usesRoutes.value);
+    }
     if (cmsSlug.present) {
       map['cms_slug'] = Variable<String>(cmsSlug.value);
     }
@@ -4651,6 +4703,7 @@ class SessionSeriesCompanion extends UpdateCompanion<RunSeries> {
           ..write('validFrom: $validFrom, ')
           ..write('validUntil: $validUntil, ')
           ..write('groupMode: $groupMode, ')
+          ..write('usesRoutes: $usesRoutes, ')
           ..write('cmsSlug: $cmsSlug, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('updatedAt: $updatedAt, ')
@@ -4797,6 +4850,21 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _usesRoutesMeta = const VerificationMeta(
+    'usesRoutes',
+  );
+  @override
+  late final GeneratedColumn<bool> usesRoutes = GeneratedColumn<bool>(
+    'uses_routes',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("uses_routes" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
   );
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
@@ -4959,6 +5027,7 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     localStartTime,
     localEndTime,
     groupMode,
+    usesRoutes,
     status,
     cancelReason,
     imageUrl,
@@ -5084,6 +5153,12 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
       );
     } else if (isInserting) {
       context.missing(_groupModeMeta);
+    }
+    if (data.containsKey('uses_routes')) {
+      context.handle(
+        _usesRoutesMeta,
+        usesRoutes.isAcceptableOrUnknown(data['uses_routes']!, _usesRoutesMeta),
+      );
     }
     if (data.containsKey('status')) {
       context.handle(
@@ -5244,6 +5319,10 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         DriftSqlType.string,
         data['${effectivePrefix}group_mode'],
       )!,
+      usesRoutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}uses_routes'],
+      )!,
       status: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}status'],
@@ -5323,6 +5402,9 @@ class Session extends DataClass implements Insertable<Session> {
   final String? localEndTime;
   final String groupMode;
 
+  /// Whether the run has set routes, so its Routes card shows (D140).
+  final bool usesRoutes;
+
   /// `scheduled` | `cancelled`.
   final String status;
   final String? cancelReason;
@@ -5369,6 +5451,7 @@ class Session extends DataClass implements Insertable<Session> {
     required this.localStartTime,
     this.localEndTime,
     required this.groupMode,
+    required this.usesRoutes,
     required this.status,
     this.cancelReason,
     this.imageUrl,
@@ -5409,6 +5492,7 @@ class Session extends DataClass implements Insertable<Session> {
       map['local_end_time'] = Variable<String>(localEndTime);
     }
     map['group_mode'] = Variable<String>(groupMode);
+    map['uses_routes'] = Variable<bool>(usesRoutes);
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || cancelReason != null) {
       map['cancel_reason'] = Variable<String>(cancelReason);
@@ -5470,6 +5554,7 @@ class Session extends DataClass implements Insertable<Session> {
           ? const Value.absent()
           : Value(localEndTime),
       groupMode: Value(groupMode),
+      usesRoutes: Value(usesRoutes),
       status: Value(status),
       cancelReason: cancelReason == null && nullToAbsent
           ? const Value.absent()
@@ -5525,6 +5610,7 @@ class Session extends DataClass implements Insertable<Session> {
       localStartTime: serializer.fromJson<String>(json['localStartTime']),
       localEndTime: serializer.fromJson<String?>(json['localEndTime']),
       groupMode: serializer.fromJson<String>(json['groupMode']),
+      usesRoutes: serializer.fromJson<bool>(json['usesRoutes']),
       status: serializer.fromJson<String>(json['status']),
       cancelReason: serializer.fromJson<String?>(json['cancelReason']),
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
@@ -5559,6 +5645,7 @@ class Session extends DataClass implements Insertable<Session> {
       'localStartTime': serializer.toJson<String>(localStartTime),
       'localEndTime': serializer.toJson<String?>(localEndTime),
       'groupMode': serializer.toJson<String>(groupMode),
+      'usesRoutes': serializer.toJson<bool>(usesRoutes),
       'status': serializer.toJson<String>(status),
       'cancelReason': serializer.toJson<String?>(cancelReason),
       'imageUrl': serializer.toJson<String?>(imageUrl),
@@ -5589,6 +5676,7 @@ class Session extends DataClass implements Insertable<Session> {
     String? localStartTime,
     Value<String?> localEndTime = const Value.absent(),
     String? groupMode,
+    bool? usesRoutes,
     String? status,
     Value<String?> cancelReason = const Value.absent(),
     Value<String?> imageUrl = const Value.absent(),
@@ -5618,6 +5706,7 @@ class Session extends DataClass implements Insertable<Session> {
     localStartTime: localStartTime ?? this.localStartTime,
     localEndTime: localEndTime.present ? localEndTime.value : this.localEndTime,
     groupMode: groupMode ?? this.groupMode,
+    usesRoutes: usesRoutes ?? this.usesRoutes,
     status: status ?? this.status,
     cancelReason: cancelReason.present ? cancelReason.value : this.cancelReason,
     imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
@@ -5657,6 +5746,9 @@ class Session extends DataClass implements Insertable<Session> {
           ? data.localEndTime.value
           : this.localEndTime,
       groupMode: data.groupMode.present ? data.groupMode.value : this.groupMode,
+      usesRoutes: data.usesRoutes.present
+          ? data.usesRoutes.value
+          : this.usesRoutes,
       status: data.status.present ? data.status.value : this.status,
       cancelReason: data.cancelReason.present
           ? data.cancelReason.value
@@ -5709,6 +5801,7 @@ class Session extends DataClass implements Insertable<Session> {
           ..write('localStartTime: $localStartTime, ')
           ..write('localEndTime: $localEndTime, ')
           ..write('groupMode: $groupMode, ')
+          ..write('usesRoutes: $usesRoutes, ')
           ..write('status: $status, ')
           ..write('cancelReason: $cancelReason, ')
           ..write('imageUrl: $imageUrl, ')
@@ -5741,6 +5834,7 @@ class Session extends DataClass implements Insertable<Session> {
     localStartTime,
     localEndTime,
     groupMode,
+    usesRoutes,
     status,
     cancelReason,
     imageUrl,
@@ -5772,6 +5866,7 @@ class Session extends DataClass implements Insertable<Session> {
           other.localStartTime == this.localStartTime &&
           other.localEndTime == this.localEndTime &&
           other.groupMode == this.groupMode &&
+          other.usesRoutes == this.usesRoutes &&
           other.status == this.status &&
           other.cancelReason == this.cancelReason &&
           other.imageUrl == this.imageUrl &&
@@ -5801,6 +5896,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   final Value<String> localStartTime;
   final Value<String?> localEndTime;
   final Value<String> groupMode;
+  final Value<bool> usesRoutes;
   final Value<String> status;
   final Value<String?> cancelReason;
   final Value<String?> imageUrl;
@@ -5829,6 +5925,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     this.localStartTime = const Value.absent(),
     this.localEndTime = const Value.absent(),
     this.groupMode = const Value.absent(),
+    this.usesRoutes = const Value.absent(),
     this.status = const Value.absent(),
     this.cancelReason = const Value.absent(),
     this.imageUrl = const Value.absent(),
@@ -5858,6 +5955,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     required String localStartTime,
     this.localEndTime = const Value.absent(),
     required String groupMode,
+    this.usesRoutes = const Value.absent(),
     this.status = const Value.absent(),
     this.cancelReason = const Value.absent(),
     this.imageUrl = const Value.absent(),
@@ -5895,6 +5993,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Expression<String>? localStartTime,
     Expression<String>? localEndTime,
     Expression<String>? groupMode,
+    Expression<bool>? usesRoutes,
     Expression<String>? status,
     Expression<String>? cancelReason,
     Expression<String>? imageUrl,
@@ -5924,6 +6023,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       if (localStartTime != null) 'local_start_time': localStartTime,
       if (localEndTime != null) 'local_end_time': localEndTime,
       if (groupMode != null) 'group_mode': groupMode,
+      if (usesRoutes != null) 'uses_routes': usesRoutes,
       if (status != null) 'status': status,
       if (cancelReason != null) 'cancel_reason': cancelReason,
       if (imageUrl != null) 'image_url': imageUrl,
@@ -5956,6 +6056,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     Value<String>? localStartTime,
     Value<String?>? localEndTime,
     Value<String>? groupMode,
+    Value<bool>? usesRoutes,
     Value<String>? status,
     Value<String?>? cancelReason,
     Value<String?>? imageUrl,
@@ -5985,6 +6086,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
       localStartTime: localStartTime ?? this.localStartTime,
       localEndTime: localEndTime ?? this.localEndTime,
       groupMode: groupMode ?? this.groupMode,
+      usesRoutes: usesRoutes ?? this.usesRoutes,
       status: status ?? this.status,
       cancelReason: cancelReason ?? this.cancelReason,
       imageUrl: imageUrl ?? this.imageUrl,
@@ -6043,6 +6145,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     }
     if (groupMode.present) {
       map['group_mode'] = Variable<String>(groupMode.value);
+    }
+    if (usesRoutes.present) {
+      map['uses_routes'] = Variable<bool>(usesRoutes.value);
     }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
@@ -6107,6 +6212,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
           ..write('localStartTime: $localStartTime, ')
           ..write('localEndTime: $localEndTime, ')
           ..write('groupMode: $groupMode, ')
+          ..write('usesRoutes: $usesRoutes, ')
           ..write('status: $status, ')
           ..write('cancelReason: $cancelReason, ')
           ..write('imageUrl: $imageUrl, ')
@@ -13087,6 +13193,7 @@ typedef $$SessionSeriesTableCreateCompanionBuilder =
       required String validFrom,
       Value<String?> validUntil,
       required String groupMode,
+      Value<bool> usesRoutes,
       Value<String?> cmsSlug,
       Value<String?> imageUrl,
       required DateTime updatedAt,
@@ -13106,6 +13213,7 @@ typedef $$SessionSeriesTableUpdateCompanionBuilder =
       Value<String> validFrom,
       Value<String?> validUntil,
       Value<String> groupMode,
+      Value<bool> usesRoutes,
       Value<String?> cmsSlug,
       Value<String?> imageUrl,
       Value<DateTime> updatedAt,
@@ -13178,6 +13286,11 @@ class $$SessionSeriesTableFilterComposer
 
   ColumnFilters<String> get groupMode => $composableBuilder(
     column: $table.groupMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get usesRoutes => $composableBuilder(
+    column: $table.usesRoutes,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13266,6 +13379,11 @@ class $$SessionSeriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get usesRoutes => $composableBuilder(
+    column: $table.usesRoutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get cmsSlug => $composableBuilder(
     column: $table.cmsSlug,
     builder: (column) => ColumnOrderings(column),
@@ -13335,6 +13453,11 @@ class $$SessionSeriesTableAnnotationComposer
   GeneratedColumn<String> get groupMode =>
       $composableBuilder(column: $table.groupMode, builder: (column) => column);
 
+  GeneratedColumn<bool> get usesRoutes => $composableBuilder(
+    column: $table.usesRoutes,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get cmsSlug =>
       $composableBuilder(column: $table.cmsSlug, builder: (column) => column);
 
@@ -13388,6 +13511,7 @@ class $$SessionSeriesTableTableManager
                 Value<String> validFrom = const Value.absent(),
                 Value<String?> validUntil = const Value.absent(),
                 Value<String> groupMode = const Value.absent(),
+                Value<bool> usesRoutes = const Value.absent(),
                 Value<String?> cmsSlug = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
@@ -13405,6 +13529,7 @@ class $$SessionSeriesTableTableManager
                 validFrom: validFrom,
                 validUntil: validUntil,
                 groupMode: groupMode,
+                usesRoutes: usesRoutes,
                 cmsSlug: cmsSlug,
                 imageUrl: imageUrl,
                 updatedAt: updatedAt,
@@ -13424,6 +13549,7 @@ class $$SessionSeriesTableTableManager
                 required String validFrom,
                 Value<String?> validUntil = const Value.absent(),
                 required String groupMode,
+                Value<bool> usesRoutes = const Value.absent(),
                 Value<String?> cmsSlug = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 required DateTime updatedAt,
@@ -13441,6 +13567,7 @@ class $$SessionSeriesTableTableManager
                 validFrom: validFrom,
                 validUntil: validUntil,
                 groupMode: groupMode,
+                usesRoutes: usesRoutes,
                 cmsSlug: cmsSlug,
                 imageUrl: imageUrl,
                 updatedAt: updatedAt,
@@ -13494,6 +13621,7 @@ typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
   required String localStartTime,
   Value<String?> localEndTime,
   required String groupMode,
+  Value<bool> usesRoutes,
   Value<String> status,
   Value<String?> cancelReason,
   Value<String?> imageUrl,
@@ -13523,6 +13651,7 @@ typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
   Value<String> localStartTime,
   Value<String?> localEndTime,
   Value<String> groupMode,
+  Value<bool> usesRoutes,
   Value<String> status,
   Value<String?> cancelReason,
   Value<String?> imageUrl,
@@ -13610,6 +13739,11 @@ class $$SessionsTableFilterComposer
 
   ColumnFilters<String> get groupMode => $composableBuilder(
     column: $table.groupMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get usesRoutes => $composableBuilder(
+    column: $table.usesRoutes,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13753,6 +13887,11 @@ class $$SessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get usesRoutes => $composableBuilder(
+    column: $table.usesRoutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get status => $composableBuilder(
     column: $table.status,
     builder: (column) => ColumnOrderings(column),
@@ -13873,6 +14012,11 @@ class $$SessionsTableAnnotationComposer
   GeneratedColumn<String> get groupMode =>
       $composableBuilder(column: $table.groupMode, builder: (column) => column);
 
+  GeneratedColumn<bool> get usesRoutes => $composableBuilder(
+    column: $table.usesRoutes,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
@@ -13974,6 +14118,7 @@ class $$SessionsTableTableManager
                 Value<String> localStartTime = const Value.absent(),
                 Value<String?> localEndTime = const Value.absent(),
                 Value<String> groupMode = const Value.absent(),
+                Value<bool> usesRoutes = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> cancelReason = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
@@ -14002,6 +14147,7 @@ class $$SessionsTableTableManager
                 localStartTime: localStartTime,
                 localEndTime: localEndTime,
                 groupMode: groupMode,
+                usesRoutes: usesRoutes,
                 status: status,
                 cancelReason: cancelReason,
                 imageUrl: imageUrl,
@@ -14032,6 +14178,7 @@ class $$SessionsTableTableManager
                 required String localStartTime,
                 Value<String?> localEndTime = const Value.absent(),
                 required String groupMode,
+                Value<bool> usesRoutes = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> cancelReason = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
@@ -14060,6 +14207,7 @@ class $$SessionsTableTableManager
                 localStartTime: localStartTime,
                 localEndTime: localEndTime,
                 groupMode: groupMode,
+                usesRoutes: usesRoutes,
                 status: status,
                 cancelReason: cancelReason,
                 imageUrl: imageUrl,

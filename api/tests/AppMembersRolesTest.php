@@ -40,7 +40,7 @@ class AppMembersRolesTest extends AppGroupsBase
         sort($sorted);
         $this->assertSame($sorted, $names);
         $this->assertCount(6, $names);
-        $this->assertSame(['memberId', 'displayName', 'status', 'roles'], array_keys($body['items'][0]));
+        $this->assertSame(['memberId', 'displayName', 'status', 'roles', 'hasApp'], array_keys($body['items'][0]));
         $this->assertStringNotContainsString('urn', json_encode($body));
         $this->assertStringNotContainsString('dob', json_encode($body));
         $this->assertStringNotContainsString('1980', json_encode($body));

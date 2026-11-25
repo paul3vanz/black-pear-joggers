@@ -215,3 +215,32 @@ extension GroupMessageState on GroupMessage {
   /// The ask this holds (a leaders-thread request), if it is one.
   AskBody? get ask => isDeleted ? null : decodeAskBody(body);
 }
+
+/// One person in a group chat, from `GET …/groups/{id}/members`: a short name
+/// ("Sam B.") and their role in the thread (`leader`, `coordinator`,
+/// `committee` or `member`).
+class ChatMember {
+  const ChatMember({
+    required this.memberId,
+    required this.name,
+    required this.role,
+  });
+
+  final String memberId;
+  final String name;
+  final String role;
+
+  factory ChatMember.fromJson(Map<String, Object?> json) => ChatMember(
+    memberId: json['memberId'] as String? ?? '',
+    name: json['name'] as String? ?? 'Member',
+    role: json['role'] as String? ?? 'member',
+  );
+
+  /// The tag shown after the name; empty for an ordinary member.
+  String get roleLabel => switch (role) {
+    'leader' => 'Leader',
+    'coordinator' => 'Coordinator',
+    'committee' => 'Committee',
+    _ => '',
+  };
+}

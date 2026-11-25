@@ -361,6 +361,7 @@ void main() {
       localStartTime: '19:00',
       localEndTime: '20:30',
       groupMode: 'paced',
+      usesRoutes: true,
       status: status,
       seriesId: null,
       occurrenceDate: null,

@@ -143,6 +143,7 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
   late String? _validUntil = widget.series?.validUntil;
   late String? _venueId = widget.series?.venueId;
   late String _groupMode = widget.series?.groupMode ?? 'paced';
+  late bool _usesRoutes = widget.series?.usesRoutes ?? true;
   bool _saving = false;
 
   @override
@@ -183,6 +184,7 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
               validFrom: _validFrom!,
               validUntil: _validUntil,
               groupMode: _groupMode,
+              usesRoutes: _usesRoutes,
               cmsSlug: _nullIfEmpty(_slug),
               imageUrl: _nullIfEmpty(_imageUrl),
             )
@@ -199,6 +201,7 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
               validFrom: _validFrom!,
               validUntil: _validUntil,
               groupMode: _groupMode,
+              usesRoutes: _usesRoutes,
               cmsSlug: _nullIfEmpty(_slug),
               imageUrl: _nullIfEmpty(_imageUrl),
             ),
@@ -346,6 +349,11 @@ class _SeriesFormState extends ConsumerState<_SeriesForm> {
                 modes: seriesGroupModes,
                 onChanged: (v) => setState(() => _groupMode = v),
               ),
+              if (_groupMode != 'routes' && !isEventLikeMode(_groupMode))
+                UsesRoutesSwitch(
+                  value: _usesRoutes,
+                  onChanged: (v) => setState(() => _usesRoutes = v),
+                ),
               formGap,
               TextFormField(
                 controller: _slug,

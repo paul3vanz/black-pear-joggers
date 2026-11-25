@@ -80,6 +80,7 @@ void main() {
       localStartTime: '19:00',
       localEndTime: '20:30',
       groupMode: mode,
+      usesRoutes: true,
       status: 'scheduled',
       seriesId: null,
       occurrenceDate: null,

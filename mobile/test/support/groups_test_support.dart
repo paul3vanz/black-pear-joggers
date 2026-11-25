@@ -24,7 +24,11 @@ List<Override> groupsOverrides(AppDatabase db, Dio dio, {DateTime? now}) => [
   appDatabaseProvider.overrideWithValue(db),
   apiClientProvider.overrideWithValue(dio),
   membershipRepositoryProvider.overrideWithValue(MembershipRepository(db, dio)),
-  runsRepositoryProvider.overrideWithValue(RunsRepository(db, dio)),
+  // Same clock as the screens, so the repository's pruning of old runs doesn't
+  // depend on the real date (the fixtures are dated October 2026).
+  runsRepositoryProvider.overrideWithValue(
+    RunsRepository(db, dio, clock: () => now ?? testNow),
+  ),
   activeClubIdProvider.overrideWithValue(1),
   activeSubProvider.overrideWithValue('test|sub'),
   clockProvider.overrideWithValue(() => now ?? testNow),
