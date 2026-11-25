@@ -160,20 +160,40 @@ class AppAttendanceController extends Controller
         return $paces;
     }
 
-    private function names($rows, $prefs): array
+    /** Full names for managers and leaders; "Sam B." for everyone else ($short). */
+    private function names($rows, $prefs, bool $short = false): array
     {
-        return $rows->map(function ($row) use ($prefs) {
+        $initials = $short ? $this->shortNames($rows) : [];
+
+        return $rows->map(function ($row) use ($prefs, $short, $initials) {
             [$unit, $from, $to] = $this->effectivePace($row, $prefs);
 
             return [
                 'memberId' => $row->member_id,
-                'displayName' => $row->member ? $row->member->display_name : null,
+                'displayName' => $short ? ($initials[$row->member_id] ?? 'Member') : ($row->member ? $row->member->display_name : null),
                 'status' => $row->status,
                 'paceUnit' => $unit,
                 'paceFromS' => $from,
                 'paceToS' => $to,
             ];
         })->sortBy('displayName')->values()->all();
+    }
+
+    /** member id => "Sam B." for the rows' members. */
+    private function shortNames($rows): array
+    {
+        $athletes = DB::table('club_members')
+            ->leftJoin('athletes', 'athletes.id', '=', 'club_members.athlete_id')
+            ->whereIn('club_members.id', $rows->pluck('member_id')->all())
+            ->get(['club_members.id', 'athletes.first_name', 'athletes.last_name']);
+
+        $names = [];
+
+        foreach ($athletes as $a) {
+            $names[$a->id] = ThreadAccess::shortName($a->first_name, $a->last_name);
+        }
+
+        return $names;
     }
 
     /** Short names ("Sam B.") and status of the members of an event group: no paces. */
@@ -237,9 +257,15 @@ class AppAttendanceController extends Controller
 
             if ($seeAll || $group->leaders->contains('member_id', $member->id)) {
                 $entry['attendees'] = $this->names($inGroup, $prefs);
-            } elseif ($group->kind === 'event' && $inGroup->contains('member_id', $member->id)) {
-                // Members of the same event see each other, for car sharing (D77). Nobody else does.
-                $entry['attendees'] = $this->eventNames($inGroup);
+            } elseif ($group->kind === 'event') {
+                if ($inGroup->contains('member_id', $member->id)) {
+                    // Members of the same event see each other, for car sharing (D77). Nobody else does.
+                    $entry['attendees'] = $this->eventNames($inGroup);
+                }
+            } else {
+                // Every member sees who is coming and at what pace, as first name and
+                // last initial, to encourage others to join.
+                $entry['attendees'] = $this->names($inGroup, $prefs, true);
             }
 
             $groups[] = $entry;
@@ -255,8 +281,9 @@ class AppAttendanceController extends Controller
             'paces' => $this->paces($loose, $prefs),
         ];
 
-        if ($seeAll) {
-            $unassigned['members'] = $this->names($loose, $prefs);
+        // Event runs keep who is going to themselves (D77); everywhere else members see short names.
+        if ($seeAll || !$session->isEventMode()) {
+            $unassigned['members'] = $this->names($loose, $prefs, !$seeAll);
         }
 
         return response()->json(['sessionId' => $session->id, 'groups' => $groups, 'unassigned' => $unassigned]);

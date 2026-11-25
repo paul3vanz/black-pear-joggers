@@ -69,6 +69,7 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
   late String? _start;
   late String? _venueId;
   late String _groupMode;
+  late bool _usesRoutes;
   String? _coordinatorId;
   String? _coordinatorName;
   bool _coordinatorChanged = false;
@@ -98,6 +99,7 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
     _start = s?.localStartTime ?? '19:00';
     _venueId = s?.venueId;
     _groupMode = s?.groupMode ?? 'open';
+    _usesRoutes = s?.usesRoutes ?? true;
     _coordinatorId = s?.coordinatorMemberId;
     _coordinatorName = s?.coordinatorName;
   }
@@ -151,6 +153,7 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
               startTime: _start!,
               durationMin: duration,
               groupMode: _groupMode,
+              usesRoutes: _usesRoutes,
               venueId: _venueId,
               notes: notes,
               imageUrl: image,
@@ -166,6 +169,7 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
               notes: notes,
               imageUrl: image,
               websiteUrl: website,
+              usesRoutes: _usesRoutes,
               localDate: _dateEditable ? _date : null,
               setCoordinator: _coordinatorChanged,
               coordinatorMemberId: _coordinatorId,
@@ -247,6 +251,13 @@ class _SessionFormState extends ConsumerState<_SessionForm> {
                 GroupModeDropdown(
                   value: _groupMode,
                   onChanged: (v) => setState(() => _groupMode = v),
+                ),
+                formGap,
+              ],
+              if (_groupMode != 'routes' && !isEventLikeMode(_groupMode)) ...[
+                UsesRoutesSwitch(
+                  value: _usesRoutes,
+                  onChanged: (v) => setState(() => _usesRoutes = v),
                 ),
                 formGap,
               ],

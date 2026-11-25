@@ -224,7 +224,7 @@ class RunReminderService
     /** @return int notifications written */
     private function alertLeaders(Club $club, ClubSession $session, string $tz): int
     {
-        if ($session->group_mode === 'routes' || $session->isEventMode()) {
+        if ($session->group_mode === 'routes' || $session->isEventMode() || $session->isEveryoneMode()) {
             return 0;
         }
 

@@ -16,6 +16,7 @@ import '../data/session_changes.dart';
 import '../../groups/ui/groups_providers.dart';
 import '../../groups/ui/groups_section.dart';
 import '../../groups/ui/respond_card.dart';
+import '../../groups/ui/routes_card.dart';
 import '../../groups/ui/whos_coming_section.dart';
 import '../data/runs_repository.dart';
 import 'run_format.dart';
@@ -135,7 +136,9 @@ class _Body extends ConsumerWidget {
               session: session,
               // No pace override on routes (shown with the routes), events or
               // races.
-              showPace: usesPaceGroups(session.groupMode),
+              showPace:
+                  usesPaceGroups(session.groupMode) ||
+                  isEveryoneMode(session.groupMode),
             ),
           if (venue != null) ...[
             _InfoRow(
@@ -198,6 +201,9 @@ class _Body extends ConsumerWidget {
                 ),
               ),
             RaceSection(session: session),
+          ] else if (isEveryoneMode(session.groupMode)) ...[
+            if (session.usesRoutes) _everyoneRoutes(ref),
+            WhosComingSection(session: session),
           ] else ...[
             GroupsSection(session: session),
             WhosComingSection(session: session),
@@ -230,6 +236,21 @@ class _Body extends ConsumerWidget {
           if (ref.watch(canManageRunsProvider))
             SessionActions(session: session, clubId: clubId),
         ],
+      ),
+    );
+  }
+
+  /// The Routes card for a run with no groups, when its routes are switched on.
+  Widget _everyoneRoutes(WidgetRef ref) {
+    final myId = ref.watch(myMemberIdProvider);
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: RoutesCard(
+        session: session,
+        canManage:
+            ref.watch(canManageRunsProvider) ||
+            (myId != null && session.coordinatorMemberId == myId),
+        open: isRunOpen(session, ref.watch(nowProvider)),
       ),
     );
   }

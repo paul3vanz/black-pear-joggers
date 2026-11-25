@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ClubSession;
 use App\Models\SessionAttendee;
+use App\Models\SessionGroup;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -29,7 +30,13 @@ class AttendanceService
         $to = null
     ): SessionAttendee {
         $row = DB::transaction(function () use ($club, $member, $session, $status, $groupId, $unit, $from, $to) {
-            $row = SessionAttendee::firstOrNew(['session_id' => $session->id, 'member_id' => $member->id]);
+            // An `everyone` run has no leaders or pace groups: whoever is coming
+            // joins its one shared group, which also holds the chat.
+            if ($session->isEveryoneMode() && $status !== SessionAttendee::NOT_GOING) {
+                $groupId = $this->everyoneGroup($club, $session)->id;
+            }
+
+            $row =SessionAttendee::firstOrNew(['session_id' => $session->id, 'member_id' => $member->id]);
             $row->fill([
                 'club_id' => $club->id,
                 'status' => $status,
@@ -46,5 +53,19 @@ class AttendanceService
         });
 
         return $row->fresh();
+    }
+
+    /** The single leaderless group of an `everyone` run, created on first use. */
+    public function everyoneGroup($club, ClubSession $session): SessionGroup
+    {
+        $group = SessionGroup::where('club_id', $club->id)->where('session_id', $session->id)->orderBy('created_at')->first();
+
+        return $group ?: SessionGroup::create([
+            'club_id' => $club->id,
+            'session_id' => $session->id,
+            'kind' => 'other',
+            'label' => 'Run chat',
+            'status' => SessionGroup::STATUS_ACTIVE,
+        ]);
     }
 }

@@ -179,6 +179,7 @@ class SessionGenerator
             'title' => $series->title,
             'venue_id' => $series->venue_id,
             'group_mode' => $series->group_mode,
+            'uses_routes' => (bool) $series->uses_routes,
         ] + self::times($date, $series->startHm(), $series->duration_min === null ? null : (int) $series->duration_min, $tz);
     }
 

@@ -1598,3 +1598,15 @@ All under `/app/clubs/{clubId}` and club-scoped.
   - 422 on validation or reporting yourself, 429 `too_many_requests` after 10 reports in an hour.
   - Committee members and admins (not the reporter) get an inbox row "Content reported" with a `route` to the thread.
 - Tables `member_blocks`, `content_reports` (migration `2026_11_20_090000_...`, manual SQL `2026_11_reports_blocks.sql`).
+
+## Update (2026-11-26): runs with no groups, routes switch, visible attendees (D140)
+
+- `groupMode` gains `everyone`. Series and run payloads gain `usesRoutes` (bool, default true); `POST/PATCH …/series` and
+  `POST/PATCH …/sessions` accept it. Needs migration `2026_11_26_090000_add_uses_routes_to_runs.php` (adds `uses_routes` to
+  `session_series` and `sessions`, default 1), run by hand on the host.
+- `PUT …/attendance` on an `everyone` run ignores `groupId` for going/maybe and puts the member in the run's single group (created on first use).
+- `GET …/sessions/{id}/plan`: every member now gets `attendees` for each pace group and `unassigned.members` (event runs keep
+  `unassigned.members` for managers only). `displayName` is "Sam B." unless the caller leads that group, is the coordinator, or is
+  committee/admin. Each item still carries `status`, `paceUnit`, `paceFromS`, `paceToS`.
+- `GET …/groups/{groupId}/members` → `{ items: [{ memberId, name, role }] }`, `role` is `leader|coordinator|committee|member`, leaders first,
+  then by name. 403 `not_in_group` for anyone who cannot read the chat.

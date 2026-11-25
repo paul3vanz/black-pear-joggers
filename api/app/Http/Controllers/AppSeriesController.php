@@ -27,6 +27,7 @@ class AppSeriesController extends Controller
         'groupMode' => 'group_mode',
         'cmsSlug' => 'cms_slug',
         'imageUrl' => 'image_url',
+        'usesRoutes' => 'uses_routes',
     ];
 
     private function rules(bool $creating): array
@@ -47,6 +48,7 @@ class AppSeriesController extends Controller
             'groupMode' => $required . '|in:' . implode(',', SessionSeries::GROUP_MODES),
             'cmsSlug' => 'nullable|string|max:100',
             'imageUrl' => ['nullable', 'string', 'max:500', 'regex:/^https?:\/\//'],
+            'usesRoutes' => 'sometimes|boolean',
         ];
     }
 

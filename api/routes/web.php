@@ -205,6 +205,7 @@ $router->group(['middleware' => 'auth', 'prefix' => 'app'], function ($router) {
 
         // Phase 6: group messaging
         $router->get('groups/{groupId}/messages', 'AppGroupMessageController@index');
+        $router->get('groups/{groupId}/members', 'AppGroupMessageController@members');
         $router->post('groups/{groupId}/messages', 'AppGroupMessageController@store');
         $router->post('groups/{groupId}/messages/read', 'AppGroupMessageController@markRead');
         $router->delete('groups/{groupId}/messages/{id}', 'AppGroupMessageController@destroy');

@@ -26,6 +26,7 @@ import '../../safety/ui/safety_providers.dart';
 import '../../updates/ui/updates_providers.dart';
 import '../data/message_dtos.dart';
 import '../data/messages_repository.dart';
+import 'chat_members_sheet.dart';
 import 'chat_widgets.dart';
 import 'messages_providers.dart';
 
@@ -295,7 +296,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           error.isNetworkError
               ? 'You need a connection to change that.'
               : error.statusCode == 403
-              ? 'Only the committee can do that.'
+              ? 'Only committee members and admins can do that.'
               : error.message,
         ),
       ),
@@ -419,6 +420,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   openThread: false,
                 ),
               ),
+            ),
+          // Who is in this chat (group chats only).
+          if (!_leaders && !_post)
+            IconButton(
+              key: const ValueKey('chat-members'),
+              tooltip: "Who's in this chat",
+              icon: const Icon(Icons.people_outline),
+              onPressed: () =>
+                  unawaited(showChatMembersSheet(context, groupId: _groupId)),
             ),
           if (muted)
             const Icon(

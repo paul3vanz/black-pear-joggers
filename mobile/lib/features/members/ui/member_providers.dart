@@ -62,6 +62,6 @@ final memberPhotoUrlProvider = Provider<String? Function(String?)>(
 String memberErrorMessage(Object error) {
   final api = ApiException.from(error);
   if (api.isNetworkError) return 'You need a connection to do that.';
-  if (api.statusCode == 403) return 'Only the committee can do that.';
+  if (api.statusCode == 403) return 'Only committee members and admins can do that.';
   return api.message;
 }

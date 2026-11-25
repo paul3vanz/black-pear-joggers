@@ -257,6 +257,7 @@ class RunsRepository {
     String? notes,
     String? imageUrl, // the run's own banner, overrides the series (D131)
     String? websiteUrl, // race website / entry link (D131)
+    bool usesRoutes = true,
     String? id,
   }) async => _upsertSession(
     clubId,
@@ -270,6 +271,7 @@ class RunsRepository {
           'startTime': startTime,
           'durationMin': durationMin,
           'groupMode': groupMode,
+          'usesRoutes': usesRoutes,
           'venueId': venueId,
           'notes': notes,
           'imageUrl': imageUrl,
@@ -293,6 +295,7 @@ class RunsRepository {
     String? localDate,
     String? imageUrl, // null clears the run's own image (D131)
     String? websiteUrl, // null clears the website link (D131)
+    bool? usesRoutes, // null leaves it as it is (D140)
     bool setCoordinator = false,
     String? coordinatorMemberId,
   }) async => _upsertSession(
@@ -308,6 +311,7 @@ class RunsRepository {
           'notes': notes,
           'imageUrl': imageUrl,
           'websiteUrl': websiteUrl,
+          'usesRoutes': ?usesRoutes,
           'localDate': ?localDate,
           if (setCoordinator) 'coordinatorMemberId': coordinatorMemberId,
         },
@@ -457,6 +461,7 @@ class RunsRepository {
     required String validFrom,
     String? validUntil,
     required String groupMode,
+    bool usesRoutes = true,
     String? cmsSlug,
     String? imageUrl, // null clears the series image (D49)
   }) => {
@@ -470,6 +475,7 @@ class RunsRepository {
     'validFrom': validFrom,
     'validUntil': validUntil,
     'groupMode': groupMode,
+    'usesRoutes': usesRoutes,
     'cmsSlug': cmsSlug,
     'imageUrl': imageUrl,
   };
@@ -486,6 +492,7 @@ class RunsRepository {
     required String validFrom,
     String? validUntil,
     required String groupMode,
+    bool usesRoutes = true,
     String? cmsSlug,
     String? imageUrl, // null clears the series image (D49)
     String? id,
@@ -507,6 +514,7 @@ class RunsRepository {
             validFrom: validFrom,
             validUntil: validUntil,
             groupMode: groupMode,
+            usesRoutes: usesRoutes,
             cmsSlug: cmsSlug,
             imageUrl: imageUrl,
           ),
@@ -528,6 +536,7 @@ class RunsRepository {
     required String validFrom,
     String? validUntil,
     required String groupMode,
+    bool usesRoutes = true,
     String? cmsSlug,
     String? imageUrl, // null clears the series image (D49)
   }) async => _upsertSeries(
@@ -546,6 +555,7 @@ class RunsRepository {
           validFrom: validFrom,
           validUntil: validUntil,
           groupMode: groupMode,
+          usesRoutes: usesRoutes,
           cmsSlug: cmsSlug,
           imageUrl: imageUrl,
         ),

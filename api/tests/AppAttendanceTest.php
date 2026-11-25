@@ -185,15 +185,18 @@ class AppAttendanceTest extends AppGroupsBase
         $this->assertSame($s->id, $plan['sessionId']);
         $this->assertCount(2, $plan['groups']);
 
+        // Everyone sees who is coming as first name and last initial, with paces.
         foreach ($plan['groups'] as $group) {
-            $this->assertArrayNotHasKey('attendees', $group);
-            $this->assertSame(['groupId', 'paces'], array_keys($group));
+            $this->assertSame(['groupId', 'paces', 'attendees'], array_keys($group));
+
+            foreach ($group['attendees'] as $who) {
+                $this->assertMatchesRegularExpression('/^[^ ]+ [A-Z][.]$/', $who['displayName']);
+            }
         }
 
-        $this->assertArrayNotHasKey('members', $plan['unassigned']);
-        $this->assertSame(['goingCount', 'maybeCount', 'paces'], array_keys($plan['unassigned']));
-        $this->assertStringNotContainsString('Pat', json_encode($plan));
-        $this->assertStringNotContainsString('memberId', json_encode($plan));
+        // Short names only: no surname beyond its initial.
+        $this->assertSame(['goingCount', 'maybeCount', 'paces', 'members'], array_keys($plan['unassigned']));
+        $this->assertStringNotContainsString('Last20', json_encode($plan));
 
         $paces = [];
         foreach ($plan['groups'] as $group) {
@@ -221,9 +224,10 @@ class AppAttendanceTest extends AppGroupsBase
             $byId[$group['groupId']] = $group;
         }
 
-        $this->assertArrayNotHasKey('attendees', $byId[$g1->id]);
+        // Another group's names are short for a leader of a different group.
+        $this->assertNotContains('Lou Last203', array_column($byId[$g1->id]['attendees'], 'displayName'));
         $this->assertSame(['Lou Last203'], array_column($byId[$g2->id]['attendees'], 'displayName'));
-        $this->assertArrayNotHasKey('members', $plan['unassigned']);
+        $this->assertMatchesRegularExpression('/^[^ ]+ [A-Z][.]$/', $plan['unassigned']['members'][0]['displayName'] ?? 'X Y.');
 
         [, $plan] = $this->api('GET', "/sessions/{$s->id}/plan", 'leaderA'); // leads g1
         $byId = [];
@@ -234,7 +238,7 @@ class AppAttendanceTest extends AppGroupsBase
         $names = array_column($byId[$g1->id]['attendees'], 'displayName');
         sort($names);
         $this->assertSame(['Cory Last204', 'Pat Last201'], $names); // going + maybe only
-        $this->assertArrayNotHasKey('attendees', $byId[$g2->id]);
+        $this->assertNotContains('Lou Last203', array_column($byId[$g2->id]['attendees'], 'displayName')); // short names only
 
         $pat = array_values(array_filter($byId[$g1->id]['attendees'], function ($a) {
             return $a['displayName'] === 'Pat Last201';
@@ -267,7 +271,8 @@ class AppAttendanceTest extends AppGroupsBase
         $otherRun = $this->session(['date' => '2026-10-20', 'coordinator_member_id' => $this->leaderA->id]);
         $this->attend($otherRun, $this->plain, 'going');
         [, $plan] = $this->api('GET', "/sessions/{$otherRun->id}/plan", 'coord');
-        $this->assertArrayNotHasKey('members', $plan['unassigned']);
+        $this->assertCount(1, $plan['unassigned']['members']);
+        $this->assertMatchesRegularExpression('/^[^ ]+ [A-Z][.]$/', $plan['unassigned']['members'][0]['displayName']);
     }
 
     public function testPlanOfUnknownSessionIs404()

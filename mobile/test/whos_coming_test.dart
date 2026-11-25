@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/units/dist_unit.dart';
 import 'package:bpj/features/runs/ui/session_detail_screen.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/fake_api.dart';
@@ -79,14 +80,15 @@ void main() {
   );
 
   group("who's coming", () {
-    testWidgets('a plain member sees the spread and no names', (tester) async {
+    testWidgets('a plain member sees the spread on the group card', (
+      tester,
+    ) async {
       await pump(tester, routes: {'GET $_plan': FakeResponse(200, memberPlan)});
       expect(find.text("Who's coming"), findsOneWidget);
-      expect(
-        find.text('3 going, 1 maybe · usually 8:51-10:44/mi'),
-        findsOneWidget,
-      );
-      expect(find.textContaining("Who's in this group"), findsNothing);
+      // The group card carries the count and the spread (D140); no separate
+      // per-group box under "Who's coming".
+      expect(find.text('3 going, 1 maybe'), findsOneWidget);
+      expect(find.text('usually 8:51-10:44/mi'), findsOneWidget);
       expect(find.text('Group coverage'), findsNothing);
       expect(find.text('Coming, no group yet'), findsNothing);
       await finish(tester);
@@ -108,10 +110,59 @@ void main() {
         paceUnit: DistUnit.km,
         routes: {'GET $_plan': FakeResponse(200, memberPlan)},
       );
-      expect(
-        find.text('3 going, 1 maybe · usually 5:30-6:40/km'),
-        findsOneWidget,
+      expect(find.text('usually 5:30-6:40/km'), findsOneWidget);
+      await finish(tester);
+    });
+
+    testWidgets('names show on the group card, open, for any member', (
+      tester,
+    ) async {
+      final plan = planJson(
+        'a',
+        groups: [
+          groupPlanJson(
+            'g1',
+            paces: [planPaceJson(354)],
+            attendees: [attendeeJson('m1', 'Sam R.')],
+          ),
+        ],
       );
+      await pump(tester, routes: {'GET $_plan': FakeResponse(200, plan)});
+      // Visible without tapping, with the pace, so others are encouraged to join.
+      expect(find.text('3 going, 1 maybe'), findsOneWidget);
+      expect(find.text('Sam R.'), findsOneWidget);
+      expect(find.text('9:30/mi'), findsWidgets);
+      await finish(tester);
+    });
+
+    testWidgets('a run with no groups lists everyone in one place', (
+      tester,
+    ) async {
+      final plan = planJson(
+        'a',
+        groups: [
+          groupPlanJson(
+            'g1',
+            paces: [planPaceJson(354)],
+            attendees: [
+              attendeeJson('m1', 'Sam R.'),
+              attendeeJson('m2', 'Pat M.', status: 'maybe'),
+            ],
+          ),
+        ],
+      );
+      await pump(
+        tester,
+        groupMode: 'everyone',
+        routes: {'GET $_plan': FakeResponse(200, plan)},
+      );
+      expect(find.text("Who's coming"), findsOneWidget);
+      expect(find.text('Sam R.'), findsOneWidget);
+      expect(find.text('Pat M.'), findsOneWidget);
+      // No pace-group cards or lead buttons, but the group chat is there for
+      // the committee (and for members once they are in the group).
+      expect(find.text('Lead a group'), findsNothing);
+      expect(find.text('Groups'), findsNothing);
       await finish(tester);
     });
 
@@ -134,11 +185,8 @@ void main() {
         memberId: 'lead',
         routes: {'GET $_plan': FakeResponse(200, plan)},
       );
-      expect(find.text("Who's in this group (2)"), findsOneWidget);
-      expect(find.text('Sam Runner'), findsNothing); // collapsed
-
-      await tester.tap(find.text("Who's in this group (2)"));
-      await settle(tester);
+      // Open by default: no tap needed (D140).
+      expect(find.text('3 going, 1 maybe'), findsOneWidget);
       expect(find.text('Sam Runner'), findsOneWidget);
       expect(find.text('Pat Maybe'), findsOneWidget);
       expect(find.text('9:30/mi'), findsWidgets);
@@ -164,8 +212,6 @@ void main() {
         paceUnit: DistUnit.km,
         routes: {'GET $_plan': FakeResponse(200, plan)},
       );
-      await tester.tap(find.text("Who's in this group (1)"));
-      await settle(tester);
       expect(find.text('5:54/km (9:30/mi)'), findsOneWidget);
       await finish(tester);
     });
@@ -196,7 +242,8 @@ void main() {
         routes: {'GET $_plan': FakeResponse(200, plan)},
       );
       expect(find.text('Coming, no group yet'), findsOneWidget);
-      expect(find.text('Who is waiting for a group (3)'), findsOneWidget);
+      expect(find.text('Waiting for a group (3)'), findsOneWidget);
+      expect(find.text('Una Slow'), findsOneWidget); // names open by default
       expect(find.text('Group coverage'), findsOneWidget);
       expect(find.text('People coming with no matching group'), findsOneWidget);
       expect(find.textContaining('Based on the 4 people'), findsOneWidget);
@@ -222,7 +269,7 @@ void main() {
       );
       await pump(tester, routes: {'GET $_plan': FakeResponse(200, plan)});
       expect(find.text('Coming, no group yet'), findsOneWidget);
-      expect(find.textContaining('Who is waiting'), findsNothing);
+      expect(find.textContaining('Waiting for a group'), findsNothing);
       expect(find.textContaining("Who's in this group"), findsNothing);
       await finish(tester);
     });
@@ -264,6 +311,25 @@ void main() {
       expect(find.text("Couldn't load who's coming."), findsOneWidget);
       expect(find.text('Retry'), findsOneWidget);
       expect(find.text('Steady'), findsWidgets); // the screen still works
+      await finish(tester);
+    });
+  });
+
+  group('routes switch (D140)', () {
+    testWidgets('the committee sees the Routes box by default', (tester) async {
+      await pump(tester, roles: ['committee']);
+      expect(find.text('Routes'), findsOneWidget);
+      await finish(tester);
+    });
+
+    testWidgets('a run with routes switched off hides it', (tester) async {
+      await pump(
+        tester,
+        roles: ['committee'],
+        seed: () => (db.update(db.sessions)..where((s) => s.id.equals('a')))
+            .write(const SessionsCompanion(usesRoutes: Value(false))),
+      );
+      expect(find.text('Routes'), findsNothing);
       await finish(tester);
     });
   });

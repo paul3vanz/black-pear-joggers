@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/util/clock.dart';
 import '../../../core/db/app_database.dart';
@@ -15,11 +18,13 @@ import 'group_access.dart';
 import 'group_format.dart';
 import 'group_plan_block.dart';
 import 'groups_providers.dart';
+import 'attendance_actions.dart';
 
-/// "Who's coming" on the session detail: per group the anonymous pace spread
-/// (everyone) and names (leaders of that group, coordinator, committee), the
-/// "no group yet" bucket, and the committee's group coverage view. Driven by the cached
-/// plan; the fetch never blocks the screen.
+/// "Who's coming" on the session detail. Each group card shows its own people
+/// (D140), so this lists the ones with no group yet, and the committee's group
+/// coverage view. A run with no groups (`everyone`) shows its one shared list
+/// here, with the group chat. Driven by the cached plan; the fetch never blocks
+/// the screen.
 class WhosComingSection extends ConsumerWidget {
   const WhosComingSection({super.key, required this.session});
 
@@ -39,12 +44,7 @@ class WhosComingSection extends ConsumerWidget {
     );
     // Routes, events and races have no pace spread or coverage (D79).
     final routes = !usesPaceGroups(session.groupMode);
-    final shown = [
-      if (!routes)
-        for (final g in groups)
-          if (g.goingCount + g.maybeCount > 0 && plan?.forGroup(g.id) != null)
-            g,
-    ];
+    final everyone = isEveryoneMode(session.groupMode);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -57,10 +57,9 @@ class WhosComingSection extends ConsumerWidget {
         ),
         const SizedBox(height: 8),
         _Status(sessionId: session.id, hasPlan: plan != null, load: load),
-        if (plan != null) ...[
-          for (final g in shown) _GroupSpread(group: g, session: session),
-          _Unassigned(plan: plan, units: units),
-        ],
+        if (everyone)
+          _EveryoneCard(session: session, group: groups.firstOrNull),
+        if (plan != null) _Unassigned(plan: plan, units: units),
         // Leader coverage works from the groups alone, so it shows before the
         // plan loads; the people part appears once names are available.
         if (isManager && !routes)
@@ -134,37 +133,60 @@ class _Status extends ConsumerWidget {
   }
 }
 
-class _GroupSpread extends ConsumerWidget {
-  const _GroupSpread({required this.group, required this.session});
+/// The one shared group of a run with no pace groups: who is coming with their
+/// pace, and the group chat.
+class _EveryoneCard extends ConsumerWidget {
+  const _EveryoneCard({required this.session, required this.group});
 
-  final Group group;
   final Session session;
+  final Group? group;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final units = ref.watch(unitPrefsProvider);
-    final title = [
-      ?group.label,
-      paceText(group.pace, units),
-    ].where((p) => p.isNotEmpty).join(' · ');
+    final theme = Theme.of(context);
+    final g = group;
+    final myId = ref.watch(myMemberIdProvider);
+    final resp = myResponse(ref, session.id);
+    final canChat =
+        g != null &&
+        canChatIn(
+          group: g,
+          session: session,
+          myMemberId: myId,
+          inGroup: resp.groupId == g.id && resp.status != 'not_going',
+          isCommittee: ref.watch(canManageRunsProvider),
+        );
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              title.isEmpty ? groupKindLabel(group.kind) : title,
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            GroupPlanBlock(
-              sessionId: session.id,
-              groupId: group.id,
-              going: group.goingCount,
-              maybe: group.maybeCount,
-            ),
+            if (g == null || g.goingCount + g.maybeCount == 0)
+              Text(
+                "Nobody has said they're coming yet.",
+                style: theme.textTheme.bodyMedium,
+              )
+            else
+              GroupPlanBlock(
+                sessionId: session.id,
+                groupId: g.id,
+                going: g.goingCount,
+                maybe: g.maybeCount,
+              ),
+            if (canChat)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: FilledButton.tonalIcon(
+                  key: const ValueKey('everyone-chat'),
+                  onPressed: () => unawaited(
+                    context.push('/runs/${session.id}/groups/${g.id}/chat'),
+                  ),
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  label: const Text('Group chat'),
+                ),
+              ),
           ],
         ),
       ),
@@ -199,7 +221,8 @@ class _Unassigned extends StatelessWidget {
               going: u.goingCount,
               maybe: u.maybeCount,
               names: u.members,
-              namesTitle: 'Who is waiting for a group',
+              namesTitle: 'Waiting for a group',
+              initiallyExpanded: true,
               units: units,
             ),
             if (u.paces.isEmpty)

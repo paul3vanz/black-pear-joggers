@@ -229,7 +229,7 @@ class _MemberProfileScreenState extends ConsumerState<MemberProfileScreen> {
                     icon: Icons.block,
                     title: 'You have blocked ${shown.displayName}',
                     text:
-                        "Their profile card is hidden. Use the menu at the top "
+                        'Their profile card is hidden. Use the menu at the top '
                         'to unblock them.',
                   ),
                 )

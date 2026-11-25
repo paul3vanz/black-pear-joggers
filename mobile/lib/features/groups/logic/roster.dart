@@ -53,7 +53,9 @@ List<RosterWeek> buildRoster(
   final result = <RosterWeek>[];
   for (final s in sessions) {
     if (s.status == 'cancelled' || s.endsAt.isBefore(now)) continue;
-    if (isEventLikeMode(s.groupMode)) continue; // nothing to lead (D79)
+    if (isEventLikeMode(s.groupMode) || isEveryoneMode(s.groupMode)) {
+      continue; // nothing to lead (D79, D140)
+    }
     if (s.localDate.compareTo(last) > 0) continue;
     final monday = mondayOf(s.localDate);
     if (result.isNotEmpty && result.last.monday == monday) {

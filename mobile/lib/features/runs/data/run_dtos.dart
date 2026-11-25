@@ -75,6 +75,7 @@ class SeriesDto {
     required this.validFrom,
     required this.validUntil,
     required this.groupMode,
+    this.usesRoutes = true,
     required this.cmsSlug,
     this.imageUrl,
     required this.updatedAt,
@@ -94,6 +95,7 @@ class SeriesDto {
   final String validFrom;
   final String? validUntil;
   final String groupMode;
+  final bool usesRoutes;
   final String? cmsSlug;
 
   /// Optional banner image URL (D49).
@@ -115,6 +117,7 @@ class SeriesDto {
     validFrom: json['validFrom'] as String? ?? '',
     validUntil: _str(json['validUntil']),
     groupMode: json['groupMode'] as String? ?? 'open',
+    usesRoutes: json['usesRoutes'] as bool? ?? true,
     cmsSlug: _str(json['cmsSlug']),
     imageUrl: _str(json['imageUrl']),
     updatedAt: _date(json['updatedAt']) ?? DateTime.now(),
@@ -135,6 +138,7 @@ class SeriesDto {
         validFrom: validFrom,
         validUntil: Value(validUntil),
         groupMode: groupMode,
+        usesRoutes: Value(usesRoutes),
         cmsSlug: Value(cmsSlug),
         imageUrl: Value(imageUrl),
 
@@ -160,6 +164,7 @@ class SessionDto {
     this.ownImageUrl,
     this.websiteUrl,
     required this.groupMode,
+    this.usesRoutes = true,
     required this.status,
     required this.cancelReason,
     required this.coordinatorMemberId,
@@ -196,6 +201,7 @@ class SessionDto {
   /// Race website / entry link (D131).
   final String? websiteUrl;
   final String groupMode;
+  final bool usesRoutes;
   final String status;
   final String? cancelReason;
   final String? coordinatorMemberId;
@@ -237,6 +243,7 @@ class SessionDto {
       ownImageUrl: _str(json['sessionImageUrl']),
       websiteUrl: _str(json['websiteUrl']),
       groupMode: json['groupMode'] as String? ?? 'open',
+      usesRoutes: json['usesRoutes'] as bool? ?? true,
       status: json['status'] as String? ?? 'scheduled',
       cancelReason: _str(json['cancelReason']),
       coordinatorMemberId: _str(json['coordinatorMemberId']),
@@ -270,6 +277,7 @@ class SessionDto {
     ownImageUrl: Value(ownImageUrl),
     websiteUrl: Value(websiteUrl),
     groupMode: groupMode,
+    usesRoutes: Value(usesRoutes),
     status: Value(status),
     cancelReason: Value(cancelReason),
     coordinatorMemberId: Value(coordinatorMemberId),

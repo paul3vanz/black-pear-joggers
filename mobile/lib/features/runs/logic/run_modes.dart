@@ -20,14 +20,34 @@ bool isEventLikeMode(String mode) => isEventsMode(mode) || isRaceMode(mode);
 /// `single` and `open`. False for `routes` (the coordinator sets routes) and
 /// for `events`/`race`, so pace notes, the pick-a-group prompt, coverage and
 /// the leader roster all stay off for them.
-bool usesPaceGroups(String mode) => mode != 'routes' && !isEventLikeMode(mode);
+bool usesPaceGroups(String mode) =>
+    mode != 'routes' && mode != 'everyone' && !isEventLikeMode(mode);
+
+/// A run with no pace groups or leaders (D140), e.g. track night or the Mug
+/// Run: whoever is coming joins its one shared group, which holds the chat.
+bool isEveryoneMode(String mode) => mode == 'everyone';
 
 /// The modes a weekly series can have. Races are one-off, so the server
 /// rejects a `race` series.
-const seriesGroupModes = ['paced', 'single', 'open', 'routes', 'events'];
+const seriesGroupModes = [
+  'paced',
+  'single',
+  'open',
+  'routes',
+  'events',
+  'everyone',
+];
 
 /// The modes an ad-hoc run can have.
-const adHocGroupModes = ['paced', 'single', 'open', 'routes', 'events', 'race'];
+const adHocGroupModes = [
+  'paced',
+  'single',
+  'open',
+  'routes',
+  'events',
+  'race',
+  'everyone',
+];
 
 /// Whether the committee's target spread of paces (8:00 to 12:00/mi plus
 /// jog/walk, no big gaps, D128) applies: `paced` runs only. A `single` or `open`

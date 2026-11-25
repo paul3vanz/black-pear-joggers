@@ -73,6 +73,9 @@ String groupModeExplainer(String mode) => switch (mode) {
     'Events: everyone picks the event they are running that day, '
         'such as a parkrun.',
   'race' => 'One race: people say they are going.',
+  'everyone' =>
+    'No set groups or leaders: people run at their own pace, and whoever is '
+        'coming joins one list and chat (e.g. track night).',
   _ => '',
 };
 
@@ -84,5 +87,6 @@ String groupModeLabel(String mode) => switch (mode) {
   'routes' => 'Routes',
   'events' => 'Events (e.g. parkrun)',
   'race' => 'Race',
+  'everyone' => 'No set groups or leaders',
   _ => mode,
 };

@@ -444,6 +444,24 @@ void main() {
       required bool deletable,
     }) async {
       await longPress(tester, text);
+      // Someone else's message opens the report / block sheet (guideline 1.2),
+      // which offers "Delete message" only to those who may moderate. Your own
+      // message goes straight to the delete question.
+      final sheet = find.byKey(const ValueKey('action-report'));
+      if (sheet.evaluate().isNotEmpty) {
+        expect(
+          find.byKey(const ValueKey('action-delete')),
+          deletable ? findsOneWidget : findsNothing,
+          reason: text,
+        );
+        if (!deletable) {
+          await tester.tapAt(const Offset(10, 10)); // dismiss the sheet
+          await settle(tester);
+          return;
+        }
+        await tester.tap(find.byKey(const ValueKey('action-delete')));
+        await settle(tester);
+      }
       expect(
         find.text('Delete this message?'),
         deletable ? findsOneWidget : findsNothing,

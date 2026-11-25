@@ -60,7 +60,7 @@ class AppEventGroupsTest extends AppGroupsBase
 
     public function testTheModeListsGainEventsAndRace()
     {
-        $this->assertSame(['paced', 'single', 'open', 'routes', 'events', 'race'], SessionSeries::GROUP_MODES);
+        $this->assertSame(['paced', 'single', 'open', 'routes', 'events', 'race', 'everyone'], SessionSeries::GROUP_MODES);
         $this->assertContains('event', SessionGroup::KINDS);
     }
 
@@ -702,7 +702,9 @@ class AppEventGroupsTest extends AppGroupsBase
         $this->attend($s, $this->leaderB, 'going', $g);
 
         [, $plan] = $this->api('GET', "/sessions/{$s->id}/plan", 'plain');
-        $this->assertArrayNotHasKey('attendees', $plan['groups'][0]);
+        // A plain member sees short names, a leader of the group sees full ones.
+        $this->assertCount(2, $plan['groups'][0]['attendees']);
+        $this->assertMatchesRegularExpression('/^[^ ]+ [A-Z][.]$/', $plan['groups'][0]['attendees'][0]['displayName']);
 
         [, $plan] = $this->api('GET', "/sessions/{$s->id}/plan", 'leaderA');
         $this->assertCount(2, $plan['groups'][0]['attendees']);

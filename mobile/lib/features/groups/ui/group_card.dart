@@ -167,7 +167,8 @@ class _GroupCardState extends State<GroupCard> {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 LeadersLine(leaders: g.leaders, style: muted),
-                Text(goingText(g.goingCount, g.maybeCount), style: muted),
+                if (widget.footer == null)
+                  Text(goingText(g.goingCount, g.maybeCount), style: muted),
               ],
             ),
             ?widget.footer,

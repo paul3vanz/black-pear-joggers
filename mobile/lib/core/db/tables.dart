@@ -152,6 +152,9 @@ class SessionSeries extends Table {
 
   /// `paced` | `single` | `open` | `routes`.
   TextColumn get groupMode => text()();
+
+  /// Whether the run has set routes, so its Routes card shows (D140).
+  BoolColumn get usesRoutes => boolean().withDefault(const Constant(true))();
   TextColumn get cmsSlug => text().nullable()();
 
   /// Optional banner image URL (D49).
@@ -182,6 +185,9 @@ class Sessions extends Table {
   /// so "is it over" checks keep working; see D52.
   TextColumn get localEndTime => text().nullable()();
   TextColumn get groupMode => text()();
+
+  /// Whether the run has set routes, so its Routes card shows (D140).
+  BoolColumn get usesRoutes => boolean().withDefault(const Constant(true))();
 
   /// `scheduled` | `cancelled`.
   TextColumn get status => text().withDefault(const Constant('scheduled'))();
