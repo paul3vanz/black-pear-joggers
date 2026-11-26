@@ -159,7 +159,7 @@ class MessagesRepository {
       );
       body = jsonObject(response);
     } on ApiException catch (e) {
-      if (e.statusCode == 403 || e.statusCode == 404) {
+      if (e.isThreadAccessLost) {
         await forgetThread(groupId);
       }
       rethrow;

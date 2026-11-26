@@ -56,6 +56,7 @@ class RosterRunCard extends ConsumerWidget {
     messenger.showSnackBar(
       SnackBar(
         content: const Text("You're leading a group for this run"),
+        persist: false,
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () => unawaited(

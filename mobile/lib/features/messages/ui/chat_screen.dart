@@ -157,7 +157,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final error = await _guard(() => repo.refresh(_clubId, _groupId));
     _polling = false;
     if (!mounted) return;
-    if (error != null && (error.statusCode == 403 || error.statusCode == 404)) {
+    if (error != null && error.isThreadAccessLost) {
       _leave();
       return;
     }

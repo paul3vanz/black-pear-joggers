@@ -37,6 +37,15 @@ class ApiException implements Exception {
 
   bool get isSessionExpired => code == 'session_expired';
 
+  /// The API itself said the caller can't see this thread or it is gone (403 or
+  /// 404 with an `error` code, e.g. `not_in_group`, `not_found`). A 403/404 with
+  /// no API body (a host or deploy hiccup) or `not_a_member` (a link problem,
+  /// not this thread) is not that, so the caller shouldn't drop the chat.
+  bool get isThreadAccessLost =>
+      (statusCode == 403 || statusCode == 404) &&
+      code != null &&
+      code != 'not_a_member';
+
   /// Converts anything thrown by a dio call into an [ApiException].
   factory ApiException.from(Object error) {
     if (error is ApiException) return error;

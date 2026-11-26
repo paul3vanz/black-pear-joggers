@@ -15,6 +15,7 @@ import '../events/data/event_locations_repository.dart';
 import '../groups/data/attendance_repository.dart';
 import '../inbox/data/inbox_repository.dart';
 import '../inbox/ui/inbox_providers.dart';
+import '../membership/data/membership_repository.dart';
 import '../membership/ui/membership_providers.dart';
 import '../members/data/member_profile_repository.dart';
 import '../messages/data/messages_repository.dart';
@@ -69,6 +70,22 @@ class _AppShellState extends ConsumerState<AppShell>
       unawaited(_retryPending());
       unawaited(_refreshMemberCards());
       unawaited(_refreshEventLocations());
+      unawaited(_refreshRoles());
+    }
+  }
+
+  /// Resume: pick up role changes made elsewhere (e.g. an admin making someone
+  /// committee). Roles otherwise only refresh at app start, so the edit buttons
+  /// would stay hidden (or show and 403) until a restart. Offline: keep the cache.
+  Future<void> _refreshRoles() async {
+    final sub = ref.read(activeSubProvider);
+    if (sub == null) return;
+    final repo = ref.read(membershipRepositoryProvider);
+    final handleExpiry = ref.read(sessionExpiryHandlerProvider);
+    try {
+      await repo.refreshMe();
+    } on Object catch (e) {
+      await handleExpiry(sub, e);
     }
   }
 

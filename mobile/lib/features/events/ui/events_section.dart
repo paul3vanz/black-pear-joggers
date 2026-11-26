@@ -115,6 +115,9 @@ class _EventsSectionState extends ConsumerState<EventsSection> {
     // joined, and has a note already.
     messenger.showSnackBar(
       SnackBar(
+        // An action would otherwise keep it on screen until dismissed.
+        persist: false,
+        duration: const Duration(seconds: 6),
         content: Text(
           result.existed
               ? "You're going to $name"

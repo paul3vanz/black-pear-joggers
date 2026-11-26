@@ -142,6 +142,7 @@ class _RunsIFollowScreenState extends ConsumerState<RunsIFollowScreen> {
     messenger.showSnackBar(
       SnackBar(
         content: Text(done),
+        persist: false,
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {
