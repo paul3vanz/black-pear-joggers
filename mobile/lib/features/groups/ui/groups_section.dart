@@ -18,7 +18,6 @@ import 'group_access.dart';
 import 'group_actions.dart';
 import 'group_card.dart';
 import 'group_format.dart';
-import 'group_plan_block.dart';
 import 'routes_card.dart';
 import 'groups_providers.dart';
 import 'respond_card.dart';
@@ -238,15 +237,11 @@ class GroupsSection extends ConsumerWidget {
       chatUnread:
           (ref.watch(threadStateProvider(g.id)).value?.unreadCount ?? 0) > 0,
       // Who is going, with photos, names and paces, sits in the card itself.
-      footer: GroupPlanBlock(
-        sessionId: session.id,
-        groupId: g.id,
-        going: g.goingCount,
-        maybe: g.maybeCount,
-        withCounts: false,
-        countStyle: Theme.of(context).textTheme.bodyMedium
-            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-      ),
+      attendees: ref
+          .watch(sessionPlanProvider(session.id))
+          .value
+          ?.forGroup(g.id)
+          ?.attendees,
     );
   }
 }

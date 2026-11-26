@@ -3,15 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/group_dtos.dart';
 import '../data/plan_dtos.dart';
-import '../logic/pace_spread.dart';
 import 'attendee_list.dart';
 import 'group_format.dart' show goingText;
 import 'groups_providers.dart';
-import 'pace_strip.dart';
 
-/// The pace spread of one group and the people going: an expandable list of
-/// photo, name and pace, open by default to encourage others to join (D140).
-/// Before a plan has been fetched it falls back to the plain "N going" count.
+/// The people going to one group: photo, name and pace for each, open by
+/// default to encourage others to join (D140). There is no pace chart: the
+/// paces beside the names are enough. Before a plan has been fetched it falls
+/// back to the plain "N going" count. Used where a group has no card of its own
+/// (the shared list of a run with no groups).
 class GroupPlanBlock extends ConsumerWidget {
   const GroupPlanBlock({
     super.key,
@@ -19,7 +19,6 @@ class GroupPlanBlock extends ConsumerWidget {
     required this.groupId,
     required this.going,
     required this.maybe,
-    this.withCounts = true,
     this.countStyle,
   });
 
@@ -28,9 +27,6 @@ class GroupPlanBlock extends ConsumerWidget {
   final int going;
   final int maybe;
 
-  /// Repeat "N going" before the pace range (off on cards that show it).
-  final bool withCounts;
-
   /// Style of the plain "N going" fallback.
   final TextStyle? countStyle;
 
@@ -38,58 +34,36 @@ class GroupPlanBlock extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final plan = ref.watch(sessionPlanProvider(sessionId)).value;
     final entry = plan?.forGroup(groupId);
-    if (entry == null) {
+    final names = entry?.attendees;
+    if (names == null || names.isEmpty) {
       return Padding(
         padding: const EdgeInsets.only(top: 4),
         child: Text(goingText(going, maybe), style: countStyle),
       );
     }
-    final units = ref.watch(unitPrefsProvider);
-    // Backmarkers are left off the group card, so their role shows against
-    // their name in the who's-in-this-group list instead.
     final group = ref
         .watch(sessionGroupsProvider(sessionId))
         .value
         ?.where((g) => g.id == groupId)
         .firstOrNull;
-    final block = PlanBlock(
-      spread: buildPaceSpread(entry.paces, units.paceUnit),
-      going: going,
-      maybe: maybe,
-      withCounts: withCounts,
-      names: entry.attendees,
+    return PlanBlock(
+      names: names,
       namesTitle: "Who's in this group",
       namesCountText: goingText(going, maybe),
       initiallyExpanded: true,
-      units: units,
+      units: ref.watch(unitPrefsProvider),
       roles: {
         for (final l in group?.leaders ?? const <GroupLeader>[])
           if (l.memberId.isNotEmpty) l.memberId: l.role,
       },
     );
-    // Nobody to list (an older server, or an event run): keep the count.
-    if (withCounts || (entry.attendees?.isNotEmpty ?? false)) return block;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(goingText(going, maybe), style: countStyle),
-        ),
-        block,
-      ],
-    );
   }
 }
 
-/// Spread strip, "5 going · usually …" text and optional names.
+/// An expandable list of the people going (photo, name, pace).
 class PlanBlock extends StatelessWidget {
   const PlanBlock({
     super.key,
-    required this.spread,
-    required this.going,
-    required this.maybe,
-    this.withCounts = true,
     required this.names,
     required this.namesTitle,
     this.namesCountText,
@@ -98,10 +72,6 @@ class PlanBlock extends StatelessWidget {
     this.roles = const {},
   });
 
-  final PaceSpread spread;
-  final int going;
-  final int maybe;
-  final bool withCounts;
   final List<PlanAttendee>? names;
   final String namesTitle;
 
@@ -117,37 +87,19 @@ class PlanBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final names = this.names;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (!spread.isEmpty) ...[
-          const SizedBox(height: 8),
-          PaceStrip(spread: spread),
-          const SizedBox(height: 4),
-          Text(
-            withCounts
-                ? spreadSummary(spread, going: going, maybe: maybe)
-                : spreadRange(spread),
-            style: theme.textTheme.bodyMedium,
-          ),
-        ],
-        if (names != null && names.isNotEmpty)
-          Theme(
-            data: theme.copyWith(dividerColor: Colors.transparent),
-            child: ExpansionTile(
-              initiallyExpanded: initiallyExpanded,
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: EdgeInsets.zero,
-              title: Text(
-                namesCountText ?? '$namesTitle (${names.length})',
-                style: theme.textTheme.labelLarge,
-              ),
-              children: [
-                AttendeeList(attendees: names, units: units, roles: roles),
-              ],
-            ),
-          ),
-      ],
+    if (names == null || names.isEmpty) return const SizedBox.shrink();
+    return Theme(
+      data: theme.copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        initiallyExpanded: initiallyExpanded,
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: EdgeInsets.zero,
+        title: Text(
+          namesCountText ?? '$namesTitle (${names.length})',
+          style: theme.textTheme.labelLarge,
+        ),
+        children: [AttendeeList(attendees: names, units: units, roles: roles)],
+      ),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../data/group_dtos.dart';
+import '../data/plan_dtos.dart';
+import 'attendee_list.dart';
 import 'group_format.dart';
 import 'groups_providers.dart';
 import 'leaders_line.dart';
@@ -26,7 +28,8 @@ class GroupCard extends StatefulWidget {
     this.onChat,
     this.onOpenRoute,
     this.chatUnread = false,
-    this.footer,
+    this.attendees,
+    this.peopleOpen = true,
   });
 
   final Group group;
@@ -55,8 +58,13 @@ class GroupCard extends StatefulWidget {
   /// only those in the group; null (no valid link) hides the button.
   final VoidCallback? onOpenRoute;
 
-  /// Extra content under the going count (the pace spread on route cards).
-  final Widget? footer;
+  /// Who is going, from the plan (null until it loads). The count beside the
+  /// leaders expands this list (photo, name and pace); the leaders are left
+  /// out of it as they already show on the card (D140).
+  final List<PlanAttendee>? attendees;
+
+  /// Whether the list starts open, to encourage others to join.
+  final bool peopleOpen;
 
   /// Descriptions longer than this collapse behind "Show more".
   static const collapseAfter = 140;
@@ -67,6 +75,7 @@ class GroupCard extends StatefulWidget {
 
 class _GroupCardState extends State<GroupCard> {
   bool _expanded = false;
+  late bool _peopleOpen = widget.peopleOpen;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +86,16 @@ class _GroupCardState extends State<GroupCard> {
     final description = g.description;
     final long =
         description != null && description.length > GroupCard.collapseAfter;
+    // The leaders shown on the card are left out of the list (backmarkers are
+    // not shown there, so they stay in it with their role tag).
+    final shownLeaderIds = {
+      for (final l in g.leaders)
+        if (l.role != 'backmarker' && l.memberId.isNotEmpty) l.memberId,
+    };
+    final others = [
+      for (final a in widget.attendees ?? const <PlanAttendee>[])
+        if (!shownLeaderIds.contains(a.memberId)) a,
+    ];
     final muted = theme.textTheme.bodyMedium?.copyWith(
       color: scheme.onSurfaceVariant,
     );
@@ -162,16 +181,54 @@ class _GroupCardState extends State<GroupCard> {
                 ),
               ),
             const SizedBox(height: 4),
-            Wrap(
-              spacing: 12,
-              crossAxisAlignment: WrapCrossAlignment.center,
+            // Leaders on the left, the going count (a link when there is anyone
+            // else to show) on the right.
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                LeadersLine(leaders: g.leaders, style: muted),
-                if (widget.footer == null)
-                  Text(goingText(g.goingCount, g.maybeCount), style: muted),
+                Expanded(
+                  child: LeadersLine(leaders: g.leaders, style: muted),
+                ),
+                const SizedBox(width: 8),
+                if (others.isEmpty)
+                  Text(goingText(g.goingCount, g.maybeCount), style: muted)
+                else
+                  InkWell(
+                    key: const ValueKey('going-toggle'),
+                    borderRadius: BorderRadius.circular(4),
+                    onTap: () => setState(() => _peopleOpen = !_peopleOpen),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            goingText(g.goingCount, g.maybeCount),
+                            style: muted?.copyWith(color: scheme.primary),
+                          ),
+                          Icon(
+                            _peopleOpen ? Icons.expand_less : Icons.expand_more,
+                            size: 20,
+                            color: scheme.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             ),
-            ?widget.footer,
+            if (others.isNotEmpty && _peopleOpen)
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: AttendeeList(
+                  attendees: others,
+                  units: widget.units,
+                  roles: {
+                    for (final l in g.leaders)
+                      if (l.memberId.isNotEmpty) l.memberId: l.role,
+                  },
+                ),
+              ),
             if (widget.isLeading)
               Padding(
                 padding: const EdgeInsets.only(top: 4),

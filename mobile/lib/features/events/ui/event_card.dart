@@ -189,36 +189,44 @@ class EventCard extends StatelessWidget {
                 onChat != null)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
+                // Side by side, like the pace group cards, to save height.
+                child: Row(
                   children: [
-                    if (onJoin != null)
-                      FilledButton.tonal(
-                        onPressed: onJoin,
-                        child: Text(joinLabel),
-                      ),
-                    if (onLeave != null)
-                      OutlinedButton(
-                        onPressed: onLeave,
-                        child: const Text('Leave'),
-                      ),
-                    if (onDecline != null)
-                      OutlinedButton(
-                        onPressed: onDecline,
-                        child: const Text("Can't go"),
-                      ),
-                    if (onChat != null)
-                      FilledButton.tonalIcon(
-                        onPressed: onChat,
-                        icon: Badge(
-                          key: const ValueKey('chat-unread'),
-                          smallSize: 9,
-                          isLabelVisible: chatUnread,
-                          child: const Icon(Icons.chat_bubble_outline),
+                    for (final (i, button) in [
+                      if (onJoin != null)
+                        FilledButton.tonal(
+                          style: _rowButtonStyle,
+                          onPressed: onJoin,
+                          child: Text(joinLabel, textAlign: TextAlign.center),
                         ),
-                        label: const Text('Chat'),
-                      ),
+                      if (onLeave != null)
+                        OutlinedButton(
+                          style: _rowButtonStyle,
+                          onPressed: onLeave,
+                          child: const Text('Leave'),
+                        ),
+                      if (onDecline != null)
+                        OutlinedButton(
+                          style: _rowButtonStyle,
+                          onPressed: onDecline,
+                          child: const Text("Can't go"),
+                        ),
+                      if (onChat != null)
+                        FilledButton.tonalIcon(
+                          style: _rowButtonStyle,
+                          onPressed: onChat,
+                          icon: Badge(
+                            key: const ValueKey('chat-unread'),
+                            smallSize: 9,
+                            isLabelVisible: chatUnread,
+                            child: const Icon(Icons.chat_bubble_outline),
+                          ),
+                          label: const Text('Chat'),
+                        ),
+                    ].indexed) ...[
+                      if (i > 0) const SizedBox(width: 8),
+                      Expanded(child: button),
+                    ],
                   ],
                 ),
               ),
@@ -228,6 +236,12 @@ class EventCard extends StatelessWidget {
     );
   }
 }
+
+/// Tighter padding so buttons fit side by side on a narrow phone (as on the
+/// group card).
+final _rowButtonStyle = ButtonStyle(
+  padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 12)),
+);
 
 /// A collapsed "Details" row (region and country) that expands to the links
 /// and, for Great Britain, a small dot map.

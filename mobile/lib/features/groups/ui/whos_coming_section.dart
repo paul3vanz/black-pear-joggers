@@ -12,7 +12,6 @@ import '../../runs/ui/runs_providers.dart';
 import '../data/group_dtos.dart';
 import '../data/plan_dtos.dart';
 import '../../runs/logic/run_modes.dart';
-import '../logic/pace_spread.dart';
 import 'coverage_card.dart';
 import 'group_access.dart';
 import 'group_format.dart';
@@ -217,15 +216,12 @@ class _Unassigned extends StatelessWidget {
                   ?.copyWith(fontWeight: FontWeight.w700),
             ),
             PlanBlock(
-              spread: buildPaceSpread(u.paces, units.paceUnit),
-              going: u.goingCount,
-              maybe: u.maybeCount,
               names: u.members,
               namesTitle: 'Waiting for a group',
               initiallyExpanded: true,
               units: units,
             ),
-            if (u.paces.isEmpty)
+            if (u.members == null || u.members!.isEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(goingText(u.goingCount, u.maybeCount)),

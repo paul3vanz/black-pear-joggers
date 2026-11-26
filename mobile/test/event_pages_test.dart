@@ -354,6 +354,15 @@ void main() {
         await unmount(tester);
       });
 
+      testWidgets('Leave and Chat sit side by side on one row', (tester) async {
+        await pump(tester, myStatus: 'going', myGroupId: 'g2');
+        final leave = tester.getCenter(find.text('Leave'));
+        final chatAt = tester.getCenter(chat());
+        expect(leave.dy, closeTo(chatAt.dy, 1));
+        expect(leave.dx, lessThan(chatAt.dx));
+        await unmount(tester);
+      });
+
       testWidgets('not for someone who is not in an event', (tester) async {
         await pump(tester);
         expect(chat(), findsNothing);

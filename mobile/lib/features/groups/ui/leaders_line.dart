@@ -32,6 +32,9 @@ class LeadersLine extends StatelessWidget {
         if (l.role != 'backmarker') l,
     ];
     if (shown.isEmpty) return Text('No leader yet', style: muted);
+    // The line shares its row with the going count (D141), so it may be
+    // narrower than one leader: each entry is itself a Wrap, so a role tag drops
+    // under the name instead of squeezing it, and a long name ellipsizes.
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 10,
@@ -39,26 +42,21 @@ class LeadersLine extends StatelessWidget {
       children: [
         Text('Led by', style: muted),
         for (final l in shown)
-          Row(
-            mainAxisSize: MainAxisSize.min,
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 4,
             children: [
-              // Flexible so one very long name ellipsizes instead of overflowing.
-              Flexible(
-                child: MemberLink(
-                  memberId: l.memberId.isEmpty ? null : l.memberId,
-                  name: l.displayName,
-                  avatarSize: 24,
-                  style: muted?.copyWith(
-                    color: theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
+              MemberLink(
+                memberId: l.memberId.isEmpty ? null : l.memberId,
+                name: l.displayName,
+                avatarSize: 24,
+                style: muted?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               if (leaderRoleTag(l.role).isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: Text('(${leaderRoleTag(l.role)})', style: muted),
-                ),
+                Text('(${leaderRoleTag(l.role)})', style: muted),
             ],
           ),
       ],

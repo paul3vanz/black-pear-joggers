@@ -4,6 +4,7 @@ import 'package:bpj/core/db/app_database.dart';
 import 'package:bpj/core/units/dist_unit.dart';
 import 'package:bpj/features/runs/ui/session_detail_screen.dart';
 import 'package:drift/drift.dart' show Value;
+import 'package:flutter/material.dart' show ValueKey;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/fake_api.dart';
@@ -85,33 +86,96 @@ void main() {
     ) async {
       await pump(tester, routes: {'GET $_plan': FakeResponse(200, memberPlan)});
       expect(find.text("Who's coming"), findsOneWidget);
-      // The group card carries the count and the spread (D140); no separate
-      // per-group box under "Who's coming".
+      // The group card carries the count (D140); no separate per-group box
+      // under "Who's coming", and no pace chart anywhere.
       expect(find.text('3 going, 1 maybe'), findsOneWidget);
-      expect(find.text('usually 8:51-10:44/mi'), findsOneWidget);
+      expect(find.textContaining('usually'), findsNothing);
       expect(find.text('Group coverage'), findsNothing);
       expect(find.text('Coming, no group yet'), findsNothing);
       await finish(tester);
     });
 
-    testWidgets('routes: the spread sits on each route card', (tester) async {
+    testWidgets('routes: the card shows the count and no pace chart', (
+      tester,
+    ) async {
       await pump(
         tester,
         groupMode: 'routes',
         routes: {'GET $_plan': FakeResponse(200, memberPlan)},
       );
-      expect(find.text('usually 8:51-10:44/mi'), findsOneWidget);
-      expect(find.textContaining('3 going, 1 maybe ·'), findsNothing);
+      expect(find.text('3 going, 1 maybe'), findsOneWidget);
+      expect(find.textContaining('usually'), findsNothing);
       await finish(tester);
     });
-    testWidgets('shows the spread in km for a km viewer', (tester) async {
-      await pump(
-        tester,
-        paceUnit: DistUnit.km,
-        routes: {'GET $_plan': FakeResponse(200, memberPlan)},
+
+    group('going link on the group card', () {
+      final withPeople = planJson(
+        'a',
+        groups: [
+          groupPlanJson(
+            'g1',
+            paces: [planPaceJson(354)],
+            attendees: [
+              attendeeJson('lead', 'Lee Leader'),
+              attendeeJson('m1', 'Sam R.'),
+            ],
+          ),
+        ],
       );
-      expect(find.text('usually 5:30-6:40/km'), findsOneWidget);
-      await finish(tester);
+
+      testWidgets('leaves the leader out of the list and toggles it', (
+        tester,
+      ) async {
+        await pump(
+          tester,
+          routes: {'GET $_plan': FakeResponse(200, withPeople)},
+        );
+        // The leader shows once, on the "Led by" line, not again in the list.
+        expect(find.text('Lee Leader'), findsOneWidget);
+        expect(find.text('Sam R.'), findsOneWidget);
+        // The count is the link, on the leader's row.
+        final link = find.byKey(const ValueKey('going-toggle'));
+        expect(link, findsOneWidget);
+        expect(
+          tester.getCenter(find.text('Lee Leader')).dy,
+          closeTo(tester.getCenter(find.text('3 going, 1 maybe')).dy, 12),
+        );
+        expect(
+          tester.getCenter(find.text('3 going, 1 maybe')).dx,
+          greaterThan(tester.getCenter(find.text('Lee Leader')).dx),
+        );
+
+        await tester.tap(link);
+        await settle(tester);
+        expect(find.text('Sam R.'), findsNothing);
+        await tester.tap(link);
+        await settle(tester);
+        expect(find.text('Sam R.'), findsOneWidget);
+        await finish(tester);
+      });
+
+      testWidgets('only the leader going: plain count, no chevron', (
+        tester,
+      ) async {
+        final onlyLeader = planJson(
+          'a',
+          groups: [
+            groupPlanJson(
+              'g1',
+              paces: [planPaceJson(354)],
+              attendees: [attendeeJson('lead', 'Lee Leader')],
+            ),
+          ],
+        );
+        await pump(
+          tester,
+          routes: {'GET $_plan': FakeResponse(200, onlyLeader)},
+        );
+        expect(find.byKey(const ValueKey('going-toggle')), findsNothing);
+        expect(find.text('3 going, 1 maybe'), findsOneWidget);
+        expect(find.text('Lee Leader'), findsOneWidget);
+        await finish(tester);
+      });
     });
 
     testWidgets('names show on the group card, open, for any member', (
@@ -295,7 +359,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('updated 2 hours ago'), findsOneWidget);
-      expect(find.textContaining('usually 8:51-10:44/mi'), findsOneWidget);
+      expect(find.text('3 going, 1 maybe'), findsOneWidget);
       await finish(tester);
     });
 

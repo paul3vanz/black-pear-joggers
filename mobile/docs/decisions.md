@@ -1135,3 +1135,12 @@ audience labels on new updates stay as they are: they name roles, not features.
 - **Who is in a chat:** `GET …/groups/{groupId}/members` returns the thread's participants (leaders, coordinator, going/maybe members) as
   short names with a role. The chat screen has a "Who's in this chat" button.
 - **Ask leaders sheet:** Send is a full-width button above Cancel, so it can't be mistaken for missing.
+
+**D141 — Group card tidy-up (2026-11-26), adjusts D140.** Feedback on the first D140 build.
+- **No pace chart.** The spread strip and its "usually 8:51-10:44/mi" line are gone from group cards, "Waiting for a group" and the shared
+  list of a no-groups run; the paces next to each name are enough. (`PaceStrip` is removed; the coverage card's `CoverageStrip` stays.)
+- **Going count on the leader's row.** The group card shows the leaders on the left and "3 going, 1 maybe" with a chevron on the right. It
+  expands the list of people (photo, name, pace), open by default. The leaders are left out of the list because they already show on the card
+  (backmarkers stay in it, tagged). With nobody else going it is plain text with no chevron.
+- **Buttons side by side on every card.** Event cards (parkrun events and the race card) now put "I'm going" / "Leave" / "Can't go" and
+  "Chat" on one row, like the pace group cards.
