@@ -64,6 +64,19 @@ class AppLeaderThreadsTest extends AppMessagesBase
         $this->assertSame(401, $this->api('GET', $this->base() . '/messages', null)[0]);
     }
 
+    public function testStaffBadgesAreCommitteeThenAdminThenLeader()
+    {
+        $thread = new \App\Services\LeaderThreadAccess($this->sess);
+        $roles = fn (array $held) => ($this->leaderB->forceFill(['roles' => $held])->save()
+            ? $thread->people([$this->leaderB->id])[$this->leaderB->id]['role']
+            : null);
+
+        $this->assertSame('admin', $roles(['leader', 'admin']));     // admin, not committee
+        $this->assertSame('committee', $roles(['committee', 'admin']));
+        $this->assertSame('committee', $roles(['leader', 'committee', 'admin']));
+        $this->assertSame('leader', $roles(['leader']));
+    }
+
     // ---- asking ---------------------------------------------------------------------
 
     public function testOnlyTheCommitteeCanAsk()

@@ -458,7 +458,7 @@ class AppGroupMessagesTest extends AppMessagesBase
         $this->assertSame([
             'coord' => 'leader',      // leader of this group beats coordinator
             'committee' => 'committee',
-            'admin' => 'committee',
+            'admin' => 'admin',       // admin without the committee role has its own badge
             'going' => 'member',
             'leaderA' => 'leader',
         ], $ids);
@@ -473,8 +473,14 @@ class AppGroupMessagesTest extends AppMessagesBase
         [, $body] = $this->messagesOf('committee', $this->g);
         $roles = array_column($body['items'], 'authorRole', 'memberId');
         $this->assertSame('coordinator', $roles[$this->committee->id]); // coordinator beats committee
-        $this->assertSame('committee', $roles[$this->admin->id]);
+        $this->assertSame('admin', $roles[$this->admin->id]);
         $this->assertSame('member', $roles[$this->coord->id]);
+
+        // Committee and admin together: just committee.
+        $this->admin->forceFill(['roles' => ['committee', 'admin']])->save();
+        [, $body] = $this->messagesOf('committee', $this->g);
+        $roles = array_column($body['items'], 'authorRole', 'memberId');
+        $this->assertSame('committee', $roles[$this->admin->id]);
     }
 
     // ---- DELETE --------------------------------------------------------------------

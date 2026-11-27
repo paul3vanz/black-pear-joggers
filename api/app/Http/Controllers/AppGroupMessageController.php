@@ -173,7 +173,7 @@ class AppGroupMessageController extends Controller
         }
 
         $people = $thread->people($thread->participantIds());
-        $order = [ThreadAccess::ROLE_LEADER => 0, ThreadAccess::ROLE_COORDINATOR => 1, ThreadAccess::ROLE_COMMITTEE => 2, ThreadAccess::ROLE_MEMBER => 3];
+        $order = [ThreadAccess::ROLE_LEADER => 0, ThreadAccess::ROLE_COORDINATOR => 1, ThreadAccess::ROLE_COMMITTEE => 2, ThreadAccess::ROLE_ADMIN => 3, ThreadAccess::ROLE_MEMBER => 4];
         $items = [];
 
         foreach ($people as $id => $who) {

@@ -152,7 +152,7 @@ Base path `/app/clubs/{clubId}/sessions/{sessionId}/leaders-chat`.
   ask went to (`leader_thread_members`). Anyone else: 403 `not_in_thread`; an unknown run: 404.
 - `GET /messages?since=` → `{ items, serverTime, closed, muted }`, like a group thread. A message adds
   `kind: "message"|"ask"`, `askFastSPerKm`, `askSlowSPerKm` (an ask's pace range in seconds per km, null for "any
-  pace") and `groupId: "leaders:<sessionId>"`. `authorRole` is `committee`, `leader` (leads a group of the run) or `member`.
+  pace") and `groupId: "leaders:<sessionId>"`. `authorRole` is `committee`, `admin` (admin without the committee role), `leader` (leads a group of the run) or `member`.
 - `POST /messages { id?, body }`, `DELETE /messages/{id}` (author or committee), `POST /messages/read`,
   `PUT /thread { muted }`: as for a group chat. Closed (409 `thread_closed`) while the run is cancelled and 12
   hours after it ends.
@@ -212,8 +212,8 @@ the thread id the app uses where a group id would go is `post:<postId>`. Base pa
 `/app/clubs/{clubId}/posts/{postId}/comments`.
 - **Who:** everyone the update is for (its audience) can read and write. An update the caller can't see, or an
   unknown or deleted one, is 404. The committee (`committee`/`admin`) moderates.
-- `GET /messages?since=` → `{ items, serverTime, closed, muted }`, like a group thread. `authorRole` is `committee`
-  (committee and admin, whether or not they wrote the update) or `member`; the app badges committee replies.
+- `GET /messages?since=` → `{ items, serverTime, closed, muted }`, like a group thread. `authorRole` is `committee`,
+  `admin` (admin without the committee role) or `member`; the app badges committee and admin replies.
   `closed` is true once the committee closed comments, for everyone; the committee can still post, the app just
   shows them a notice.
 - `POST /messages { id?, body }` (1-1000 characters, idempotent on `id`, 429 over 20 a minute), `DELETE /messages/{id}`
@@ -823,12 +823,15 @@ immediately (the app hides the thread).
 ### Message shape
 ```json
 { "id": "uuid", "groupId": "uuid", "memberId": "uuid",
-  "authorName": "Sam B.", "authorRole": "leader|coordinator|committee|member",
+  "authorName": "Sam B.", "authorRole": "leader|coordinator|committee|admin|member",
   "body": "…", "createdAt": "2026-10-12T17:30:00.000Z", "deletedAt": "…|null" }
 ```
 `authorName` is first name + surname initial (`Sam B.`), taken from the athlete record, or `Member` if
 unknown. `authorRole` is the author's role **in this thread** (leader of this group beats coordinator beats
-committee/admin beats member). A deleted message is a tombstone: `body` is `""` and `deletedAt` is set.
+committee beats admin beats member; someone who is both committee and admin shows as `committee`; an admin
+without the committee role shows as `admin`). The same `committee`/`admin` split applies in the leaders thread
+(where it also beats `leader`) and in update comments, and to `role` in `GET …/groups/{id}/members`. An older
+app that does not know `admin` shows no badge for it. A deleted message is a tombstone: `body` is `""` and `deletedAt` is set.
 
 ### Endpoints
 - `GET /groups/{groupId}/messages?since=` → `{ "items": [Message], "serverTime": "…" }`.

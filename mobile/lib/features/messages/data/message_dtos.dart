@@ -218,7 +218,7 @@ extension GroupMessageState on GroupMessage {
 
 /// One person in a group chat, from `GET …/groups/{id}/members`: a short name
 /// ("Sam B.") and their role in the thread (`leader`, `coordinator`,
-/// `committee` or `member`).
+/// `committee`, `admin` or `member`).
 class ChatMember {
   const ChatMember({
     required this.memberId,
@@ -241,6 +241,7 @@ class ChatMember {
     'leader' => 'Leader',
     'coordinator' => 'Coordinator',
     'committee' => 'Committee',
+    'admin' => 'Admin',
     _ => '',
   };
 }

@@ -27,6 +27,7 @@ class ThreadAccess
     const ROLE_LEADER = 'leader';
     const ROLE_COORDINATOR = 'coordinator';
     const ROLE_COMMITTEE = 'committee';
+    const ROLE_ADMIN = 'admin';
     const ROLE_MEMBER = 'member';
 
     public SessionGroup $group;
@@ -187,7 +188,7 @@ class ThreadAccess
         return $people;
     }
 
-    /** Leader of this group beats coordinator beats committee/admin beats member. */
+    /** Leader of this group beats coordinator beats committee beats admin beats member. */
     private function roleFor(string $memberId, array $roles): string
     {
         if (in_array($memberId, $this->leaderIds(), true)) {
@@ -198,11 +199,22 @@ class ThreadAccess
             return self::ROLE_COORDINATOR;
         }
 
-        if (array_intersect(['committee', 'admin'], $roles)) {
+        return self::staffRole($roles) ?? self::ROLE_MEMBER;
+    }
+
+    /**
+     * The badge for a member's staff roles: committee, else admin, else null.
+     * Someone who is both shows only as committee.
+     *
+     * @param string[] $roles
+     */
+    public static function staffRole(array $roles): ?string
+    {
+        if (in_array('committee', $roles, true)) {
             return self::ROLE_COMMITTEE;
         }
 
-        return self::ROLE_MEMBER;
+        return in_array('admin', $roles, true) ? self::ROLE_ADMIN : null;
     }
 
     /** "Sam B." from the athlete record; "Member" when there is no usable name. */

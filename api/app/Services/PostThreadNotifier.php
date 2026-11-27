@@ -40,7 +40,8 @@ class PostThreadNotifier
             }
 
             $who = $thread->people([$comment->member_id])[$comment->member_id];
-            $title = ($who['role'] === ThreadAccess::ROLE_COMMITTEE ? $who['name'] . ' (committee)' : $who['name']) . ' · ' . $thread->post->title;
+            $tag = in_array($who['role'], [ThreadAccess::ROLE_COMMITTEE, ThreadAccess::ROLE_ADMIN], true) ? ' (' . $who['role'] . ')' : '';
+            $title = $who['name'] . $tag . ' · ' . $thread->post->title;
 
             app(NotificationService::class)->notifyMembers(
                 $club,

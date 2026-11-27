@@ -74,6 +74,7 @@ String? roleBadge(String role) => switch (role) {
   'leader' => 'Leader',
   'coordinator' => 'Coordinator',
   'committee' => 'Committee',
+  'admin' => 'Admin',
   _ => null,
 };
 

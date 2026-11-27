@@ -114,7 +114,7 @@ class PostThreadAccess
     // ---- people ----------------------------------------------------------------------
 
     /**
-     * Name and role for each member id ('committee' or 'member').
+     * Name and role for each member id ('committee', 'admin' or 'member').
      *
      * @param  string[] $memberIds
      * @return array<string, array{name: string, role: string}>
@@ -138,7 +138,7 @@ class PostThreadAccess
             $roles = json_decode((string) $row->roles, true) ?: [];
             $people[$row->id] = [
                 'name' => ThreadAccess::shortName($row->first_name, $row->last_name),
-                'role' => array_intersect(['committee', 'admin'], $roles) ? ThreadAccess::ROLE_COMMITTEE : ThreadAccess::ROLE_MEMBER,
+                'role' => ThreadAccess::staffRole($roles) ?? ThreadAccess::ROLE_MEMBER,
             ];
         }
 

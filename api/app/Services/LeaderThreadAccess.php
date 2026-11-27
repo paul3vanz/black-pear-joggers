@@ -131,7 +131,7 @@ class LeaderThreadAccess
     // ---- people ----------------------------------------------------------------------
 
     /**
-     * Name and role for each member id ('committee', 'leader' or 'member').
+     * Name and role for each member id ('committee', 'admin', 'leader' or 'member').
      *
      * @param  string[] $memberIds
      * @return array<string, array{name: string, role: string}>
@@ -155,9 +155,8 @@ class LeaderThreadAccess
             $roles = json_decode((string) $row->roles, true) ?: [];
             $people[$row->id] = [
                 'name' => ThreadAccess::shortName($row->first_name, $row->last_name),
-                'role' => array_intersect(['committee', 'admin'], $roles)
-                    ? ThreadAccess::ROLE_COMMITTEE
-                    : (in_array($row->id, $this->leaderIds(), true) ? ThreadAccess::ROLE_LEADER : ThreadAccess::ROLE_MEMBER),
+                'role' => ThreadAccess::staffRole($roles)
+                    ?? (in_array($row->id, $this->leaderIds(), true) ? ThreadAccess::ROLE_LEADER : ThreadAccess::ROLE_MEMBER),
             ];
         }
 

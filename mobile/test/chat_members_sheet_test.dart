@@ -33,5 +33,12 @@ void main() {
         'Committee',
       );
     });
+
+    test('admin has its own tag', () {
+      expect(
+        const ChatMember(memberId: 'c', name: 'C', role: 'admin').roleLabel,
+        'Admin',
+      );
+    });
   });
 }
