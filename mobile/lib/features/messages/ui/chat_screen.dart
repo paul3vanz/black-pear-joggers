@@ -743,7 +743,7 @@ class _ClosedBar extends StatelessWidget {
                     post
                         ? 'The committee has closed comments on this update. '
                               'You can still read them.'
-                        : 'Posting stops 12 hours after the run, or when it is '
+                        : 'Posting stops 48 hours after the run, or when it is '
                               'cancelled. You can still read the messages.',
                   ),
                 ],

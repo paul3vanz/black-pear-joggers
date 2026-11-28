@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 class ThreadAccess
 {
     /** Hours after the run ends that posting stays open. */
-    const CLOSES_AFTER_HOURS = 12;
+    const CLOSES_AFTER_HOURS = 48;
 
     const ROLE_LEADER = 'leader';
     const ROLE_COORDINATOR = 'coordinator';
@@ -130,7 +130,7 @@ class ThreadAccess
 
     // ---- closed ----------------------------------------------------------------------
 
-    /** Posting is closed while the run is cancelled and from 12 hours after it ends. */
+    /** Posting is closed while the run is cancelled and from CLOSES_AFTER_HOURS (48) after it ends. */
     public function isClosed(?Carbon $now = null): bool
     {
         if ($this->session->isCancelled()) {

@@ -182,7 +182,7 @@ class AppLeaderThreadController extends Controller
      * @OA\Post(
      *   tags={"App"},
      *   path="/app/clubs/{clubId}/sessions/{sessionId}/leaders-chat/messages",
-     *   summary="Post a message to the leaders thread. Idempotent on id. 409 thread_closed 12 hours after the run ends, 429 over 20 a minute.",
+     *   summary="Post a message to the leaders thread. Idempotent on id. 409 thread_closed 48 hours after the run ends, 429 over 20 a minute.",
      *   security={{"bearerAuth":{}}},
      *   @OA\Response(response=201, description="The message (200 on a replayed id)"),
      *   @OA\Response(response=403, description="Not in the thread"),

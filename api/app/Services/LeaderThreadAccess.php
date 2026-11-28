@@ -24,8 +24,8 @@ use Illuminate\Support\Facades\DB;
  */
 class LeaderThreadAccess
 {
-    /** Hours after the run ends that posting stays open (same as a group chat). */
-    const CLOSES_AFTER_HOURS = 12;
+    /** Hours after the run ends that posting stays open: the group chat's value, so the two never drift apart. */
+    const CLOSES_AFTER_HOURS = ThreadAccess::CLOSES_AFTER_HOURS;
 
     /** The thread id the app uses where a group id would go: `leaders:<sessionId>`. */
     const PREFIX = 'leaders:';
@@ -109,7 +109,7 @@ class LeaderThreadAccess
 
     // ---- closed ----------------------------------------------------------------------
 
-    /** Posting is closed while the run is cancelled and from 12 hours after it ends. */
+    /** Posting is closed while the run is cancelled and from CLOSES_AFTER_HOURS (48) after it ends. */
     public function isClosed(?Carbon $now = null): bool
     {
         if ($this->session->isCancelled()) {

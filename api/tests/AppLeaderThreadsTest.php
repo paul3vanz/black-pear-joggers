@@ -223,12 +223,15 @@ class AppLeaderThreadsTest extends AppMessagesBase
         $this->assertSame(1, LeaderMessage::count());
     }
 
-    public function testItClosesTwelveHoursAfterTheRunAndWhenCancelled()
+    public function testItClosesFortyEightHoursAfterTheRunAndWhenCancelled()
     {
         $this->assertSame(201, $this->say('committee', 'now')[0]);
 
-        // The run ends 20:30 London (19:30Z).
-        Carbon::setTestNow(Carbon::parse('2026-10-13 07:31:00', 'UTC'));
+        // The run ends 20:30 London (19:30Z) on the 12th: still open at 47h59m, closed at 48h01m.
+        Carbon::setTestNow(Carbon::parse('2026-10-14 19:29:00', 'UTC'));
+        $this->assertSame(201, $this->say('committee', 'still open')[0]);
+
+        Carbon::setTestNow(Carbon::parse('2026-10-14 19:31:00', 'UTC'));
         [$status, $body] = $this->say('committee', 'too late');
         $this->assertSame(409, $status);
         $this->assertSame('thread_closed', $body['error']);

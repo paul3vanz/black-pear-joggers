@@ -1144,3 +1144,9 @@ audience labels on new updates stay as they are: they name roles, not features.
   (backmarkers stay in it, tagged). With nobody else going it is plain text with no chevron.
 - **Buttons side by side on every card.** Event cards (parkrun events and the race card) now put "I'm going" / "Leave" / "Can't go" and
   "Chat" on one row, like the pace group cards.
+
+**D142 — Chats close 48 hours after the run, not 12 (2026-11-28), supersedes the timing in D40.** Requested by the
+club (reason not recorded). The rule lives only in the API: `ThreadAccess::CLOSES_AFTER_HOURS` (48), which the leaders thread (`LeaderThreadAccess`) reuses so the two cannot
+drift apart. The app just follows the `closed` flag; its "Posting stops 48 hours after the run" notice is the one
+hardcoded copy. To make it configurable later, replace the constant with a club setting and send the hours alongside
+`closed` so the notice is no longer hardcoded.

@@ -817,7 +817,7 @@ A member **may read and post** when any of these is true (computed live, nothing
 
 Anyone else gets 403 `not_in_group`. A member who leaves the group or says "not coming" loses access
 immediately (the app hides the thread).
-**Posting closes** 12 hours after the run ends, and while the run is cancelled: 409 `thread_closed`
+**Posting closes** 48 hours after the run ends, and while the run is cancelled: 409 `thread_closed`
 (`message` says why). Reading stays open while the group exists. Deleting a group deletes its thread.
 
 ### Message shape
@@ -892,7 +892,7 @@ Follow the hosting constraints in `api/CLAUDE.md` (InnoDB, short indexed varchar
 - **Check order:** 404 (group missing, other club, group or run deleted), 403 `not_in_group`, 422, replay/409 `conflict`, 409 `thread_closed`, 429. A replay of your own id is 200 even after the thread closed.
 - **DELETE** also needs thread access, so a member who left the group gets `not_in_group` even for their own message. A participant who may not moderate gets 403 `forbidden`. Deleting works on closed threads. Repeating it keeps the first `deleted_at`.
 - **Rate limit:** counted from `group_messages.created_at` over the last 60 s across all groups, deleted messages included, replays excluded. 429 carries `Retry-After`.
-- **GET messages:** `since` mode orders by `created_at` (not `updated_at`), so a tombstone keeps its place; the 500 cap cuts the newest. `closed` uses `ends_at` (else `starts_at`) + 12 h, or a cancelled run.
+- **GET messages:** `since` mode orders by `created_at` (not `updated_at`), so a tombstone keeps its place; the 500 cap cuts the newest. `closed` uses `ends_at` (else `starts_at`) + 48 h (`ThreadAccess::CLOSES_AFTER_HOURS`, shared with the leaders thread), or a cancelled run.
 - **Thread read state:** `last_read_at` is "now" at second precision and unread means `created_at > last_read_at`, so a message in the same second as a read counts as read. Muting keeps `last_read_at`.
 - **`label`** (threads and notification title) is `RunText::groupName`: the group's label and pace text together ("Jog/walk 9:00-9:30/mi"), either alone, or "Group".
 - **`GET /threads`:** window is 14 days by message `created_at`; deleted messages never count as the last message or towards a thread being listed. Committee/admin see every thread of the club; the coordinator sees those of their runs; everyone else sees groups they lead or are going/maybe in.

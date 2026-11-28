@@ -233,12 +233,12 @@ class AppGroupMessagesTest extends AppMessagesBase
     {
         $this->msg($this->going, $this->g, 'hello');
 
-        // The run ended at 19:30Z; 11h59m later it is still open, 12h01m later closed.
-        Carbon::setTestNow(Carbon::parse('2026-10-13 07:29:00', 'UTC'));
+        // The run ended at 19:30Z on the 12th; 47h59m later it is still open, 48h01m later closed.
+        Carbon::setTestNow(Carbon::parse('2026-10-14 19:29:00', 'UTC'));
         [, $body] = $this->messagesOf('going', $this->g);
         $this->assertFalse($body['closed']);
 
-        Carbon::setTestNow(Carbon::parse('2026-10-13 07:31:00', 'UTC'));
+        Carbon::setTestNow(Carbon::parse('2026-10-14 19:31:00', 'UTC'));
         [$status, $body] = $this->messagesOf('going', $this->g);
         $this->assertSame(200, $status);
         $this->assertTrue($body['closed']);
@@ -359,7 +359,7 @@ class AppGroupMessagesTest extends AppMessagesBase
         $id = $this->uuid();
         $this->postMsg('going', $this->g, 'sent just before', $id);
 
-        Carbon::setTestNow(Carbon::parse('2026-10-13 08:00:00', 'UTC')); // more than 12h after the run ended
+        Carbon::setTestNow(Carbon::parse('2026-10-14 20:00:00', 'UTC')); // more than 48h after the run ended
 
         [$status, $body] = $this->postMsg('going', $this->g, 'sent just before', $id);
         $this->assertSame(200, $status);
@@ -371,14 +371,14 @@ class AppGroupMessagesTest extends AppMessagesBase
         $this->assertSame(1, GroupMessage::count());
     }
 
-    public function testPostingIsOpenJustBeforeTwelveHoursAfterTheRunEnds()
+    public function testPostingIsOpenJustBeforeFortyEightHoursAfterTheRunEnds()
     {
-        Carbon::setTestNow(Carbon::parse('2026-10-13 07:29:00', 'UTC')); // run ended 19:30Z
+        Carbon::setTestNow(Carbon::parse('2026-10-14 19:29:00', 'UTC')); // run ended 19:30Z on the 12th
 
         [$status] = $this->postMsg('going', $this->g, 'still open');
         $this->assertSame(201, $status);
 
-        Carbon::setTestNow(Carbon::parse('2026-10-13 07:31:00', 'UTC'));
+        Carbon::setTestNow(Carbon::parse('2026-10-14 19:31:00', 'UTC'));
         [$status, $body] = $this->postMsg('going', $this->g, 'closed now');
         $this->assertSame(409, $status);
         $this->assertSame('thread_closed', $body['error']);

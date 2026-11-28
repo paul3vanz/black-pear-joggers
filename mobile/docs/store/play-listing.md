@@ -61,7 +61,7 @@ REMINDERS
 GROUP CHAT
 - A chat for each pace group on a run: "running 5 minutes late", "meet at the back car park".
 - Messages are cached on your phone and sent when you are back online.
-- Mute a chat any time. Chats close 12 hours after the run ends.
+- Mute a chat any time. Chats close 48 hours after the run ends.
 
 MEMBER PROFILES
 - Add a photo and a short bio so people know who they are running with.
